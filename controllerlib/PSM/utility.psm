@@ -1,0 +1,150 @@
+                    ;-----------------------------------------------------------
+                    ; Company: Quantum Technology Laboratory
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: utility.psm
+                    ; Project Name: control_unit
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;   
+                    ; NOTE:A lot taken from XILINX example code
+                    ;-----------------------------------------------------------
+                    ; Delays, ASCII<->hex conversion and send_hex_byte
+                    ;-----------------------------------------------------------
+                    ;-----------------------------------------------------------
+                    ; Software Delays
+                    ;-----------------------------------------------------------
+                    ; All based on 125MHz clock
+                    ; The number of iterations of a delay loop required to form 
+                    ; each delay required are loaded into the register set 
+                    ; [s2,s1,s0] and then the delay loop is started.
+                    ;  
+                    ; Registers used s0, s1, s2
+                    ;  
+                    ; 1ms is 125,000 clock cycles requiring 15,625 delay 
+                    ; iterations
+                    ;       
+       delay_128ns: LOAD s2, 00
+                    LOAD s1, 00
+                    LOAD s0, 04
+                    JUMP software_delay
+                    ;
+         delay_1ms: LOAD s2, 00
+                    LOAD s1, 3D
+                    LOAD s0, 09
+                    JUMP software_delay
+                    ;
+                    ; 20ms is 2,500,000 clock cycles requiring 312,000 delay 
+                    ; iterations
+                    ;
+        delay_20ms: LOAD s2, 04
+                    LOAD s1, C4
+                    LOAD s0, B4
+                    JUMP software_delay
+                    ;
+                    ; 1s is 125,000,000 clock cycles requiring 15,625,000 delay 
+                    ; iterations
+                    ;
+          delay_1s: LOAD s2, EE
+                    LOAD s1, 6B
+                    LOAD s0, 28
+                    JUMP software_delay
+                    ;          
+       delay_500ms: LOAD s2, 77
+                    LOAD s1, 35
+                    LOAD s0, 94
+                    JUMP software_delay
+                    ;
+        delay_40us: LOAD s2, 00   ; 1250 delay cycles
+                    LOAD s1, 04
+                    LOAD s0, E2
+                    JUMP software_delay
+                    ;
+                    ; The delay loop decrements [s2,s1,s0] until it reaches zero
+                    ; Each decrement cycle is 4 instructions which is 8 clock 
+                    ; cycles (64ns at 125MHz)
+    software_delay: SUB s0, 1'd
+                    SUBCY s1, 0'd
+                    SUBCY s2, 0'd
+                    JUMP NZ, software_delay
+                    RETURN 
+                    ;
+                    ;
+                    ;-----------------------------------------------------------
+                    ; Send Hex Value of Byte to UART
+                    ;-----------------------------------------------------------
+                    ;
+                    ; Value provided in register 's4' is sent as ASCII HEX to 
+                    ; the UART transmitter.
+                    ;
+                    ; Registers used s0, s4 (preserved) and s5.
+                    ;
+     send_hex_byte: LOAD s5, s4                     ;isolate upper nibble
+                    SR0 s5
+                    SR0 s5
+                    SR0 s5
+                    SR0 s5
+                    CALL hex_to_ASCII               ;convert to ASCII
+                    CALL UART_Tx                    ;send upper digit to UART
+                    LOAD s5, s4                     ;isolate lower nibble
+                    AND s5, 0F
+                    CALL hex_to_ASCII               ; convert to ASCII
+                    CALL UART_Tx                    ;send lower digit to UART
+                    RETURN 
+                    ;
+                    ; Convert value 00 to 0F provided in 's5' into ASCII 
+                    ; character in 's5'
+                    ;
+                    ; Register used s5
+                    ;
+      hex_to_ASCII: SUB s5, 0A            ;test if value is in range 0 to 9
+                    JUMP C, number_char
+                    ADD s5, 07            ;ASCII char A to F in range 41 to 46
+       number_char: ADD s5, 3A            ;ASCII char 0 to 9 in range 30 to 40
+                    RETURN 
+                    ;
+                    ;-----------------------------------------------------------
+                    ; Converts character to upper case
+                    ;-----------------------------------------------------------
+                    ;
+                    ; Tests and converts character in 's5' (if necessary).
+                    ;
+                    ; To convert character to upper case
+                    ;
+                    ; If the character is in the range 'a' to 'z', it is 
+                    ; converted to the equivalent upper case character in the 
+                    ; range 'A' to 'Z'. All other characters remain unchanged.
+                    ;
+        upper_case: COMPARE s5, "a";eliminate character codes below 'a' (61 hex)
+                    RETURN C
+                    COMPARE s5, 7B ;eliminate character codes above 'z' (7A hex)
+                    RETURN NC
+                    AND s5, 11011111'b ;force bit5 Low to convert to upper case
+                    RETURN 
+                    ;
+                    ;-----------------------------------------------------------
+                    ; Convert ASCII character to an equivalent HEX value.
+                    ;-----------------------------------------------------------
+                    ;
+                    ; Converts the ASCII character presented in 's5' to an 
+                    ; equivalent HEX value. If character is not valid for hex, 
+                    ; then CARRY is set on return.
+                    ;
+                    ; Register used s5
+                    ;
+      ASCII_to_hex: ADD s5, B9        ;test for above ASCII code 46 ('F')
+                    RETURN C
+                    SUB s5, E9        ;normalise 0 to 9 with A-F in 11 to 16 hex
+                    RETURN C          ;reject below ASCII code 30 ('0')
+                    SUB s5, 11        ;isolate A-F down to 00 to 05 hex
+                    JUMP NC, ASCII_letter
+                    ADD s5, 07        ;test for above ASCII code 46 ('F')
+                    RETURN C
+                    SUB s5, F6        ;convert to range 00 to 09
+                    RETURN 
+      ASCII_letter: ADD s5, 0A        ;convert to range 0A to 0F
+                    RETURN 
+                    ;-----------------------------------------------------------
+                    ;-----------------------------------------------------------

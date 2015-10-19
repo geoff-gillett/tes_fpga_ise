@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>ethernet_library</name>
+	<comment></comment>
+	<projects>
+		<project>streamlib</project>
+		<project>teslib</project>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.xtext.ui.shared.xtextBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.sigasi.hdt.vhdl.ui.vhdlNature</nature>
+		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>Common Libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>IP_cores</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/IP_cores</locationURI>
+		</link>
+		<link>
+			<name>scripts</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/scripts</locationURI>
+		</link>
+		<link>
+			<name>Common Libraries/DRAG_REUSABLE_LIBRARIES_HERE.txt</name>
+			<type>1</type>
+			<locationURI>sigasiresource:/vhdl/readme2.txt</locationURI>
+		</link>
+		<link>
+			<name>Common Libraries/IEEE</name>
+			<type>2</type>
+			<locationURI>sigasiresource:/vhdl/93/IEEE</locationURI>
+		</link>
+		<link>
+			<name>Common Libraries/STD</name>
+			<type>2</type>
+			<locationURI>sigasiresource:/vhdl/93/STD</locationURI>
+		</link>
+		<link>
+			<name>Common Libraries/IEEE/Synopsys</name>
+			<type>2</type>
+			<locationURI>sigasiresource:/vhdl/93/IEEE%20Synopsys</locationURI>
+		</link>
+	</linkedResources>
+	<filteredResources>
+		<filter>
+			<id>1445238867525</id>
+			<name>IP_cores</name>
+			<type>5</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-v6_emac_v2_3_0/v6_emac_v2_3_0/*</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1445238867531</id>
+			<name>IP_cores</name>
+			<type>5</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.xco</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
+</projectDescription>

@@ -1,0 +1,301 @@
+                    ;-----------------------------------------------------------
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: command_IO.psm
+                    ; Project Name: control_unit
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    ; Code for reading AXI commands from UART and 
+                    ; sending back responses.
+                    ;-----------------------------------------------------------
+                    ;-----------------------------------------------------------
+                    ; Reads ASCII-HEX command of 18 characters followed by a 
+                    ; TERMINATOR byte.
+                    ;
+                    ; Input ASCII command format (Big endian)
+                    ; VVVVVVVV:AAAAAAAA:CC:TERMINATOR
+                    ; Value   :Address :Command byte
+                    ;
+                    ; Command Byte 
+                    ; 01 - AXI Write (value to address)
+                    ; 02 - AXI Read  (value from address)
+                    ; 03 - System reset (Address and Value must be zero for the
+                    ;                    reset to be recognised)
+                    ;
+                    ; The command is converted to numbers in registers
+                    ;
+                    ;       value3:value2:value1:value0  
+                    ;       address3:address2:address2:address0
+                    ;       command 
+                    ;
+                    ; The address and value are also stored in scratch
+                    ;   Address byte 3-0 @ ADDRESS_BYTE3 to ADDRESS_BYTE0
+                    ;   Value   byte 3-0 @ VALUE_BYTE3 to VALUE_BYTE0  
+                    ;
+                    ; A read response consists of 9 ASCII hex chars + TERMINATOR
+                    ;
+                    ;     VVVVVVVV:RR:TERMINATOR
+                    ;
+                    ; where VVVVVVV is the value read and RR is the response 
+                    ; byte with bits.
+                    ;
+                    ;     DLAACCCC 
+                    ;
+                    ;       D    - non hex chars in command
+                    ;       L    - wrong length (not 18 chars + TERMINATOR)
+                    ;       AA   - AXI response code
+                    ;                 00 - OKAY
+                    ;                 11 - DECERR (bad address)
+                    ;                 10 - SLVERR (slave generated an error)
+                    ;       CCCC - the command received or 0000 if the command
+                    ;              was not recognised.
+                    ;
+                    ; See command_IO.psm 
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE read_command 
+                    ;-----------------------------------------------------------
+                    ; Register Usage
+                    ; s0 
+                    ; s6 
+                    ; s5
+                    ; s4 Counts received characters that are not hex digits
+                    ;-----------------------------------------------------------
+                    ; Returns with Z flag set when the registers contain 
+                    ; valid read or write command data. Otherwise sends 
+                    ; appropriate response for an invalid command.
+                    ;-----------------------------------------------------------
+      read_command: CALL clear_AXI_regs
+                    LOAD s6, 00           ;count the digits in s6
+                    LOAD s4, 00           ;count bad digits in s4
+        read_digit: CALL UART_Rx          ;wait for a character and return in s5
+                    JUMP Z, read_digit    ;continue to wait if timeout occurs
+                    COMPARE s5, TERMINATOR
+                    JUMP Z, command_end;
+                    CALL upper_case
+                    CALL ASCII_to_hex     ;convert value in s5 to hex nibble
+                    JUMP NC, is_hex
+                    ADD s4, 01            ;its not a hex char count it 
+                    JUMP next_digit
+            is_hex: LOAD s0, 4'd          ;shift registers set left by 4 bits
+       build_value: SL0 command           ;to make space for new digit value
+                    SLA address0
+                    SLA address1
+                    SLA address2
+                    SLA address3
+                    SLA value0
+                    SLA value1
+                    SLA value2
+                    SLA value3
+                    SUB s0, 1'd
+                    JUMP NZ, build_value
+                    OR command, s5 ;merge value of new digit into existing value
+        next_digit: ADD s6, 01
+                    JUMP read_digit
+       command_end: COMPARE command, READ
+                    JUMP Z, good_command
+                    COMPARE command, WRITE
+                    JUMP Z, good_command
+                    COMPARE command, RESET
+                    JUMP Z, good_command
+   unknown_command: LOAD command, 00      
+      good_command: COMPARE s6, 18'd
+                    JUMP Z, good_length     ; 18 chars read before TERMINATOR
+                    OR command, BAD_LENGTH  ; set bad command length bit
+       good_length: COMPARE s4, 00
+                    JUMP Z, good_digits     ; 18 valid hex digits
+                    OR command, BAD_DIGITS  ; set bad chars received bit
+       good_digits: TEST command, COMMAND_BITS  
+                    JUMP Z, error_response
+                    TEST command, ERROR_BITS
+                    JUMP NZ, error_response
+                    COMPARE command, RESET
+                    JUMP NZ, command_done   ; TODO check address & value are 0
+                    OUTPUTK RESET_SYSTEM, RESET_CO_PORT ; perform full reset
+        wait_reset: JUMP wait_reset         ; CPU will reset and break loop
+      command_done: AND s6, 00              ; set Z flag
+                    RETURN                  ; valid command Z-flag is set
+    error_response: CALL send_response_byte
+                    SR1 s6                  ; reset Z-flag
+                    RETURN                    
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE read_register
+                    ; Read 32 bit value from 24 bit address in address2-0
+                    ;
+                    ;-----------------------------------------------------------
+     read_register: OUTPUTK SEL_ADDRESS, IO_SEL_CO_PORT   ;set to write address
+                    CALL write_address24
+                    CALL read_value   
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE write_register
+                    ; Write 32 bit value to 24 bit address in address2-0
+                    ;-----------------------------------------------------------
+    write_register: OUTPUTK SEL_ADDRESS, IO_SEL_CO_PORT    ;set to write address
+                    CALL write_address24
+                    OUTPUTK SEL_DATA, IO_SEL_CO_PORT       ;set to write data
+                    CALL write_value
+                    OUTPUTK REG_WRITE, CONTROL_CO_PORT     ; write it
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE read_value
+                    ; Read 32 bit value from the selected IO channel
+                    ;-----------------------------------------------------------
+        read_value: INPUT value3, BYTE3_IO_PORT
+                    INPUT value2, BYTE2_IO_PORT
+                    INPUT value1, BYTE1_IO_PORT
+                    INPUT value0, BYTE0_IO_PORT
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE write_value
+                    ; Writes 32 bit value to the selected IO channel
+                    ;-----------------------------------------------------------
+       write_value: OUTPUT value3, BYTE3_IO_PORT
+                    OUTPUT value2, BYTE2_IO_PORT
+                    OUTPUT value1, BYTE1_IO_PORT
+                    OUTPUT value0, BYTE0_IO_PORT
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE write_address
+                    ; Write 32 bit address to to selected IO channel
+                    ;-----------------------------------------------------------
+   write_address32: OUTPUT address3, BYTE3_IO_PORT
+   write_address24: OUTPUT address2, BYTE2_IO_PORT
+   write_address16: OUTPUT address1, BYTE1_IO_PORT
+    write_address8: OUTPUT address0, BYTE0_IO_PORT
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE is_onehot_address24
+                    ; Verifies 24 bit register address in address2-0 is one-hot
+                    ;
+                    ; RETURN flags and value in s2
+                    ;   C  and NZ -> is one-hot s2=hot bit number
+                    ;   NC and NZ -> more than one bit set s2=?
+                    ;   NC and Z  -> no bits set s2=?
+                    ;
+                    ; NOTE requires s2 to be 0 when other entry points called
+                    ; USES s0,s1,s2 
+                    ;-----------------------------------------------------------
+  onehot_address24: LOAD s2, 00
+                    LOAD s0, address2
+                    CALL onehot_byte
+                    JUMP C, onehotbyte3
+                    JUMP Z, onehot_address16                     
+                    RETURN                       ; byte not one-hot
+       onehotbyte3: LOAD s2, s1 
+                    ADD s2, 16'd  
+  onehot_address16: LOAD s0, address1            ; 16 bit address entry point
+                    CALL onehot_byte
+                    JUMP C, onehotbyte2
+                    JUMP Z, onehot_address8                     
+                    RETURN                       ; byte not one-hot
+       onehotbyte2: COMPARE s2, 00
+                    JUMP NZ, not_onehotaddress
+                    LOAD s2, s1 
+                    ADD s2, 8'd  
+   onehot_address8: LOAD s0, address0            ; 8 bit address entry point
+                    CALL onehot_byte
+                    JUMP C, onehotbyte1
+                    JUMP Z, zerobyte1                     
+                    RETURN                       ; byte not one-hot
+       onehotbyte1: COMPARE s2, 00
+                    JUMP NZ, not_onehotaddress
+                    LOAD s2, s1
+  is_onehotaddress: HWBUILD s1                   ; set carry reset zero flag
+                    RETURN                       ; is one-hot
+         zerobyte1: COMPARE s2, 00 
+                    JUMP NZ, is_onehotaddress
+ not_onehotaddress: AND s2, FF                   ; reset C flag set Z if s2=00 
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE onehot_byte
+                    ; Checks byte in s0 is one-hot (s0 is altered)
+                    ;
+                    ; RETURN flags and value in s1
+                    ;   C  and NZ -> is one-hot s1=hot bit number
+                    ;   NC and NZ -> more than one bit set s1=0
+                    ;   NC and Z  -> no bits set s1=0
+                    ;
+                    ; USES s0,s1
+                    ;-----------------------------------------------------------
+       onehot_byte: LOAD s1, 08
+    check_next_bit: SUB s1, 01
+                    SL0 s0
+                    JUMP Z, onehot_or_0      
+                    JUMP NC, check_next_bit
+       not_one_hot: LOAD s1, 00               
+                    AND s0, FF                ; reset carry
+                    RETURN                    
+       onehot_or_0: JUMP NC, not_one_hot
+                    HWBUILD s0                ; set C and reset Z   
+                    RETURN                    
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROTINE respond_decerr
+                    ; sends decoder error response (AXI_DECERR invalid address)
+                    ;-----------------------------------------------------------
+    respond_decerr: OR command, AXI_DECERR
+                    JUMP send_response_byte    ;returns to caller
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROTINE respond_decerr
+                    ; sends slave error response (AXI_DECERR invalid address)
+                    ;-----------------------------------------------------------
+    respond_slverr: AND command, COMMAND_BITS
+                    OR command, AXI_SLVERR
+                    JUMP send_response_byte    ;returns to caller
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE send_response
+                    ;-----------------------------------------------------------
+                    ; Send the response stored in value registers and the 
+                    ; response byte followed by TERMINATOR for a valid READ
+                    ; Send response byte followed by TERMINATOR if WRITE or 
+                    ; error
+                    ;
+                    ; register usage
+                    ; s6, send_hex_byte uses s0 ,s4, s5
+                    ;-----------------------------------------------------------
+     send_response: LOAD s4, command
+                    AND s4, COMMAND_BITS
+                    COMPARE s4, WRITE
+                    JUMP Z, send_response_byte
+                    LOAD s4, command 
+                    TEST s4, ~COMMAND_BITS
+                    JUMP NZ, send_response_byte
+                    LOAD s4, value3             
+                    CALL send_hex_byte
+                    LOAD s4, value2 
+                    CALL send_hex_byte
+                    LOAD s4, value1 
+                    CALL send_hex_byte
+                    LOAD s4, value0 
+                    CALL send_hex_byte
+send_response_byte: LOAD s4, command
+                    CALL send_hex_byte
+                    LOAD s5, TERMINATOR
+                    CALL UART_Tx
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINES clear_AXI_regs clear_value_regs
+                    ;-----------------------------------------------------------
+    clear_AXI_regs: LOAD address3, 00
+                    LOAD address2, 00
+                    LOAD address1, 00
+                    LOAD address0, 00
+                    LOAD command, 00      
+  clear_value_regs: LOAD value3, 00           ;clear the registers
+                    LOAD value2, 00
+                    LOAD value1, 00
+                    LOAD value0, 00
+                    RETURN

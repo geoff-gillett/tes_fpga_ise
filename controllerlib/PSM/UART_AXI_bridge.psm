@@ -1,0 +1,81 @@
+                    ;-----------------------------------------------------------
+                    ; Company: Quantum Technology Laboratory
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: UART_AXI_bridge
+                    ; Project Name: control_unit
+                    ; Target Devices: virtex6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    ; UART to AXI Bridge code
+                    ; Handles transactions on the system AXI bus
+                    ;-----------------------------------------------------------
+                    ; The command is converted to numbers in registers
+                    ;
+                    ;       value3:value2:value1:value0  
+                    ;       address3:address2:address2:address0
+                    ;       command 
+                    ;
+                    ; See command_IO.psm 
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE AXI_command_handler
+                    ;-----------------------------------------------------------
+                    ; register usage
+                    ; s6, s5, s4 and s0
+                    ;-----------------------------------------------------------
+AXI_command_handler:COMPARE command, WRITE              ; write command?
+                    JUMP Z, do_AXI_write
+       do_AXI_read: OUTPUTK SEL_AXI_AR, IO_SEL_CO_PORT ; select AXI ARaddr
+                    CALL write_address                 ; load the address
+                    CALL do_AXI                        ; do transaction
+                    OUTPUTK AXI_DONE, CONTROL_CO_PORT  ; reset the AXI handler
+                    OUTPUTK SEL_AXI_R, IO_SEL_CO_PORT  ; select AXI Rresp 
+                    CALL do_AXI                        ; do transaction
+                    INPUT s3, RESP_IN_PORT             ; AXI response bits
+                    COMPARE s3, 00                     ; Error?
+                    JUMP NZ, AXI_read_error
+                    CALL read_value                    ; read the returned value
+                    OUTPUTK AXI_DONE, CONTROL_CO_PORT  ; reset the AXI handler
+                    JUMP send_response
+                    ;
+    AXI_read_error: AND command, ~AXI_BITS         ; clear the AXI response bits
+                    OR command, s3                 ; construct response byte
+                    OUTPUTK AXI_DONE, CONTROL_CO_PORT  ; reset the AXI handler
+                    JUMP send_response_byte 
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE do_AXI_write
+                    ;-----------------------------------------------------------
+      do_AXI_write: OUTPUTK SEL_AXI_W, IO_SEL_CO_PORT  ; select Wdata channel
+                    CALL write_value
+                    CALL do_AXI                        ; do transaction
+                    OUTPUTK AXI_DONE, CONTROL_CO_PORT  ; reset the AXI handler
+                    OUTPUTK SEL_AXI_AW, IO_SEL_CO_PORT ; select Waddr
+                    CALL write_address
+                    CALL do_AXI                        ; do transaction
+                    OUTPUTK AXI_DONE, CONTROL_CO_PORT  ; reset the AXI handler
+                    OUTPUTK SEL_AXI_B, IO_SEL_CO_PORT  ; select AXI write resp 
+                    CALL do_AXI                        ; do transaction
+                    INPUT s3, RESP_IN_PORT             ; AXI response bits
+                    OUTPUTK AXI_DONE, CONTROL_CO_PORT  ; reset the AXI handler
+                    AND command, ~AXI_BITS      ; clear the AXI response bits
+                    OR command, s3              ; construct response byte
+                    JUMP send_response_byte
+                    ;
+                    ;-----------------------------------------------------------
+                    ; Perform transaction on selected AXI channel
+                    ;-----------------------------------------------------------
+            do_AXI: OUTPUTK AXI_GO, CONTROL_CO_PORT      ; initiate exchange
+wait_for_handshake: INPUT s3, STATUS_IN_PORT              
+                    TEST s3, AXI_HANDSHAKE
+                    JUMP Z, wait_for_handshake
+                    RETURN
+                    ;-----------------------------------------------------------
+                    ; for debugging
+                    ;-----------------------------------------------------------
+     infinite_loop: JUMP infinite_loop
+
+                    

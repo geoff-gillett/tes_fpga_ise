@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<com.sigasi.hdt.shared.librarymapping.model:LibraryMappings xmlns:com.sigasi.hdt.shared.librarymapping.model="com.sigasi.hdt.vhdl.scoping.librarymapping" Version="2">
+  <Mappings Location="" Library="controllerlib"/>
+  <Mappings Location="KCPSM6" Library="controllerlib"/>
+  <Mappings Location="PSM" Library="controllerlib"/>
+  <Mappings Location="Common Libraries/IEEE" Library="ieee"/>
+  <Mappings Location="Common Libraries" Library="not mapped"/>
+  <Mappings Location="Common Libraries/unisim/primitive" Library="not mapped"/>
+  <Mappings Location="Common Libraries/unisim/secureip" Library="not mapped"/>
+  <Mappings Location="PSM/ROM_form.vhd" Library="not mapped"/>
+  <Mappings Location="PSM/kc705_kcpsm6_spi_flash.vhd" Library="not mapped"/>
+  <Mappings Location="Common Libraries/STD" Library="std"/>
+  <Mappings Location="Common Libraries/unisim" Library="unisim"/>
+</com.sigasi.hdt.shared.librarymapping.model:LibraryMappings>

@@ -1,0 +1,50 @@
+                    ;-----------------------------------------------------------
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Project Name: control_unit
+                    ; Target Devices: virtex6
+                    ; Tool versions: ISE 14.7
+                    ;
+                    ; NOTE:Taken from the XILINX example code
+                    ;-----------------------------------------------------------
+                    ; Routine to send one character to the UART Transmitter 
+                    ;-----------------------------------------------------------
+                    ;
+                    ; This routine will transmit the character provided in 
+                    ; register 's5'.
+                    ;
+                    ; Before the character is output to the 'UART_TX6' macro the 
+                    ; status of the FIFO buffer is checked to see if there is 
+                    ; space. If the buffer is full then this routine will
+                    ; wait for space to become available (e.g. the time required 
+                    ; for a previous character to be transmitted by the UART).
+                    ;
+                    ; Registers used s0 and s5 for the data (which is preserved)
+                    ;
+           UART_Tx: INPUT s0, STATUS_IN_PORT            ;Check if buffer is full
+                    TEST s0, TX_FULL
+                    JUMP NZ, UART_Tx                    ;wait if full
+                    OUTPUT s5, UART_IO_PORT
+                    RETURN 
+                    ;
+                    ;-----------------------------------------------------------
+                    ; Routine to attempt to receive one character from the UART 
+                    ;-----------------------------------------------------------
+                    ;
+                    ;
+                    ;
+                    ; Registers used s0, s1 and s5.
+                    ;
+           UART_Rx: LOAD s1, FF      ;Timeout= 167x(6 instructionsx2 clocks)
+        rx_timeout: INPUT s0, STATUS_IN_PORT
+                    TEST s0, RX_NOTEMPTY    ;Z=0 and C=1 when data present
+                    JUMP NZ, read_Rx
+                    SUB s1, 1'd
+                    RETURN Z                  ;Timeout returns with Z=1 and C=0
+                    JUMP rx_timeout
+                    ;
+           read_Rx: INPUT s5, UART_IO_PORT     ;read character from buffer
+                    RETURN 
+                    ;

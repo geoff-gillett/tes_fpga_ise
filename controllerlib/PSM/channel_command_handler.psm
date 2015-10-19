@@ -1,0 +1,53 @@
+                    ;-----------------------------------------------------------
+                    ; Company: Quantum Technology Laboratory
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: command_handler.psm
+                    ; Project Name: channel
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    CONSTANT NUM_CHANNEL_REGS, 14'd
+                    ;
+   channel_command: COMPARE command, READ
+                    JUMP Z, read_channel_reg
+                    COMPARE command, WRITE
+                    JUMP Z, write_channel_reg
+                    JUMP respond_slverr        ; should not be able to get here
+                    ;
+ write_channel_reg: CALL onehot_address24
+                    JUMP Z, respond_slverr     ; returns to caller
+                    JUMP NC, respond_decerr    ; returns to caller
+                    COMPARE s2, NUM_CHANNEL_REGS
+                    JUMP NC, respond_decerr;   ; returns to caller
+                    CALL write_register
+                    JUMP send_response_byte
+                    ;
+  read_channel_reg: CALL onehot_address24
+                    JUMP Z, version     ; returns to caller
+                    JUMP NC, respond_decerr    ; returns to caller
+                    COMPARE s2, NUM_CHANNEL_REGS
+                    JUMP NC, respond_decerr;   ; returns to caller
+                    CALL read_register
+                    JUMP send_response
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE get_response_byte
+                    ; adds response bits to command
+                    ; uses s3, s6
+                    ;-----------------------------------------------------------
+; get_chan_response: INPUT s3, STATUS_IN_PORT
+;                    TEST s3, STATUS_RESPONSE_VALID
+;                    JUMP Z, get_chan_response
+;                    INPUT s6, RESP_IN_PORT
+;                    AND s6, CHAN_RESPONSE_MASK
+;                    SL0 s6
+;                    SL0 s6
+;                    SL0 s6
+;                    SL0 s6
+;                    AND command, ~AXI_BITS
+;                    OR command, s6
+;                    RETURN
+                    

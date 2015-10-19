@@ -1,0 +1,53 @@
+                    ;-----------------------------------------------------------
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: command_IO.psm
+                    ; Project Name: control_unit
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    CONSTANT NUM_GLOBAL_REGS, 16'd      ;change to add registers 
+                    CONSTANT ADC_ENABLES_ADDR_BIT, 05   
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE read_global_reg
+                    ; Read 32 bit value from  address2,address1,address0
+                    ; and send response
+                    ;
+                    ; Register addresses are all one-hot 
+                    ; Assumes contiguous addresses 
+                    ;-----------------------------------------------------------
+   read_global_reg: CALL onehot_address24
+                    JUMP Z, version
+                    JUMP NC, respond_decerr         ; not one-hot (RTC)
+                    COMPARE s2, NUM_GLOBAL_REGS
+                    JUMP NC, respond_decerr         ; address out of range (RTC)
+                    ; must be valid address
+                    TEST address0, 00000001'b       ; features
+                    JUMP NZ, respond_features       ; (RTC)
+                    CALL read_register               
+                    JUMP send_response              ; (RTC)
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE write_global_reg
+                    ; write 32 bit value in (value3,value2,value1,value0) to 
+                    ; (address2,address1,address0) and send response
+                    ;
+                    ; Register addresses are all one-hot 
+                    ; Assumes contiguous addresses from LSB
+                    ;-----------------------------------------------------------
+  write_global_reg: CALL onehot_address24
+                    JUMP Z, respond_slverr           ; version is read only
+                    JUMP NC, respond_decerr          ; not one-hot
+                    COMPARE s2, NUM_GLOBAL_REGS
+                    JUMP NC, respond_decerr          ; address out of range
+                    TEST address0, 03               
+                    JUMP NZ, respond_slverr          ; read only
+                    COMPARE s2, ADC_ENABLES_ADDR_BIT 
+                    JUMP Z, write_adc_enables      
+                    CALL write_register              
+                    JUMP send_response               ; (RTC)
+                    ;
+                    
+                    
