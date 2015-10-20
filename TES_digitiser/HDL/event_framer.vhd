@@ -37,7 +37,8 @@ port (
   area_threshold:in pulse_area_t;
   --! buffer overflow signal
   enabled:in boolean;
-  event_lost:out boolean; -- framer overflow happens if framer goes full during any part of measurement
+	-- framer overflow happens if framer goes full during any part of measurement
+  event_lost:out boolean; 
   mux_full:in boolean;
   --! measurement in
   start:in boolean; -- from measurement
@@ -177,6 +178,7 @@ if rising_edge(clk) then
       length <= resize(word_len,ADDRESS_BITS);
       chunk_len:=to_unsigned(4,SIZE_BITS)+(peak_count & '0');
       
+      -- TODO: fix this comment
       --header is streamed as a single 8-byte value with endianity set by
       --the generic LITTLE_ENDIAN in event_mux.vhd
       -- Field    lengths

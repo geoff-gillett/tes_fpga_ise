@@ -26,7 +26,7 @@ use streamlib.types.all;
 --!* count objects
 --------------------------------------------------------------------------------
 --FIXME comments need rework
-entity ethernet_transmitter is
+entity transmitter is
 generic(
   MCASTREAM_CHUNKS:integer:=2;
   EVENTSTREAM_CHUNKS:integer:=4;
@@ -65,9 +65,9 @@ port (
   mcastream_valid:in boolean;
   mcastream_ready:out boolean
 );
-end ethernet_transmitter;
+end transmitter;
 --  
-architecture RTL of ethernet_transmitter is
+architecture RTL of transmitter is
 --
 component event_buffer
 port(

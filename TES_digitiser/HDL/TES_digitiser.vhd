@@ -825,7 +825,7 @@ port map(
 --------------------------------------------------------------------------------
 -- Ethernet framing
 --------------------------------------------------------------------------------
-transmitter:entity ethernetlib.ethernet_transmitter
+transmitter:entity ethernetlib.transmitter
 generic map(
 	MCASTREAM_CHUNKS => MCASTREAM_CHUNKS,
   EVENTSTREAM_CHUNKS => EVENTSTREAM_CHUNKS,

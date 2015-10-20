@@ -13,7 +13,6 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 --
 library teslib;
---use TES.stream.all;
 use teslib.types.all;
 use teslib.functions.all;
 --

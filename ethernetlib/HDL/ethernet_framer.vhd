@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 --      Author: Geoff Gillett
---     Project: TES counter for ML605 development board with
+--     Project: TES digitiser for ML605 development board with
 --              FMC108 ADC mezzanine card
 --        File: IO_control.vhd
 -- Description: AXI arbiter/MUX for transmission of commands
