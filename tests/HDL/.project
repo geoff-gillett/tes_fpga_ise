@@ -25,6 +25,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>IP_cores</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/IP_cores</locationURI>
+		</link>
+		<link>
 			<name>scripts</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/scripts</locationURI>

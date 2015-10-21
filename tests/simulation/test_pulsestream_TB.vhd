@@ -12,9 +12,7 @@ use streamlib.functions.all;
 
 entity test_pulsestream_TB is
 generic(
-  BUS_CHUNKS:integer:=4;
-  ADDRESS_BITS:integer:=9;
-  ENDIANNESS:string:="LITTLE"
+  BUS_CHUNKS:integer:=4
 );
 end entity test_pulsestream_TB;
 
@@ -31,9 +29,7 @@ clk <= not clk after CLK_PERIOD/2;
 
 UUT:entity work.test_pulsestream
 generic map(
-  BUS_CHUNKS   => BUS_CHUNKS,
-  ADDRESS_BITS => ADDRESS_BITS,
-  ENDIANNESS   => ENDIANNESS
+  BUS_CHUNKS   => BUS_CHUNKS
 )
 port map(
   clk               => clk,

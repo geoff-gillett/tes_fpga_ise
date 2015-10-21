@@ -26,9 +26,7 @@ use streamlib.functions.all;
 
 entity test_pulsestream is
 generic(
-  BUS_CHUNKS:integer:=4;
-  ADDRESS_BITS:integer:=9;
-  ENDIANNESS:string:="LITTLE"
+  BUS_CHUNKS:integer:=4
 );
 port (
   clk:in std_logic;
@@ -40,6 +38,8 @@ port (
 end entity test_pulsestream;
 
 architecture RTL of test_pulsestream is
+constant ADDRESS_BITS:integer:=9;
+constant ENDIANNESS:string:="LITTLE";
 	
 signal event1:std_logic_vector(BUS_CHUNKS*CHUNK_DATABITS-1 downto 0);
 signal event2:std_logic_vector(BUS_CHUNKS*CHUNK_DATABITS-1 downto 0);

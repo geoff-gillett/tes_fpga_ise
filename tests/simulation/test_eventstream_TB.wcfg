@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="test_eventstream_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="functions" />
+            <top_module name="functions" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_unsigned" />
+            <top_module name="test_eventstream_tb" />
+            <top_module name="types" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="19" />
+   <wvobject fp_name="/test_eventstream_tb/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/reset" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/eventstream" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">eventstream[71:0]</obj_property>
+      <obj_property name="ObjectShortName">eventstream[71:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/eventstream_valid" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">eventstream_valid</obj_property>
+      <obj_property name="ObjectShortName">eventstream_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/eventstream_ready" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">eventstream_ready</obj_property>
+      <obj_property name="ObjectShortName">eventstream_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/eventstream_last" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">eventstream_last</obj_property>
+      <obj_property name="ObjectShortName">eventstream_last</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/state" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">state</obj_property>
+      <obj_property name="ObjectShortName">state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/tickstream_valid" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">tickstream_valid</obj_property>
+      <obj_property name="ObjectShortName">tickstream_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/tickstream_ready" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">tickstream_ready</obj_property>
+      <obj_property name="ObjectShortName">tickstream_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/tickstream_last" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">tickstream_last</obj_property>
+      <obj_property name="ObjectShortName">tickstream_last</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/pulsestream_valid" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">pulsestream_valid</obj_property>
+      <obj_property name="ObjectShortName">pulsestream_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/pulsestream_ready" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">pulsestream_ready</obj_property>
+      <obj_property name="ObjectShortName">pulsestream_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/pulsestream_last" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">pulsestream_last</obj_property>
+      <obj_property name="ObjectShortName">pulsestream_last</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/stream_in" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">stream_in[71:0]</obj_property>
+      <obj_property name="ObjectShortName">stream_in[71:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/valid_in" type="other" db_ref_id="1">
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="ElementShortName">valid_in</obj_property>
+      <obj_property name="ObjectShortName">valid_in</obj_property>
+      <obj_property name="label">valid_in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/tickstream" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">tickstream[71:0]</obj_property>
+      <obj_property name="ObjectShortName">tickstream[71:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/pulsestream" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pulsestream[71:0]</obj_property>
+      <obj_property name="ObjectShortName">pulsestream[71:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/ready_out" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">ready_out</obj_property>
+      <obj_property name="ObjectShortName">ready_out</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_eventstream_tb/UUT/last_in" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">last_in</obj_property>
+      <obj_property name="ObjectShortName">last_in</obj_property>
+   </wvobject>
+</wave_config>

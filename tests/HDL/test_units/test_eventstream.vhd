@@ -28,14 +28,8 @@ library main;
 --
 entity test_eventstream is
 generic(
-  CHANNEL_BITS:integer:=3;
-  --
-  BUS_CHUNKS:integer:=4;
-  ENDIANNESS:string:="LITTLE";
-  --
-  TICK_PERIOD_BITS:integer:=32;
-  MINIMUM_TICK_PERIOD:integer:=2**14;
-  TIMESTAMP_BITS:integer:=64
+	TICK_PERIOD:integer:=25000000;
+	BUS_CHUNKS:integer:=4
 );
 port (
   clk:in std_logic;
@@ -48,8 +42,11 @@ port (
 end entity test_eventstream;
 
 architecture RTL of test_eventstream is
-constant ADDRESS_BITS:integer:=9; --framer address width
-constant TICK_PERIOD:integer:=25000000;
+constant CHANNEL_BITS:integer:=3;
+constant ENDIANNESS:string:="LITTLE";
+constant TICK_PERIOD_BITS:integer:=32;
+constant MINIMUM_TICK_PERIOD:integer:=2**14;
+constant TIMESTAMP_BITS:integer:=64;
 
 signal tickstream:std_logic_vector(BUS_CHUNKS*CHUNK_BITS-1 downto 0);
 signal tickstream_valid:boolean;
@@ -60,6 +57,7 @@ signal pulsestream:std_logic_vector(BUS_CHUNKS*CHUNK_BITS-1 downto 0);
 signal pulsestream_valid:boolean;
 signal pulsestream_ready:boolean;
 signal pulsestream_last:boolean;
+
 signal stream_in:std_logic_vector(BUS_CHUNKS*CHUNK_BITS-1 downto 0);
 signal ready_out:boolean;
 signal valid_in:boolean;
@@ -95,9 +93,7 @@ port map(
 
 pulses:entity work.test_pulsestream
 generic map(
-  BUS_CHUNKS   => BUS_CHUNKS,
-  ADDRESS_BITS => ADDRESS_BITS,
-  ENDIANNESS   => ENDIANNESS
+  BUS_CHUNKS   => BUS_CHUNKS
 )
 port map(
   clk               => clk,
@@ -137,7 +133,9 @@ end process fsmNextstate;
 
 -- mux pulsestream and tickstream
 pulsestream_last <= busLast(pulsestream,BUS_CHUNKS);
-fsmTransition:process(state,tickstream_valid,ready_out,tickstream_last)
+fsmTransition:process(state,tickstream_valid,ready_out,tickstream_last,
+											pulsestream,pulsestream_last,pulsestream_ready,
+											pulsestream_valid,tickstream,tickstream_ready)
 begin
 nextstate <= state;
 case state is 
@@ -158,7 +156,7 @@ when TICK =>
   last_in <= tickstream_last;
 	tickstream_ready <= ready_out;
 	pulsestream_ready <= FALSE;
-  if not tickstream_last and tickstream_valid and tickstream_ready then 
+  if tickstream_last and tickstream_valid and tickstream_ready then 
   	nextstate <= IDLE;
   end if;
 when EVENT =>
@@ -167,7 +165,7 @@ when EVENT =>
   last_in <= pulsestream_last;
 	tickstream_ready <= FALSE;
 	pulsestream_ready <= ready_out;
-  if not pulsestream_last and pulsestream_valid and pulsestream_ready then 
+  if pulsestream_last and pulsestream_valid and pulsestream_ready then 
   	nextstate <= IDLE;
   end if;
 end case;

@@ -186,7 +186,7 @@ proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} {
 	set_property board ML605 [current_project]
 	set_property target_language VHDL [current_project]
 	puts "Adding $sourceDir/HDL"
-  add_files $sourceDir/HDL
+  add_files $sourceDir/HDL 
   if [regexp {lib$} $name] {
     #puts "Adding library $name"
     set libName [string range $name 0 end-8]

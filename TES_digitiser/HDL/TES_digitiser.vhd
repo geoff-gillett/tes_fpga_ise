@@ -201,20 +201,6 @@ constant SPI_CHANNELS:integer:=ADC_CHIPS+1;
 --------------------------------------------------------------------------------
 -- Components
 --------------------------------------------------------------------------------
---component MMCM_clk_wiz_v3_6
---port(
---  -- clock in ports
---  clk_in1_p:in std_logic;
---  clk_in1_n:in std_logic;
---  -- clock out ports
---  clk_out1:out std_logic;
---  clk_out2:out std_logic;
---  clk_out3:out std_logic;
---  clk_out4:out std_logic;
---  -- status and control signals
---  locked:out std_logic
---);
---end component;
 
 component pipelineMMCM
 port(
@@ -412,7 +398,6 @@ if rising_edge(pipeline_clk) then
   end if;
 end if;
 end process overflowLEDs;
-
 --
 ADC_spi_ce_n <= spi_ce_n(ADC_CHIPS-1 downto 0); 
 AD9510_spi_ce_n  <= spi_ce_n(ADC_CHIPS); 
@@ -439,16 +424,6 @@ end process FMCfunction;
 --------------------------------------------------------------------------------
 -- Clock and reset tree
 --------------------------------------------------------------------------------
---clockTree:component MMCM_clk_wiz_v3_6
---port map(
---  clk_in1_p => clk_p,
---  clk_in1_n => clk_n,
---  clk_out1 => IO_clk, --125 Mhz
---  clk_out2 => s_axi_aclk, --FIXME replace s_axi_clk with IO_clk
---  clk_out3 => idelay_refclk, --200 MHz?
---  clk_out4 => open, --pipeline_clk, --250 MHz
---  locked => dcm_locked
---);
 
 ioClkGen:IO_MMCM
 port map(
@@ -525,11 +500,6 @@ port map (
   i  => AD9510_clkout6_buf,
   o  => AD9510_clkout6
 );
---pipelineBufg:bufg
---port map(
---  i => AD9510_clkout6_buf,
---  o => pipeline_clk
---);
 adcDataBuffers:for i in ADC_BITS/2-1 downto 0 generate
   data0Ibufds:ibufds
   generic map(
