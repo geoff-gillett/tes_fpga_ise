@@ -196,25 +196,25 @@ proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} {
   } 
 	if [file exists $sourceDir/IP_cores] { Process_IP_cores $sourceDir/IP_cores }
 	Process_deps $name $buildDir $scriptsDir
-#	puts "Processing simulation directory"
-#	set simFiles [glob -nocomplain $sourceDir/simulation/*.{vhd,vhdl,tcl} ]
-#	set TBfiles [ lsearch -all -inline -regexp $simFiles {_TB\.(vhd|vhdl)$} ]
-#	set othersimFiles [ lsearch -all -inline -regexp $simFiles {[^_TB]\.(vhd|vhdl)$}]
-#	set tclTB [ lsearch -all -inline -regexp $simFiles {_TB\.tcl$}]
-#	puts "Testbenches:$TBfiles"
-#	puts "Other simulation files:$othersimFiles"
-#	puts "TCL testbench scripts:$tclTB"
-#	foreach TBfile $TBfiles { Create_simset $TBfile $othersimFiles}
-#	if { [llength $tclTB] != 0 } {
-#    foreach tclfile $tclTB {
-#      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $tclfile ]]/
-#      file mkdir $simdir
-#      file link -hard $simdir/[file tail $tclfile] $tclfile
-##			exec mklink 
-#    }
-#	}
+	puts "Processing simulation directory"
+	set simFiles [glob -nocomplain $sourceDir/simulation/*.{vhd,vhdl,tcl} ]
+	set TBfiles [ lsearch -all -inline -regexp $simFiles {_TB\.(vhd|vhdl)$} ]
+	set othersimFiles [ lsearch -all -inline -regexp $simFiles {[^_TB]\.(vhd|vhdl)$}]
+	set tclTB [ lsearch -all -inline -regexp $simFiles {_TB\.tcl$}]
+	puts "Testbenches:$TBfiles"
+	puts "Other simulation files:$othersimFiles"
+	puts "TCL testbench scripts:$tclTB"
+	foreach TBfile $TBfiles { Create_simset $TBfile $othersimFiles}
+	if { [llength $tclTB] != 0 } {
+    foreach tclfile $tclTB {
+      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $tclfile ]]/
+      file mkdir $simdir
+      file link -hard $simdir/[file tail $tclfile] $tclfile
+#			exec mklink 
+    }
+	}
 	puts "Creating constraint sets"
-	set constraintDirs [glob -type d $sourceDir/constraints/*]
+	set constraintDirs [glob -nocomplain -type d $sourceDir/constraints/*]
 	if {[llength $constraintDirs]} {
 		foreach constraintDir $constraintDirs {
 			set constraintName [file tail $constraintDir]

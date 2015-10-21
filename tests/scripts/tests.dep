@@ -1,0 +1,22 @@
+../../teslib teslib
+../../adclib adclib
+../../mcalib mcalib
+../../ethernetlib ethernetlib
+../../streamlib streamlib
+../../dsplib dsplib
+
+../../ethernetlib/IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/v6_emac_v2_3_0_block.vhd ethernetlib
+../../ethernetlib/IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/v6_emac_v2_3_0_fifo_block.vhd ethernetlib
+../../ethernetlib/IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/axi_ipif ethernetlib
+../../ethernetlib/IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/axi_lite ethernetlib
+../../ethernetlib/IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/common ethernetlib
+../../ethernetlib/IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/fifo ethernetlib
+../../ethernetlib/IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/physical ethernetlib
+../../ethernetlib/IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/statistics ethernetlib
+
+../../controllerlib controllerlib
+../../controllerlib/HDL/KCPSM6 controllerlib
+../../controllerlib/PSM/IO_controller_program.vhd controllerlib
+../../controllerlib/PSM/channel_program.vhd controllerlib
+
+../../TES_digitiser main

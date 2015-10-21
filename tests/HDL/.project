@@ -3,8 +3,9 @@
 	<name>tests</name>
 	<comment></comment>
 	<projects>
-		<project>ethernetlib</project>
+		<project>streamlib</project>
 		<project>TES_digitiser</project>
+		<project>teslib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -22,6 +23,16 @@
 			<name>Common Libraries</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>scripts</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/scripts</locationURI>
+		</link>
+		<link>
+			<name>simulation</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/simulation</locationURI>
 		</link>
 		<link>
 			<name>Common Libraries/DRAG_REUSABLE_LIBRARIES_HERE.txt</name>

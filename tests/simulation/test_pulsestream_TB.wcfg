@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="test_pulsestream_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="functions" />
+            <top_module name="functions" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="test_pulsestream_tb" />
+            <top_module name="types" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="10" />
+   <wvobject fp_name="/test_pulsestream_tb/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_pulsestream_tb/reset" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_pulsestream_tb/pulsestream" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pulsestream[71:0]</obj_property>
+      <obj_property name="ObjectShortName">pulsestream[71:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_pulsestream_tb/pulsestream_valid" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">pulsestream_valid</obj_property>
+      <obj_property name="ObjectShortName">pulsestream_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_pulsestream_tb/pulsestream_ready" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">pulsestream_ready</obj_property>
+      <obj_property name="ObjectShortName">pulsestream_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_pulsestream_tb/UUT/frame_addr" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">frame_addr</obj_property>
+      <obj_property name="ObjectShortName">frame_addr</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_pulsestream_tb/UUT/framer_full" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">framer_full</obj_property>
+      <obj_property name="ObjectShortName">framer_full</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_pulsestream_tb/UUT/address" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">address[8:0]</obj_property>
+      <obj_property name="ObjectShortName">address[8:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/test_pulsestream_tb/UUT/framer_free" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">framer_free[9:0]</obj_property>
+      <obj_property name="ObjectShortName">framer_free[9:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="group113" type="group">
+      <obj_property name="label">framer</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data[63:0]</obj_property>
+         <obj_property name="ObjectShortName">data[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/address" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">address[8:0]</obj_property>
+         <obj_property name="ObjectShortName">address[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/lasts" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">lasts[3:0]</obj_property>
+         <obj_property name="ObjectShortName">lasts[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/keeps" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">keeps[3:0]</obj_property>
+         <obj_property name="ObjectShortName">keeps[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/chunk_we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">chunk_we[3:0]</obj_property>
+         <obj_property name="ObjectShortName">chunk_we[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/wr_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">wr_valid</obj_property>
+         <obj_property name="ObjectShortName">wr_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/length" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">length[8:0]</obj_property>
+         <obj_property name="ObjectShortName">length[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/free" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">free[9:0]</obj_property>
+         <obj_property name="ObjectShortName">free[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream[71:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/frame_ram" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_ram[0:511]</obj_property>
+         <obj_property name="ObjectShortName">frame_ram[0:511]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/input_word" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">input_word[71:0]</obj_property>
+         <obj_property name="ObjectShortName">input_word[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/ram_dout" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ram_dout[71:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_dout[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/ram_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ram_data[71:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_data[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/ram_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ram_reg[71:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_reg[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">we[3:0]</obj_property>
+         <obj_property name="ObjectShortName">we[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/rd_ptr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">rd_ptr[8:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_ptr[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/wr_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">wr_addr[8:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_addr[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/free_ram" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">free_ram[9:0]</obj_property>
+         <obj_property name="ObjectShortName">free_ram[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/read_ram" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">read_ram</obj_property>
+         <obj_property name="ObjectShortName">read_ram</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/ram_empty" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ram_empty</obj_property>
+         <obj_property name="ObjectShortName">ram_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/read_en" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">read_en</obj_property>
+         <obj_property name="ObjectShortName">read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/wr_valid_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">wr_valid_int</obj_property>
+         <obj_property name="ObjectShortName">wr_valid_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/bus_chunks" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bus_chunks</obj_property>
+         <obj_property name="ObjectShortName">bus_chunks</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/address_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">address_bits</obj_property>
+         <obj_property name="ObjectShortName">address_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/bus_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bus_bits</obj_property>
+         <obj_property name="ObjectShortName">bus_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/test_pulsestream_tb/UUT/framer/latency" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">latency</obj_property>
+         <obj_property name="ObjectShortName">latency</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

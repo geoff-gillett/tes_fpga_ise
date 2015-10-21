@@ -35,6 +35,7 @@ port(
   --! frame address
   address:in unsigned(ADDRESS_BITS-1 downto 0);
   --! control bits for the dataword 
+  -- FIXME: why are these SLV while chunk_we is boolean_vector?
   lasts:in std_logic_vector(BUS_CHUNKS-1 downto 0);
   keeps:in std_logic_vector(BUS_CHUNKS-1 downto 0);
   --! Chunk wise write enables
