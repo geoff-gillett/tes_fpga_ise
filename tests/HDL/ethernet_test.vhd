@@ -10,7 +10,7 @@
 --
 -- For testing the frame generation on the FPGA side and capture speed on the 
 -- PC side.
--- Generates ticks with 100ms period and events as fast as possible.
+-- Generates ticks with 100ms period and dummy events as fast as possible.
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -107,7 +107,6 @@ port (
 );
 end component;
 
-constant CHANNEL_BITS:integer:=3;
   --
 constant MCASTREAM_CHUNKS:integer:=2;
 constant EVENTSTREAM_CHUNKS:integer:=4;
@@ -117,10 +116,6 @@ constant EVENT_LENGTH_BITS:integer:=SIZE_BITS;
 constant MTU_BITS:integer:=12;
 constant MIN_FRAME_LENGTH:integer:=32;
 constant ENDIANNESS:string:="LITTLE";
-  --
-constant TICK_PERIOD_BITS:integer:=32;
-constant MINIMUM_TICK_PERIOD:integer:=2**14;
-constant TIMESTAMP_BITS:integer:=64;
   --
 constant DEFAULT_MTU:integer:=750;
 
@@ -169,7 +164,7 @@ testClkGen:test_MMCM
 port map(
   -- Clock in ports
   board_clk_P => clk_p,
-  board_clk_N => clk_p,
+  board_clk_N => clk_n,
   -- Clock out ports
   IO_clk => IO_clk,
   IOdelay_refclk => IOdelay_refclk,
@@ -237,7 +232,7 @@ port map(
   eventstream_ready => eventstream_ready,
   mcastream         => (others=>'0'),
   mcastream_valid   => FALSE,
-  mcastream_ready   => FALSE
+  mcastream_ready   => open
 );
 
 framebuffer_din <= '0' & framechunk(15 downto 8) 

@@ -34,6 +34,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/IP_cores</locationURI>
 		</link>
 		<link>
+			<name>constraints</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/constraints</locationURI>
+		</link>
+		<link>
 			<name>scripts</name>
 			<type>2</type>
 			<locationURI>SCRIPTS</locationURI>

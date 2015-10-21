@@ -4,6 +4,7 @@
   <Mappings Location="" Library="main"/>
   <Mappings Location="Common Libraries" Library="not mapped"/>
   <Mappings Location="IP_cores" Library="not mapped"/>
+  <Mappings Location="constraints" Library="not mapped"/>
   <Mappings Location="scripts" Library="not mapped"/>
   <Mappings Location="Common Libraries/STD" Library="std"/>
 </com.sigasi.hdt.shared.librarymapping.model:LibraryMappings>

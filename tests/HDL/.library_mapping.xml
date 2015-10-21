@@ -3,6 +3,7 @@
   <Mappings Location="Common Libraries/IEEE" Library="ieee"/>
   <Mappings Location="Common Libraries" Library="not mapped"/>
   <Mappings Location="IP_cores" Library="not mapped"/>
+  <Mappings Location="constraints" Library="not mapped"/>
   <Mappings Location="scripts" Library="not mapped"/>
   <Mappings Location="Common Libraries/STD" Library="std"/>
   <Mappings Location="" Library="testlib"/>
