@@ -3,8 +3,8 @@
 -- Date:08/02/2014 
 --
 -- Design Name: TES_digitiser
--- Module Name: event_to_stream
--- Project Name: channel
+-- Module Name: event_framer
+-- Project Name: TES_digitiser
 -- Target Devices: virtex6
 -- Tool versions: ISE 14.7
 --------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ port (
 );
 end entity event_framer;
 --
-architecture point_data of event_framer is
+architecture packed of event_framer is
 --
 constant DATA_BITS:integer:=BUS_CHUNKS*CHUNK_DATABITS;
 constant PEAK_COUNT_BITS:integer:=bits(MAX_PEAKS);
@@ -322,4 +322,4 @@ port map(
   rolling_over => local_rollover,
   time_stamp => relative_time
 );
-end architecture point_data;
+end architecture packed;

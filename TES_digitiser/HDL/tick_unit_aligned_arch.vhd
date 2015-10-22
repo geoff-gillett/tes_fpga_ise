@@ -1,55 +1,5 @@
---------------------------------------------------------------------------------
--- Engineer: Geoff Gillett
--- Date:22/02/2014 
--- 
--- Design Name: TES_digitiser
--- Module Name: tick_unit
--- Project Name: channel
--- Target Devices: virtex6
--- Tool versions: ISE 14.7
---------------------------------------------------------------------------------
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
---
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
---
-library streamlib;
-use streamlib.types.all;
-use streamlib.functions.all;
---
-entity tick_unit is
-generic(
-  CHANNEL_BITS:integer:=3;
-  STREAM_CHUNKS:integer:=4;
-  SIZE_BITS:integer:=SIZE_BITS;
-  TICK_BITS:integer:=32;
-  MINIMUM_TICK_PERIOD:integer:=2**TIME_BITS;
-  TIMESTAMP_BITS:integer:=64;
-  ENDIANNESS:string:="LITTLE"
-);
-port (
-  clk:in std_logic;
-  reset:in std_logic;
-  --
-  tick:out boolean;
-  timestamp:out unsigned(TIMESTAMP_BITS-1 downto 0);
-  tick_period:in unsigned(TICK_BITS-1 downto 0);
-  --
-  events_lost:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  dirty:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  --signal_valid:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  --
-  tickstream:out std_logic_vector(STREAM_CHUNKS*CHUNK_BITS-1 downto 0);
-  valid:out boolean;
-  last:out boolean;
-  ready:in boolean
-);
-end entity tick_unit;
 
-architecture packed of tick_unit is
+architecture aligned of tick_unit is
 --
 constant CHANNELS:integer:=2**CHANNEL_BITS;
 constant ADDRESS_BITS:integer:=9;
@@ -88,15 +38,18 @@ timestamp <= time_stamp;
 -- size 16 bits
 -- rel time 16 bits
 -- flags 32 bits,
--- period 32 bits
--- reserved 32 bits
 -- timestamp 64 bits
 
-header_data <= std_logic_vector(to_unsigned(8,SIZE_BITS)) &
-               "0000" & to_std_logic(unaryOR(param_out)) &
-               "00000000000000" & --replaced by mux
+header_data <= std_logic_vector(to_unsigned(8,CHUNK_DATABITS)) &
+		 					 to_std_logic(0, CHUNK_DATABITS) &
+               to_std_logic(resize(unsigned(param_out),8)) &
                std_logic_vector(resize(unsigned(overflow_out),8)) &
-               SetEndianness(resize(tick_period_header,32),ENDIANNESS);
+               to_std_logic(0, 16);
+--<= std_logic_vector(to_unsigned(8,SIZE_BITS)) &
+--               "0000" & to_std_logic(unaryOR(param_out)) &
+--               "00000000000000" & --replaced by mux
+--               std_logic_vector(resize(unsigned(overflow_out),8)) &
+--               SetEndianness(resize(tick_period_header,32),ENDIANNESS);
 length <= to_unsigned(2,ADDRESS_BITS);
 --------------------------------------------------------------------------------
 FSMnextstate:process(clk)
@@ -253,4 +206,4 @@ port map(
   period => tick_period,
   current_period => tick_period_header
 );
-end architecture packed;
+end architecture aligned;
