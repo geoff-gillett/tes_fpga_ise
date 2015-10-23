@@ -262,7 +262,7 @@ port map(
   slope_zero_crossing => slope_valid
 );
 --
-streamer:entity work.event_framer
+streamer:entity work.event_framer(fixed_aligned)
 generic map(
   CHANNEL => CHANNEL_NUMBER,
   MAX_PEAKS => MAX_PEAKS,

@@ -1,56 +1,5 @@
---------------------------------------------------------------------------------
---      Author: Geoff Gillett
---     Project: TES digitiser for ML605 development board with
---              FMC108 ADC mezzanine card
---        File: IO_control.vhd
--- Description: AXI arbiter/MUX for transmission of commands
---              and data to the host PC via the Virtex-6
---              embeded trimode ethernet MAC. 
---------------------------------------------------------------------------------
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
---
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
---
-library streamlib;
-use streamlib.types.all;
-use streamlib.functions.all;
---
---TODO this entity could be cleaned up
-entity ethernet_framer is
-generic(
-	MCA_CHUNKS:integer:=2; --will only break a MCA frame every MCA_CHUNKS
-	MTU_BITS:integer:=12;
-  EVENT_LENGTH_BITS:integer:=SIZE_BITS;
-  MIN_FRAME_LENGTH:integer:=32;
-  ENDIANNESS:string:="LITTLE" --"BIG" or "LITTLE"
-); 
-port (
-  clk:in std_logic;
-  reset:in std_logic;
-  LEDs:out std_logic_vector(7 downto 0);
-  --
-  MTU:in unsigned(MTU_BITS-1 downto 0); -- in chunks
-  flush_events:in boolean; --flag
-  eventbuffer_empty:in boolean;
-  eventframe_sent:out boolean; 
-  eventchunk:in std_logic_vector(CHUNK_BITS-1 downto 0);
-  eventchunk_valid:in boolean;
-  eventchunk_ready:out boolean;
-  mcachunk:in std_logic_vector(CHUNK_BITS-1 downto 0);
-  mcachunk_valid:in boolean;
-  mcachunk_ready:out boolean;
-  --!* outgoing stream interface  
-  framechunk:out std_logic_vector(CHUNK_BITS-1 downto 0); 
-  framechunk_valid:out boolean;
-  framechunk_ready:in boolean
-);
-end ethernet_framer;
---
-architecture packed of ethernet_framer is
+
+architecture fixed_aligned of ethernet_framer is
 --------------------------------------------------------------------------------      
 constant HEADER_LENGTH:integer:=12; --needs to be a multiple of MCA_CHUNKS
 --
@@ -82,7 +31,7 @@ signal eventchunk_reg,eventchunk_reg1:std_logic_vector(CHUNK_BITS-1 downto 0);
 signal eventchunk_last_reg:boolean;
 signal eventchunk_first_reg,eventchunk_first,eventchunk_first_reg1:boolean;
 signal end_eventframe:boolean;
-signal event_length:unsigned(EVENT_LENGTH_BITS-1 downto 0);
+signal event_length:unsigned(CHUNK_DATABITS-1 downto 0);
 signal chunk_last:boolean;
 signal chunk_we:boolean;
 signal mcaframe_full:boolean;
@@ -118,9 +67,9 @@ if rising_edge(clk) then
       eventchunk_first  <= eventchunk(CHUNK_LASTBIT)='1'; 
     end if;
     if eventchunk_first and eventchunk_valid then
+    	--This will swap back to big endianness
       event_length <= unsigned(
-        eventchunk(CHUNK_DATABITS-1 downto CHUNK_DATABITS-EVENT_LENGTH_BITS)
-      );
+      		SetEndianness(eventchunk(CHUNK_DATABITS-1 downto 0), "LITTLE"));
     end if;
   end if;
 end if;
@@ -226,7 +175,7 @@ if rising_edge(clk) then
   else
     frame_free <= signed('0' & MTU)-signed('0' & next_address);
     eventframe_full <= to_0IfX(frame_free) 
-      <= signed('0' & to_0IfX(event_length));
+      <= signed('0' & to_0IfX(resize(event_length,MTU_BITS)));
     mcaframe_full <= frame_free <= 2;
     inc_payload_address:=FALSE;
     inc_mca_sequence:=FALSE;
@@ -500,4 +449,4 @@ begin
   end case;
 end process arbitorTransition;
 --------------------------------------------------------------------------------
-end packed;
+end fixed_aligned;

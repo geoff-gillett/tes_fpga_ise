@@ -690,7 +690,7 @@ end generate TESchannel;
 --------------------------------------------------------------------------------
 -- eventstream MUX
 --------------------------------------------------------------------------------
-MUX:entity work.event_mux
+MUX:entity work.event_mux(aligned)
 generic map(
   CHANNEL_BITS => TES_CHANNEL_BITS,
   EVENTSTREAM_CHUNKS => EVENTSTREAM_CHUNKS,

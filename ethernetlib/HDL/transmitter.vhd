@@ -67,7 +67,7 @@ port (
 );
 end transmitter;
 --  
-architecture RTL of transmitter is
+architecture packed of transmitter is
 --
 component event_buffer
 port(
@@ -184,7 +184,7 @@ port map(
   last => open
 );
 
-framer:entity work.ethernet_framer
+framer:entity work.ethernet_framer(fixed_aligned)
 generic map(
 	MTU_BITS => MTU_BITS,
   EVENT_LENGTH_BITS => EVENT_LENGTH_BITS,
@@ -240,4 +240,4 @@ if rising_edge(clk) then
   end if;
 end if;
 end process flushEvents;
-end RTL;
+end packed;

@@ -17,8 +17,9 @@
 architecture fixed_aligned of event_framer is
 --
 constant DATA_BITS:integer:=BUS_CHUNKS*CHUNK_DATABITS;
+constant TIME_BITS:integer:=16;
 --
-signal relative_time,rel_time:time_t;
+signal relative_time,rel_time:unsigned(TIME_BITS-1 downto 0);
 signal data,headerdata:std_logic_vector(DATA_BITS-1 downto 0);
 signal frame_addr:unsigned(ADDRESS_BITS-1 downto 0);
 signal free:unsigned(ADDRESS_BITS downto 0);
@@ -29,6 +30,7 @@ signal peak_detected:boolean;
 signal peaks_lost,overflow:boolean;
 signal eventstream_int:std_logic_vector(EVENTBUS_CHUNKS*CHUNK_BITS-1 downto 0);
 signal valid_int,ready_int,last_int:boolean;
+signal flags:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 --
 begin
 dump <= dump_int;
@@ -95,6 +97,8 @@ port map(
 --------------------------------------------------------------------------------
 -- Record the event in the Frame Memory
 --------------------------------------------------------------------------------
+flags	<=	"1" & to_std_logic(peaks_lost) & "0000000000" & 
+					to_std_logic(CHANNEL, 4);
 measure:process(clk)
 begin
 if rising_edge(clk) then
@@ -118,8 +122,6 @@ if rising_edge(clk) then
         overflow <= FALSE;  
         started <= TRUE;
         start_mux <= TRUE;
-        peak_detected <= FALSE;
-        peak_data <= (others => '0');
       end if;
     end if;
     if pulse_valid and started then --rewrite last peak with last bit set
@@ -140,16 +142,14 @@ if rising_edge(clk) then
       -- size|reltime|flags|length
       -- area | peak
       -- [peak | peak]	
+      
       headerdata <= 
       	--chunk length
       	SetEndianness(to_std_logic(8,CHUNK_DATABITS),ENDIANNESS) & 
 				--relative time-stamp 
-      	SetEndianness(to_std_logic(0,CHUNK_DATABITS),ENDIANNESS) & 
+      	to_std_logic(0,CHUNK_DATABITS) & 
       	--flags
-      	SetEndianness(
-      		"1" & to_std_logic(peaks_lost) & "0000000000" &
-      		to_std_logic(CHANNEL, 4), ENDIANNESS
-      	) &
+      	SetEndianness(flags, ENDIANNESS) &
       	--pulse length
       	SetEndianness(
       		to_std_logic(resize(pulse_length,CHUNK_DATABITS)),ENDIANNESS
@@ -194,12 +194,13 @@ begin
 if rising_edge(clk) then
   if reset = '1' then
     peak_detected <= FALSE;
+    peak_data <= (others => '0');
   else
     if start then
     	peaks_lost <= FALSE;
     	peak_detected <= FALSE;
       if peak then
-        peak_data <= std_logic_vector(to_unsigned(0,CHUNK_DATABITS)) &
+        peak_data <= to_std_logic(0,CHUNK_DATABITS) &
                      SetEndianness(resize(sample,CHUNK_DATABITS),ENDIANNESS);
       end if;
     else

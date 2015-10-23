@@ -1,62 +1,7 @@
---------------------------------------------------------------------------------
--- Engineer: Geoff Gillett
--- Date:09/02/2014 
---
--- Design Name: TES_digitiser
--- Module Name: event_mux
--- Project Name: output_stream
--- Target Devices: virtex6
--- Tool versions: ISE 14.7
---------------------------------------------------------------------------------
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
---
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
---
-library streamlib;
-use streamlib.types.all;
-use streamlib.functions.all;
 
---FIXME this is a complicated mess and has too many wait states for PCIe
-entity event_mux is
-generic(
-  CHANNEL_BITS:integer:=3;
-  EVENTSTREAM_CHUNKS:integer:=4;
-  TICK_BITS:integer:=32;
-  TIMESTAMP_BITS:integer:=64;
-  MINIMUM_TICK_PERIOD:integer:=2**14;
-  ENDIANNESS:string:="LITTLE"
-);
-port (
-  clk:in std_logic;
-  reset1:in std_logic;
-  reset2:in std_logic;
-  -- incoming channel event streams
-  start:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  commit:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  dump:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  instream:in eventbus_array(2**CHANNEL_BITS-1 downto 0);
-  instream_last:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  instream_valid:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  ready_for_instream:out boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  full:out boolean;
-  -- tick event
-  tick_period:in unsigned(TICK_BITS-1 downto 0);
-  events_lost:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  dirty:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  -- merged output stream
-  eventstream:out eventbus_t;
-  valid:out boolean;
-  last:out boolean;
-  ready:in boolean
-);
-end entity event_mux;
+architecture aligned of event_mux is
+constant TIME_BITS:integer:=16;
 
-architecture packed of event_mux is
-constant TIME_BITS:integer:=14;
 constant CHANNELS:integer:=2**CHANNEL_BITS;
 constant STREAM_BITS:integer:=EVENTSTREAM_CHUNKS*CHUNK_BITS;
 --
@@ -98,7 +43,7 @@ signal request,next_request:std_logic_vector(CHANNELS-1 downto 0);
 signal handled:std_logic_vector(CHANNELS-1 downto 0);
 signal time_valid:boolean;
 signal tickstream_handshake:boolean;
-signal rel_timestamp:std_logic_vector(REL_TIME_BITS-1 downto 0);
+signal rel_timestamp:std_logic_vector(TIME_BITS-1 downto 0);
 signal time_rd_en:boolean;
 signal relative_time_valid:boolean;
 signal muxstream_handshake:boolean;
@@ -135,7 +80,7 @@ end process FSMnextstate;
 --------------------------------------------------------------------------------
 -- Time stamping
 --------------------------------------------------------------------------------
-tickUnit:entity work.tick_unit
+tickUnit:entity work.tick_unit(aligned)
 generic map(
   CHANNEL_BITS => CHANNEL_BITS,
   TICK_BITS => TICK_BITS,
@@ -204,7 +149,7 @@ begin
 end process timeFSMtransition;
 --
 dumped_only <= time_rd_en and all_dumped and not ticked; --FIXME??
-rel_timestamp <= to_std_logic(relative_time)
+rel_timestamp <= SetEndianness(resize(relative_time,16), ENDIANNESS)
                  when time_state=ISVALID else (others => '0'); 
 relative_time_valid <= time_state=ISVALID;
 --
@@ -414,16 +359,20 @@ begin
     eventstream_last <= FALSE;
     eventstream_valid <= FALSE;
   when HEAD =>
+  	--FIXME the out going buffer should be a framer, can then just rewrite the TS
     if state=HANDLEPULSE then
       --  7            6            5       
       --710|98765|432|10|987654|32|10987654|3
       -- LK|size |chn|1P|time  |LK|time    |
       -- FIXME can this be parameterised? perhaps a function
-      eventstream_int <= muxstream(71 downto 60) &
-        rel_timestamp(13 downto 8) & 
-        muxstream(53 downto 52) &
-        rel_timestamp(7 downto 0) &
-        muxstream(43 downto 0);
+      eventstream_int <= muxstream(71 downto 52) &
+        rel_timestamp & 
+        muxstream(35 downto 0);
+--      eventstream_int <= muxstream(71 downto 60) &
+--        rel_timestamp(13 downto 8) & 
+--        muxstream(53 downto 52) &
+--        rel_timestamp(7 downto 0) &
+--        muxstream(43 downto 0);
       eventstream_last <= muxstream_last;
       if relative_time_valid then
         eventstream_valid <= muxstream_valid;
@@ -438,11 +387,9 @@ begin
       --6|32109|87654|32109876543210|98765432|
       -- |size |xxx0D| relative time|overflow| xxx=unused D=dirty flag
       -- | tick period 32 bits               |
-      eventstream_int <= tickstream(71 downto 60) &
-        rel_timestamp(13 downto 8) & 
-        tickstream(53 downto 52) &
-        rel_timestamp(7 downto 0) &
-        tickstream(43 downto 0);
+      eventstream_int <= tickstream(71 downto 52) &
+        rel_timestamp & 
+        tickstream(35 downto 0);
       eventstream_last <= tickstream_last; 
       if relative_time_valid then
         eventstream_valid <= tickstream_valid;
@@ -482,4 +429,4 @@ port map(
   ready => ready
 );
 --
-end architecture packed;
+end architecture aligned;
