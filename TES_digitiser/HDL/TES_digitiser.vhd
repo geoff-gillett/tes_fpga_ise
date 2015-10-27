@@ -690,25 +690,52 @@ end generate TESchannel;
 --------------------------------------------------------------------------------
 -- eventstream MUX
 --------------------------------------------------------------------------------
-MUX:entity work.event_mux(aligned)
+--MUX:entity work.event_mux(aligned)
+--generic map(
+--  CHANNEL_BITS => TES_CHANNEL_BITS,
+--  EVENTSTREAM_CHUNKS => EVENTSTREAM_CHUNKS,
+--  TICK_BITS => TICK_PERIOD_BITS,
+--  TIMESTAMP_BITS => GLOBALTIME_BITS,
+--  ENDIANNESS => ENDIANNESS
+--)
+--port map(
+--  clk => pipeline_clk,
+--  reset1 => reset1,
+--  reset2 => reset2,
+--  start => start,
+--  commit => commit,
+--  dump => dump,
+--  instream => instream,
+--  instream_last => instream_last,
+--  instream_valid => instream_valid,
+--  ready_for_instream => ready_for_instream,
+--  full => mux_full,
+--  tick_period => tick_period,
+--  events_lost => events_lost,
+--  dirty => adc_fifo_full(TES_CHANNELS-1 downto 0),--signal_valid,
+--  eventstream => eventstream,
+--  valid => eventstream_valid,
+--  last => open, --eventstream_last,
+--  ready => eventstream_ready
+--);
+
+MUX:entity work.eventstream_mux
 generic map(
   CHANNEL_BITS => TES_CHANNEL_BITS,
-  EVENTSTREAM_CHUNKS => EVENTSTREAM_CHUNKS,
   TICK_BITS => TICK_PERIOD_BITS,
   TIMESTAMP_BITS => GLOBALTIME_BITS,
   ENDIANNESS => ENDIANNESS
 )
 port map(
   clk => pipeline_clk,
-  reset1 => reset1,
-  reset2 => reset2,
+  reset => reset2,
   start => start,
   commit => commit,
   dump => dump,
-  instream => instream,
-  instream_last => instream_last,
-  instream_valid => instream_valid,
-  ready_for_instream => ready_for_instream,
+  pulsestreams => instream,
+  pulsestream_lasts => instream_last,
+  pulsestream_valids => instream_valid,
+  ready_for_pulsestreams => ready_for_instream,
   full => mux_full,
   tick_period => tick_period,
   events_lost => events_lost,

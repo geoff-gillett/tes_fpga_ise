@@ -91,9 +91,6 @@ signal done:boolean;
 signal started:std_logic_vector(CHANNELS-1 downto 0);
 signal commited:std_logic_vector(CHANNELS-1 downto 0);
 signal dumped:std_logic_vector(CHANNELS-1 downto 0);
---attribute keep of dumped:signal is "TRUE";
---attribute keep of started:signal is "TRUE";
---attribute keep of commited:signal is "TRUE";
 signal request,next_request:std_logic_vector(CHANNELS-1 downto 0);
 signal handled:std_logic_vector(CHANNELS-1 downto 0);
 signal time_valid:boolean;
@@ -248,7 +245,7 @@ port map(
   time_valid => time_valid,
   commited => commited,
   dumped => dumped,
-  next_time => time_rd_en,--next_time,
+  read => time_rd_en,--next_time,
   full => full
 );
 --

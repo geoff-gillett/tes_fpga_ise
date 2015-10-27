@@ -36,15 +36,12 @@ signal done:boolean;
 signal started:std_logic_vector(CHANNELS-1 downto 0);
 signal commited:std_logic_vector(CHANNELS-1 downto 0);
 signal dumped:std_logic_vector(CHANNELS-1 downto 0);
---attribute keep of dumped:signal is "TRUE";
---attribute keep of started:signal is "TRUE";
---attribute keep of commited:signal is "TRUE";
 signal request,next_request:std_logic_vector(CHANNELS-1 downto 0);
 signal handled:std_logic_vector(CHANNELS-1 downto 0);
 signal time_valid:boolean;
 signal tickstream_handshake:boolean;
 signal rel_timestamp:std_logic_vector(TIME_BITS-1 downto 0);
-signal time_rd_en:boolean;
+signal read_next_event:boolean;
 signal relative_time_valid:boolean;
 signal muxstream_handshake:boolean;
 signal all_dumped:boolean;
@@ -114,13 +111,13 @@ if rising_edge(clk) then
     time_was_valid <= time_valid;
     new_time_valid <= time_valid and not time_was_valid;
     new_relativetime <= new_time_valid or (time_rd_en1 and time_valid);
-    time_rd_en1 <= time_rd_en;
-    if time_rd_en then
+    time_rd_en1 <= read_next_event;
+    if read_next_event then
       tick_handled <= FALSE;
     elsif tickstream_done then
       tick_handled <= TRUE;
     end if;
-    if time_rd_en and (not all_dumped or ticked) then
+    if read_next_event and (not all_dumped or ticked) then
       last_eventtime <= eventtime;
     end if;
     time_dif <= eventtime-last_eventtime;
@@ -148,7 +145,7 @@ begin
   end case;
 end process timeFSMtransition;
 --
-dumped_only <= time_rd_en and all_dumped and not ticked; --FIXME??
+dumped_only <= read_next_event and all_dumped and not ticked; --FIXME??
 rel_timestamp <= SetEndianness(resize(relative_time,16), ENDIANNESS)
                  when time_state=ISVALID else (others => '0'); 
 relative_time_valid <= time_state=ISVALID;
@@ -157,15 +154,15 @@ timeRdEn:process(clk)
 begin
 if rising_edge(clk) then
   if reset2 = '1' then
-    time_rd_en <= FALSE;
+    read_next_event <= FALSE;
   else
     case state is 
     when IDLE =>
-      time_rd_en <= all_dumped and not time_rd_en and not ticked;
+      read_next_event <= all_dumped and not read_next_event and not ticked;
     when HANDLETICK =>
-      time_rd_en <= (no_starts or all_dumped) and tickstream_done;
+      read_next_event <= (no_starts or all_dumped) and tickstream_done;
     when HANDLEPULSE => 
-      time_rd_en <= time_done and not time_rd_en 
+      read_next_event <= time_done and not read_next_event 
                     and (muxstream_done or all_handled);
     end case;
   end if;
@@ -193,7 +190,7 @@ port map(
   time_valid => time_valid,
   commited => commited,
   dumped => dumped,
-  next_time => time_rd_en,--next_time,
+  read => read_next_event,--next_time,
   full => full
 );
 --
@@ -207,7 +204,7 @@ request <= started and commited and to_std_logic(instream_valid) and
            not handled;
 next_request <= started and commited and to_std_logic(instream_valid) and 
                 not handled and not current_grant;
---
+--new
 arbiter:process (clk)
 variable next_gnt,gnt:std_logic_vector(CHANNELS-1 downto 0);
 begin
@@ -226,7 +223,7 @@ if rising_edge(clk) then
     next_grant <= next_gnt;
     next_index <= onehotToInteger(next_gnt);
     next_granted <= unaryOR(next_gnt);
-    if time_rd_en then
+    if read_next_event then
       handled <= (others => '0');
       current_grant <= (others => '0');
       current_granted <= FALSE;
@@ -246,6 +243,87 @@ if rising_edge(clk) then
   end if;
 end if;
 end process arbiter;
+--
+muxGen2chan:if CHANNEL_BITS=1 generate
+begin
+mux2chan:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset2='1' then
+			pulsestream <= (others => '-');
+		else
+			case grant is
+			when "01" =>
+				pulsestream <= instream(0);
+			when "10" =>
+				pulsestream <= instream(1);
+			when others =>
+				pulsestream <= (others => '-');
+			end case;
+		end if;
+	end if;		
+end process mux2chan;
+end generate muxGen2chan;
+
+muxGen4chan:if CHANNEL_BITS=2 generate
+begin
+mux4chan:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset2='1' then
+			pulsestream <= (others => '-');
+		else
+			case grant is
+			when "0001" =>
+				pulsestream <= instream(0);
+			when "0010" =>
+				pulsestream <= instream(1);
+			when "0100" =>
+				pulsestream <= instream(2);
+			when "1000" =>
+				pulsestream <= instream(3);
+			when others =>
+				pulsestream <= (others => '-');
+			end case;
+		end if;
+	end if;		
+end process mux4chan;
+end generate muxGen4chan;
+
+muxGen8chan:if CHANNEL_BITS=3 generate
+begin
+mux8chan:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset2='1' then
+			pulsestream <= (others => '-');
+		else
+			case grant is
+			when "00000001" =>
+				pulsestream <= instream(0);
+			when "00000010" =>
+				pulsestream <= instream(1);
+			when "00000100" =>
+				pulsestream <= instream(2);
+			when "00001000" =>
+				pulsestream <= instream(3);
+			when "00010000" =>
+				pulsestream <= instream(4);
+			when "00100000" =>
+				pulsestream <= instream(5);
+			when "01000000" =>
+				pulsestream <= instream(6);
+			when "10000000" =>
+				pulsestream <= instream(7);
+			when others =>
+				pulsestream <= (others => '-');
+			end case;
+		end if;
+	end if;		
+end process mux8chan;
+end generate muxGen8chan;
+
+
 --
 pulsestream <= instream(current_index) when current_granted 
                else (others => '-');
@@ -295,14 +373,14 @@ end process muxstreamstate;
 --------------------------------------------------------------------------------
 --has_pulses <= unsigned(started and (commited and not handled))/=0;
 has_pulses <= unsigned(started)/=0;
-FSMtransition:process(state,ticked,time_valid,time_rd_en,tickstream_done,
+FSMtransition:process(state,ticked,time_valid,read_next_event,tickstream_done,
                       has_pulses,all_dumped,tick_handled,all_handled,
                       muxstream_complete,muxstream_done)
 begin
 nextstate <= state;
 case state is 
   when IDLE =>
-    if time_valid and not time_rd_en then 
+    if time_valid and not read_next_event then 
       if ticked and not tick_handled then
         nextstate <= HANDLETICK; 
       elsif has_pulses and not all_dumped then
@@ -368,11 +446,6 @@ begin
       eventstream_int <= muxstream(71 downto 52) &
         rel_timestamp & 
         muxstream(35 downto 0);
---      eventstream_int <= muxstream(71 downto 60) &
---        rel_timestamp(13 downto 8) & 
---        muxstream(53 downto 52) &
---        rel_timestamp(7 downto 0) &
---        muxstream(43 downto 0);
       eventstream_last <= muxstream_last;
       if relative_time_valid then
         eventstream_valid <= muxstream_valid;
