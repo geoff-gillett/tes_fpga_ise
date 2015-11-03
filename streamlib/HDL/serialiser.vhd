@@ -50,11 +50,11 @@ architecture dynamic_shift_register of serialiser is
 subtype ramword is std_logic_vector(DATA_BITS-1 downto 0);
 type pipe is array (natural range <>) of ramword;
 signal data_shifter:pipe(1 to LATENCY);
-attribute shreg_extract:string;
-attribute shreg_extract of data_shifter:signal is "NO";
+--attribute shreg_extract:string;
+--attribute shreg_extract of data_shifter:signal is "NO";
 signal valid_int,valid_read,last_int,read_stream,ready_int,data_valid:boolean;
 signal valid_read_pipe,last_read_pipe,last_shifter:boolean_vector(1 to LATENCY);
-attribute shreg_extract of valid_read_pipe,last_read_pipe,last_shifter:signal is "NO";
+--attribute shreg_extract of valid_read_pipe,last_read_pipe,last_shifter:signal is "NO";
 signal read_en_pipe:boolean_vector(1 to LATENCY);
 signal stream_int:ramword;
 signal shift_addr:integer range 0 to LATENCY;
@@ -92,6 +92,7 @@ read <= read_ram;
 stream <= stream_int;
 valid <= valid_int;
 last <= last_int;
+--FIXME why extra signal?
 ready_int <= ready;
 read_stream <= (valid_int and ready_int) or not valid_int; -- stream read
 --

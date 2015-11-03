@@ -51,12 +51,12 @@ NET "LEDs*" TIG;
 #-------------------------------------------------------------------------------
 # extra clk out from AD9510 
 #-------------------------------------------------------------------------------
-NET "AD9510_clkout6_n" LOC = W30;
-NET "AD9510_clkout6_n" IOSTANDARD = LVDS_25;
-NET "AD9510_clkout6_n" DIFF_TERM = "TRUE";
-NET "AD9510_clkout6_p" LOC = V30;
-NET "AD9510_clkout6_p" IOSTANDARD = LVDS_25;
-NET "AD9510_clkout6_p" DIFF_TERM = "TRUE";
+#NET "AD9510_clkout6_n" LOC = W30;
+#NET "AD9510_clkout6_n" IOSTANDARD = LVDS_25;
+#NET "AD9510_clkout6_n" DIFF_TERM = "TRUE";
+#NET "AD9510_clkout6_p" LOC = V30;
+#NET "AD9510_clkout6_p" IOSTANDARD = LVDS_25;
+#NET "AD9510_clkout6_p" DIFF_TERM = "TRUE";
 # Texas instruments ADS62P49 dual ADC chips 
 #-------------------------------------------------------------------------------
 # LVDS clocks for each chip
@@ -85,6 +85,11 @@ NET "adc_clk_n[3]" DIFF_TERM = "TRUE";
 NET "adc_clk_p[3]" LOC = AH25;
 NET "adc_clk_p[3]" IOSTANDARD = LVDS_25;
 NET "adc_clk_p[3]" DIFF_TERM = "TRUE";
+#-------------------------------------------------------------------------------
+# LOCs for ADC clock BUFRs
+#-------------------------------------------------------------------------------
+INST "clkInputBuffers[0].adcClkBufr" LOC = BUFR_X1Y0;
+INST "clkInputBuffers[1].adcClkBufr" LOC = BUFR_X1Y1;
 #-------------------------------------------------------------------------------
 # LVDS from ADC A (samples)
 #-------------------------------------------------------------------------------
@@ -483,8 +488,8 @@ NET "FMC_present_n" LOC = AP25;
 #-------------------------------------------------------------------------------
 # FMC108 clock periods
 #-------------------------------------------------------------------------------
-NET "AD9510_clkout6_p" TNM_NET = "AD9510_clkout6";
-TIMESPEC TS_AD9510_clkout6 = PERIOD "AD9510_clkout6" 250 MHz HIGH 50 %;
+#NET "AD9510_clkout6_p" TNM_NET = "AD9510_clkout6";
+#TIMESPEC TS_AD9510_clkout6 = PERIOD "AD9510_clkout6" 250 MHz HIGH 50 %;
 NET "adc_clk_p[0]" TNM_NET = "adc0_clk";
 NET "pipeline_clk" TNM_NET = "pipeline_clk";
 TIMESPEC TS_pipeline_clk = PERIOD "pipeline_clk" 250 MHz HIGH 50 %;

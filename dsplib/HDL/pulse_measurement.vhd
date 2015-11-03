@@ -36,6 +36,7 @@ signal relative_time:unsigned(TIME_BITS-1 downto 0);
 signal above,below,was_above,was_below,start_int,stop_int,started:boolean;
 
 begin
+--FIXME is area relative to threshold the best way?
 --------------------------------------------------------------------------------
 -- pipeline
 -- 1 sample relative to threshold

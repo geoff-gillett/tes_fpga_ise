@@ -205,7 +205,7 @@ port map(
   baseline_threshold => baseline_threshold
 );
 --
---TODO local extrema should be handled in this entity make delay separate
+--FIXME local extrema should be handled in this entity make delay separate
 DSP:entity dsplib.dsp_unit
 generic map(
 	SIGNAL_DELAY_BITS => DELAY_BITS,

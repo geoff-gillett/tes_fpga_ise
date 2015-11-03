@@ -153,8 +153,8 @@ spi_ce_n <= spi_ce_n_int;
 spi_clk <= spi_clk_int;
 spi_mosi <= spi_mosi_int;
 --
-LEDs(SPI_CHANNELS-1 downto 0) <= not spi_ce_n_int;
-LEDs(7 downto SPI_CHANNELS) <= (others => '0');
+--LEDs(SPI_CHANNELS-1 downto 0) <= not spi_ce_n_int;
+LEDs <= (others => '0');
 --
 debug:process(clk)
 begin
@@ -395,7 +395,7 @@ if rising_edge(clk) then
 end if;
 end process SPIoutput;
 --------------------------------------------------------------------------------
--- UART IO: main_uart_set=TRUE IO between PC and control_unit
+-- UART IO: main_uart_sel=TRUE IO between PC and control_unit
 -- else between control_unit and active channel (channel_sel)
 --------------------------------------------------------------------------------
 UARTselect:process(clk)

@@ -46,7 +46,7 @@ generic(
   ------------------------------------------------------------------------------
   -- Signal path parameters
   ------------------------------------------------------------------------------
-  TES_CHANNEL_BITS:integer:=2;
+  TES_CHANNEL_BITS:integer:=3;
   DELAY_BITS:integer:=10;
   SLOPE_ADDRESS_BITS:integer:=6;
   SYNC_ADDRESS_BITS:integer:=6;
@@ -118,8 +118,8 @@ port(
   ------------------------------------------------------------------------------
   -- FMC108 pins - HPC FMC connector on the ML605  
   ------------------------------------------------------------------------------
-  AD9510_clkout6_p:in std_logic; --used to clock pipeline (source common to adc clks)  
-  AD9510_clkout6_n:in std_logic;
+  --AD9510_clkout6_p:in std_logic; --used to clock pipeline (source common to adc clks)  
+  --AD9510_clkout6_n:in std_logic;
   FMC_power_good:in std_logic;
   FMC_present_n:in std_logic; --FMC108 present in the HPC FMC connector
   FMC_AD9510_status:in std_logic;
@@ -244,8 +244,8 @@ end component;
 --------------------------------------------------------------------------------
 -- Clock and reset signals
 --------------------------------------------------------------------------------
-signal global_reset_IO_clk,IO_clk,pipeline_clk,AD9510_clkout6_buf:std_logic;
-signal reset0,reset1,reset2,CPU_reset,IO_MMCM_locked,AD9510_clkout6:std_logic;
+signal global_reset_IO_clk,IO_clk,pipeline_clk:std_logic;
+signal reset0,reset1,reset2,CPU_reset,IO_MMCM_locked:std_logic;
 signal AD9510_clk_stopped,pipeline_mmcm_locked:std_logic;
 signal s_axi_aclk,iodelay_refclk:std_logic;
 attribute keep:string;
@@ -261,7 +261,7 @@ attribute keep of CPU_reset:signal is "true";
 --------------------------------------------------------------------------------
 constant IODELAY_CONTROL_BITS:integer:=ADC_BITS+bits(ADC_CHANNELS);
 -- DDR
-signal adc_clk,adc_clk_buf:std_logic_vector(ADC_CHIPS-1 downto 0);
+signal adc_clk,adc_clk_bufds:std_logic_vector(ADC_CHIPS-1 downto 0);
 signal adc_ddr:ddr_sample_array(ADC_CHANNELS-1 downto 0);
 --
 signal iodelay_control:std_logic_vector(IODELAY_CONTROL_BITS-1 downto 0);
@@ -358,46 +358,46 @@ signal write_global_register,write_global_register_IO_clk:boolean;
 attribute keep of write_global_register:signal is "true";
 --------------------------------------------------------------------------------
 signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
-subtype overflow_counter is integer range 0 to 50000000;
-type overflow_array is array (natural range <>) of overflow_counter;
-signal overflow_count:overflow_array(TES_CHANNELS downto 0);
+--subtype overflow_counter is integer range 0 to 50000000;
+--type overflow_array is array (natural range <>) of overflow_counter;
+--signal overflow_count:overflow_array(TES_CHANNELS downto 0);
 begin
 --LEDs <= signal_pipeline_LEDs;
 --LEDs <= padLeft(to_std_logic(eventstream_enables),8);
 LEDs <= overflow_LEDs;
-overflowLEDs:process (pipeline_clk) is
-begin
-if rising_edge(pipeline_clk) then
-  if reset0 = '1' then
-    for i in TES_CHANNELS downto 0 loop
-       overflow_count(i) <= 0;
-    end loop;
-  else
-    for i in TES_CHANNELS-1 downto 0 loop
-      if events_lost(i) then
-        overflow_count(i) <= 50000000;
-      else
-        if overflow_count(i) = 0 then
-          overflow_LEDs(i) <= '0';
-        else
-          overflow_LEDs(i) <= '1';
-          overflow_count(i) <= overflow_count(i)-1;
-        end if;
-      end if;
-    end loop;
-    if (mux_full) then
-        overflow_count(TES_CHANNELS) <= 50000000;
-    else
-      if overflow_count(TES_CHANNELS) = 0 then
-        overflow_LEDs(TES_CHANNELS) <= '0';
-      else
-        overflow_LEDs(TES_CHANNELS) <= '1';
-        overflow_count(TES_CHANNELS) <= overflow_count(TES_CHANNELS)-1;
-      end if;
-    end if;
-  end if;
-end if;
-end process overflowLEDs;
+--overflowLEDs:process (pipeline_clk) is
+--begin
+--if rising_edge(pipeline_clk) then
+--  if reset0 = '1' then
+--    for i in TES_CHANNELS downto 0 loop
+--       overflow_count(i) <= 0;
+--    end loop;
+--  else
+--    for i in TES_CHANNELS-1 downto 0 loop
+--      if events_lost(i) then
+--        overflow_count(i) <= 50000000;
+--      else
+--        if overflow_count(i) = 0 then
+--          overflow_LEDs(i) <= '0';
+--        else
+--          overflow_LEDs(i) <= '1';
+--          overflow_count(i) <= overflow_count(i)-1;
+--        end if;
+--      end if;
+--    end loop;
+--    if (mux_full) then
+--        overflow_count(TES_CHANNELS) <= 50000000;
+--    else
+--      if overflow_count(TES_CHANNELS) = 0 then
+--        overflow_LEDs(TES_CHANNELS) <= '0';
+--      else
+--        overflow_LEDs(TES_CHANNELS) <= '1';
+--        overflow_count(TES_CHANNELS) <= overflow_count(TES_CHANNELS)-1;
+--      end if;
+--    end if;
+--  end if;
+--end if;
+--end process overflowLEDs;
 --
 ADC_spi_ce_n <= spi_ce_n(ADC_CHIPS-1 downto 0); 
 AD9510_spi_ce_n  <= spi_ce_n(ADC_CHIPS); 
@@ -441,7 +441,7 @@ port map(
 pipelineClkGen:pipelineMMCM
 port map(
   -- Clock in ports
-  AD9510_clkout6 => AD9510_clkout6,
+  AD9510_clkout6 => adc_clk(0),
   -- Clock out ports
   pipeline_clk => pipeline_clk,
   -- Status and control signals
@@ -465,7 +465,7 @@ clkInputBuffers:for i in ADC_CHIPS-1 downto 0 generate
     IOSTANDARD => "LVDS_25"
   )
   port map(
-    O => adc_clk_buf(i),
+    O => adc_clk_bufds(i),
     I => adc_clk_p(i),
     IB => adc_clk_n(i)
   );
@@ -476,30 +476,11 @@ clkInputBuffers:for i in ADC_CHIPS-1 downto 0 generate
   port map (
     ce => '1',
     clr=> '0',
-    i  => adc_clk_buf(i),
+    i  => adc_clk_bufds(i),
     o  => adc_clk(i)
   );
 end generate;
-pipelineIbufds:ibufds
-generic map(
-  DIFF_TERM => TRUE,
-  IOSTANDARD => "LVDS_25"
-)
-port map(
-  O => AD9510_clkout6_buf,
-  I => AD9510_clkout6_p,
-  IB => AD9510_clkout6_n
-);
-pipelineBufr:bufr
-generic map (
-  BUFR_DIVIDE => "BYPASS"
-)
-port map (
-  ce => '1',
-  clr=> '0',
-  i  => AD9510_clkout6_buf,
-  o  => AD9510_clkout6
-);
+
 adcDataBuffers:for i in ADC_BITS/2-1 downto 0 generate
   data0Ibufds:ibufds
   generic map(

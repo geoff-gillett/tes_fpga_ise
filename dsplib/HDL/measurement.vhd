@@ -111,7 +111,6 @@ if rising_edge(clk) then
 end if;
 end process relSample;
 
-
 sampleZeroCrossing:entity work.zero_crossing_measurements
 generic map(
   ADC_BITS => ADC_BITS,

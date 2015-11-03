@@ -21,7 +21,7 @@ port (
   last:out boolean
 );
 end entity register_slice;
-
+--
 architecture RTL of register_slice is
 signal store:std_logic_vector(STREAM_BITS-1 downto 0);
 signal valid_int,store_valid,last_int,store_last,ready_int:boolean;

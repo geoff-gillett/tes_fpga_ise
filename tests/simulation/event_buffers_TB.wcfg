@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="event_buffers_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="event_buffers_tb" />
+            <top_module name="functions" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_signed" />
+            <top_module name="std_logic_textio" />
+            <top_module name="textio" />
+            <top_module name="types" />
+            <top_module name="types" />
+            <top_module name="vcomponents" />
+            <top_module name="vital_primitives" />
+            <top_module name="vital_timing" />
+            <top_module name="vpkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="19" />
+   <wvobject fp_name="/event_buffers_tb/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/reset" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/start" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">start[1:0]</obj_property>
+      <obj_property name="ObjectShortName">start[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/commit" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">commit[1:0]</obj_property>
+      <obj_property name="ObjectShortName">commit[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/dump" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">dump[1:0]</obj_property>
+      <obj_property name="ObjectShortName">dump[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/tick" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">tick</obj_property>
+      <obj_property name="ObjectShortName">tick</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/timestamp" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">timestamp[63:0]</obj_property>
+      <obj_property name="ObjectShortName">timestamp[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/eventtime" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">eventtime[63:0]</obj_property>
+      <obj_property name="ObjectShortName">eventtime[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/reltime" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">reltime[15:0]</obj_property>
+      <obj_property name="ObjectShortName">reltime[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/ticked" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">ticked</obj_property>
+      <obj_property name="ObjectShortName">ticked</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ffff</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/started" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">started[1:0]</obj_property>
+      <obj_property name="ObjectShortName">started[1:0]</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ffff</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/commited" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">commited[1:0]</obj_property>
+      <obj_property name="ObjectShortName">commited[1:0]</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ffff</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/dumped" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">dumped[1:0]</obj_property>
+      <obj_property name="ObjectShortName">dumped[1:0]</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ffff</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/valid" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ff0000</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/read_next" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">read_next</obj_property>
+      <obj_property name="ObjectShortName">read_next</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ff0000</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/full" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">full</obj_property>
+      <obj_property name="ObjectShortName">full</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ff00</obj_property>
+   </wvobject>
+   <wvobject fp_name="/event_buffers_tb/eventBuffers/commit_wr_en" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">commit_wr_en[1:0]</obj_property>
+      <obj_property name="ObjectShortName">commit_wr_en[1:0]</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ff00</obj_property>
+   </wvobject>
+   <wvobject fp_name="group31" type="group">
+      <obj_property name="label">commitdump 0</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(0)\/commitDumpFIFO/din" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">din[0:0]</obj_property>
+         <obj_property name="ObjectShortName">din[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(0)\/commitDumpFIFO/wr_en" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">wr_en</obj_property>
+         <obj_property name="ObjectShortName">wr_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(0)\/commitDumpFIFO/rd_en" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">rd_en</obj_property>
+         <obj_property name="ObjectShortName">rd_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(0)\/commitDumpFIFO/dout" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dout[0:0]</obj_property>
+         <obj_property name="ObjectShortName">dout[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(0)\/commitDumpFIFO/full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">full</obj_property>
+         <obj_property name="ObjectShortName">full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(0)\/commitDumpFIFO/empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">empty</obj_property>
+         <obj_property name="ObjectShortName">empty</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group40" type="group">
+      <obj_property name="label">commitdump 1</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(1)\/commitDumpFIFO/din" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">din[0:0]</obj_property>
+         <obj_property name="ObjectShortName">din[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(1)\/commitDumpFIFO/wr_en" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">wr_en</obj_property>
+         <obj_property name="ObjectShortName">wr_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(1)\/commitDumpFIFO/rd_en" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">rd_en</obj_property>
+         <obj_property name="ObjectShortName">rd_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(1)\/commitDumpFIFO/dout" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dout[0:0]</obj_property>
+         <obj_property name="ObjectShortName">dout[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(1)\/commitDumpFIFO/full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">full</obj_property>
+         <obj_property name="ObjectShortName">full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_buffers_tb/eventBuffers/\commitdump(1)\/commitDumpFIFO/empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">empty</obj_property>
+         <obj_property name="ObjectShortName">empty</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
