@@ -49,8 +49,8 @@ port (
   --
   max_count:unsigned(COUNTER_BITS-1 downto 0);
   most_frequent:unsigned(ADDRESS_BITS-1 downto 0);
-  start_time:in unsigned(GLOBALTIME_BITS-1 downto 0);
-  stop_time:in unsigned(GLOBALTIME_BITS-1 downto 0);
+  start_time:in unsigned(TIMESTAMP_BITS-1 downto 0);
+  stop_time:in unsigned(TIMESTAMP_BITS-1 downto 0);
   total:in unsigned(TOTAL_BITS-1 downto 0);
   --
   stream:out std_logic_vector(STREAM_CHUNKS*CHUNK_BITS-1 downto 0);

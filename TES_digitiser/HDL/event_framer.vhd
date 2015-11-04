@@ -33,8 +33,8 @@ port (
   clk:in std_logic;
   reset:in std_logic;
   --
-  sample:in rel_sample_t;
-  area_threshold:in pulse_area_t;
+  sample:in sample_t;
+  area_threshold:in area_t;
   --! buffer overflow signal
   enabled:in boolean;
 	-- framer overflow happens if framer goes full during any part of measurement
@@ -43,7 +43,7 @@ port (
   --! measurement in
   start:in boolean; -- from measurement
   peak:in boolean;
-  pulse_area:in pulse_area_t;
+  pulse_area:in area_t;
   pulse_length:in time_t;
   pulse_valid:in boolean; --measurement stop
   --! to mux

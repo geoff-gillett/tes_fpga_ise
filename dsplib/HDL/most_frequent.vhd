@@ -17,15 +17,14 @@ use teslib.types.all;
 use teslib.functions.all;
 --
 library mcalib;
-
---! the distribution is collected in a MCA over 2**TIMECONSTANT clks
+--FIXME description is wrong
+--! the distribution is collected in a MCA over timeconstant clks
 --! and the average of the maximum of of the last two distributions is the
 --! baseline.
 entity most_frequent is
 generic(
-  --The distributions are acquired over 2**TIMECONSTANT_BITS clks
   --number of bins (channels) = 2**ADDRESS_BITS
-  SAMPLE_BITS:integer:=12;
+  ADDRESS_BITS:integer:=12;
   --width of counters and stream
   COUNTER_BITS:integer:=18;
   TIMECONSTANT_BITS:integer:=32
@@ -35,19 +34,21 @@ port(
   reset:in std_logic;
   --
   timeconstant:in unsigned(TIMECONSTANT_BITS-1 downto 0);
-  -- max count threshold
+  -- count threshold before most frequent value is used in the average
   threshold:in unsigned(COUNTER_BITS-1 downto 0);
-  sample:in std_logic_vector(SAMPLE_BITS-1 downto 0);
+  sample:in std_logic_vector(ADDRESS_BITS-1 downto 0);
   sample_valid:in boolean;
   --
-  most_frequent:out std_logic_vector(SAMPLE_BITS-1 downto 0);
+  most_frequent:out std_logic_vector(ADDRESS_BITS-1 downto 0);
   new_value:out boolean
 );
 end entity most_frequent;
 --
 architecture MCA of most_frequent is
+-- TODO modify clear so that smaller minimum time constants are possible
+-- ie do partial clears threshold needs some thought
 --------------------------------------------------------------------------------
-constant MIN_TIMECONSTANT:integer:=2**SAMPLE_BITS+8;
+constant MIN_TIMECONSTANT:integer:=2**ADDRESS_BITS+8;
 --------------------------------------------------------------------------------
 -- shift register functions
 signal mca_ready:boolean;
@@ -56,10 +57,10 @@ signal state,nextstate:FSMstate;
 signal timer:unsigned(TIMECONSTANT_BITS-1 downto 0);
 signal timeout:boolean;
 signal readable:boolean;
-signal most_frequent_int:unsigned(SAMPLE_BITS-1 downto 0);
+signal most_frequent_int:unsigned(ADDRESS_BITS-1 downto 0);
 signal max_count:unsigned(COUNTER_BITS-1 downto 0);
 signal new_max:boolean;
-signal address_to_clear:unsigned(SAMPLE_BITS-1 downto 0);
+signal address_to_clear:unsigned(ADDRESS_BITS-1 downto 0);
 signal clear_mca:boolean;
 signal clear_done:boolean;
 --
@@ -67,7 +68,7 @@ begin
 --
 mca:entity mcalib.mca
 generic map(
-  ADDRESS_BITS => SAMPLE_BITS,
+  ADDRESS_BITS => ADDRESS_BITS,
   COUNTER_BITS => COUNTER_BITS,
   TOTAL_BITS => 1
 )
@@ -89,7 +90,7 @@ port map(
   count => open
 );
 clear_mca <= state=CLEAR;
-clear_done <= address_to_clear=to_unsigned((2**SAMPLE_BITS)-1,SAMPLE_BITS);
+clear_done <= address_to_clear=to_unsigned((2**ADDRESS_BITS)-1,ADDRESS_BITS);
 clearAddress:process(clk)
 begin
 if rising_edge(clk) then

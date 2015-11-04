@@ -282,17 +282,17 @@ signal write_register,write_register_IO_clk
 signal register_address:registeraddress_array(TES_CHANNELS-1 downto 0);
 signal register_write_data:registerdata_array(TES_CHANNELS-1 downto 0);
 signal register_read_data:registerdata_array(TES_CHANNELS-1 downto 0);
-signal pulse_areas:pulse_area_array(TES_CHANNELS-1 downto 0);
-signal mca_pulse_areas:pulse_area_array(TES_CHANNELS-1 downto 0);
-signal sample_areas:sample_area_array(TES_CHANNELS-1 downto 0);
-signal mca_sample_areas:sample_area_array(TES_CHANNELS-1 downto 0);
+signal pulse_areas:area_array(TES_CHANNELS-1 downto 0);
+signal mca_pulse_areas:area_array(TES_CHANNELS-1 downto 0);
+signal sample_areas:area_array(TES_CHANNELS-1 downto 0);
+signal mca_sample_areas:area_array(TES_CHANNELS-1 downto 0);
 signal events_lost,pulse_valids:boolean_vector(TES_CHANNELS-1 downto 0);
 signal mca_pulse_valids:boolean_vector(TES_CHANNELS-1 downto 0);
-signal sample_extremas,slope_extremas:rel_sample_array(TES_CHANNELS-1 downto 0);
-signal mca_sample_extremas:rel_sample_array(TES_CHANNELS-1 downto 0);
-signal mca_slope_extremas:rel_sample_array(TES_CHANNELS-1 downto 0);
-signal sample_out:rel_sample_array(TES_CHANNELS-1 downto 0);
-signal mca_sample:rel_sample_array(TES_CHANNELS-1 downto 0);
+signal sample_extremas,slope_extremas:sample_array(TES_CHANNELS-1 downto 0);
+signal mca_sample_extremas:sample_array(TES_CHANNELS-1 downto 0);
+signal mca_slope_extremas:sample_array(TES_CHANNELS-1 downto 0);
+signal sample_out:sample_array(TES_CHANNELS-1 downto 0);
+signal mca_sample:sample_array(TES_CHANNELS-1 downto 0);
 signal baseline_out:sample_array(TES_CHANNELS-1 downto 0);
 signal mca_baseline:sample_array(TES_CHANNELS-1 downto 0);
 signal pulse_lengths:time_array(TES_CHANNELS-1 downto 0);
@@ -638,7 +638,7 @@ TESchannel:for chan in TES_CHANNELS-1 downto 0 generate
     pipeline_clk => pipeline_clk,
     reset1 => reset1,
     reset2 => reset2,
-    ADC_sample => unsigned(adc_sample(chan)),
+    ADC_sample => adc_sample(chan),
     eventstream_enabled => eventstream_enables(chan),
     mux_full => mux_full,
     event_lost => events_lost(chan),
@@ -704,7 +704,7 @@ MUX:entity work.eventstream_mux
 generic map(
   CHANNEL_BITS => TES_CHANNEL_BITS,
   TICK_BITS => TICK_PERIOD_BITS,
-  TIMESTAMP_BITS => GLOBALTIME_BITS,
+  TIMESTAMP_BITS => TIMESTAMP_BITS,
   ENDIANNESS => ENDIANNESS
 )
 port map(

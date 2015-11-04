@@ -1,11 +1,13 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+--
+library teslib;
+use teslib.types.all;
 
 entity slope_measurement is
 generic(
-  ADC_BITS:integer:=14;
-  AREA_BITS:integer:=26
+  ADC_BITS:integer:=14
 );
 port (
   clk:in std_logic;
@@ -26,7 +28,7 @@ port (
   --
   zero_crossing:out boolean; --extrema valid
   extrema:out signed(ADC_BITS downto 0);
-  area:out signed(AREA_BITS downto 0)
+  area:out signed(AREA_BITS-1 downto 0)
 );
 end entity slope_measurement;
 
@@ -63,10 +65,6 @@ port map(
 );
 
 slopeZeroCrossing:entity work.zero_crossing_measurements
-generic map(
-  ADC_BITS => ADC_BITS,
-  AREA_BITS => AREA_BITS
-)
 port map(
   clk => clk,
   reset => reset,

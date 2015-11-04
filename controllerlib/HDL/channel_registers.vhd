@@ -16,10 +16,11 @@ library teslib;
 use teslib.types.all;
 use teslib.functions.all;
 --
+library adclib;
+use adclib.types.all;
+--
 entity channel_registers is
 generic(
-  ADC_BITS:integer:=14;
-  AREA_BITS:integer:=26;
   ------------------------------------------------------------------------------
   -- Register Widths etc
   ------------------------------------------------------------------------------
@@ -65,16 +66,16 @@ port (
   sync_clks:out unsigned(SYNC_ADDRESS_BITS downto 0);
   sync_clks_updated:out boolean;
   baseline_timeconstant:out unsigned(TIMECONSTANT_BITS-1 downto 0);
-  fixed_baseline:out unsigned(ADC_BITS-1 downto 0);
+  fixed_baseline:out sample_t;
   baseline_timeconstant_updated:out boolean;
   baseline_avn:out unsigned(bits(BASELINE_AV_ADDRESS_BITS) downto 0);
   baseline_avn_updated:out boolean;
-  start_threshold:out unsigned(ADC_BITS-1 downto 0);
-  stop_threshold:out unsigned(ADC_BITS-1 downto 0);
+  start_threshold:out sample_t;
+  stop_threshold:out sample_t;
   baseline_relative:out boolean;
-  slope_threshold:out unsigned(ADC_BITS-1 downto 0);
-  slope_crossing_level:out unsigned(ADC_BITS-1 downto 0);
-  area_threshold:out unsigned(AREA_BITS-1 downto 0);
+  slope_threshold:out sample_t;
+  slope_crossing_level:out sample_t;
+  area_threshold:out area_t;
   baseline_threshold:out unsigned(BASELINE_MCA_COUNTER_BITS-1 downto 0)
 );
 end entity channel_registers;
@@ -89,14 +90,14 @@ signal slope_n_reg:unsigned(bits(SLOPE_ADDRESS_BITS) downto 0);
 signal sync_clks_reg:unsigned(SYNC_ADDRESS_BITS downto 0);
 signal baseline_timeconstant_reg:unsigned(TIMECONSTANT_BITS-1 downto 0);
 signal baseline_avn_reg:unsigned(bits(BASELINE_AV_ADDRESS_BITS) downto 0);
-signal start_threshold_reg:unsigned(ADC_BITS-1 downto 0);
-signal stop_threshold_reg:unsigned(ADC_BITS-1 downto 0);
+signal start_threshold_reg:sample_t;
+signal stop_threshold_reg:sample_t;
 signal baseline_relative_reg:boolean;
-signal slope_threshold_reg:unsigned(ADC_BITS-1 downto 0);
-signal slope_crossing_reg:unsigned(ADC_BITS-1 downto 0);
-signal area_threshold_reg:unsigned(AREA_BITS-1 downto 0);
+signal slope_threshold_reg:sample_t;
+signal slope_crossing_reg:sample_t;
+signal area_threshold_reg:area_t;
 signal baseline_threshold_reg:unsigned(BASELINE_MCA_COUNTER_BITS-1 downto 0);
-signal fixed_baseline_reg:unsigned(ADC_BITS-1 downto 0);
+signal fixed_baseline_reg:sample_t;
 --
 signal data_out_int:std_logic_vector(AXI_DATA_BITS-1 downto 0);
 --------------------------------------------------------------------------------
@@ -148,20 +149,15 @@ if rising_edge(clk) then
       <= to_unsigned(DEFAULT_BASELINE_TIMECONSTANT,TIMECONSTANT_BITS); 
     baseline_avn_reg 
       <= to_unsigned(DEFAULT_BASELINE_AVN,bits(BASELINE_AV_ADDRESS_BITS)+1);
-    start_threshold_reg 
-      <= to_unsigned(DEFAULT_START_THRESHOLD,ADC_BITS);
-    stop_threshold_reg 
-      <= to_unsigned(DEFAULT_STOP_THRESHOLD,ADC_BITS);
     baseline_relative_reg <= TRUE;
-    slope_threshold_reg 
-      <= to_unsigned(DEFAULT_SLOPE_THRESHOLD,ADC_BITS);
-    slope_crossing_reg 
-      <= to_unsigned(DEFAULT_SLOPE_CROSSING,ADC_BITS);
-    area_threshold_reg <= to_unsigned(DEFAULT_AREA_THRESHOLD,AREA_BITS);
+    start_threshold_reg <= to_signed(DEFAULT_START_THRESHOLD,SAMPLE_BITS);
+    stop_threshold_reg <= to_signed(DEFAULT_STOP_THRESHOLD,SAMPLE_BITS);
+    slope_threshold_reg <= to_signed(DEFAULT_SLOPE_THRESHOLD,SAMPLE_BITS);
+    slope_crossing_reg <= to_signed(DEFAULT_SLOPE_CROSSING,SAMPLE_BITS);
+    fixed_baseline_reg <= to_signed(DEFAULT_FIXED_BASELINE,SAMPLE_BITS);
+    area_threshold_reg <= to_signed(DEFAULT_AREA_THRESHOLD,AREA_BITS);
     baseline_threshold_reg 
       <= to_unsigned(DEFAULT_BASELINE_THRESHOLD,BASELINE_MCA_COUNTER_BITS);
-    fixed_baseline_reg
-      <= to_unsigned(DEFAULT_FIXED_BASELINE,ADC_BITS);
   else
     signal_avn_updated <= FALSE;
     slope_n_updated <= FALSE;
@@ -196,29 +192,29 @@ if rising_edge(clk) then
         baseline_avn_updated <= TRUE;
       end if;
       if address(START_THRESHOLD_ADDR_BIT)='1' then
-        start_threshold_reg <= unsigned(data_in(ADC_BITS-1 downto 0)); 
+        start_threshold_reg <= signed(data_in(SAMPLE_BITS-1 downto 0)); 
       end if;
       if address(STOP_THRESHOLD_ADDR_BIT)='1' then
-        stop_threshold_reg <= unsigned(data_in(ADC_BITS-1 downto 0)); 
+        stop_threshold_reg <= signed(data_in(SAMPLE_BITS-1 downto 0)); 
       end if;
       if address(BASELINE_RELATIVE_ADDR_BIT)='1' then
         baseline_relative_reg <= to_boolean(data_in(0)); 
       end if;
       if address(SLOPE_THRESHOLD_ADDR_BIT)='1' then
-        slope_threshold_reg <= unsigned(data_in(ADC_BITS-1 downto 0)); 
+        slope_threshold_reg <= signed(data_in(SAMPLE_BITS-1 downto 0)); 
       end if;
       if address(SLOPE_CROSSING_ADDR_BIT)='1' then
-        slope_crossing_reg <= unsigned(data_in(ADC_BITS-1 downto 0)); 
+        slope_crossing_reg <= signed(data_in(SAMPLE_BITS-1 downto 0)); 
       end if;
       if address(AREA_THRESHOLD_ADDR_BIT)='1' then
-        area_threshold_reg <= unsigned(data_in(AREA_BITS-1 downto 0)); 
+        area_threshold_reg <= signed(data_in(AREA_BITS-1 downto 0)); 
       end if;
       if address(BASELINE_THRESHOLD_ADDR_BIT)='1' then
         baseline_threshold_reg 
           <= unsigned(data_in(BASELINE_MCA_COUNTER_BITS-1 downto 0)); 
       end if;
       if address(FIXED_BASELINE_ADDR_BIT)='1' then
-        fixed_baseline_reg <= unsigned(data_in(ADC_BITS-1 downto 0)); 
+        fixed_baseline_reg <= signed(data_in(SAMPLE_BITS-1 downto 0)); 
       end if;
     end if;
   end if;
@@ -232,40 +228,34 @@ regRead:process(address,area_threshold_reg,baseline_avn_reg,
                 sync_clks_reg, baseline_threshold_reg,fixed_baseline_reg) 
 begin
   if address(DELAY_ADDR_BIT)='1' then
-    data_out_int <= std_logic_vector(resize(delay_reg,AXI_DATA_BITS)); 
+    data_out_int <= to_std_logic(resize(delay_reg,AXI_DATA_BITS)); 
   elsif address(SIGNAL_AVN_ADDR_BIT)='1' then
-    data_out_int <= std_logic_vector(resize(signal_avn_reg,AXI_DATA_BITS)); 
+    data_out_int <= to_std_logic(resize(signal_avn_reg,AXI_DATA_BITS)); 
   elsif address(SLOPE_N_ADDR_BIT)='1' then
-    data_out_int <= std_logic_vector(resize(slope_n_reg,AXI_DATA_BITS)); 
+    data_out_int <= to_std_logic(resize(slope_n_reg,AXI_DATA_BITS)); 
   elsif address(SYNC_CLKS_ADDR_BIT)='1' then
-    data_out_int <= std_logic_vector(resize(sync_clks_reg,AXI_DATA_BITS)); 
+    data_out_int <= to_std_logic(resize(sync_clks_reg,AXI_DATA_BITS)); 
   elsif address(BASELINE_TIMECONSTANT_ADDR_BIT)='1' then
     data_out_int 
-      <= std_logic_vector(resize(baseline_timeconstant_reg,AXI_DATA_BITS)); 
+      <= to_std_logic(resize(baseline_timeconstant_reg,AXI_DATA_BITS)); 
   elsif address(BASELINE_AVN_ADDR_BIT)='1' then
-    data_out_int <= std_logic_vector(resize(baseline_avn_reg,AXI_DATA_BITS)); 
+    data_out_int <= to_std_logic(resize(baseline_avn_reg,AXI_DATA_BITS)); 
   elsif address(START_THRESHOLD_ADDR_BIT)='1' then
-    data_out_int 
-      <= std_logic_vector(resize(unsigned(start_threshold_reg),AXI_DATA_BITS)); 
+    data_out_int <= to_std_logic(resize(start_threshold_reg,AXI_DATA_BITS)); 
   elsif address(STOP_THRESHOLD_ADDR_BIT)='1' then
-    data_out_int 
-      <= std_logic_vector(resize(unsigned(stop_threshold_reg),AXI_DATA_BITS)); 
+    data_out_int <= to_std_logic(resize(stop_threshold_reg,AXI_DATA_BITS)); 
   elsif address(BASELINE_RELATIVE_ADDR_BIT)='1' then
-    data_out_int <= (0 => to_std_logic(baseline_relative_reg), others => '0');
+  	data_out_int <= (0 => to_std_logic(baseline_relative_reg), others => '0');
   elsif address(SLOPE_THRESHOLD_ADDR_BIT)='1' then
-    data_out_int 
-      <= std_logic_vector(resize(unsigned(slope_threshold_reg),AXI_DATA_BITS)); 
+    data_out_int <= to_std_logic(resize(slope_threshold_reg,AXI_DATA_BITS)); 
   elsif address(SLOPE_CROSSING_ADDR_BIT)='1' then
-    data_out_int 
-      <= std_logic_vector(resize(unsigned(slope_crossing_reg),AXI_DATA_BITS)); 
+    data_out_int <= to_std_logic(resize(slope_crossing_reg,AXI_DATA_BITS)); 
   elsif address(AREA_THRESHOLD_ADDR_BIT)='1' then
-    data_out_int <= std_logic_vector(resize(area_threshold_reg,AXI_DATA_BITS)); 
+    data_out_int <= to_std_logic(resize(area_threshold_reg,AXI_DATA_BITS)); 
   elsif address(BASELINE_THRESHOLD_ADDR_BIT)='1' then
-    data_out_int <= std_logic_vector(
-      resize(baseline_threshold_reg,AXI_DATA_BITS)
-    ); 
+    data_out_int <= to_std_logic(resize(baseline_threshold_reg,AXI_DATA_BITS)); 
   elsif address(FIXED_BASELINE_ADDR_BIT)='1' then
-    data_out_int <= to_std_logic(resize(fixed_baseline_reg,AXI_DATA_BITS));
+    data_out_int <= to_std_logic(resize(fixed_baseline_reg,AXI_DATA_BITS)); 
   else
     data_out_int <= (others => '-');
   end if;

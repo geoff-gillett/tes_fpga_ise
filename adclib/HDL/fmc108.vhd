@@ -80,6 +80,7 @@ signal fifo_wr_en_chipclk,fifo_wr_en:std_logic_vector(ADC_CHANNELS-1 downto 0)
        :=(others => '0');
 signal fifo_rd_en:boolean_vector(ADC_CHANNELS-1 downto 0);
 signal enables_reg:boolean_vector(ADC_CHANNELS-1 downto 0);
+
 signal samples_int:adc_sample_array(ADC_CHANNElS-1 downto 0);
 signal fifo_full_chipclk,fifo_empty:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal fifo_full_int:std_logic_vector(ADC_CHANNELS-1 downto 0);

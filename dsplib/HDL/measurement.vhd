@@ -19,59 +19,52 @@ library teslib;
 use teslib.types.all;
 use teslib.functions.all;
 --
-
+--FIXME fixed signed overflows
 entity measurement is
-generic(
-  ADC_BITS:integer:=14;
-  TIME_BITS:integer:=14;
-  AREA_BITS:integer:=26
-);
 port (
   clk:in std_logic;
   reset:in std_logic;
   --
-  pulse_threshold:in unsigned(ADC_BITS-1 downto 0);
+  pulse_threshold:in sample_t;
   baseline_relative:in boolean;
   --
-  slope_threshold:in unsigned(ADC_BITS-1 downto 0); 
+  slope_threshold:in sample_t; 
   --! always absolute and positive. The minimum positive slope that will trigger
   --! an extrema
-  slope_crossing_level:in unsigned(ADC_BITS-1 downto 0);
+  slope_crossing_level:in sample_t;
   --! the value of the slope that the sample is taken at
   --! FALSE and sample threshold is taken when slope falls this far from its max
-  baseline_in:in unsigned(ADC_BITS-1 downto 0);
-  sample_in:in signed(ADC_BITS downto 0);
-  slope_in:in signed(ADC_BITS downto 0);
+  baseline_in:in sample_t;
+  sample_in:in sample_t;
+  slope_in:in sample_t;
   -- latency adjusted  outputs
-  sample_out:out signed(ADC_BITS downto 0); -- sample out
-  slope_out:out signed(ADC_BITS downto 0);
-  baseline_out:out unsigned(ADC_BITS-1 downto 0);
+  sample_out:out sample_t; -- sample out
+  slope_out:out sample_t;
+  baseline_out:out sample_t;
   --
   local_maxima:out boolean;
   local_minima:out boolean;
   --! sample measurements relative to baseline
   sample_zero_crossing:out boolean;
-  sample_extrema:out signed(ADC_BITS downto 0);
-  sample_area:out signed(AREA_BITS downto 0);
+  sample_extrema:out sample_t;
+  sample_area:out area_t;
   --pulse measurements valid at stop
-  pulse_area:out unsigned(AREA_BITS-1 downto 0);
-  pulse_length:out unsigned(TIME_BITS-1 downto 0);
+  pulse_area:out area_t;
+  pulse_length:out time_t;
   pulse_start:out boolean;
   pulse_stop:out boolean; --pulse variables valid
   --slope measurement
   slope_zero_crossing:out boolean;
-  slope_extrema:out signed(ADC_BITS downto 0);
-  slope_area:out signed(AREA_BITS downto 0)
+  slope_extrema:out sample_t;
+  slope_area:out area_t
 );
 end entity measurement;
 --
 architecture RTL of measurement is
 --
-signal rel_sample:signed(ADC_BITS downto 0):=(others => '0');
-signal sample_reg1,sample_reg2,sample_reg3:signed(ADC_BITS downto 0)
-       :=(others => '0');
-signal baseline_reg1,baseline_reg2,baseline_reg3:unsigned(ADC_BITS-1 downto 0)
-       :=(others => '0');
+signal rel_sample:sample_t:=(others => '0');
+signal sample_reg1,sample_reg2,sample_reg3:sample_t:=(others => '0');
+signal baseline_reg1,baseline_reg2,baseline_reg3:sample_t:=(others => '0');
 --
 begin
 --
@@ -106,16 +99,12 @@ if rising_edge(clk) then
   if baseline_relative then
     rel_sample <= sample_reg1;
   else
-    rel_sample <= sample_reg1-signed('0' & baseline_reg1);
+    rel_sample <= sample_reg1-baseline_reg1;
   end if;
 end if;
 end process relSample;
 
 sampleZeroCrossing:entity work.zero_crossing_measurements
-generic map(
-  ADC_BITS => ADC_BITS,
-  AREA_BITS => AREA_BITS
-)
 port map(
   clk => clk,
   reset => reset,
@@ -129,11 +118,6 @@ port map(
 -- pulse measurements
 --------------------------------------------------------------------------------
 pulseMeasurement:entity work.pulse_measurement
-generic map(
-  ADC_BITS => ADC_BITS,
-  TIME_BITS => TIME_BITS,
-  AREA_BITS => AREA_BITS
-)
 port map(
   clk => clk,
   reset => reset,
@@ -146,18 +130,14 @@ port map(
 );
 --
 slopeMeasurement:entity work.slope_measurement
-generic map(
-  ADC_BITS => ADC_BITS,
-  AREA_BITS => AREA_BITS
-)
 port map(
   clk => clk,
   reset => reset,
   slope => slope_in,
   slope_out => slope_out,
-  downward_arming_threshold => signed('0' & slope_threshold),
+  downward_arming_threshold => slope_threshold,
   upward_arming_threshold => (others => '0'),
-  downward_crossing_threshold => signed('0' & slope_crossing_level),
+  downward_crossing_threshold => slope_crossing_level,
   upward_crossing_threshold => (others => '0'),
   downward_crossing => local_maxima,
   upward_crossing => local_minima,

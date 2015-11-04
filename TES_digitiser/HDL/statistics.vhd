@@ -69,12 +69,12 @@ port(
   --! inputs from channels
   ------------------------------------------------------------------------------
   -- values
-  samples:in rel_sample_array(2**CHANNEL_BITS-1 downto 0);
+  samples:in sample_array(2**CHANNEL_BITS-1 downto 0);
   baselines:in sample_array(2**CHANNEL_BITS-1 downto 0);
-  extremas:in rel_sample_array(2**CHANNEL_BITS-1 downto 0);
-  areas:in sample_area_array(2**CHANNEL_BITS-1 downto 0);
-  derivative_extremas:in rel_sample_array(2**CHANNEL_BITS-1 downto 0);
-  pulse_areas:in pulse_area_array(2**CHANNEL_BITS-1 downto 0);
+  extremas:in sample_array(2**CHANNEL_BITS-1 downto 0);
+  areas:in area_array(2**CHANNEL_BITS-1 downto 0);
+  derivative_extremas:in sample_array(2**CHANNEL_BITS-1 downto 0);
+  pulse_areas:in area_array(2**CHANNEL_BITS-1 downto 0);
   pulse_lengths:in time_array(2**CHANNEL_BITS-1 downto 0);
   -- valids
   max_valids:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
@@ -118,7 +118,7 @@ signal register_controls:boolean;
 signal tick,mca_last,swap_buffer_reg,updated_int:boolean;
 signal max_count:unsigned(COUNTER_BITS-1 downto 0);
 signal most_frequent:unsigned(ADDRESS_BITS-1 downto 0);
-signal timestamp,start_time,stop_time:unsigned(GLOBALTIME_BITS-1 downto 0);
+signal timestamp,start_time,stop_time:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal stream_in:std_logic_vector(STREAM_CHUNKS*CHUNK_BITS-1 downto 0);
 signal valid_in,ready_out:boolean;
 signal mca_unit_LEDs:std_logic_vector(7 downto 0);
@@ -261,7 +261,7 @@ ticker:entity teslib.tick_counter
 generic map(
   MINIMUM_PERIOD => MIN_TICK_PERIOD,
   TICK_BITS => TICK_PERIOD_BITS,
-  TIMESTAMP_BITS => GLOBALTIME_BITS
+  TIMESTAMP_BITS => TIMESTAMP_BITS
 )
 port map(
   clk => clk,
@@ -271,6 +271,7 @@ port map(
   period => tick_period,
   current_period => open
 );
+--
 tickCounter:process(clk)
 begin
 if rising_edge(clk) then

@@ -15,6 +15,9 @@ use ieee.numeric_std.all;
 library teslib;
 use teslib.types.all;
 use teslib.functions.all;
+--
+library adclib;
+use adclib.types.all;
 
 library streamlib;
 use streamlib.types.all;
@@ -25,9 +28,6 @@ library dsplib;
 --
 entity channel_pipeline is
 generic(
-  ADC_BITS:integer:=14;
-  AREA_BITS:integer:=26;
-  TIME_BITS:integer:=14;
   ------------------------------------------------------------------------------
   -- Signal path parameters
   ------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ port(
   pipeline_clk:in std_logic;
   reset1:in std_logic;
   reset2:in std_logic;
-  ADC_sample:in unsigned(ADC_BITS-1 downto 0);
+  ADC_sample:in adc_sample_t;
   --
   eventstream_enabled:in boolean;
   mux_full:in boolean;
@@ -77,20 +77,20 @@ port(
   ------------------------------------------------------------------------------
   -- Measurements for MCA
   ------------------------------------------------------------------------------
-  sample:out signed(ADC_BITS downto 0);
-  baseline:out unsigned(ADC_BITS-1 downto 0);
+  sample:out sample_t;
+  baseline:out sample_t;
   local_maxima:out boolean;
   local_minima:out boolean;
   --! sample areas and extrema relative to baseline
-  sample_extrema:out signed(ADC_BITS downto 0);
-  sample_area:out signed(AREA_BITS downto 0);
+  sample_extrema:out sample_t;
+  sample_area:out area_t;
   sample_valid:out boolean;
   --
-  pulse_area:out unsigned(AREA_BITS-1 downto 0);
-  pulse_length:out unsigned(TIME_BITS-1 downto 0);
+  pulse_area:out area_t;
+  pulse_length:out time_t;
   pulse_valid:out boolean;
   --
-  slope_extrema:out signed(ADC_BITS downto 0);
+  slope_extrema:out sample_t;
   slope_valid:out boolean;
   ------------------------------------------------------------------------------
   -- to MUX
@@ -123,24 +123,24 @@ signal slope_n:unsigned(bits(SLOPE_ADDRESS_BITS) downto 0);
 signal slope_n_updated:boolean;
 signal sync_clks:unsigned(SYNC_ADDRESS_BITS downto 0);
 signal sync_clks_updated:boolean;
-signal area_threshold:unsigned(AREA_BITS-1 downto 0);
-signal slope_crossing_level:unsigned(ADC_BITS-1 downto 0);
+signal area_threshold:area_t;
+signal slope_crossing_level:sample_t;
 signal baseline_relative:boolean;
-signal start_threshold:unsigned(ADC_BITS-1 downto 0);
-signal stop_threshold:unsigned(ADC_BITS-1 downto 0);
-signal slope_threshold:unsigned(ADC_BITS-1 downto 0);
+signal start_threshold:sample_t;
+signal stop_threshold:sample_t;
+signal slope_threshold:sample_t;
 --------------------------------------------------------------------------------
 -- Measurements
 --------------------------------------------------------------------------------
-signal slope,slope_out,dsp_sample,sample_out:rel_sample_t;
-signal baseline_int,baseline_out:unsigned(ADC_BITS-1 downto 0);
+signal slope,slope_out,dsp_sample,sample_out:sample_t;
+signal baseline_int,baseline_out:sample_t;
 signal max_valid,min_valid,measure_valid:boolean;
 signal commit,dump,pulse_valid_int:boolean;
 signal start:boolean;
-signal pulse_area_int:unsigned(AREA_BITS-1 downto 0);
-signal pulse_length_int:unsigned(TIME_BITS-1 downto 0);
-signal baseline_threshold : unsigned(BASELINE_MCA_COUNTER_BITS-1 downto 0);
-signal fixed_baseline:unsigned(ADC_BITS-1 downto 0);
+signal pulse_area_int:area_t;
+signal pulse_length_int:time_t;
+signal baseline_threshold:unsigned(BASELINE_MCA_COUNTER_BITS-1 downto 0);
+signal fixed_baseline:sample_t;
 --
 begin
 local_maxima <= max_valid;

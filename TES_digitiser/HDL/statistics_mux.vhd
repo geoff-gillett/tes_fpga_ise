@@ -24,7 +24,7 @@ entity statistics_mux is
 generic(
   CHANNEL_BITS:integer:=3;
   VALUES:integer:=8;
-  VALUE_BITS:integer:=AREA_BITS+1
+  VALUE_BITS:integer:=AREA_BITS 
 );
 port(
   clk:std_logic;
@@ -40,12 +40,12 @@ port(
   ------------------------------------------------------------------------------
   --! inputs from channels
   ------------------------------------------------------------------------------
-  samples:in rel_sample_array(2**CHANNEL_BITS-1 downto 0);
+  samples:in sample_array(2**CHANNEL_BITS-1 downto 0);
   baselines:in sample_array(2**CHANNEL_BITS-1 downto 0);
-  extremas:in rel_sample_array(2**CHANNEL_BITS-1 downto 0);
-  areas:in sample_area_array(2**CHANNEL_BITS-1 downto 0);
-  derivative_extremas:in rel_sample_array(2**CHANNEL_BITS-1 downto 0);
-  pulse_areas:in pulse_area_array(2**CHANNEL_BITS-1 downto 0);
+  extremas:in sample_array(2**CHANNEL_BITS-1 downto 0);
+  areas:in area_array(2**CHANNEL_BITS-1 downto 0);
+  derivative_extremas:in sample_array(2**CHANNEL_BITS-1 downto 0);
+  pulse_areas:in area_array(2**CHANNEL_BITS-1 downto 0);
   pulse_lengths:in time_array(2**CHANNEL_BITS-1 downto 0);
   -- valid flags
   max_valids:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
@@ -66,11 +66,11 @@ end entity statistics_mux;
 
 architecture RTL of statistics_mux is
 -- select registers
-signal sample:rel_sample_t;
+signal sample:sample_t;
 signal baseline:sample_t;
-signal extrema,derivative_extrema:rel_sample_t;
-signal area:sample_area_t;
-signal pulse_area:pulse_area_t;
+signal extrema,derivative_extrema:sample_t;
+signal area:area_t;
+signal pulse_area:area_t;
 signal max_valid,min_valid,sample_valid,derivative_valid,pulse_valid:boolean;
 signal pulse_length:time_t;
 signal swap_pipe:boolean;
@@ -124,7 +124,7 @@ if rising_edge(clk) then
       value_valid <= max_valid;
     when "00000100" => --baseline -- sample min
       enabled <= TRUE;
-      value <= resize(signed('0' & baseline),VALUE_BITS);
+      value <= resize(baseline,VALUE_BITS);
       value_valid <= TRUE; --min_valid;
 --    when "00000110" => -- sample max or min
 --      enabled <= TRUE;
@@ -136,7 +136,7 @@ if rising_edge(clk) then
       value_valid <= sample_valid;
     when "00010000" => -- sample area
       enabled <= TRUE;
-      value <= resize(area,VALUE_BITS);
+      value <= area;
       value_valid <= sample_valid;
     when "00100000" => -- derivative extrema
       enabled <= TRUE;
@@ -144,7 +144,7 @@ if rising_edge(clk) then
       value_valid <= derivative_valid;
     when "01000000" => -- pulse area
       enabled <= TRUE;
-      value <= resize(signed('0' & pulse_area),VALUE_BITS);
+      value <= pulse_area;
       value_valid<= pulse_valid;
     when "10000000" => -- pulse length
       enabled <= TRUE;

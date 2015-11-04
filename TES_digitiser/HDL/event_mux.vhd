@@ -95,7 +95,7 @@ signal request,next_request:std_logic_vector(CHANNELS-1 downto 0);
 signal handled:std_logic_vector(CHANNELS-1 downto 0);
 signal time_valid:boolean;
 signal tickstream_handshake:boolean;
-signal rel_timestamp:std_logic_vector(REL_TIME_BITS-1 downto 0);
+signal rel_timestamp:std_logic_vector(TIME_BITS-1 downto 0);
 signal time_rd_en:boolean;
 signal relative_time_valid:boolean;
 signal muxstream_handshake:boolean;

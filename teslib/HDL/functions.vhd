@@ -74,6 +74,8 @@ function to_0IfX(slv:std_logic_vector) return std_logic_vector;
 function to_0IfX(u:unsigned) return unsigned;
 --used to suppress warnings from numeric_std
 function to_0IfX(s:signed) return signed;
+--saturating addition r = a1+a2 
+function saturatingAddition(a1,a2:signed) return signed;
 end;
 package body functions is  
 --------------------------------------------------------------------------------
@@ -294,5 +296,27 @@ function to_0IfX(s:signed) return signed is
 begin
   return signed(to_0Ifx(std_logic_vector(s)));
 end function;
-
+-- assumes that a1 is the longest argument
+-- and that a1 and a2 are already sign extended
+-- and that a1,a2 downto 
+function saturatingAddition(a1,a2:signed) return signed is
+variable temp:signed(a1'high downto 0);
+variable flags:std_logic_vector(2 downto 0);
+variable result:signed(a1'high downto 0);
+begin
+temp:=a1 + a2;
+flags:=a1(a1'high) & a2(a2'high) & temp(temp'high);
+case flags is
+when "011" => --underflow
+    result:=(others => '0');
+	result(result'high):='1';
+	return(result);
+when "100" => --overflow
+	result:=(others =>'1');
+	result(result'high):='0';
+	return(result);
+when others => 
+	return(temp);
+end case;
+end function saturatingAddition;
 end;

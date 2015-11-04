@@ -20,34 +20,42 @@ constant AXI_OKAY:std_logic_vector(1 downto 0):="00";
 constant AXI_DECERR:std_logic_vector(1 downto 0):="11";
 -- AXI Slave error--Slave generated error while processing request
 constant AXI_SLVERR:std_logic_vector(1 downto 0):="10";
-constant AXI_EXOKAY:std_logic_vector(1 downto 0):="01"; --not used in AXIlite
+--not used in AXIlite
+constant AXI_EXOKAY:std_logic_vector(1 downto 0):="01"; 
 --------------------------------------------------------------------------------
 -- TES design constants and types
 --------------------------------------------------------------------------------
---constant CHANNEL_BITS:integer:=3; -- 2**CHANNEL_BITS channels
-constant GLOBALTIME_BITS:integer:=64; 
--- Bits in the event time-stamp NOTE the MSB is used to indicate a roll-over 
--- since the previous time-stamp 
---FIXME: rearrange libraries fix REL_SAMPLE_BITS
-constant REL_SAMPLE_BITS:integer:=15; --ADC_BITS+1; -- sample relative to baseline 
-constant TIME_BITS:integer:=14; -- size field (MSBs of bus)    
-constant SIZE_BITS:integer:=5; -- Number of bits in a peak time-stamp
-constant REL_TIME_BITS:integer:=14; --CHUNK_DATA_BITS;
--- pulse area big enough that it can't overflow
-constant AREA_BITS:integer:=26;
---sum field bits actually put on the bus
+-- bits in a native ADC sample
+constant ADC_BITS:integer:=14;
+-- There are 2**CHANNEL_BITS channels
+constant CHANNEL_BITS:integer:=3; 
+-- Bits in a full full time-stamp (Tick event)
+constant TIMESTAMP_BITS:integer:=64; 
+-- Bits in a relative ADC sample (sample_t)
+constant SAMPLE_BITS:integer:=ADC_BITS+1;
+-- Bits in the size field of an event
+constant SIZE_BITS:integer:=16; 
+-- Bits in a relative time
+constant TIME_BITS:integer:=16; --CHUNK_DATA_BITS;
+-- Bits in an area measurement
+constant AREA_BITS:integer:=32;
+--
 constant AXI_DATA_BITS:integer:=32;
 constant AXI_ADDRESS_BITS:integer:=32;
 constant REGISTER_ADDRESS_BITS:integer:=24;
 constant REGISTER_DATA_BITS:integer:=32;
 --
-subtype rel_sample_t is signed(REL_SAMPLE_BITS-1 downto 0);
-type rel_sample_array is array (natural range <>) of rel_sample_t;
-subtype pulse_area_t is unsigned(AREA_BITS-1 downto 0);
-type pulse_area_array is array (natural range <>) of pulse_area_t;
-subtype sample_area_t is signed(AREA_BITS downto 0);
-type sample_area_array is array (natural range <>) of sample_area_t;
+-- relative sample
+subtype sample_t is signed(SAMPLE_BITS-1 downto 0);
+-- relative sample array
+type sample_array is array (natural range <>) of sample_t;
+-- type representing areas
+subtype area_t is signed(AREA_BITS-1 downto 0);
+-- array of areas
+type area_array is array (natural range <>) of area_t;
+-- type representing a relative time
 subtype time_t is unsigned(TIME_BITS-1 downto 0);
+-- array of relative times
 type time_array is array (natural range <>) of time_t;
 -- useful types
 subtype AXI_data is std_logic_vector(AXI_DATA_BITS-1 downto 0);
@@ -59,6 +67,6 @@ type registerdata_array is array (natural range <>) of registerdata;
 subtype registeraddress is std_logic_vector(REGISTER_ADDRESS_BITS-1 downto 0);
 type registeraddress_array is array (natural range <>) of registeraddress;
 type boolean_vector is array (natural range <>) of boolean;
-end;-- package definition ------------------------------------------------------
+end package types;
 package body types is  
-end;-- package body-------------------------------------------------------------
+end package body types;

@@ -1,25 +1,21 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-
+--
 library teslib;
+use teslib.types.all;
 use teslib.functions.all;
-
+--
 entity pulse_measurement is
-generic(
-  ADC_BITS:integer:=14;
-  TIME_BITS:integer:=14;
-  AREA_BITS:integer:=26
-);
 port (
   clk:in std_logic;
   reset:in std_logic;
 
-  threshold:in unsigned(ADC_BITS-1 downto 0);
-  sample:in signed(ADC_BITS downto 0);
+  threshold:in sample_t;
+  sample:in sample_t;
   
-  area:out unsigned(AREA_BITS-1 downto 0);
-  length:out unsigned;
+  area:out area_t;
+  length:out time_t;
   start:out boolean;
   stop:out boolean --pulse variables valid
 );
@@ -27,12 +23,12 @@ end entity pulse_measurement;
 
 architecture RTL of pulse_measurement is
 
-signal sample_rel:signed(ADC_BITS downto 0);
+signal sample_rel:sample_t;
 signal rolling_over,start_reg,stop_reg:boolean;
 signal start_timer:std_logic;
-signal sample_rel_thresh_reg:signed(ADC_BITS downto 0);
-signal pulse_area_int:unsigned(31 downto 0);
-signal relative_time:unsigned(TIME_BITS-1 downto 0);
+signal sample_rel_thresh_reg:sample_t;
+signal pulse_area_int:area_t;
+signal relative_time:time_t;
 signal above,below,was_above,was_below,start_int,stop_int,started:boolean;
 
 begin
@@ -41,7 +37,7 @@ begin
 -- pipeline
 -- 1 sample relative to threshold
 -- 2 start/stop
--- 3 saturation
+-- 3 saturation FIXME cannot saturate anymore can remove this stage
 --------------------------------------------------------------------------------
 above <= sample_rel > 0;
 below <= sample_rel <= 0;
@@ -71,21 +67,17 @@ if rising_edge(clk) then
     sample_rel_thresh_reg <= sample_rel;
 
     if start_int then
-      pulse_area_int <= resize(unsigned(sample_rel),32);
+      pulse_area_int <= resize(sample_rel,AREA_BITS);
       started <= TRUE;
     elsif not stop_int then
-      pulse_area_int <= pulse_area_int+unsigned(sample_rel);
+      pulse_area_int <= pulse_area_int+sample_rel;
     end if;
     
     if stop_int or rolling_over then
       started <= FALSE;
     end if;
     
-    if unaryOR(pulse_area_int(31 downto AREA_BITS)) then
-      area <= (others => '1');
-    else
-      area <= pulse_area_int(AREA_BITS-1 downto 0);
-    end if;
+		area <= pulse_area_int;
     
     if not (rolled_over or stop_reg) then
       length <= relative_time;

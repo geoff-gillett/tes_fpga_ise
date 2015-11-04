@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- Engineer: Geoff Gillett
 -- Date:07/02/2014 
@@ -17,16 +16,17 @@ library teslib;
 use teslib.types.all;
 use teslib.functions.all;
 --
+library adclib;
+use adclib.types.all;
+--FIXME make this description understandable
 --! the baseline is the maximum of the signal distribution
---! the distribution is collected in a MCA over 2**TIMECONSTANT clks
+--! the distribution is collected in a MCA over timeconstant clks
 --! and the average of the maximum of of the last two distributions is the
 --! baseline.
 entity baseline is
 generic(
-  --The distributions are acquired over 2**TIMECONSTANT_BITS clks
   --number of bins (channels) = 2**ADDRESS_BITS
   BASELINE_BITS:integer:=12;
-  SAMPLE_BITS:integer:=14;
   --width of counters and stream
   COUNTER_BITS:integer:=18;
   TIMECONSTANT_BITS:integer:=32;
@@ -37,64 +37,62 @@ port(
   reset:in std_logic;
   --
   timeconstant:in unsigned(TIMECONSTANT_BITS-1 downto 0);
+  -- count required before adding to average
   threshold:in unsigned(COUNTER_BITS-1 downto 0);
   --offset to center of mca range 
-  fixed_baseline:in unsigned(SAMPLE_BITS-1 downto 0);
+  fixed_baseline:in sample_t;
   avn:in unsigned(bits(AVN_BITS) downto 0);
   avn_updated:in boolean;
   --
-  sample:in std_logic_vector(SAMPLE_BITS-1 downto 0);
+  sample:in sample_t;
   --sample_valid:in boolean;
   --
-  baseline_estimate:out std_logic_vector(SAMPLE_BITS-1 downto 0);
+  baseline_estimate:out sample_t;
+  range_error:out boolean;
   new_value:out boolean
 );
 end entity baseline;
---
+--TODO bring start_threshold into the picture
 architecture most_frequent of baseline is
 
 signal baseline_sample:std_logic_vector(BASELINE_BITS-1 downto 0);
-signal baseline_lowest_value:unsigned(SAMPLE_BITS-1 downto 0);
 signal baseline_sample_valid:boolean;
-signal most_frequent,most_frequent_av:std_logic_vector(BASELINE_BITS-1 downto 0);
+signal most_frequent,most_frequent_av
+			 :std_logic_vector(BASELINE_BITS-1 downto 0);
 signal new_most_frequent,new_average:boolean;
+signal offset_sample,offset,limit:sample_t;
 
 begin
 
 baselineControl:process(clk)
-variable offset,offset_sample:signed(SAMPLE_BITS downto 0);
-variable highest_value:unsigned(SAMPLE_BITS downto 0);
-constant HALF_WIDTH:unsigned(SAMPLE_BITS-1 downto 0)
-         :=to_unsigned((2**BASELINE_BITS)/2,SAMPLE_BITS);
+variable lowest,highest:sample_t;
+constant HALF_RANGE:sample_t:=to_signed((2**BASELINE_BITS)/2,SAMPLE_BITS);
 begin
 if rising_edge(clk) then
+  lowest:=fixed_baseline-HALF_RANGE;
+  highest:=fixed_baseline+HALF_RANGE-1;
+  offset <= lowest;
+  limit <= highest;
   
-  offset:=signed('0' & fixed_baseline)-signed(HALF_WIDTH);
-  highest_value:=('0' & fixed_baseline)+HALF_WIDTH;
-  
-  if offset(SAMPLE_BITS)='1' then --less than 0
-    baseline_lowest_value <= (others => '0');
-  elsif highest_value(SAMPLE_BITS)='1' then --greater than 2**SAMPLE_BITS-1
-    baseline_lowest_value 
-      <= to_unsigned((2**SAMPLE_BITS-1)-(2**BASELINE_BITS-1),SAMPLE_BITS);
-  else
-    baseline_lowest_value <= unsigned(offset(SAMPLE_BITS-1 downto 0));
-  end if;
-  offset_sample:=signed('0' & sample)-signed('0' & baseline_lowest_value);
-  baseline_sample <= to_std_logic(offset_sample(BASELINE_BITS-1 downto 0));
-  if offset_sample(SAMPLE_BITS)='1' then
-    baseline_sample_valid <= FALSE;
-  elsif offset_sample(BASELINE_BITS)='1' then
-    baseline_sample_valid <= FALSE;
-  else
-    baseline_sample_valid <= TRUE;
-  end if;
+  offset_sample <= sample-offset;
+  baseline_sample <= to_std_logic(resize(offset_sample,BASELINE_BITS));
+	
+	if offset_sample > limit then 
+		baseline_sample_valid <= FALSE;
+		range_error <= FALSE;
+	elsif offset_sample < offset then
+		baseline_sample_valid <= FALSE;
+		range_error <= TRUE;
+	else
+		baseline_sample_valid <= TRUE;
+		range_error <= FALSE;
+	end if;
 end if;
 end process baselineControl;
 --
 mostFrequent:entity work.most_frequent
 generic map(
-  SAMPLE_BITS => BASELINE_BITS,
+  ADDRESS_BITS => BASELINE_BITS,
   COUNTER_BITS => COUNTER_BITS,
   TIMECONSTANT_BITS => TIMECONSTANT_BITS
 )
@@ -113,7 +111,7 @@ average:entity work.average
 generic map(
   ADDRESS_BITS => AVN_BITS,
   DATA_BITS => BASELINE_BITS,
-  SIGNED_DATA => FALSE
+  SIGNED_DATA => TRUE
 )
 port map(
   clk => clk,
@@ -131,14 +129,13 @@ outputReg:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
-    baseline_estimate <= to_std_logic(fixed_baseline);
+    baseline_estimate <= fixed_baseline;
   else
     new_value <= new_average;
     if timeconstant=0 then
-      baseline_estimate <= to_std_logic(fixed_baseline);
+      baseline_estimate <= fixed_baseline;
     elsif new_average then
-      baseline_estimate 
-        <= to_std_logic(unsigned(most_frequent_av)+baseline_lowest_value);
+      baseline_estimate <= resize(signed(most_frequent_av)+offset,SAMPLE_BITS);
     end if;
   end if;
 end if;

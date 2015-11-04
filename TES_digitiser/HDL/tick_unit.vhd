@@ -49,7 +49,7 @@ port (
 );
 end entity tick_unit;
 
-architecture packed of tick_unit is
+architecture aligned of tick_unit is
 --
 constant CHANNELS:integer:=2**CHANNEL_BITS;
 constant ADDRESS_BITS:integer:=9;
@@ -88,15 +88,18 @@ timestamp <= time_stamp;
 -- size 16 bits
 -- rel time 16 bits
 -- flags 32 bits,
--- period 32 bits
--- reserved 32 bits
 -- timestamp 64 bits
 
-header_data <= std_logic_vector(to_unsigned(8,SIZE_BITS)) &
-               "0000" & to_std_logic(unaryOR(param_out)) &
-               "00000000000000" & --replaced by mux
+header_data <= std_logic_vector(to_unsigned(8,CHUNK_DATABITS)) &
+		 					 to_std_logic(0, CHUNK_DATABITS) &
+               to_std_logic(resize(unsigned(param_out),8)) &
                std_logic_vector(resize(unsigned(overflow_out),8)) &
-               SetEndianness(resize(tick_period_header,32),ENDIANNESS);
+               to_std_logic(0, 16);
+--<= std_logic_vector(to_unsigned(8,SIZE_BITS)) &
+--               "0000" & to_std_logic(unaryOR(param_out)) &
+--               "00000000000000" & --replaced by mux
+--               std_logic_vector(resize(unsigned(overflow_out),8)) &
+--               SetEndianness(resize(tick_period_header,32),ENDIANNESS);
 length <= to_unsigned(2,ADDRESS_BITS);
 --------------------------------------------------------------------------------
 FSMnextstate:process(clk)
@@ -253,4 +256,4 @@ port map(
   period => tick_period,
   current_period => tick_period_header
 );
-end architecture packed;
+end architecture aligned;
