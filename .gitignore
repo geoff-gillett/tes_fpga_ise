@@ -42,3 +42,5 @@ junkheap/
 *.edif
 *.csv
 *.backup
+vivado_sysgen/data/
+vivado_sysgen/tes_traces/

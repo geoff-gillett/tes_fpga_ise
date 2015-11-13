@@ -118,17 +118,9 @@ stage2_reload_ready <= to_boolean(stage2_reload_ready_int);
 raw_sample <= resize(signed(raw_sample_int),SIGNAL_BITS);
 stage1_sample <= signed(stage1_sample_int);
 
-rawDelay:entity work.SREG_delay
-generic map(
-  DEPTH => DELAY_DEPTH,
-  DATA_BITS => SAMPLE_BITS
-)
-port map(
-  clk => clk,
-  data_in => to_std_logic(sample),
-  delay => raw_delay,
-  delayed => raw_sample_int
-);
+--------------------------------------------------------------------------------
+-- FIR filter stages with reloadable coefficients (FIR compiler 6.3)
+--------------------------------------------------------------------------------
 
 stage1FIRfilter:stage1_FIR_23
 port map(
@@ -147,22 +139,6 @@ port map(
   m_axis_data_tdata => stage1_out,
   event_s_reload_tlast_missing => stage1_reload_last_missing,
   event_s_reload_tlast_unexpected => stage1_reload_last_unexpected
-);
-
-stage2_data <= to_std_logic(
-	resize(shift_right(signed(stage1_out),to_integer(stage1_shift)),18)
-);
-
-stage1Delay:entity work.SREG_delay
-generic map(
-  DEPTH => DELAY_DEPTH,
-  DATA_BITS => SIGNAL_BITS
-)
-port map(
-  clk     => clk,
-  data_in => stage2_data(17 downto 18-SIGNAL_BITS),
-  delay   => stage1_delay,
-  delayed => stage1_sample_int
 );
 
 stage2FIRfilter:stage2_FIR_23
@@ -184,5 +160,46 @@ port map(
   event_s_reload_tlast_unexpected => stage2_reload_last_unexpected
 );
 
+--------------------------------------------------------------------------------
+-- shift to correct fixed precision and register the outputs of each FIR stage
+--------------------------------------------------------------------------------
+firOutputReg:process (clk) is
+begin
+if rising_edge(clk) then
+  stage2_data <= to_std_logic(
+    resize(shift_right(signed(stage1_out),to_integer(stage1_shift)),18)
+  );
+  stage2_sample <= signed(to_std_logic(
+    resize(shift_right(signed(stage1_out),to_integer(stage2_shift)),SIGNAL_BITS)
+  ));
+end if;
+end process firOutputReg;
+
+--------------------------------------------------------------------------------
+-- delays to align outputs after FIR group delay
+--------------------------------------------------------------------------------
+rawDelay:entity work.SREG_delay
+generic map(
+  DEPTH => DELAY_DEPTH,
+  DATA_BITS => SAMPLE_BITS
+)
+port map(
+  clk => clk,
+  data_in => to_std_logic(sample),
+  delay => raw_delay,
+  delayed => raw_sample_int
+);
+
+stage1Delay:entity work.SREG_delay
+generic map(
+  DEPTH => DELAY_DEPTH,
+  DATA_BITS => SIGNAL_BITS
+)
+port map(
+  clk     => clk,
+  data_in => stage2_data(17 downto 18-SIGNAL_BITS),
+  delay   => stage1_delay,
+  delayed => stage1_sample_int
+);
 
 end architecture order_23;
