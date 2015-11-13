@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="RAM_delay_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="functions" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="ram_delay_tb" />
+            <top_module name="std_logic_1164" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="5" />
+   <wvobject fp_name="/ram_delay_tb/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ram_delay_tb/data_in" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data_in[17:0]</obj_property>
+      <obj_property name="ObjectShortName">data_in[17:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ram_delay_tb/delay" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">delay[3:0]</obj_property>
+      <obj_property name="ObjectShortName">delay[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ram_delay_tb/delayed" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">delayed[17:0]</obj_property>
+      <obj_property name="ObjectShortName">delayed[17:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="group19" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/ram_delay_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ram_delay_tb/UUT/data_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">data_in[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ram_delay_tb/UUT/delay" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">delay[3:0]</obj_property>
+         <obj_property name="ObjectShortName">delay[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ram_delay_tb/UUT/delayed" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">delayed[17:0]</obj_property>
+         <obj_property name="ObjectShortName">delayed[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ram_delay_tb/UUT/ring" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ring[0:15]</obj_property>
+         <obj_property name="ObjectShortName">ring[0:15]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ram_delay_tb/UUT/delay_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">delay_addr[3:0]</obj_property>
+         <obj_property name="ObjectShortName">delay_addr[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ram_delay_tb/UUT/ring_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ring_addr[3:0]</obj_property>
+         <obj_property name="ObjectShortName">ring_addr[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ram_delay_tb/UUT/data_out_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data_out_int[17:0]</obj_property>
+         <obj_property name="ObjectShortName">data_out_int[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ram_delay_tb/UUT/data_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">data_out[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ram_delay_tb/UUT/address_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">address_bits</obj_property>
+         <obj_property name="ObjectShortName">address_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ram_delay_tb/UUT/data_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">data_bits</obj_property>
+         <obj_property name="ObjectShortName">data_bits</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

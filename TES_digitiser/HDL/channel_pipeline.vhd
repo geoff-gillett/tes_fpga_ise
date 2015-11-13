@@ -133,28 +133,44 @@ signal slope_threshold:sample_t;
 -- Measurements
 --------------------------------------------------------------------------------
 signal slope,slope_out,dsp_sample,sample_out:sample_t;
+signal slope_out_reg,sample_out_reg:sample_t;
 signal baseline_int,baseline_out:sample_t;
+signal baseline_out_reg:sample_t;
 signal max_valid,min_valid,measure_valid:boolean;
+signal max_valid_reg,min_valid_reg,measure_valid_reg:boolean;
 signal commit,dump,pulse_valid_int:boolean;
+signal pulse_valid_reg:boolean;
 signal start:boolean;
-signal pulse_area_int:area_t;
-signal pulse_length_int:time_t;
+signal start_reg:boolean;
+signal pulse_area_int,pulse_area_reg:area_t;
+signal pulse_length_int,pulse_length_reg:time_t;
 signal baseline_threshold:unsigned(BASELINE_MCA_COUNTER_BITS-1 downto 0);
 signal fixed_baseline:sample_t;
+signal sample_extrema_int,sample_extrema_reg:sample_t;
+signal sample_area_int,sample_area_reg:area_t;
+signal sample_valid_int,sample_valid_reg:boolean;
+signal slope_extrema_int,slope_extrema_reg:sample_t;
+signal slope_valid_int,slope_valid_reg:boolean;
 --
 begin
-local_maxima <= max_valid;
-local_minima <= min_valid;
-sample <= sample_out;
-baseline <= baseline_out;
-dirty <= measure_valid;
-pulse_valid <= pulse_valid_int;
+local_maxima <= max_valid_reg;
+local_minima <= min_valid_reg;
+sample <= sample_out_reg;
+baseline <= baseline_out_reg;
+dirty <= measure_valid_reg; --FIXME this is not connected
+pulse_valid <= pulse_valid_reg;
 --event_lost <= event_lost;
-pulse_area <= pulse_area_int;
-pulse_length <= pulse_length_int;
+pulse_area <= pulse_area_reg;
+pulse_length <= pulse_length_reg;
 --start_mux <= pulse_start_int;
 commit_pulse <= commit;
 dump_pulse <= dump;
+sample_extrema <= sample_extrema_reg;
+sample_area <= sample_area_reg;
+sample_valid <= sample_valid_reg;
+slope_extrema <= slope_extrema_reg;
+slope_valid <= slope_valid_reg;
+
 --
 channelRegisters:entity controllerlib.channel_registers
 generic map(
@@ -251,17 +267,38 @@ port map(
   baseline_out => baseline_out,
   local_maxima => max_valid,
   local_minima => min_valid,
-  sample_extrema => sample_extrema,
-  sample_area => sample_area,
-  sample_zero_crossing => sample_valid,
+  sample_extrema => sample_extrema_int,
+  sample_area => sample_area_int,
+  sample_zero_crossing => sample_valid_int,
   pulse_area => pulse_area_int,
   pulse_length => pulse_length_int,
   pulse_start => start,
   pulse_stop => pulse_valid_int,
-  slope_extrema => slope_extrema,
-  slope_zero_crossing => slope_valid
+  slope_extrema => slope_extrema_int,
+  slope_zero_crossing => slope_valid_int
 );
---
+
+--to help close timing
+measurementReg:process(pipeline_clk) is
+begin
+if rising_edge(pipeline_clk) then
+	sample_out_reg <= sample_out;
+	slope_out_reg <= slope_out;
+	baseline_out_reg <= baseline_out;
+	max_valid_reg <= max_valid;
+	min_valid_reg <= min_valid;
+	sample_extrema_reg <= sample_extrema_int;
+	sample_area_reg <= sample_area_int;
+	sample_valid_reg <= sample_valid_int;
+	pulse_area_reg <= pulse_area_int;
+	pulse_length_reg <= pulse_length_int;
+	start_reg <= start;
+	pulse_valid_reg <= pulse_valid_int;
+	slope_extrema_reg <= slope_extrema_reg;
+	slope_valid_reg <= slope_valid_int;
+end if;
+end process measurementReg;
+
 streamer:entity work.event_framer(fixed_aligned)
 generic map(
   CHANNEL => CHANNEL_NUMBER,
@@ -271,16 +308,16 @@ generic map(
 port map(
   clk => pipeline_clk,
   reset => reset2,
-  sample => sample_out,
+  sample => sample_out_reg,
   area_threshold => area_threshold,
   enabled  => eventstream_enabled,
   event_lost => event_lost,
   mux_full => mux_full,
-  start => start,
-  pulse_valid => pulse_valid_int,
-  peak => max_valid,
-  pulse_area => pulse_area_int,
-  pulse_length => pulse_length_int,
+  start => start_reg,
+  pulse_valid => pulse_valid_reg,
+  peak => max_valid_reg,
+  pulse_area => pulse_area_reg,
+  pulse_length => pulse_length_reg,
   start_mux => start_mux,
   dump => dump,
   commit => commit,

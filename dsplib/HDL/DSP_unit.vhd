@@ -130,12 +130,11 @@ port map(
   fixed_baseline => fixed_baseline,
   avn => baseline_avn,
   avn_updated => baseline_avn_updated,
-  sample => signed(delayed_sample), --adc_sample,
+  sample => adc_sample_int, --delayed_sample,
   baseline_estimate => baseline_estimate,
   new_value => open
 );
 
---FIXME average after relative?
 relSample:process(clk)
 begin
 if rising_edge(clk) then
@@ -165,7 +164,13 @@ port map(
   valid => open,
   newvalue => open
 );
-sample_av <= signed(sample_av_int);
+avReg:process(clk) is
+begin
+if rising_edge(clk) then
+	sample_av <= signed(sample_av_int);
+end if;
+end process avReg;
+
 --
 slopeUnit:entity work.slope
 generic map(
@@ -191,7 +196,7 @@ generic map(
 port map(
 	clk => clk,
   reset => reset,
-  data_in => std_logic_vector(sample_reg),
+  data_in => std_logic_vector(sample_av),
   wr_en => TRUE,
   zerodelay => open,
   delayed => sample_out,

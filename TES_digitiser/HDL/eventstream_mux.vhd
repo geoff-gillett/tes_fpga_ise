@@ -49,30 +49,35 @@ constant CHANNELS:integer:=2**CHANNEL_BITS;
 signal timestamp,eventtime:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal reltime:unsigned(RELTIME_BITS-1 downto 0);
 signal started,commited,dumped:std_logic_vector(CHANNELS-1 downto 0);
-signal handled,req,gnt,grant:std_logic_vector(CHANNELS-1 downto 0);
-signal index:integer range 0 to CHANNELS-1;
-signal ticked,tick,time_valid,read_next,pulses_handled:boolean;
-type muxstate is (IDLE,HANDLEPULSE,HANDLETICK);
-signal mux_state,mux_nextstate:muxstate;
-type streamstate is (HEAD,TAIL);
-signal stream_state,stream_nextstate:streamstate;
-signal muxstream,tickstream:eventbus_t;
-signal muxstream_valid,ready_for_muxstream,muxstream_last:boolean;
-signal granted,muxstream_handshake:boolean;
+signal req,gnt:std_logic_vector(CHANNELS-1 downto 0);
+signal handled:std_logic_vector(CHANNELS downto 0);
+signal sel:std_logic_vector(CHANNELS downto 0);
+
+signal ticked,tick,time_valid,read_next:boolean;
+--type muxstate is (IDLE,HANDLEPULSE,HANDLETICK);
+--signal mux_state,mux_nextstate:muxstate;
+type FSMstate is (IDLE,HEAD,TAIL,NEXT_TIME);
+signal state,nextstate:FSMstate;
+signal tickstream:eventbus_t;
+signal stream_valid,ready_for_stream,stream_last:boolean;
 signal tickstream_valid:boolean;
 signal tickstream_last:boolean;
 signal ready_for_tickstream:boolean;
-signal tickstream_handshake:boolean;
-signal tickstream_done:boolean;
-signal muxstream_done:boolean;
-signal ready_for_pulsestream:boolean;
--- 
-signal store:eventbus_t;
-signal valid_int,store_valid,last_int,store_last,ready_int:boolean;
-signal sel:boolean_vector(3 downto 0);
+
+--
+signal streams:eventbus_array(CHANNELS downto 0);
+signal stream,stream_int:eventbus_t;
+signal valids,lasts,readys:boolean_vector(CHANNELS downto 0);
+signal done:boolean;
+signal handshake:boolean;
+signal pulses_done:boolean;
+signal stream_valid_int:boolean;
+signal last_handshake:boolean;
+
 --
 begin
-tickUnit:entity work.tick_unit
+
+tickUnit:entity work.tick_unit(aligned)
 generic map(
   CHANNEL_BITS => CHANNEL_BITS,
   TICK_BITS => TICK_BITS,
@@ -118,37 +123,94 @@ port map(
   read_next => read_next,
   full      => full
 );
+
+selector:entity work.eventstream_select
+generic map(
+  CHANNELS => CHANNELS+1
+)
+port map(
+  sel     => sel,
+  streams => streams,
+  lasts   => lasts,
+  valids  => valids,
+  stream  => stream,
+  valid   => stream_valid,
+  last    => stream_last
+);
 --
 -- clk1 req
 -- clk2 gnt onehot index 
 -- clk3 mux
 -- 
-pulses_handled <= started = (started and (handled or dumped)) and time_valid;
+--pulses_handled <= started = (started and (handled or dumped)) and time_valid;
+
+readys <= (others => FALSE) when state=IDLE or not ready_for_stream 
+													  else to_boolean(sel);
+	
+inputRegGen:for i in CHANNELS downto 1 generate
+begin
+	inputReg:entity streamlib.register_slice
+		generic map(
+			STREAM_BITS => CHUNK_BITS*EVENTBUS_CHUNKS
+		)
+		port map(
+			clk       => clk,
+			reset     => reset,
+			stream_in => pulsestreams(i-1),
+			ready_out => ready_for_pulsestreams(i-1),
+			valid_in  => pulsestream_valids(i-1),
+			last_in   => pulsestream_lasts(i-1),
+			stream    => streams(i),
+			ready     => readys(i),
+			valid     => valids(i),
+			last      => lasts(i)
+		);
+end generate;
+
+tickInputReg:entity streamlib.register_slice
+generic map(
+  STREAM_BITS => CHUNK_BITS*EVENTBUS_CHUNKS
+)
+port map(
+  clk       => clk,
+  reset     => reset,
+  stream_in => tickstream,
+  ready_out => ready_for_tickstream,
+  valid_in  => tickstream_valid,
+  last_in   => tickstream_last,
+  stream    => streams(0),
+  ready     => readys(0),
+  valid     => valids(0),
+  last      => lasts(0)
+);
+
+pulses_done <= started = handled(CHANNELS downto 1);-- and time_valid; 
+done <= pulses_done and to_std_logic(ticked) = handled(0);
+read_next <= state=NEXT_TIME;
 arbiter:process(clk)
 begin
 if rising_edge(clk) then
-  if reset = '1' then
+  if reset = '1' or state=NEXT_TIME then
   	req <= (others => '0');
   	gnt <= (others => '0');
-  	grant <= (others => '0');
+  	sel <= (others => '0');
+  	handled <= (others => '0');
   else
   	if time_valid then
-  		req <= started and commited and not handled;
+  		req <= started and commited and not handled(CHANNELS downto 1);
       gnt <= req and std_logic_vector(unsigned(not req)+1);
-      if mux_state=IDLE then 
-        handled <= handled or gnt;
-        grant <= gnt;
-        if unsigned(gnt) = 0 then
-        	index <= 0;
-        	granted <= FALSE;
-        else
-          index <= onehotToInteger(gnt);
-        	granted <= TRUE;
-        end if;
+--      if state=IDLE then 
+      if last_handshake or state=IDLE then 
+      	if pulses_done then 
+	      	handled(0) <= to_std_logic(ticked);
+      		sel <= (0 => to_std_logic(ticked), others => '0');
+      	else
+	      	handled <= handled or gnt & '0' or dumped & '0';
+      		sel <= gnt & '0';
+      	end if;
       end if;
   	else
-  		grant <= (others => '0');
-  		granted <= FALSE;
+  		sel <= (others => '0');
   		req <= (others => '0');
   		handled <= (others => '0');
   	end if;
@@ -160,133 +222,47 @@ fsmNextstate:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
-  	mux_state <= IDLE;
-  	stream_state <= HEAD;
+  	state <= IDLE;
   else
-    mux_state <= mux_nextstate;
-    stream_state <=  stream_nextstate;
+    state <= nextstate;
   end if;
 end if;
 end process fsmNextstate;
 --
-muxstream_handshake <= muxstream_valid and ready_for_muxstream;
-tickstream_handshake <= tickstream_valid and ready_for_muxstream;
-muxTransition:process(granted,tickstream_handshake,pulses_handled,ticked,
-										 mux_state,stream_state,tickstream_last,
-										 grant,index,pulsestream_lasts,pulsestream_valids,
-										 pulsestreams,tickstream,tickstream_valid, 
-										 ready_for_muxstream,muxstream_handshake,muxstream_last, 
-										 time_valid,reltime)
+handshake <= stream_valid and ready_for_stream;
+last_handshake <= handshake and stream_last;
+fsmTransition:process(state,sel,handshake,done,last_handshake)
 begin
-mux_nextstate <= mux_state;
-stream_nextstate <= stream_state;
-case mux_state is 
+nextstate <= state;  		
+case state is 
 when IDLE =>
-	muxstream <= (others => '-');
-	muxstream_valid <= FALSE;
-	muxstream_last <= FALSE;
-	ready_for_pulsestream <= FALSE;
-	ready_for_tickstream <= FALSE;
-	ready_for_pulsestreams <= (others => FALSE);
-	read_next <= FALSE;
-  if pulses_handled then
-  	if ticked then
-  		mux_nextstate <= HANDLETICK; 
-  	else
-  		mux_nextstate <= IDLE;
-			read_next <= TRUE;
-  	end if;
-  elsif granted and time_valid then
-  	mux_nextstate <= HANDLEPULSE;
-  end if;
-when HANDLETICK =>
-	if stream_state = HEAD then 
-		muxstream <= tickstream(71 downto 52) & 
-								 SetEndianness(reltime,ENDIANNESS) &
-								 tickstream(35 downto 0);
-	else
-		muxstream <= tickstream;
-		end if;
-	muxstream_valid <= tickstream_valid;
-	muxstream_last <= tickstream_last;
-	ready_for_pulsestream <= FALSE;
-	ready_for_tickstream <= ready_for_muxstream;
-	ready_for_pulsestreams <= (others => FALSE);
-	read_next <= FALSE;
-	if tickstream_handshake then
-		if tickstream_last then
-			stream_nextstate <= HEAD;
-			mux_nextstate <= IDLE;
-			read_next <= TRUE;
-		else
-			stream_nextstate <= TAIL;
-		end if;
-	end if; 
-when HANDLEPULSE =>
-	if stream_state=HEAD then
-		muxstream <= pulsestreams(index)(71 downto 52) & 
-								 SetEndianness(reltime,ENDIANNESS) &
-								 pulsestreams(index)(35 downto 0);
-	else
-		muxstream <= pulsestreams(index);
+	if unaryOr(sel) then
+		nextstate <= HEAD;
+	elsif done then
+		nextstate <= NEXT_TIME;
 	end if;
-	muxstream_valid <= pulsestream_valids(index);
-	muxstream_last <= pulsestream_lasts(index);
-	if ready_for_muxstream then
-		ready_for_pulsestreams <= to_boolean(grant);
-	else
-		ready_for_pulsestreams <= (others => FALSE);
+when HEAD =>
+	if handshake then
+		nextstate <= TAIL;
 	end if;
-	ready_for_tickstream <= FALSE;
-	read_next <= FALSE;
-	if muxstream_handshake then
-		if muxstream_last then
-			stream_nextstate <= HEAD;
-			mux_nextstate <= IDLE;
+when TAIL =>
+	if last_handshake then
+		if done then
+			nextstate <= NEXT_TIME;
 		else
-			stream_nextstate <= TAIL;
+			nextstate <= IDLE;
 		end if;
-	end if; 
+	end if;
+when NEXT_TIME =>
+	nextstate <= IDLE;
 end case;
-end process muxTransition;
--- This may make it difficult to achieve timing closure
--- this needs to be clocked
--- Problem when MUX switches? need to stop after last
--- remember to 
---mux:process(clk)
---begin
---if rising_edge(clk) then
---  if reset = '1' then
---    muxstream <= (others => '-');
---    muxstream_valid <= FALSE;
---    muxstream_last <= FALSE;
---  else 
---  	ready_for_tickstream <= FALSE;
--- 		ready_for_pulsestreams <= (others => FALSE);
---    muxstream <= (others => '-');
---    muxstream_valid <= FALSE;
---    muxstream_last <= FALSE;
--- 		if not muxstream_valid or (muxstream_valid and ready_for_muxstream) then
--- 			if pulses_handled and ticked and tickstream_valid 
--- 			   and ready_for_tickstream then
---        muxstream <= tickstream;
---        muxstream_valid <= tickstream_valid;
---        muxstream_last <= tickstream_last;
---        if tickstream_valid and not muxstream_last then
---          ready_for_tickstream <= TRUE;
---        end if;
---      elsif granted then
---        muxstream <= pulsestreams(index);
---        muxstream_valid <= pulsestream_valids(index);
---        muxstream_last <= pulsestream_lasts(index);
---        if pulsestream_valids(index) and not muxstream_last then
---        	ready_for_pulsestreams(index) <= TRUE;
---        end if;
---      end if;
---    end if;
---  end if;
---end if;  	
---end process mux;
+end process fsmTransition;
+--
+
+stream_int <= stream(71 downto 52) & SetEndianness(reltime,ENDIANNESS) &
+							stream(35 downto 0) when state=HEAD
+							else stream;
+stream_valid_int <= stream_valid and state/=IDLE;
 --
 outStreamReg:entity streamlib.register_slice
 generic map(
@@ -295,10 +271,10 @@ generic map(
 port map(
   clk       => clk,
   reset     => reset,
-  stream_in => muxstream,
-  ready_out => ready_for_muxstream,
-  valid_in  => muxstream_valid,
-  last_in   => muxstream_last,
+  stream_in => stream_int,
+  ready_out => ready_for_stream,
+  valid_in  => stream_valid_int,
+  last_in   => stream_last,
   stream    => eventstream,
   ready     => ready,
   valid     => valid,

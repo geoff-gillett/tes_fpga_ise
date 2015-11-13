@@ -44,7 +44,6 @@ generic(
 port(
   clk:in std_logic;
   reset:in std_logic;
-  LEDs:out std_logic_vector(7 downto 0);
   --
   update_asap:in boolean; 
   update_on_completion:in boolean; --update after ticks
@@ -121,7 +120,6 @@ signal most_frequent:unsigned(ADDRESS_BITS-1 downto 0);
 signal timestamp,start_time,stop_time:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal stream_in:std_logic_vector(STREAM_CHUNKS*CHUNK_BITS-1 downto 0);
 signal valid_in,ready_out:boolean;
-signal mca_unit_LEDs:std_logic_vector(7 downto 0);
 signal test_LEDs:std_logic_vector(7 downto 0);
 begin
 --
@@ -129,7 +127,6 @@ begin
 --------------------------------------------------------------------------------
 -- Test points
 --------------------------------------------------------------------------------
-LEDs <= mca_unit_LEDs;
 --LEDs(0) <= to_std_logic(stream_state=IDLE);
 --LEDs(7 downto 1) <= test_LEDs(7 downto 1);
 --LEDs <= mca_unit_LEDs;
@@ -436,7 +433,6 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  LEDs => mca_unit_LEDs,
   can_swap => can_swap,
   value => value,
   value_valid => value_valid,

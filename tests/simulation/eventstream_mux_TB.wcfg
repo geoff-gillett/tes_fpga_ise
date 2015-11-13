@@ -38,36 +38,36 @@
       <obj_property name="label">testbench</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <wvobject fp_name="/eventstream_mux_tb/start" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">start[3:0]</obj_property>
-         <obj_property name="ObjectShortName">start[3:0]</obj_property>
+         <obj_property name="ElementShortName">start[7:0]</obj_property>
+         <obj_property name="ObjectShortName">start[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/commit" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commit[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commit[3:0]</obj_property>
+         <obj_property name="ElementShortName">commit[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commit[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/commitdump_toggle" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commitdump_toggle[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commitdump_toggle[3:0]</obj_property>
+         <obj_property name="ElementShortName">commitdump_toggle[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commitdump_toggle[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/dump" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dump[3:0]</obj_property>
-         <obj_property name="ObjectShortName">dump[3:0]</obj_property>
+         <obj_property name="ElementShortName">dump[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dump[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/pulsestreams" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulsestreams[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulsestreams[3:0]</obj_property>
+         <obj_property name="ElementShortName">pulsestreams[7:0]</obj_property>
+         <obj_property name="ObjectShortName">pulsestreams[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/pulsestream_lasts" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulsestream_lasts[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulsestream_lasts[3:0]</obj_property>
+         <obj_property name="ElementShortName">pulsestream_lasts[7:0]</obj_property>
+         <obj_property name="ObjectShortName">pulsestream_lasts[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/pulsestream_valids" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulsestream_valids[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulsestream_valids[3:0]</obj_property>
+         <obj_property name="ElementShortName">pulsestream_valids[7:0]</obj_property>
+         <obj_property name="ObjectShortName">pulsestream_valids[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/ready_for_pulsestreams" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">ready_for_pulsestreams[3:0]</obj_property>
-         <obj_property name="ObjectShortName">ready_for_pulsestreams[3:0]</obj_property>
+         <obj_property name="ElementShortName">ready_for_pulsestreams[7:0]</obj_property>
+         <obj_property name="ObjectShortName">ready_for_pulsestreams[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/full" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">full</obj_property>
@@ -78,12 +78,12 @@
          <obj_property name="ObjectShortName">tick_period[31:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/events_lost" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">events_lost[3:0]</obj_property>
-         <obj_property name="ObjectShortName">events_lost[3:0]</obj_property>
+         <obj_property name="ElementShortName">events_lost[7:0]</obj_property>
+         <obj_property name="ObjectShortName">events_lost[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/dirty" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dirty[3:0]</obj_property>
-         <obj_property name="ObjectShortName">dirty[3:0]</obj_property>
+         <obj_property name="ElementShortName">dirty[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dirty[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/eventstream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">eventstream[71:0]</obj_property>
@@ -103,8 +103,8 @@
          <obj_property name="ObjectShortName">ready</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/counter" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">counter[0:3]</obj_property>
-         <obj_property name="ObjectShortName">counter[0:3]</obj_property>
+         <obj_property name="ElementShortName">counter[0:7]</obj_property>
+         <obj_property name="ObjectShortName">counter[0:7]</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group106" type="group">
@@ -119,16 +119,16 @@
          <obj_property name="ObjectShortName">reset</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/start" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">start[3:0]</obj_property>
-         <obj_property name="ObjectShortName">start[3:0]</obj_property>
+         <obj_property name="ElementShortName">start[7:0]</obj_property>
+         <obj_property name="ObjectShortName">start[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/commit" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commit[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commit[3:0]</obj_property>
+         <obj_property name="ElementShortName">commit[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commit[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/dump" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dump[3:0]</obj_property>
-         <obj_property name="ObjectShortName">dump[3:0]</obj_property>
+         <obj_property name="ElementShortName">dump[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dump[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/tick" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">tick</obj_property>
@@ -201,37 +201,37 @@
          <obj_property name="ObjectShortName">all_dumped</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/started" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">started[3:0]</obj_property>
-         <obj_property name="ObjectShortName">started[3:0]</obj_property>
+         <obj_property name="ElementShortName">started[7:0]</obj_property>
+         <obj_property name="ObjectShortName">started[7:0]</obj_property>
          <obj_property name="Radix">BINARYRADIX</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ffffff</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/started_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">started_int[3:0]</obj_property>
-         <obj_property name="ObjectShortName">started_int[3:0]</obj_property>
+         <obj_property name="ElementShortName">started_int[7:0]</obj_property>
+         <obj_property name="ObjectShortName">started_int[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/commited" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commited[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commited[3:0]</obj_property>
+         <obj_property name="ElementShortName">commited[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commited[7:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
          <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/commited_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commited_int[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commited_int[3:0]</obj_property>
+         <obj_property name="ElementShortName">commited_int[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commited_int[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/dumped" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dumped[3:0]</obj_property>
-         <obj_property name="ObjectShortName">dumped[3:0]</obj_property>
+         <obj_property name="ElementShortName">dumped[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dumped[7:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
          <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/dumped_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dumped_int[3:0]</obj_property>
-         <obj_property name="ObjectShortName">dumped_int[3:0]</obj_property>
+         <obj_property name="ElementShortName">dumped_int[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dumped_int[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/ticked_int" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">ticked_int</obj_property>
@@ -246,20 +246,20 @@
          <obj_property name="CustomSignalColor">#ffff00</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/timedif" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">timedif[63:0]</obj_property>
-         <obj_property name="ObjectShortName">timedif[63:0]</obj_property>
+         <obj_property name="ElementShortName">timedif[62:0]</obj_property>
+         <obj_property name="ObjectShortName">timedif[62:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/last_eventtime" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">last_eventtime[63:0]</obj_property>
-         <obj_property name="ObjectShortName">last_eventtime[63:0]</obj_property>
+         <obj_property name="ElementShortName">last_eventtime[62:0]</obj_property>
+         <obj_property name="ObjectShortName">last_eventtime[62:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/commit_out" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commit_out[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commit_out[3:0]</obj_property>
+         <obj_property name="ElementShortName">commit_out[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_out[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/commit_wr_en" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commit_wr_en[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commit_wr_en[3:0]</obj_property>
+         <obj_property name="ElementShortName">commit_wr_en[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_wr_en[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/time_rd_en" type="logic" db_ref_id="1">
          <obj_property name="DisplayName">label</obj_property>
@@ -270,18 +270,18 @@
          <obj_property name="CustomSignalColor">#ffffff</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/commit_rd_en" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commit_rd_en[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commit_rd_en[3:0]</obj_property>
+         <obj_property name="ElementShortName">commit_rd_en[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_rd_en[7:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ffffff</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/commit_empty" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commit_empty[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commit_empty[3:0]</obj_property>
+         <obj_property name="ElementShortName">commit_empty[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_empty[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/commit_full" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commit_full[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commit_full[3:0]</obj_property>
+         <obj_property name="ElementShortName">commit_full[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_full[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/buffers/time_in" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">time_in[71:0]</obj_property>
@@ -306,36 +306,44 @@
          <obj_property name="ObjectShortName">time_full</obj_property>
       </wvobject>
    </wvobject>
-   <wvobject fp_name="group55" type="group">
+   <wvobject fp_name="group165" type="group">
       <obj_property name="label">UUT</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/start" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">start[3:0]</obj_property>
-         <obj_property name="ObjectShortName">start[3:0]</obj_property>
+         <obj_property name="ElementShortName">start[7:0]</obj_property>
+         <obj_property name="ObjectShortName">start[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/commit" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commit[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commit[3:0]</obj_property>
+         <obj_property name="ElementShortName">commit[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commit[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/dump" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dump[3:0]</obj_property>
-         <obj_property name="ObjectShortName">dump[3:0]</obj_property>
+         <obj_property name="ElementShortName">dump[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dump[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/pulsestreams" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulsestreams[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulsestreams[3:0]</obj_property>
+         <obj_property name="ElementShortName">pulsestreams[7:0]</obj_property>
+         <obj_property name="ObjectShortName">pulsestreams[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/pulsestream_lasts" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulsestream_lasts[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulsestream_lasts[3:0]</obj_property>
+         <obj_property name="ElementShortName">pulsestream_lasts[7:0]</obj_property>
+         <obj_property name="ObjectShortName">pulsestream_lasts[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/pulsestream_valids" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulsestream_valids[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulsestream_valids[3:0]</obj_property>
+         <obj_property name="ElementShortName">pulsestream_valids[7:0]</obj_property>
+         <obj_property name="ObjectShortName">pulsestream_valids[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/ready_for_pulsestreams" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">ready_for_pulsestreams[3:0]</obj_property>
-         <obj_property name="ObjectShortName">ready_for_pulsestreams[3:0]</obj_property>
+         <obj_property name="ElementShortName">ready_for_pulsestreams[7:0]</obj_property>
+         <obj_property name="ObjectShortName">ready_for_pulsestreams[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/full" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">full</obj_property>
@@ -346,37 +354,29 @@
          <obj_property name="ObjectShortName">tick_period[31:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/events_lost" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">events_lost[3:0]</obj_property>
-         <obj_property name="ObjectShortName">events_lost[3:0]</obj_property>
+         <obj_property name="ElementShortName">events_lost[7:0]</obj_property>
+         <obj_property name="ObjectShortName">events_lost[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/dirty" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dirty[3:0]</obj_property>
-         <obj_property name="ObjectShortName">dirty[3:0]</obj_property>
+         <obj_property name="ElementShortName">dirty[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dirty[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/eventstream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">eventstream[71:0]</obj_property>
          <obj_property name="ObjectShortName">eventstream[71:0]</obj_property>
          <obj_property name="Radix">HEXRADIX</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ffff00</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">valid</obj_property>
          <obj_property name="ObjectShortName">valid</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ffff00</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/last" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">last</obj_property>
          <obj_property name="ObjectShortName">last</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ffff00</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/ready" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">ready</obj_property>
          <obj_property name="ObjectShortName">ready</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ffff00</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/timestamp" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">timestamp[63:0]</obj_property>
@@ -389,115 +389,109 @@
       <wvobject fp_name="/eventstream_mux_tb/UUT/reltime" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">reltime[15:0]</obj_property>
          <obj_property name="ObjectShortName">reltime[15:0]</obj_property>
-         <obj_property name="Radix">HEXRADIX</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/req" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">req[3:0]</obj_property>
-         <obj_property name="ObjectShortName">req[3:0]</obj_property>
-         <obj_property name="Radix">BINARYRADIX</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/started" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">started[7:0]</obj_property>
+         <obj_property name="ObjectShortName">started[7:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/gnt" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">gnt[3:0]</obj_property>
-         <obj_property name="ObjectShortName">gnt[3:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#0000ff</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/commited" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commited[7:0]</obj_property>
+         <obj_property name="ObjectShortName">commited[7:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/grant" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">grant[3:0]</obj_property>
-         <obj_property name="ObjectShortName">grant[3:0]</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/dumped" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dumped[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dumped[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/ticked" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ticked</obj_property>
+         <obj_property name="ObjectShortName">ticked</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/tick" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">tick</obj_property>
          <obj_property name="ObjectShortName">tick</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/handled" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">handled[3:0]</obj_property>
-         <obj_property name="ObjectShortName">handled[3:0]</obj_property>
-         <obj_property name="Radix">BINARYRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/dumped" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dumped[3:0]</obj_property>
-         <obj_property name="ObjectShortName">dumped[3:0]</obj_property>
-         <obj_property name="Radix">BINARYRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/commited" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commited[3:0]</obj_property>
-         <obj_property name="ObjectShortName">commited[3:0]</obj_property>
-         <obj_property name="Radix">BINARYRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/started" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">started[3:0]</obj_property>
-         <obj_property name="ObjectShortName">started[3:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-         <obj_property name="Radix">BINARYRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/pulses_handled" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulses_handled</obj_property>
-         <obj_property name="ObjectShortName">pulses_handled</obj_property>
-      </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/read_next" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">read_next</obj_property>
          <obj_property name="ObjectShortName">read_next</obj_property>
       </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/req" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">req[7:0]</obj_property>
+         <obj_property name="ObjectShortName">req[7:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/gnt" type="array" db_ref_id="1">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">gnt[7:0]</obj_property>
+         <obj_property name="ObjectShortName">gnt[7:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         <obj_property name="label">gnt[7:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/handled" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">handled[8:0]</obj_property>
+         <obj_property name="ObjectShortName">handled[8:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/sel" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sel[8:0]</obj_property>
+         <obj_property name="ObjectShortName">sel[8:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/time_valid" type="other" db_ref_id="1">
+         <obj_property name="DisplayName">label</obj_property>
          <obj_property name="ElementShortName">time_valid</obj_property>
          <obj_property name="ObjectShortName">time_valid</obj_property>
+         <obj_property name="label">time_valid</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#0000ff</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/mux_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mux_state</obj_property>
-         <obj_property name="ObjectShortName">mux_state</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/last_handshake" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">last_handshake</obj_property>
+         <obj_property name="ObjectShortName">last_handshake</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/pulses_done" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulses_done</obj_property>
+         <obj_property name="ObjectShortName">pulses_done</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/stream_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stream_state</obj_property>
-         <obj_property name="ObjectShortName">stream_state</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/done" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">done</obj_property>
+         <obj_property name="ObjectShortName">done</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/ticked" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">ticked</obj_property>
-         <obj_property name="ObjectShortName">ticked</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#0000ff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/granted" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">granted</obj_property>
-         <obj_property name="ObjectShortName">granted</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#0000ff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/index" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">index</obj_property>
-         <obj_property name="ObjectShortName">index</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#0000ff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/muxstream" type="array" db_ref_id="1">
-         <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="ElementShortName">muxstream[71:0]</obj_property>
-         <obj_property name="ObjectShortName">muxstream[71:0]</obj_property>
-         <obj_property name="label">muxstream[71:0]</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream[71:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[71:0]</obj_property>
          <obj_property name="Radix">HEXRADIX</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/muxstream_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_valid</obj_property>
-         <obj_property name="ObjectShortName">muxstream_valid</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/stream_valid_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stream_valid_int</obj_property>
+         <obj_property name="ObjectShortName">stream_valid_int</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/ready_for_muxstream" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">ready_for_muxstream</obj_property>
-         <obj_property name="ObjectShortName">ready_for_muxstream</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/ready_for_stream" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready_for_stream</obj_property>
+         <obj_property name="ObjectShortName">ready_for_stream</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/muxstream_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_last</obj_property>
-         <obj_property name="ObjectShortName">muxstream_last</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/stream_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stream_last</obj_property>
+         <obj_property name="ObjectShortName">stream_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/stream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stream_valid</obj_property>
+         <obj_property name="ObjectShortName">stream_valid</obj_property>
       </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/tickstream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">tickstream[71:0]</obj_property>
@@ -508,29 +502,35 @@
          <obj_property name="ElementShortName">tickstream_valid</obj_property>
          <obj_property name="ObjectShortName">tickstream_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/ready_for_tickstream" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">ready_for_tickstream</obj_property>
-         <obj_property name="ObjectShortName">ready_for_tickstream</obj_property>
-      </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/muxstream_handshake" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_handshake</obj_property>
-         <obj_property name="ObjectShortName">muxstream_handshake</obj_property>
-      </wvobject>
       <wvobject fp_name="/eventstream_mux_tb/UUT/tickstream_last" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">tickstream_last</obj_property>
          <obj_property name="ObjectShortName">tickstream_last</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/tickstream_handshake" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">tickstream_handshake</obj_property>
-         <obj_property name="ObjectShortName">tickstream_handshake</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/ready_for_tickstream" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready_for_tickstream</obj_property>
+         <obj_property name="ObjectShortName">ready_for_tickstream</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/tickstream_done" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">tickstream_done</obj_property>
-         <obj_property name="ObjectShortName">tickstream_done</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/streams" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">streams[8:0]</obj_property>
+         <obj_property name="ObjectShortName">streams[8:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/eventstream_mux_tb/UUT/muxstream_done" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_done</obj_property>
-         <obj_property name="ObjectShortName">muxstream_done</obj_property>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/valids" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">valids[8:0]</obj_property>
+         <obj_property name="ObjectShortName">valids[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/lasts" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">lasts[8:0]</obj_property>
+         <obj_property name="ObjectShortName">lasts[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/readys" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">readys[8:0]</obj_property>
+         <obj_property name="ObjectShortName">readys[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_mux_tb/UUT/nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

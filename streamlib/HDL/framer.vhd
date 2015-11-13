@@ -69,10 +69,10 @@ signal we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal rd_ptr,wr_addr:unsigned(ADDRESS_BITS-1 downto 0);
 signal free_ram:unsigned(ADDRESS_BITS downto 0);
 signal read_ram,ram_empty,read_en:boolean;
-attribute keep:string;
-attribute keep of ram_data:signal is "TRUE";
+--attribute keep:string;
+--attribute keep of ram_data:signal is "TRUE";
 signal wr_valid_int:boolean;
-attribute keep of wr_valid_int:signal is "TRUE";
+--attribute keep of wr_valid_int:signal is "TRUE";
 --
 begin
 free <= free_ram;

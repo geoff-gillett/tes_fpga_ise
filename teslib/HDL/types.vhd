@@ -33,6 +33,8 @@ constant CHANNEL_BITS:integer:=3;
 constant TIMESTAMP_BITS:integer:=64; 
 -- Bits in a relative ADC sample (sample_t)
 constant SAMPLE_BITS:integer:=ADC_BITS+1;
+-- Bits in a processed sample
+constant SIGNAL_BITS:integer:=16;
 -- Bits in the size field of an event
 constant SIZE_BITS:integer:=16; 
 -- Bits in a relative time
@@ -44,7 +46,11 @@ constant AXI_DATA_BITS:integer:=32;
 constant AXI_ADDRESS_BITS:integer:=32;
 constant REGISTER_ADDRESS_BITS:integer:=24;
 constant REGISTER_DATA_BITS:integer:=32;
---
+-- 
+-- DSP processed samples
+subtype signal_t is signed(SIGNAL_BITS-1 downto 0);
+-- array of DSP processed samples
+type signal_array is array (natural range <>) of signal_t;
 -- relative sample
 subtype sample_t is signed(SAMPLE_BITS-1 downto 0);
 -- relative sample array

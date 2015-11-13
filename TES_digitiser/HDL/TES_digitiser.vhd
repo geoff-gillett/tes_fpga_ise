@@ -46,7 +46,7 @@ generic(
   ------------------------------------------------------------------------------
   -- Signal path parameters
   ------------------------------------------------------------------------------
-  TES_CHANNEL_BITS:integer:=3;
+  TES_CHANNEL_BITS:integer:=2;
   DELAY_BITS:integer:=10;
   SLOPE_ADDRESS_BITS:integer:=6;
   SYNC_ADDRESS_BITS:integer:=6;
@@ -246,12 +246,12 @@ end component;
 --------------------------------------------------------------------------------
 signal global_reset_IO_clk,IO_clk,pipeline_clk:std_logic;
 signal reset0,reset1,reset2,CPU_reset,IO_MMCM_locked:std_logic;
-signal AD9510_clk_stopped,pipeline_mmcm_locked:std_logic;
+signal pipeline_mmcm_locked:std_logic;
 signal s_axi_aclk,iodelay_refclk:std_logic;
 attribute keep:string;
 
-attribute keep of AD9510_clk_stopped:signal is "true";
-attribute keep of pipeline_mmcm_locked:signal is "true";
+--attribute keep of AD9510_clk_stopped:signal is "true";
+--attribute keep of pipeline_mmcm_locked:signal is "true";
 attribute keep of reset0:signal is "true";
 attribute keep of reset1:signal is "true";
 attribute keep of reset2:signal is "true";
@@ -773,7 +773,6 @@ generic map(
 port map(
   clk => pipeline_clk,
   reset => reset1,
-  LEDs => open,
   update_asap => mca_update_asap,
   update_on_completion => mca_update_on_completion,
   updated => mca_updated,

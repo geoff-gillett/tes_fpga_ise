@@ -583,6 +583,16 @@ NET "gmii_txd[2]" IOSTANDARD = LVCMOS25;
 NET "gmii_txd[1]" IOSTANDARD = LVCMOS25;
 NET "gmii_txd[0]" IOSTANDARD = LVCMOS25;
 
+NET "gmii_tx_en" LOC = AJ10;
+NET "gmii_tx_er" LOC = AH10;
+NET "gmii_txd[0]" LOC = AM11;
+NET "gmii_txd[1]" LOC = AL11;
+NET "gmii_txd[2]" LOC = AG10;
+NET "gmii_txd[3]" LOC = AG11;
+NET "gmii_txd[4]" LOC = AL10;
+NET "gmii_txd[5]" LOC = AM10;
+NET "gmii_txd[6]" LOC = AE11;
+NET "gmii_txd[7]" LOC = AF11;
 
 NET "gmii_col" LOC = AK13;
 NET "gmii_col" IOSTANDARD = LVCMOS25;
@@ -763,9 +773,9 @@ INST "TEMAC/v6emac_fifo_block/v6emac_block/BUFGMUX_SPEED_CLK" LOC = BUFGCTRL_X0Y
 ###############################################################################
 # TES_digitiser timing constraints
 ###############################################################################
-PIN "mainCPU.reset2" TIG;
-PIN "mainCPU.reset1" TIG;
-PIN "mainCPU.reset0" TIG;
+PIN "mainCPU.reset?" TIG;
+#PIN "mainCPU.reset1" TIG;
+#PIN "mainCPU.reset0" TIG;
 PIN "mainCPU.spi_*" TIG;
 #NET "*channel_tx*" TIG;
 #NET "*channel_rx*" TIG;

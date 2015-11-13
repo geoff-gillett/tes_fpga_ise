@@ -89,8 +89,8 @@ timestamp <= time_stamp;
 -- rel time 16 bits
 -- flags 32 bits,
 -- timestamp 64 bits
-
-header_data <= std_logic_vector(to_unsigned(8,CHUNK_DATABITS)) &
+--FIXME change endianness
+header_data <= std_logic_vector(to_unsigned(8,SIZE_BITS)) &
 		 					 to_std_logic(0, CHUNK_DATABITS) &
                to_std_logic(resize(unsigned(param_out),8)) &
                std_logic_vector(resize(unsigned(overflow_out),8)) &
@@ -254,6 +254,6 @@ port map(
   tick => tick_int,
   time_stamp => time_stamp,
   period => tick_period,
-  current_period => tick_period_header
+  current_period => open --tick_period_header
 );
 end architecture aligned;

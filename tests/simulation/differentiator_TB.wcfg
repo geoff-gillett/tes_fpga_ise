@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="differentiator_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="differentiator_tb" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="4" />
+   <wvobject fp_name="/differentiator_tb/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/differentiator_tb/sample" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">sample[14:0]</obj_property>
+      <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/differentiator_tb/derivitive" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">derivitive[14:0]</obj_property>
+      <obj_property name="ObjectShortName">derivitive[14:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/differentiator_tb/sample_out" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">sample_out[14:0]</obj_property>
+      <obj_property name="ObjectShortName">sample_out[14:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+</wave_config>

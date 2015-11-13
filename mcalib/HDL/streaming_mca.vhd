@@ -37,8 +37,6 @@ port(
   clk:in std_logic;
   reset:in std_logic;
   --
-  LEDs:out std_logic_vector(7 downto 0);
-  --
   bin:in unsigned(ADDRESS_BITS-1 downto 0);
   bin_valid:in boolean;
   overflow:in boolean;
@@ -74,46 +72,9 @@ signal data:std_logic_vector(COUNTER_BITS-1 downto 0);
 signal mca_ready,mca_valid,last_addr,last_MCA_addr,swap_buffer_int:boolean;
 signal mca_last,clearing,readable_int:boolean;
 signal read_count,read_bin_valid,can_swap_int:boolean;
-signal serialiser_LEDs:std_logic_vector(7 downto 0);
 signal last_read,read_bin:boolean;
-signal test_LEDs:std_logic_vector(7 downto 0);
 --------------------------------------------------------------------------------
 begin
-LEDs(7 downto 4) <= test_LEDs(7 downto 4);
-LEDs(3 downto 0) <= serialiser_LEDs(3 downto 0);
-test:process(clk)
-begin
-if rising_edge(clk) then
-  if reset = '1' then
-    test_LEDs <= (others => '0');
-  else
-  	if state=IDLE and nextstate=STREAMING then
-  		test_LEDs(0) <= not test_LEDs(0);
-  	end if;
-  	if state=STREAMING and nextstate=CLEAR then
-  		test_LEDs(1) <= not test_LEDs(1);
-  	end if;
-  	if state=CLEAR and nextstate=IDLE then
-  		test_LEDs(2) <= not test_LEDs(2);
-  	end if;
-    if last_MCA_addr and read_count then
-      test_LEDs(3) <= '1';
-    end if;
-    if mca_last then
-      test_LEDS(4) <= '1';
-    end if;
-    if last_addr and read_count then
-      test_LEDs(5) <= '1';
-    end if;
-    if last_read and read_count then
-      test_LEDs(6) <= '1';
-    end if;
-    if swap_buffer then
-      test_LEDs(7) <= not test_LEDs(7);
-    end if;
-  end if;
-end if;
-end process test;
 valid <= mca_valid;
 last <= mca_last;
 can_swap <= can_swap_int; 
@@ -152,7 +113,6 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  LEDs => serialiser_LEDs,
   read => read_count,
   read_en => read_bin_valid,
   last_read => last_read,

@@ -31,7 +31,6 @@ port(
   -- synchronous reset
   reset:in std_logic;
   --
-  LEDs:out std_logic_vector(7 downto 0);
   read:out boolean;
   read_en:in boolean; 
   last_read:in boolean; --used to generate last signal
@@ -50,43 +49,20 @@ architecture dynamic_shift_register of serialiser is
 subtype ramword is std_logic_vector(DATA_BITS-1 downto 0);
 type pipe is array (natural range <>) of ramword;
 signal data_shifter:pipe(1 to LATENCY);
---attribute shreg_extract:string;
---attribute shreg_extract of data_shifter:signal is "NO";
+attribute shreg_extract:string;
+attribute shreg_extract of data_shifter:signal is "NO";
 signal valid_int,valid_read,last_int,read_stream,ready_int,data_valid:boolean;
 signal valid_read_pipe,last_read_pipe,last_shifter:boolean_vector(1 to LATENCY);
---attribute shreg_extract of valid_read_pipe,last_read_pipe,last_shifter:signal is "NO";
+attribute shreg_extract of valid_read_pipe,last_read_pipe,last_shifter:signal is "NO";
 signal read_en_pipe:boolean_vector(1 to LATENCY);
 signal stream_int:ramword;
 signal shift_addr:integer range 0 to LATENCY;
-attribute keep:string;
-attribute keep of shift_addr:signal is "TRUE";
-attribute keep of data_valid:signal is "TRUE";
-signal test_LEDs:std_logic_vector(7 downto 0);
+--attribute keep:string;
+--attribute keep of shift_addr:signal is "TRUE";
+--attribute keep of data_valid:signal is "TRUE";
 signal read_ram:boolean;
 --
 begin
-LEDs <= test_LEDs;
-test:process (clk) is
-begin
-if rising_edge(clk) then
-  if reset = '1' then
-    test_LEDs <= (others => '0');
-  else
-  	if last_read and read_en and valid_read then
-	    test_LEDs(0) <= '1';
-    end if;
-  	if last_int then
-	    test_LEDs(1) <= '1';
-    end if;
-  	if last_read then
-	    test_LEDs(2) <= '1';
-    end if;
-  	if last_read and read_en then
-	    test_LEDs(3) <= '1';
-    end if;
-  end if;
-end if;
-end process test;
 
 read <= read_ram;
 stream <= stream_int;

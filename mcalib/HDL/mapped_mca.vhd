@@ -33,8 +33,6 @@ port (
   clk:in std_logic;
   reset:in std_logic;  
   --
-  LEDs:out std_logic_vector(7 downto 0);
-  --
   value:in signed(VALUE_BITS-1 downto 0);
   value_valid:in boolean;
   --The write buffer is swapped and control signals bin_n last_bin and 
@@ -165,7 +163,6 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  LEDs => LEDs,
   bin => bin,
   bin_valid => bin_valid,
   overflow => overflow,

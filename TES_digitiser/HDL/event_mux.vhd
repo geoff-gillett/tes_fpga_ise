@@ -64,15 +64,15 @@ signal timestamp:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal eventtime,last_eventtime,time_dif:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal relative_time:unsigned(TIME_BITS-1 downto 0);
 --
-attribute keep:string;
+--attribute keep:string;
 type muxFSMstate is (WAITING,HEAD,TAIL);
 --TODO rename to event_state
 signal mux_state,mux_nextstate:muxFSMstate;
-attribute keep of mux_state:signal is "TRUE";
+--attribute keep of mux_state:signal is "TRUE";
 --
 type FSMstate is (IDLE,HANDLETICK,HANDLEPULSE);
 signal state,nextstate:FSMstate;
-attribute keep of state:signal is "TRUE";
+--attribute keep of state:signal is "TRUE";
 type timeFSMstate is (INVALID,ISVALID);
 signal time_state,time_nextstate:timeFSMstate;
 --
