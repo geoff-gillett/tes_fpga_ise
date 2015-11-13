@@ -22,15 +22,15 @@ use streamlib.types.all;
 -- 
 library dsplib;
 
-entity FIR_stages_TB is
+entity FIR_filters_TB is
 generic(
 	STAGE1_OUT_WIDTH:integer:=45;
 	STAGE2_OUT_WIDTH:integer:=48;
 	DELAY_DEPTH:integer:=64
 );
-end entity FIR_stages_TB;
+end entity FIR_filters_TB;
 
-architecture testbench of FIR_stages_TB is
+architecture testbench of FIR_filters_TB is
 
 signal clk:std_logic:='1';	
 constant CLK_PERIOD:time:=4 ns;
@@ -93,7 +93,25 @@ port map(
 
 stimulus:process is
 begin
+sample <= (others => '0');
+stage1_shift <= (others => '0');
+stage1_delay <= (others => '0');
+stage1_config_data <= (others => '0');
+stage1_config_valid <= FALSE;
+stage1_reload_data <= (others => '0');
+stage1_reload_valid <= FALSE;
+stage1_reload_last <= FALSE;
+stage2_shift <= (others => '0');
+stage2_config_data <= (others => '0');
+stage2_config_valid <= FALSE;
+stage2_reload_data <= (others => '0');
+stage2_reload_valid <= FALSE;
+stage2_reload_last <= FALSE;
+raw_delay <= (others => '0');
+wait for CLK_PERIOD*64;
+sample <= to_signed(1, SAMPLE_BITS);
 wait for CLK_PERIOD;
+sample <= (others => '0');
 wait;
 end process stimulus;
 

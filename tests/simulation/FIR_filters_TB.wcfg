@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="FIR_filters_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="bip_utils_pkg_v2_0" />
+            <top_module name="fir_compiler_v6_3_sim_pkg" />
+            <top_module name="fir_filters_tb" />
+            <top_module name="functions" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_textio" />
+            <top_module name="textio" />
+            <top_module name="types" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group28" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/fir_filters_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[14:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_shift" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_shift[4:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_shift[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_delay" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_delay[5:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_delay[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_config_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_config_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_config_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_config_valid</obj_property>
+         <obj_property name="ObjectShortName">stage1_config_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_config_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_config_ready</obj_property>
+         <obj_property name="ObjectShortName">stage1_config_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_reload_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_reload_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_valid</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_reload_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_ready</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_reload_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_last</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage2_shift" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_shift[4:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_shift[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage2_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_config_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_config_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage2_config_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_config_valid</obj_property>
+         <obj_property name="ObjectShortName">stage2_config_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage2_config_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_config_ready</obj_property>
+         <obj_property name="ObjectShortName">stage2_config_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage2_reload_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage2_reload_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_valid</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage2_reload_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_ready</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage2_reload_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_last</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/raw_delay" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_delay[5:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_delay[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/raw_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_sample[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_sample[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage2_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_sample[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage1_out_width" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_out_width</obj_property>
+         <obj_property name="ObjectShortName">stage1_out_width</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/stage2_out_width" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_out_width</obj_property>
+         <obj_property name="ObjectShortName">stage2_out_width</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/delay_depth" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">delay_depth</obj_property>
+         <obj_property name="ObjectShortName">delay_depth</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/clk_period" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">clk_period</obj_property>
+         <obj_property name="ObjectShortName">clk_period</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group68" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/fir_filters_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[14:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_shift" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_shift[4:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_shift[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_delay" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_delay[5:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_delay[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_config_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_config_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_config_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_config_valid</obj_property>
+         <obj_property name="ObjectShortName">stage1_config_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_config_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_config_ready</obj_property>
+         <obj_property name="ObjectShortName">stage1_config_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_reload_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_reload_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_valid</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_reload_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_ready</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_reload_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_last</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_shift" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_shift[4:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_shift[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_config_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_config_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_config_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_config_valid</obj_property>
+         <obj_property name="ObjectShortName">stage2_config_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_config_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_config_ready</obj_property>
+         <obj_property name="ObjectShortName">stage2_config_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_reload_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_reload_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_valid</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_reload_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_ready</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_reload_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_last</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/raw_delay" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_delay[5:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_delay[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/raw_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_sample[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_sample[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_sample[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_out[47:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_out[47:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_reload_last_missing" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_last_missing</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_last_missing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_reload_last_unexpected" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_last_unexpected</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_last_unexpected</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_data[23:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_data[23:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_out[47:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_out[47:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_reload_last_missing" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_last_missing</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_last_missing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_reload_last_unexpected" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_last_unexpected</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_last_unexpected</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_config_ready_int" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_config_ready_int</obj_property>
+         <obj_property name="ObjectShortName">stage1_config_ready_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_reload_ready_int" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_reload_ready_int</obj_property>
+         <obj_property name="ObjectShortName">stage1_reload_ready_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_config_ready_int" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_config_ready_int</obj_property>
+         <obj_property name="ObjectShortName">stage2_config_ready_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_reload_ready_int" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_reload_ready_int</obj_property>
+         <obj_property name="ObjectShortName">stage2_reload_ready_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/raw_sample_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_sample_int[14:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_sample_int[14:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_sample_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_sample_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_sample_int[15:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

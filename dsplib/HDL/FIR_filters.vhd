@@ -106,7 +106,7 @@ signal stage1_config_ready_int:std_logic;
 signal stage1_reload_ready_int:std_logic;
 signal stage2_config_ready_int:std_logic;
 signal stage2_reload_ready_int:std_logic;
-signal raw_sample_int:std_logic_vector(SIGNAL_BITS-1 downto 0);
+signal raw_sample_int:std_logic_vector(SAMPLE_BITS-1 downto 0);
 signal stage1_sample_int:std_logic_vector(SIGNAL_BITS-1 downto 0);
 
 begin
@@ -127,7 +127,7 @@ port map(
   aclk => clk,
   s_axis_data_tvalid => '1',
   s_axis_data_tready => open,
-  s_axis_data_tdata => to_std_logic(sample),
+  s_axis_data_tdata => to_std_logic(resize(sample,16)),
   s_axis_config_tvalid => to_std_logic(stage1_config_valid),
   s_axis_config_tready => stage1_config_ready_int,
   s_axis_config_tdata => stage1_config_data,
@@ -167,7 +167,7 @@ firOutputReg:process (clk) is
 begin
 if rising_edge(clk) then
   stage2_data <= to_std_logic(
-    resize(shift_right(signed(stage1_out),to_integer(stage1_shift)),18)
+    resize(shift_right(signed(stage1_out),to_integer(stage1_shift)),24)
   );
   stage2_sample <= signed(to_std_logic(
     resize(shift_right(signed(stage1_out),to_integer(stage2_shift)),SIGNAL_BITS)
