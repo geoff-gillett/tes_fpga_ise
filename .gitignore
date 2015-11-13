@@ -44,3 +44,9 @@ junkheap/
 *.backup
 vivado_sysgen/data/
 vivado_sysgen/tes_traces/
+*.asv
+matlab/SysgenFeatureReport.htm
+matlab/.Xil/
+matlab/slprj/
+matlab/tes_traces/
+matlab/wavedata/
