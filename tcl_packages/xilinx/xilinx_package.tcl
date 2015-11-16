@@ -1,13 +1,13 @@
 # tcl scripts for xilinx ISE 14.7
 # Geoff Gillett
-package provide xilinx 14.7.3
+package provide xilinx 14.7.4
 
 namespace eval xilinx {
 	namespace export create_projects update_version src build_bitstream versionHex
 }
 	
 # TB_file includes .vhd extension and possible path
-proc ::xilinx::Create_simset {TB_file othersimFiles} { 
+proc ::xilinx::Create_simset {TB_file} { 
 	set name [file tail [file rootname $TB_file]]
 	puts "Creating simulation set $name"
 	create_fileset -simset $name
@@ -18,9 +18,6 @@ proc ::xilinx::Create_simset {TB_file othersimFiles} {
 	if {[file exists $structural]} {
 		puts "adding structural simulation files"
 		add_files -fileset $name $structural
-	}
-	if {[ llength $othersimFiles]} {
-		add_files -fileset $name -norecurse $othersimFiles
 	}
 	#update_compile_order -fileset $name
 	#update_compile_order -fileset $name
@@ -197,20 +194,29 @@ proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} {
 	if [file exists $sourceDir/IP_cores] { Process_IP_cores $sourceDir/IP_cores }
 	Process_deps $name $buildDir $scriptsDir
 	puts "Processing simulation directory"
-	set simFiles [glob -nocomplain $sourceDir/simulation/*.{vhd,vhdl,tcl} ]
+	set simFiles [glob -nocomplain $sourceDir/simulation/* ]
+	#puts "simfiles:$simFiles"
 	set TBfiles [ lsearch -all -inline -regexp $simFiles {_TB\.(vhd|vhdl)$} ]
-	set othersimFiles [ lsearch -all -inline -regexp $simFiles {[^_TB]\.(vhd|vhdl)$}]
+	set othersimFiles [ lsearch -all -inline -regexp $simFiles {[^_TB\.(vhd|vhdl|wcfg)]$}]
 	set tclTB [ lsearch -all -inline -regexp $simFiles {_TB\.tcl$}]
 	puts "Testbenches:$TBfiles"
 	puts "Other simulation files:$othersimFiles"
 	puts "TCL testbench scripts:$tclTB"
-	foreach TBfile $TBfiles { Create_simset $TBfile $othersimFiles}
-	if { [llength $tclTB] != 0 } {
-    foreach tclfile $tclTB {
-      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $tclfile ]]/
+	foreach TBfile $TBfiles { Create_simset $TBfile}
+#	if { [llength $tclTB] != 0 } {
+#    foreach tclfile $tclTB {
+#      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $tclfile ]]/
+#      file mkdir $simdir
+#      file link -hard $simdir/[file tail $tclfile] $tclfile
+#    }
+#	}
+	# link auxilary files into planahead simulation directory
+	set linkFiles [concat $tclTB $othersimFiles]
+	if { [llength $linkFiles] != 0 } {
+    foreach lfile $linkFiles {
+      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $lfile ]]/
       file mkdir $simdir
-      file link -hard $simdir/[file tail $tclfile] $tclfile
-#			exec mklink 
+      file link -hard $simdir/[file tail $lfile] $lfile
     }
 	}
 	puts "Creating constraint sets"

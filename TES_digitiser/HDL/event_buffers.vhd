@@ -243,6 +243,7 @@ end process fsmNextstate;
 --
 valid_event <= (ticked_reg or unaryOr(started_reg and commited_reg)) 
 							 and timefifo_valid;
+--							 
 bufferFsmTransition:process(buffer_state,reltime_state,all_dumped_reg,
 														timefifo_valid,read_next,ticked_reg,commited_reg,
 														started_reg)

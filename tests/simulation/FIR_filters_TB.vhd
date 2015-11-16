@@ -26,7 +26,7 @@ entity FIR_filters_TB is
 generic(
 	STAGE1_OUT_WIDTH:integer:=45;
 	STAGE2_OUT_WIDTH:integer:=48;
-	DELAY_DEPTH:integer:=64
+	DELAY_DEPTH:integer:=96
 );
 end entity FIR_filters_TB;
 
@@ -94,22 +94,22 @@ port map(
 stimulus:process is
 begin
 sample <= (others => '0');
-stage1_shift <= (others => '0');
-stage1_delay <= (others => '0');
+stage1_shift <= to_unsigned(22,bits(STAGE1_OUT_WIDTH-SIGNAL_BITS));
+stage1_delay <= to_unsigned(41,bits(DELAY_DEPTH));
 stage1_config_data <= (others => '0');
 stage1_config_valid <= FALSE;
 stage1_reload_data <= (others => '0');
 stage1_reload_valid <= FALSE;
 stage1_reload_last <= FALSE;
-stage2_shift <= (others => '0');
+stage2_shift <= to_unsigned(20,bits(STAGE1_OUT_WIDTH-SIGNAL_BITS));
 stage2_config_data <= (others => '0');
 stage2_config_valid <= FALSE;
 stage2_reload_data <= (others => '0');
 stage2_reload_valid <= FALSE;
 stage2_reload_last <= FALSE;
-raw_delay <= (others => '0');
+raw_delay <= to_unsigned(85,bits(DELAY_DEPTH));
 wait for CLK_PERIOD*64;
-sample <= to_signed(1, SAMPLE_BITS);
+sample <= to_signed(2**14-1,SAMPLE_BITS);
 wait for CLK_PERIOD;
 sample <= (others => '0');
 wait;

@@ -121,7 +121,7 @@ stage1_sample <= signed(stage1_sample_int);
 --------------------------------------------------------------------------------
 -- FIR filter stages with reloadable coefficients (FIR compiler 6.3)
 --------------------------------------------------------------------------------
-
+-- stage1 internal output w=45 f=25
 stage1FIRfilter:stage1_FIR_23
 port map(
   aclk => clk,
@@ -141,6 +141,7 @@ port map(
   event_s_reload_tlast_unexpected => stage1_reload_last_unexpected
 );
 
+-- stage2 internal output w=48 f=28
 stage2FIRfilter:stage2_FIR_23
 port map(
   aclk => clk,
@@ -166,11 +167,12 @@ port map(
 firOutputReg:process (clk) is
 begin
 if rising_edge(clk) then
+	-- stage2 input is w=18 f=3 but the port is rounded up to nearest byte
   stage2_data <= to_std_logic(
     resize(shift_right(signed(stage1_out),to_integer(stage1_shift)),24)
   );
   stage2_sample <= signed(to_std_logic(
-    resize(shift_right(signed(stage1_out),to_integer(stage2_shift)),SIGNAL_BITS)
+    resize(shift_right(signed(stage2_out),to_integer(stage2_shift)),SIGNAL_BITS)
   ));
 end if;
 end process firOutputReg;

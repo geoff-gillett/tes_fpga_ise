@@ -36,8 +36,8 @@
          <obj_property name="ObjectShortName">stage1_shift[4:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/stage1_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_delay[5:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_delay[5:0]</obj_property>
+         <obj_property name="ElementShortName">stage1_delay[6:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_delay[6:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/stage1_config_data" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">stage1_config_data[7:0]</obj_property>
@@ -100,8 +100,8 @@
          <obj_property name="ObjectShortName">stage2_reload_last</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/raw_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_delay[5:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_delay[5:0]</obj_property>
+         <obj_property name="ElementShortName">raw_delay[6:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_delay[6:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/raw_sample" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">raw_sample[15:0]</obj_property>
@@ -142,14 +142,15 @@
       <wvobject fp_name="/fir_filters_tb/UUT/sample" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">sample[14:0]</obj_property>
          <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/UUT/stage1_shift" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">stage1_shift[4:0]</obj_property>
          <obj_property name="ObjectShortName">stage1_shift[4:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/UUT/stage1_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_delay[5:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_delay[5:0]</obj_property>
+         <obj_property name="ElementShortName">stage1_delay[6:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_delay[6:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/UUT/stage1_config_data" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">stage1_config_data[7:0]</obj_property>
@@ -212,25 +213,19 @@
          <obj_property name="ObjectShortName">stage2_reload_last</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/UUT/raw_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_delay[5:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_delay[5:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/fir_filters_tb/UUT/raw_sample" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_sample[15:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_sample[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/fir_filters_tb/UUT/stage1_sample" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_sample[15:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_sample[15:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/fir_filters_tb/UUT/stage2_sample" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_sample[15:0]</obj_property>
-         <obj_property name="ObjectShortName">stage2_sample[15:0]</obj_property>
+         <obj_property name="ElementShortName">raw_delay[6:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_delay[6:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/UUT/stage1_out" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">stage1_out[47:0]</obj_property>
          <obj_property name="ObjectShortName">stage1_out[47:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_data[23:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_data[23:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
@@ -243,17 +238,33 @@
          <obj_property name="ElementShortName">stage1_reload_last_unexpected</obj_property>
          <obj_property name="ObjectShortName">stage1_reload_last_unexpected</obj_property>
       </wvobject>
-      <wvobject fp_name="/fir_filters_tb/UUT/stage2_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_data[23:0]</obj_property>
-         <obj_property name="ObjectShortName">stage2_data[23:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      <wvobject fp_name="/fir_filters_tb/UUT/raw_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_sample[15:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage1_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_sample[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/fir_filters_tb/UUT/stage2_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_sample[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/UUT/stage2_out" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">stage2_out[47:0]</obj_property>
          <obj_property name="ObjectShortName">stage2_out[47:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/fir_filters_tb/UUT/stage2_reload_last_missing" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">stage2_reload_last_missing</obj_property>

@@ -7,4 +7,4 @@
 # in response to "package require" commands.  When this
 # script is sourced, the variable $dir must contain the
 # full path name of this file's directory.
-package ifneeded xilinx 14.7.3 [list source [file join $dir xilinx_package.tcl]]
+package ifneeded xilinx 14.7.4 [list source [file join $dir xilinx_package.tcl]]
