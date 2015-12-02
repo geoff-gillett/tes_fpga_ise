@@ -13,25 +13,65 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="5" />
-   <wvobject fp_name="/average_filter_tb/clk" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group62" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/average_filter_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/average_filter_tb/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/average_filter_tb/order" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">order</obj_property>
+         <obj_property name="ObjectShortName">order</obj_property>
+      </wvobject>
+      <wvobject fp_name="/average_filter_tb/average" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">average[15:0]</obj_property>
+         <obj_property name="ObjectShortName">average[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/average_filter_tb/integer_av" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">integer_av[15:0]</obj_property>
+         <obj_property name="ObjectShortName">integer_av[15:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
    </wvobject>
-   <wvobject fp_name="/average_filter_tb/sample" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">sample[14:0]</obj_property>
-      <obj_property name="ObjectShortName">sample[14:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/average_filter_tb/n" type="other" db_ref_id="1">
-      <obj_property name="ElementShortName">n</obj_property>
-      <obj_property name="ObjectShortName">n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/average_filter_tb/average" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">average[14:0]</obj_property>
-      <obj_property name="ObjectShortName">average[14:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/average_filter_tb/UUT/stage" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">stage[0:4]</obj_property>
-      <obj_property name="ObjectShortName">stage[0:4]</obj_property>
+   <wvobject fp_name="group73" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/average_filter_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/average_filter_tb/UUT/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[15:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/average_filter_tb/UUT/order" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">order</obj_property>
+         <obj_property name="ObjectShortName">order</obj_property>
+      </wvobject>
+      <wvobject fp_name="/average_filter_tb/UUT/average" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">average[15:0]</obj_property>
+         <obj_property name="ObjectShortName">average[15:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/average_filter_tb/UUT/reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reg[0:7]</obj_property>
+         <obj_property name="ObjectShortName">reg[0:7]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/average_filter_tb/UUT/stage" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage[1:8]</obj_property>
+         <obj_property name="ObjectShortName">stage[1:8]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/average_filter_tb/UUT/sample_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">sample_int[15:0]</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>

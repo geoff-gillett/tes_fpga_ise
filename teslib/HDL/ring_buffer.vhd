@@ -58,9 +58,9 @@ valid <= valid_reg;
 ramInstance:process(clk)
 begin
 if rising_edge(clk) then
-  data_out_int <= ring(to_integer(ring_addr(ADDRESS_BITS-1 downto 0)));
+  data_out_int <= ring(to_integer(to_0IfX(ring_addr(ADDRESS_BITS-1 downto 0))));
   if wr_en then
-    ring(to_integer(delay_addr(ADDRESS_BITS-1 downto 0))) <= data_in;
+    ring(to_integer(to_0IfX(delay_addr(ADDRESS_BITS-1 downto 0)))) <= data_in;
   end if;
   data_out <= data_out_int; --absorbed into RAM
 end if;
@@ -110,7 +110,7 @@ if rising_edge(clk) then
     if delay_updated then
       reset_count <= delay+2;
       valid_reg <= FALSE;
-    elsif reset_count/=0 and wr_en then
+    elsif to_0IfX(reset_count)/=0 and wr_en then
       valid_reg <= FALSE;
       reset_count <= reset_count-1;
     elsif wr_en then

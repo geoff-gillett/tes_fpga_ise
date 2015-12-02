@@ -96,15 +96,15 @@ max_count <= maxcount_int;
 --------------------------------------------------------------------------------
 -- Infer simple dual port RAM with registered outputs
 --------------------------------------------------------------------------------
-rd_addr <= bin_pipe(1);
+rd_addr <= to_0IfX(bin_pipe(1));
 MCAram:process(clk)
 begin
 if rising_edge(clk) then
   if wr_en then
-    MCA(to_integer(to_0IfX(wr_addr))) <= newcount;
+    MCA(to_integer(wr_addr)) <= newcount;
   end if;
- 	ram_out2 <= MCA(to_integer(to_0IfX(wr_addr))); 
-  ram_out1 <= MCA(to_integer(to_0IfX(rd_addr)));
+ 	ram_out2 <= MCA(to_integer(wr_addr)); 
+  ram_out1 <= MCA(to_integer(rd_addr));
 end if;
 end process MCAram;
 --register ram outputs to meet timing
@@ -127,7 +127,7 @@ begin
     if reset = '1' then
       rw_collision <= (others => FALSE);
     else
-      rw_collision <= (to_0IfX(rd_addr)=to_0IfX(wr_addr) and wr_en) & 
+      rw_collision <= (rd_addr=wr_addr and wr_en) & 
                        rw_collision(1);
       newcount_pipe <= newcount & newcount_pipe(1);
     end if;
@@ -165,11 +165,11 @@ begin
 if rising_edge(clk) then
   inc <= to_unsigned(1,INC_BITS)+unsigned(to_std_logic(collision(1 to 1)));
   if rw_collision(2) then
-    incremented_count <= ('0' & newcount_pipe(2)) + inc + 
-                         unsigned(to_std_logic(collision(2 to 2)));
+    incremented_count <= to_0IfX(('0' & newcount_pipe(2)) + inc + 
+                         unsigned(to_std_logic(collision(2 to 2))));
   else
-    incremented_count <= ('0' & old_count) + inc + 
-                         unsigned(to_std_logic(collision(2 to 2)));
+    incremented_count <= to_0IfX(('0' & old_count) + inc + 
+                         unsigned(to_std_logic(collision(2 to 2))));
   end if;
   if clear or read_count then
     newcount <= (others => '0');
@@ -189,19 +189,19 @@ if rising_edge(clk) then
     clear_reg <= FALSE;
   else
     write_pipe <= write & write_pipe(1 to 3);
-    bin_pipe <= bin & bin_pipe(1 to 3);
+    bin_pipe <= to_0IfX(bin) & bin_pipe(1 to 3);
     clear_reg <= clear;
     readable <= FALSE;
     if clear then
       wr_en <= TRUE;
-      wr_addr <= clear_addr;
+      wr_addr <= to_0IfX(clear_addr);
     elsif not write and not write_pipe(4) then
       wr_en <= read_count;
-      wr_addr <= bin_to_read;
+      wr_addr <= to_0IfX(bin_to_read);
       readable <= TRUE;
     else 
       wr_en <= valid_pipe(4);
-      wr_addr <= bin_pipe(4);
+      wr_addr <= to_0IfX(bin_pipe(4));
     end if;
   end if;
 end if;
@@ -220,9 +220,9 @@ if rising_edge(clk) then
       maxcount_int <= (others => '0');
       most_frequent <= (others => '0'); 
     else
-      if (newcount >= maxcount_int) and wr_en and write_pipe(4) 
+      if (to_0IfX(newcount) >= to_0IfX(maxcount_int)) and wr_en and write_pipe(4) 
           and not overflow_pipe(5) then
-        maxcount_int <= newcount;
+        maxcount_int <= to_0IfX(newcount);
         most_frequent <= wr_addr;
         new_max <= TRUE;
       else
@@ -243,7 +243,7 @@ if rising_edge(clk) then
     clear_addr <= (others => '0');
     clear <= TRUE;
   else
-    if clear_addr=to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS) then
+    if to_0IfX(clear_addr)=to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS) then
       clear <= FALSE;
       clear_addr <= (others => '0');
     elsif clear then

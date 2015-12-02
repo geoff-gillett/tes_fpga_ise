@@ -31,7 +31,7 @@ architecture testbench of SREG_delay_TB is
 signal clk:std_logic:='1';	
 constant CLK_PERIOD:time:=4 ns;
 signal data_in:std_logic_vector(DATA_BITS-1 downto 0);
-signal delay:unsigned(bits(DEPTH)-1 downto 0);
+signal delay:natural range 0 to DEPTH-1;
 signal delayed:std_logic_vector(DATA_BITS-1 downto 0);
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -49,7 +49,7 @@ UUT:entity dsplib.SREG_delay
 	);
 stimulus:process is
 begin
-delay <= to_unsigned(31,bits(DEPTH));
+delay <= 31;
 data_in <= (others => '0');
 wait for CLK_PERIOD*2;
 data_in <= to_std_logic(1,DATA_BITS);

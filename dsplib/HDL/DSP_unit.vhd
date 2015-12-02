@@ -123,10 +123,11 @@ generic map(
   AVN_BITS => BASELINE_AV_BITS
 )
 port map(
+  sample_valid => TRUE,
   clk => clk,
   reset => reset,
   timeconstant => baseline_timeconstant,
-  threshold => baseline_threshold,
+  count_threshold => baseline_threshold,
   fixed_baseline => fixed_baseline,
   avn => baseline_avn,
   avn_updated => baseline_avn_updated,

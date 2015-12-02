@@ -23,44 +23,44 @@ use adclib.types.all;
 --! the distribution is collected in a MCA over timeconstant clks
 --! and the average of the maximum of of the last two distributions is the
 --! baseline.
-entity baseline is
+--
+entity baseline_estimator is
 generic(
   --number of bins (channels) = 2**ADDRESS_BITS
   BASELINE_BITS:integer:=11;
   --width of counters and stream
   COUNTER_BITS:integer:=18;
   TIMECONSTANT_BITS:integer:=32;
-  AVN_BITS:integer:=4
+  MAX_AVERAGE_ORDER:integer:=6;
+  OUT_BITS:integer:=18
 );
 port(
   clk:in std_logic;
   reset:in std_logic;
   --
-  timeconstant:in unsigned(TIMECONSTANT_BITS-1 downto 0);
-  -- count required before adding to average
-  count_threshold:in unsigned(COUNTER_BITS-1 downto 0);
-  --offset to center of mca range 
-  fixed_baseline:in sample_t;
-  avn:in unsigned(bits(AVN_BITS) downto 0);
-  avn_updated:in boolean;
-  --FIXME make this adc_sample_t
   sample:in sample_t;
   sample_valid:in boolean;
   --
-  baseline_estimate:out sample_t;
-  range_error:out boolean;
-  new_value:out boolean
+  timeconstant:in unsigned(TIMECONSTANT_BITS-1 downto 0);
+  -- above this threshold sample does not contribute to estimate
+  threshold:unsigned(BASELINE_BITS-2 downto 0);
+  -- count required before adding to average
+  count_threshold:in unsigned(COUNTER_BITS-1 downto 0);
+  average_order:natural range 0 to MAX_AVERAGE_ORDER;
+  --
+  baseline_estimate:out signed(OUT_BITS-1 downto 0);
+  range_error:out boolean
 );
-end entity baseline;
+end entity baseline_estimator;
 --TODO bring start_threshold into the picture
-architecture most_frequent of baseline is
+architecture most_frequent of baseline_estimator is
 
 signal baseline_sample:std_logic_vector(BASELINE_BITS-1 downto 0);
 signal baseline_sample_valid:boolean;
-signal most_frequent,most_frequent_av
-			 :std_logic_vector(BASELINE_BITS-1 downto 0);
-signal new_most_frequent,new_average:boolean;
-signal offset_sample,offset:sample_t;
+signal most_frequent :std_logic_vector(BASELINE_BITS-1 downto 0);
+
+signal most_frequent_av:signed(OUT_BITS-1 downto 0);
+signal new_most_frequent:boolean;
 
 begin
 --FIXME I think the timing might be off for sample_valid
@@ -69,17 +69,17 @@ variable lowest,highest:sample_t;
 constant HALF_RANGE:sample_t:=to_signed((2**BASELINE_BITS)/2,SAMPLE_BITS);
 begin
 if rising_edge(clk) then
-  lowest:=fixed_baseline-HALF_RANGE;
-  highest:=fixed_baseline+HALF_RANGE-1;
-  offset <= lowest;
+  lowest:=-HALF_RANGE;
+  highest:=HALF_RANGE-1;
   
-  offset_sample <= sample-offset;
-  baseline_sample <= to_std_logic(resize(unsigned(offset_sample),BASELINE_BITS));
-	
-	if offset_sample > 2**BASELINE_BITS-1 then 
+  baseline_sample <= std_logic_vector(resize(sample,BASELINE_BITS));
+	if sample > highest then 
 		baseline_sample_valid <= FALSE;
 		range_error <= TRUE;
-	elsif offset_sample < 0 then
+	elsif (sample > resize(signed('0' & threshold), SAMPLE_BITS)) then 
+		baseline_sample_valid <= FALSE;
+		range_error <= TRUE;
+	elsif sample < lowest then
 		baseline_sample_valid <= FALSE;
 		range_error <= TRUE;
 	else
@@ -105,36 +105,31 @@ port map(
   most_frequent => most_frequent,
   new_value => new_most_frequent
 );
---FIXME replace this
-average:entity work.average
+--
+averageing:entity work.average_filter
 generic map(
-  ADDRESS_BITS => AVN_BITS,
-  DATA_BITS => BASELINE_BITS,
-  SIGNED_DATA => TRUE
+  MAX_ORDER => MAX_AVERAGE_ORDER,
+  IN_BITS   => BASELINE_BITS,
+  OUT_BITS  => OUT_BITS
 )
 port map(
   clk => clk,
-  reset => reset,
   enable => new_most_frequent,
-  data_in => most_frequent,
-  average => most_frequent_av,
-  valid => open,
-  n => avn,
-  n_updated => avn_updated,
-  newvalue => new_average 
+  sample => signed(most_frequent),
+  order => average_order,
+  average => most_frequent_av
 );
 --
 outputReg:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
-    baseline_estimate <= fixed_baseline;
+    baseline_estimate <= to_signed(0,OUT_BITS);
   else
-    new_value <= new_average;
     if timeconstant=0 then
-      baseline_estimate <= fixed_baseline;
-    elsif new_average then
-      baseline_estimate <= resize(signed('0' & most_frequent_av)+offset,SAMPLE_BITS);
+    	baseline_estimate <= to_signed(0,OUT_BITS);
+    else
+      baseline_estimate <=  most_frequent_av;
     end if;
   end if;
 end if;

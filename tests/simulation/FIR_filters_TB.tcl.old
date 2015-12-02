@@ -7,8 +7,7 @@ set out [open "../FIR_filters_TB.output" w]
 restart
 runclks
 set i 0
-while {$i < 100000} {
-	gets $fp hexsample
+while {[gets $fp hexsample] >= 0} {
 	setsig sample $hexsample hex
 	puts -nonewline $out [getsig raw_sample dec]
 	puts -nonewline $out ","

@@ -18,19 +18,20 @@ use teslib.functions.all;
 --------------------------------------------------------------------------------
 --! ring buffer single clock domain 
 --! implemented as SDP BRAM
---! actual delay is delay+2 due to BRAM latency
+--! actual delay is delay+2 due to latency
+-- maximum delay is DEPTH-1
 --------------------------------------------------------------------------------
 entity SREG_delay is
 generic(
-  DEPTH:integer:=64; 
+  DEPTH:integer:=128; 
   DATA_BITS:integer:=18
 );
 port (
   clk:in std_logic;
   --
   data_in:in std_logic_vector(DATA_BITS-1 downto 0);
-  -- data in is delayed by delay+2 (BRAM latency)
-  delay:in unsigned(bits(DEPTH)-1 downto 0);
+  -- data in is delayed by delay+1 (BRAM latency)
+  delay:in natural range 0 to DEPTH-1;
   delayed:out std_logic_vector(DATA_BITS-1 downto 0)
 );
 end entity SREG_delay;
@@ -46,7 +47,7 @@ shift:process (clk) is
 begin
 if rising_edge(clk) then
   shifter <= data_in & shifter(0 to DEPTH-2);
-  delayed <= shifter(to_integer(delay));
+  delayed <= shifter(delay);
 end if;
 end process shift;
 --
