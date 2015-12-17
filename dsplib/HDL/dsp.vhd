@@ -34,14 +34,15 @@ generic(
 	--STAGE2_OUT_BITS:integer:=SIGNAL_BITS;
 	--STAGE2_OUT_FRAC:integer:=9;
 	--
-  BASELINE_BITS:integer:=11;
+  BASELINE_BITS:integer:=10;
   --BASELINE_AV_FRAC:integer:=5;
   --width of counters and stream
   BASELINE_COUNTER_BITS:integer:=18;
   BASELINE_TIMECONSTANT_BITS:integer:=32;
   BASELINE_MAX_AVERAGE_ORDER:integer:=6;
-  CFD_BITS:integer:=17;
-  CFD_FRAC:integer:=17
+  CFD_BITS:integer:=18;
+  CFD_FRAC:integer:=17;
+  MAX_PEAKS:integer:=2
 );
 port(
   clk:in std_logic;
@@ -59,65 +60,77 @@ port(
   baseline_average_order:natural range 0 to BASELINE_MAX_AVERAGE_ORDER;
   -- FIR filters
   --interstage_shift:in unsigned(bits(STAGE1_BITS-SIGNAL_BITS)-1 downto 0);
-  stage1_config_data:in std_logic_vector(7 downto 0);
-  stage1_config_valid:in boolean;
-  stage1_config_ready:out boolean;
-  stage1_reload_data:in std_logic_vector(31 downto 0);
-  stage1_reload_valid:in boolean;
-  stage1_reload_ready:out boolean;
-  stage1_reload_last:in boolean;
-  stage2_config_data:in std_logic_vector(7 downto 0);
-  stage2_config_valid:in boolean;
-  stage2_config_ready:out boolean;
-  stage2_reload_data:in std_logic_vector(31 downto 0);
-  stage2_reload_valid:in boolean;
-  stage2_reload_ready:out boolean;
-  stage2_reload_last:in boolean;
-  -- outputs
+  filter_config_data:in std_logic_vector(7 downto 0);
+  filter_config_valid:in boolean;
+  filter_config_ready:out boolean;
+  filter_reload_data:in std_logic_vector(31 downto 0);
+  filter_reload_valid:in boolean;
+  filter_reload_ready:out boolean;
+  filter_reload_last:in boolean;
+  differentiator_config_data:in std_logic_vector(7 downto 0);
+  differentiator_config_valid:in boolean;
+  differentiator_config_ready:out boolean;
+  differentiator_reload_data:in std_logic_vector(31 downto 0);
+  differentiator_reload_valid:in boolean;
+  differentiator_reload_ready:out boolean;
+  differentiator_reload_last:in boolean;
+  -- thresholds
+  -- total threshold value at slope crossing
+  cfd_relative:in boolean;
   constant_fraction:in unsigned(CFD_BITS-2 downto 0);
   pulse_threshold:unsigned(THRESHOLD_BITS-2 downto 0);
   slope_threshold:unsigned(THRESHOLD_BITS-2 downto 0);
-  pulse_area_threshold:unsigned(AREA_BITS-2 downto 0);
-  -- signal_t default is signed 15.1 bits
-  raw:out signal_t;
+  -- signal area and extrema measurements
   raw_area:out area_t;
   raw_extrema:out signal_t;
-  new_raw_area:out boolean;
-  --w=16 f=BASELINE_AV_FRAC default is signed 11.5 bits
-  baseline:out signal_t;
-  stage1:out signal_t;
-  stage1_area:out area_t;
-  stage1_extrema:out signal_t;
-  new_stage1_area:out boolean;
-  stage2:out signal_t;
-  stage2_area:out area_t;
-  stage2_extrema:out signal_t;
-  new_stage2_area:out boolean;
-  pulse_detected:out boolean;
-  accept_pulse:out boolean;
-  reject_pulse:out boolean; -- pulse_area valid when asserted
+  new_raw_measurement:out boolean;
+  filtered_area:out area_t;
+  filtered_extrema:out signal_t;
+  new_filtered_measurement:out boolean;
+  slope_area:out area_t;
+  slope_extrema:out signal_t;
+  new_slope_measurement:out boolean;
+  -- pulse measurements
   pulse_area:out area_t;
   pulse_length:out time_t;
-  peak:out signal_t;
-  peak_time:out time_t;
-  new_peak:out boolean;
-  minima:out signal_t;
-  minima_time:out time_t;
+  pulse_extrema:out signal_t; --always a maxima
+  new_pulse_measurement:out boolean;
+  --w=16 f=BASELINE_AV_FRAC default is signed 11.5 bits
+  baseline:out signal_t;
+  raw:out signal_t;
+  filtered:out signal_t;
+  slope:out signal_t;
+  slope_threshold_xing:out boolean; --@ output delay
+  --
+  pulse_detected:out boolean; -- @ FIR output delay
+  peak:out boolean;
+  peak_num:out unsigned(MAX_PEAKS-1 downto 0);
   --new_minima:out boolean;
-  cfd_value:out signal_t;
-  new_cfd_value:out boolean
+  cfd:out boolean
 );
 end entity dsp;
 --
 architecture RTL of dsp is
+component cfd_threshold_queue
+port( 
+  clk:in std_logic;
+  srst:in std_logic;
+  din:in std_logic_vector(24 downto 0);
+  wr_en:in std_logic;
+  rd_en:in std_logic;
+  dout:out std_logic_vector(24 downto 0);
+  full:out std_logic;
+  empty:out std_logic
+);
+end component;
 	
-constant CFD_DELAY_DEPTH:integer:=64;
-constant CFD_DELAY:integer:=50;
+constant CFD_DELAY_DEPTH:integer:=128;
+constant CFD_DELAY:integer:=80;
 constant BASELINE_AV_FRAC:integer:=SIGNAL_BITS-BASELINE_BITS;
 --
 signal stage1_out:std_logic_vector(STAGE1_BITS-1 downto 0);
 signal stage2_out:std_logic_vector(STAGE2_BITS-1 downto 0);
-signal signal_out,signal_reg:signed(THRESHOLD_BITS-1 downto 0);	
+signal signal_out:signed(THRESHOLD_BITS-1 downto 0);	
 signal slope_out:signed(THRESHOLD_BITS-1 downto 0);	
 signal sample:sample_t;
 signal stage1_input:signed(STAGE1_IN_BITS-1 downto 0);
@@ -133,11 +146,12 @@ signal slope_below_threshold:boolean;
 signal slope_was_positive:boolean;
 signal slope_was_below_threshold:boolean;
 signal slope_armed:boolean;
-signal cfd_threshold_reg,cfd_threshold:
+signal cfd_threshold_reg,cfd_threshold_reg2:
 			 signed(CFD_BITS+THRESHOLD_BITS-1 downto 0);
-signal above_CFD_threshold : boolean;
-signal was_above_CFD_threshold,CFD_valid:boolean;
-signal slope_CFD_delay:std_logic_vector(THRESHOLD_BITS-1 downto 0);
+signal cfd_threshold_in:signed(THRESHOLD_BITS-1 downto 0);
+signal above_CFD_threshold:boolean;
+signal was_above_CFD_threshold:boolean;
+signal slope_CFD_delay:std_logic_vector(SIGNAL_BITS-1 downto 0);
 signal signal_below_threshold:boolean;
 signal signal_above_0,slope_above_0,raw_above_0:boolean;
 signal signal_below_0,slope_below_0,raw_below_0:boolean;
@@ -152,17 +166,32 @@ signal slope_was_above_0,slope_was_below_0:boolean;
 signal raw_was_above_0,raw_was_below_0:boolean;
 signal pulse_area_int:area_t;
 signal signal_was_below_threshold,pulse_end:boolean;
-signal pulse_length_int:time_t;
 signal signal_equal_threshold:boolean;
 signal signal_was_equal_threshold:boolean;
-signal slope_negative,slope_was_negative:boolean;
-signal minima_int:signed(THRESHOLD_BITS-1 downto 0);
-signal minima_time_int:time_t;
+signal slope_negative:boolean;
 signal raw_int,signal_int,slope_int:signal_t;
 signal raw_extrema_int,signal_extrema_int,slope_extrema_int:signal_t;
+signal pulse_extrema_int:signed(THRESHOLD_BITS-1 downto 0);
+signal signal_xing,slope_xing:boolean;
+signal signal_at_slope_xing:signed(THRESHOLD_BITS-1 downto 0);
+signal signal_for_cfd:signed(THRESHOLD_BITS-1 downto 0);
+signal flags,flags_CFD_delay:std_logic_vector(1 downto 0);
+signal signal_out_above_threshold:boolean;
+signal pulse_length_int:time_t;
+signal cfd_xing:boolean;
+signal cfd_queue_wr_en,cfd_queue_rd_en,cfd_queue_full,cfd_queue_empty:std_logic;
+signal cfd_threshold_out:std_logic_vector(THRESHOLD_BITS-1 downto 0);
+signal cfd_threshold:signed(THRESHOLD_BITS-1 downto 0);
+constant CFD_PIPE_DEPTH:integer:=3;
+signal peak_pipe:boolean_vector(1 to CFD_PIPE_DEPTH);
+signal cfd_overflow:boolean;
+signal cfd_pending:boolean;
+signal slope_was_negative:boolean;
+
 --
 begin
 --	
+
 sampleoffset:process(clk)
 begin
 if rising_edge(clk) then
@@ -219,20 +248,20 @@ port map(
   clk => clk,
   sample => stage1_input,
   --interstage_shift => interstage_shift,
-  stage1_config_data => stage1_config_data,
-  stage1_config_valid => stage1_config_valid,
-  stage1_config_ready => stage1_config_ready,
-  stage1_reload_data => stage1_reload_data,
-  stage1_reload_valid => stage1_reload_valid,
-  stage1_reload_ready => stage1_reload_ready,
-  stage1_reload_last => stage1_reload_last,
-  stage2_config_data => stage2_config_data,
-  stage2_config_valid => stage2_config_valid,
-  stage2_config_ready => stage2_config_ready,
-  stage2_reload_data => stage2_reload_data,
-  stage2_reload_valid => stage2_reload_valid,
-  stage2_reload_ready => stage2_reload_ready,
-  stage2_reload_last => stage2_reload_last,
+  stage1_config_data => filter_config_data,
+  stage1_config_valid => filter_config_valid,
+  stage1_config_ready => filter_config_ready,
+  stage1_reload_data => filter_reload_data,
+  stage1_reload_valid => filter_reload_valid,
+  stage1_reload_ready => filter_reload_ready,
+  stage1_reload_last => filter_reload_last,
+  stage2_config_data => differentiator_config_data,
+  stage2_config_valid => differentiator_config_valid,
+  stage2_config_ready => differentiator_config_ready,
+  stage2_reload_data => differentiator_reload_data,
+  stage2_reload_valid => differentiator_reload_valid,
+  stage2_reload_ready => differentiator_reload_ready,
+  stage2_reload_last => differentiator_reload_last,
   stage1 => stage1_out,
   stage2 => stage2_out
 );
@@ -258,7 +287,7 @@ signal_int <= resize(
 								shift_right(signed(signal_out),THRESHOLD_FRAC-SIGNAL_FRAC),
 							SIGNAL_BITS); 
 slope_int <= resize(
-								shift_right(signed(slope_out),THRESHOLD_FRAC-SIGNAL_FRAC),
+								shift_right(signed(slope_out),THRESHOLD_FRAC-SLOPE_FRAC),
 							SIGNAL_BITS); 
 -- delay raw and baseline to sync with FIR outputs
 rawFIRdelay:entity work.SREG_delay
@@ -272,7 +301,7 @@ port map(
   delay => 86,
   delayed => raw_FIR_delay
 );
---
+--FIXME remove the baseline output
 baselineFIRdelay:entity work.SREG_delay
 generic map(
   DEPTH => 96,
@@ -280,19 +309,21 @@ generic map(
 )
 port map(
   clk => clk,
-  data_in => to_std_logic(resize(baseline_estimate,SIGNAL_BITS)),
+  data_in => to_std_logic(
+  	resize(
+  		shift_right(baseline_estimate,BASELINE_AV_FRAC-SIGNAL_FRAC),
+  		SIGNAL_BITS
+  	)
+  ),
   delay => 87,
   delayed => baseline_FIR_delay
 );
--- 
+
+-- FIXME metavalue here?
 slope_positive <= slope_out > 0;
 slope_negative <= slope_out(THRESHOLD_BITS-1)='1';
 slope_below_threshold 
 	<= signed(slope_out) < signed('0' & slope_threshold);
-
-signal_above_threshold <= signed(signal_out) > signed('0' & pulse_threshold);
-signal_below_threshold <= signed(signal_out) <= signed('0' & pulse_threshold);
-signal_equal_threshold <= signed(signal_out) = signed('0' & pulse_threshold);
 
 signal_above_0 <= signed(signal_out) > 0;
 signal_below_0 <= signal_out(THRESHOLD_BITS-1)='1';
@@ -317,17 +348,18 @@ if rising_edge(clk) then
 
   	signal_was_above_0 <= signal_above_0;	
   	signal_was_below_0 <= signal_below_0;
+  	
   	if (signal_was_above_0 and not signal_above_0) or
   		 (signal_was_below_0 and not signal_below_0) then
-  		stage1_area <= resize(shift_right(
+  		filtered_area <= resize(shift_right(
   									 	signal_area_int,THRESHOLD_BITS+TIME_BITS-AREA_BITS
   									 ),AREA_BITS);
   		signal_area_int <= resize(signed(signal_out),THRESHOLD_BITS+TIME_BITS);
   		signal_extrema_int <= signal_int;
-  		stage1_extrema <= signal_extrema_int;
-  		new_stage1_area <= TRUE;
+  		filtered_extrema <= signal_extrema_int;
+  		new_filtered_measurement <= TRUE;
   	else
-  		new_stage1_area <= FALSE;
+  		new_filtered_measurement <= FALSE;
   		if signal_above_0 and signal_int > signal_extrema_int then
   				signal_extrema_int <= signal_int;
   		end if;
@@ -338,17 +370,18 @@ if rising_edge(clk) then
     	 
   	slope_was_above_0 <= slope_above_0;	
   	slope_was_below_0 <= slope_below_0;
+  	
   	if (slope_was_above_0 and not slope_above_0) or
   		 (slope_was_below_0 and not slope_below_0) then
-  		stage2_area <= resize(shift_right(
+  		slope_area <= resize(shift_right(
   									 	slope_area_int,THRESHOLD_BITS+TIME_BITS-AREA_BITS
   									 ),AREA_BITS);
   		slope_area_int <= resize(signed(slope_out),THRESHOLD_BITS+TIME_BITS);
   		slope_extrema_int <= slope_int;
-  		stage2_extrema <= slope_extrema_int;
-  		new_stage2_area <= TRUE;
+  		slope_extrema <= slope_extrema_int;
+  		new_slope_measurement <= TRUE;
   	else
-  		new_stage2_area <= FALSE;
+  		new_slope_measurement <= FALSE;
   		if slope_above_0 and slope_int > slope_extrema_int then
   				slope_extrema_int <= slope_int;
   		end if;
@@ -365,11 +398,11 @@ if rising_edge(clk) then
   									shift_right(raw_area_int,STAGE1_IN_FRAC-AREA_FRAC),
   								AREA_BITS);
   		raw_area_int <= resize(signed(stage1_input),STAGE1_IN_BITS+TIME_BITS);
-  		new_raw_area <= TRUE;
+  		new_raw_measurement <= TRUE;
   		raw_extrema_int <= raw_int;
   		raw_extrema <= raw_extrema_int;
   	else
-  		new_raw_area <= FALSE;
+  		new_raw_measurement <= FALSE;
   		if raw_above_0 and raw_int > raw_extrema_int then
   				raw_extrema_int <= raw_int;
   		end if;
@@ -381,103 +414,103 @@ if rising_edge(clk) then
 end if;
 end process signalAreas;
 
+signal_out_above_threshold 
+	<= signed(signal_out) > signed('0' & pulse_threshold);
 -- Detect peak of filtered_out via negative going zero crossing of slope_out
 -- after slope has exceeded threshold.
 -- Use the peak value to calculate the constant fraction threshold.
-pulse_start <= signal_above_threshold and
-							 (signal_was_below_threshold or signal_was_equal_threshold);
-pulse_end <= ((signal_below_threshold or signal_equal_threshold) and
-						  signal_was_above_threshold) or 
-						  pulse_length_int=to_unsigned(2**TIME_BITS-1,TIME_BITS);
 --
---minima <= resize(shift_right(minima_int,THRESHOLD_FRAC-SIGNAL_FRAC),SIGNAL_BITS);
---minima_time <= minima_time_int;						  
-pulseMeasurement:process(clk)
+cfdThresholdQueue:cfd_threshold_queue
+port map (
+  clk => clk,
+  srst => reset,
+  din => to_std_logic(cfd_threshold_in),
+  wr_en => cfd_queue_wr_en,
+  rd_en => cfd_queue_rd_en,
+  dout => cfd_threshold_out,
+  full => cfd_queue_full,
+  empty => cfd_queue_empty
+);
+peakDetect:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
     slope_was_positive <= FALSE;
     slope_was_below_threshold <=FALSE;
     slope_armed <= FALSE;
-    new_peak <= FALSE;
-    --new_minima <= FALSE;
+    signal_for_cfd <= (others => '0');
+    peak_pipe <= (others => FALSE);
+    cfd_queue_wr_en <= '0';
   else
-  	signal_reg <= signal_out;
-    slope_was_positive <= slope_positive;
-    slope_was_negative <= slope_negative;
+  	slope_was_positive <= slope_positive;
+  	slope_was_negative <= slope_negative;
     slope_was_below_threshold <= slope_below_threshold;
-    signal_was_above_threshold <= signal_above_threshold;
-    signal_was_below_threshold <= signal_below_threshold;
-    signal_was_equal_threshold <= signal_equal_threshold;
-    reject_pulse <= FALSE;
-    accept_pulse <= FALSE;
-    pulse_detected <= pulse_start;
-  	
-  	if pulse_start then
-  		pulse_area_int <= resize(signal_out,AREA_BITS);
-  		pulse_length_int <= to_unsigned(1,TIME_BITS);
-  	elsif signal_above_threshold then
-  		pulse_area_int <= pulse_area_int+signal_out;
-  		pulse_length_int <= pulse_length_int+1;
-  	end if;
-  	
-  	if pulse_end then
-  		pulse_area <= pulse_area_int;
-  		pulse_length <= pulse_length_int;
-  		if pulse_area_int >= signed( '0' & pulse_area_threshold) then
-  			reject_pulse <= FALSE;
-  			accept_pulse <= TRUE;
-  		else
-  			reject_pulse <= TRUE;
-  			accept_pulse <= FALSE;
-  		end if;
-  	end if;
   	 
     if slope_was_below_threshold and not slope_below_threshold then
     	slope_armed <= TRUE;
+    	slope_xing <= not slope_armed;
+    	signal_at_slope_xing <= signal_out;
+    else
+    	slope_xing <= FALSE;
     end if;
     
+    peak_pipe(2 to CFD_PIPE_DEPTH) <= peak_pipe(1 to CFD_PIPE_DEPTH-1);
     if slope_was_positive and not slope_positive then
 			slope_armed <= FALSE;
-			if slope_armed and signal_above_threshold then 
-				new_peak <= TRUE;
-				peak <= resize(shift_right(
-											 signal_reg,THRESHOLD_FRAC-SIGNAL_FRAC
-								),SIGNAL_BITS);
-				minima_int <= signal_reg;	
-				minima <= resize(
-										shift_right(minima_int,THRESHOLD_FRAC-SIGNAL_FRAC),
-									SIGNAL_BITS);
-				minima_time <= minima_time_int;
-				peak_time <= pulse_length_int;
+			if slope_armed and signal_out_above_threshold then 
+				if cfd_queue_full = '0' then
+					peak_pipe(1) <= TRUE;
+					cfd_overflow <= FALSE;
+				else
+					cfd_overflow <= TRUE;
+				end if;
 				-- this REG is absorbed into the DSP block multiplier.
-				CFD_threshold_reg <= signal_reg*signed('0' & constant_fraction);
+				if cfd_relative then
+			    signal_for_cfd <= (signal_out - signal_at_slope_xing);
+				else
+			    signal_for_cfd <= signal_out;
+				end if;
 			end if;
 		else
-			if signal_out < minima_int then
-				minima_int <= signal_reg;
-				minima_time_int <= pulse_length_int;
-			end if;
-			new_peak <= FALSE;
+			peak_pipe(1) <= FALSE;
 		end if;
-		
---		if slope_was_negative and not slope_negative then
---			minima <= resize(shift_right(
---											 signal_reg,THRESHOLD_FRAC-SIGNAL_FRAC
---								),SIGNAL_BITS);
---			new_minima <= TRUE;
---			minima_time <= pulse_length_int;
---		else
---			new_minima <= FALSE;
---		end if;
+		--
 		-- this REG is absorbed into the DSP block multiplier.
-		cfd_threshold <= CFD_threshold_reg;
+		CFD_threshold_reg <= signal_for_cfd*signed('0' & constant_fraction);
+		cfd_threshold_reg2 <= CFD_threshold_reg;
+		if cfd_queue_full = '0' and peak_pipe(CFD_PIPE_DEPTH) then
+			cfd_queue_wr_en <= '1';
+      if cfd_relative then
+        cfd_threshold_in <= resize(
+            shift_right(cfd_threshold_reg2,CFD_FRAC), THRESHOLD_BITS
+          ) + signal_at_slope_xing;
+      else
+        cfd_threshold_in <= resize( 
+        		shift_right(cfd_threshold_reg2,CFD_FRAC),
+            THRESHOLD_BITS
+          );
+    	end if;
+    else
+			cfd_queue_wr_en <= '0';
+    end if;
   end if;
 end if;
-end process pulseMeasurement;
+end process peakDetect;
 -- delay for constant fraction discrimination and to bring other signals to same 
 -- latency, really only necessary align traces when implemented.
 --
+flags <= (to_std_logic(peak_pipe(1)),to_std_logic(slope_xing));
+flagsCFDdelay:entity work.SREG_delay
+generic map(
+  DEPTH     => CFD_DELAY_DEPTH,
+  DATA_BITS => 2
+)
+port map(
+  clk     => clk,
+  data_in => flags,
+  delay   => CFD_DELAY,
+  delayed => flags_CFD_delay
+);
 filteredCFDdelay:entity work.SREG_delay
 generic map(
   DEPTH     => CFD_DELAY_DEPTH,
@@ -492,11 +525,11 @@ port map(
 slopeCFDdelay:entity work.SREG_delay
 generic map(
   DEPTH => CFD_DELAY_DEPTH,
-  DATA_BITS => THRESHOLD_BITS
+  DATA_BITS => SIGNAL_BITS
 )
 port map(
   clk     => clk,
-  data_in => to_std_logic(slope_out),
+  data_in => to_std_logic(slope_int),
   delay   => CFD_DELAY,
   delayed => slope_CFD_delay
 );
@@ -524,38 +557,111 @@ port map(
 );
 --
 -- Thresholding and zero crossing
+signal_above_threshold 
+	<= signed(signal_CFD_delay) > signed('0' & pulse_threshold);
+signal_below_threshold 
+	<= signed(signal_CFD_delay) < signed('0' & pulse_threshold);
+signal_equal_threshold 
+	<= signed(signal_CFD_delay) = signed('0' & pulse_threshold);
+
+pulse_start <= signal_above_threshold and
+							 (signal_was_below_threshold or signal_was_equal_threshold);
+							 
+pulse_end <= ((signal_below_threshold or signal_equal_threshold) and
+						  signal_was_above_threshold) or 
+						  pulse_length_int=to_unsigned(2**TIME_BITS-1,TIME_BITS);
+						  
+pulseMeasurement:process(clk)
+begin
+if rising_edge(clk) then
+  if reset = '1' then
+    signal_was_above_threshold <= FALSE;
+    signal_was_below_threshold <= FALSE;
+    signal_was_equal_threshold <= FALSE;
+  else
+    signal_was_above_threshold <= signal_above_threshold;
+    signal_was_below_threshold <= signal_below_threshold;
+    signal_was_equal_threshold <= signal_equal_threshold;
+    
+    new_pulse_measurement <= FALSE;
+  	signal_xing <= pulse_start;
+  	
+  	if pulse_start then
+  		pulse_area_int <= resize(signed(signal_cfd_delay),AREA_BITS);
+  		pulse_length_int <= to_unsigned(1,TIME_BITS);
+  		pulse_extrema_int <= signed(signal_cfd_delay); 
+  	elsif signal_above_threshold then
+  		if signed(signal_cfd_delay) > pulse_extrema_int then
+  			pulse_extrema_int <= signed(signal_cfd_delay);
+  		end if;
+  		pulse_length_int <= pulse_length_int+1;
+  		pulse_area_int <= pulse_area_int+signed(signal_cfd_delay);
+  	end if;
+  	
+  	if pulse_end then
+  		pulse_area <= pulse_area_int;
+  		pulse_extrema <= resize(
+  			shift_right(pulse_extrema_int,THRESHOLD_FRAC-SIGNAL_FRAC),
+  			SIGNAL_BITS
+  		);
+  		pulse_length <= pulse_length_int;
+  		new_pulse_measurement <= TRUE;
+  	end if;
+  	
+  end if;
+end if;
+end process pulseMeasurement;
 --
-above_CFD_threshold <= signed(signal_CFD_delay) > 
-			resize(shift_right(cfd_threshold,CFD_FRAC),THRESHOLD_BITS);
+above_CFD_threshold <= signed(signal_CFD_delay) >= cfd_threshold;
+cfd_xing <= not was_above_CFD_threshold and above_CFD_threshold;
 --
-cfdValue:process(clk)
+outputReg:process(clk)
 begin
 if rising_edge(clk) then
 	if reset='1' then
-		was_above_CFD_threshold <= FALSE;
-		CFD_valid <= FALSE;
+		was_above_CFD_threshold <= FALSE; 
+		cfd_pending <= FALSE;
+		cfd_threshold <= (others => '0');
 	else
 		was_above_CFD_threshold <= above_CFD_threshold;
-		if not was_above_CFD_threshold and above_CFD_threshold then
-			new_CFD_value <= TRUE;
-			CFD_value <= resize(shift_right(
-				signed(signal_CFD_delay),THRESHOLD_FRAC-SIGNAL_FRAC
-			),SIGNAL_BITS);
+		
+		if cfd_queue_empty='0' and not cfd_pending then
+			cfd_threshold <= signed(cfd_threshold_out);
+			cfd_pending <= TRUE;
+			cfd_queue_rd_en <= '1';
 		else
-			new_CFD_value <= FALSE;
+			cfd_queue_rd_en <= '0';
+		end if;	
+		
+		if cfd_pending then 
+			cfd <= above_cfd_threshold;
+			if above_cfd_threshold then
+				if cfd_queue_empty = '0' then
+					cfd_threshold <= signed(cfd_threshold_out);
+					cfd_queue_rd_en <= '1';
+				else
+					cfd_pending <= FALSE;
+					cfd_queue_rd_en <= '0';
+				end if;
+			end if;
+		else
+			cfd_queue_rd_en <= '1';
+			cfd <= FALSE;
 		end if;
-			
-    stage1 <= resize(
-      shift_right(signed(signal_CFD_delay),THRESHOLD_FRAC-SIGNAL_FRAC),
-      SIGNAL_BITS);
-    stage2 <= resize(
-      shift_right(signed(slope_CFD_delay),THRESHOLD_FRAC-SLOPE_FRAC),
-      SIGNAL_BITS);
-    raw <= signed(raw_CFD_delay);
-    baseline <= signed(baseline_CFD_delay);
 	end if;	
+  filtered <= resize(
+    shift_right(signed(signal_CFD_delay),THRESHOLD_FRAC-SIGNAL_FRAC),
+    SIGNAL_BITS);
+  slope <= signed(slope_CFD_delay);
+  raw <= signed(raw_CFD_delay);
+  baseline <= signed(baseline_CFD_delay);
 end if;
-end process cfdValue;
+end process outputReg;
+--
+pulse_detected <= signal_xing;
+peak <= to_boolean(flags_CFD_delay(1));
+slope_threshold_xing <= to_boolean(flags_CFD_delay(0));
+--filtered_threshold_xing <= to_boolean(flags_CFD_delay(0));
 --
 
 end architecture RTL;

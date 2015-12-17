@@ -31,19 +31,21 @@ end entity average_filter;
 architecture unsigned of average_filter is
 
 type pipeline is array (natural range <>) of signed(OUT_BITS-1 downto 0);
-signal stage:pipeline(1 to MAX_ORDER):=(others =>(others => '0'));
-signal reg:pipeline(0 to MAX_ORDER-1):=(others =>(others => '0'));
+signal stage:pipeline(1 to MAX_ORDER+1):=(others =>(others => '0'));
+signal reg:pipeline(0 to MAX_ORDER):=(others =>(others => '0'));
 signal sample_int:signed(OUT_BITS-1 downto 0);
+signal enable_reg:boolean;
 
 begin
 stages:process(clk) is
 begin
 if rising_edge(clk) then
-	if enable then
-    sample_int <= shift_left(resize(sample,OUT_BITS), OUT_BITS-IN_BITS);
+	sample_int <= shift_left(resize(sample,OUT_BITS), OUT_BITS-IN_BITS);
+	enable_reg <= enable;
+	if enable_reg then
     reg(0) <= sample_int;
     stage(1) <= shift_right(reg(0)+sample_int,1);
-    for i in 1 to MAX_ORDER-1 loop
+    for i in 1 to MAX_ORDER loop
       reg(i) <= stage(i);
       stage(i+1) <= shift_right(reg(i)+stage(i),1);
     end loop;

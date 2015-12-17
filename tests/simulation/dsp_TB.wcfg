@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="dsp_TB.wdb" id="1" type="auto">
+      <db_ref path="C:/TES_project/fpga_ise/tests/PlanAhead/tests.sim/dsp_TB/behav/isim.wdb" id="1" type="auto">
          <top_modules>
             <top_module name="bip_utils_pkg_v2_0" />
             <top_module name="dsp_tb" />
@@ -17,11 +17,15 @@
             <top_module name="types" />
             <top_module name="types" />
             <top_module name="types" />
+            <top_module name="vcomponents" />
+            <top_module name="vital_primitives" />
+            <top_module name="vital_timing" />
+            <top_module name="vpkg" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <WVObjectSize size="2" />
-   <wvobject fp_name="group149" type="group">
+   <wvobject fp_name="group203" type="group">
       <obj_property name="label">testbench</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <wvobject fp_name="/dsp_tb/clk" type="logic" db_ref_id="1">
@@ -32,65 +36,61 @@
          <obj_property name="ElementShortName">reset</obj_property>
          <obj_property name="ObjectShortName">reset</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage1_config_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_config_data[7:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_config_data[7:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/filter_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_config_data[7:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage1_config_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_config_valid</obj_property>
-         <obj_property name="ObjectShortName">stage1_config_valid</obj_property>
+      <wvobject fp_name="/dsp_tb/filter_config_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_valid</obj_property>
+         <obj_property name="ObjectShortName">filter_config_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage1_config_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_config_ready</obj_property>
-         <obj_property name="ObjectShortName">stage1_config_ready</obj_property>
+      <wvobject fp_name="/dsp_tb/filter_config_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_ready</obj_property>
+         <obj_property name="ObjectShortName">filter_config_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage1_reload_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_reload_data[31:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_reload_data[31:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/filter_reload_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_data[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage1_reload_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_reload_valid</obj_property>
-         <obj_property name="ObjectShortName">stage1_reload_valid</obj_property>
+      <wvobject fp_name="/dsp_tb/filter_reload_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_valid</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage1_reload_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_reload_ready</obj_property>
-         <obj_property name="ObjectShortName">stage1_reload_ready</obj_property>
+      <wvobject fp_name="/dsp_tb/filter_reload_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_ready</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage1_reload_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_reload_last</obj_property>
-         <obj_property name="ObjectShortName">stage1_reload_last</obj_property>
+      <wvobject fp_name="/dsp_tb/filter_reload_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_last</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_last</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage2_config_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_config_data[7:0]</obj_property>
-         <obj_property name="ObjectShortName">stage2_config_data[7:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/differentiator_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_config_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">differentiator_config_data[7:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage2_config_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_config_valid</obj_property>
-         <obj_property name="ObjectShortName">stage2_config_valid</obj_property>
+      <wvobject fp_name="/dsp_tb/differentiator_config_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_config_valid</obj_property>
+         <obj_property name="ObjectShortName">differentiator_config_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage2_config_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_config_ready</obj_property>
-         <obj_property name="ObjectShortName">stage2_config_ready</obj_property>
+      <wvobject fp_name="/dsp_tb/differentiator_config_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_config_ready</obj_property>
+         <obj_property name="ObjectShortName">differentiator_config_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage2_reload_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_reload_data[31:0]</obj_property>
-         <obj_property name="ObjectShortName">stage2_reload_data[31:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/differentiator_reload_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_data[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage2_reload_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_reload_valid</obj_property>
-         <obj_property name="ObjectShortName">stage2_reload_valid</obj_property>
+      <wvobject fp_name="/dsp_tb/differentiator_reload_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_valid</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage2_reload_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_reload_ready</obj_property>
-         <obj_property name="ObjectShortName">stage2_reload_ready</obj_property>
+      <wvobject fp_name="/dsp_tb/differentiator_reload_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_ready</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage2_reload_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_reload_last</obj_property>
-         <obj_property name="ObjectShortName">stage2_reload_last</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/adc_sample" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
-         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/differentiator_reload_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_last</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_last</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/baseline_subtraction" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">baseline_subtraction</obj_property>
@@ -101,8 +101,8 @@
          <obj_property name="ObjectShortName">baseline_timeconstant[31:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/baseline_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline_threshold[9:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline_threshold[9:0]</obj_property>
+         <obj_property name="ElementShortName">baseline_threshold[10:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_threshold[10:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/baseline_count_threshold" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">baseline_count_threshold[17:0]</obj_property>
@@ -112,81 +112,137 @@
          <obj_property name="ElementShortName">baseline_average_order</obj_property>
          <obj_property name="ObjectShortName">baseline_average_order</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/baseline" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline[15:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline[15:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/adc_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/adc_baseline" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">adc_baseline[13:0]</obj_property>
          <obj_property name="ObjectShortName">adc_baseline[13:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/constant_fraction" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">constant_fraction[15:0]</obj_property>
-         <obj_property name="ObjectShortName">constant_fraction[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/pulse_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_threshold[22:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_threshold[22:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/slope_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_threshold[22:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_threshold[22:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/baseline" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline[15:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/raw" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">raw[15:0]</obj_property>
          <obj_property name="ObjectShortName">raw[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/filtered" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">filtered[15:0]</obj_property>
          <obj_property name="ObjectShortName">filtered[15:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/slope" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">slope[15:0]</obj_property>
          <obj_property name="ObjectShortName">slope[15:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/constant_fraction" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">constant_fraction[16:0]</obj_property>
+         <obj_property name="ObjectShortName">constant_fraction[16:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/slope_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_threshold[23:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold[23:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/raw_area" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">raw_area[31:0]</obj_property>
          <obj_property name="ObjectShortName">raw_area[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/new_raw_area" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">new_raw_area</obj_property>
-         <obj_property name="ObjectShortName">new_raw_area</obj_property>
+      <wvobject fp_name="/dsp_tb/filtered_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_area[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage1_area" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_area[31:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_area[31:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <wvobject fp_name="/dsp_tb/slope_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_area[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/new_stage1_area" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">new_stage1_area</obj_property>
-         <obj_property name="ObjectShortName">new_stage1_area</obj_property>
+      <wvobject fp_name="/dsp_tb/new_raw_measurement" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_raw_measurement</obj_property>
+         <obj_property name="ObjectShortName">new_raw_measurement</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/stage2_area" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_area[31:0]</obj_property>
-         <obj_property name="ObjectShortName">stage2_area[31:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <wvobject fp_name="/dsp_tb/new_filtered_measurement" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_filtered_measurement</obj_property>
+         <obj_property name="ObjectShortName">new_filtered_measurement</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/new_stage2_area" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">new_stage2_area</obj_property>
-         <obj_property name="ObjectShortName">new_stage2_area</obj_property>
+      <wvobject fp_name="/dsp_tb/new_slope_measurement" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_slope_measurement</obj_property>
+         <obj_property name="ObjectShortName">new_slope_measurement</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/pulse_detected" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_detected</obj_property>
+         <obj_property name="ObjectShortName">pulse_detected</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/pulse_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_area[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/peak" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak</obj_property>
+         <obj_property name="ObjectShortName">peak</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/raw_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_extrema[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/filtered_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_extrema[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/slope_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_extrema[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/cfd_relative" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_relative</obj_property>
+         <obj_property name="ObjectShortName">cfd_relative</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/pulse_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_extrema[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/new_pulse_measurement" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_pulse_measurement</obj_property>
+         <obj_property name="ObjectShortName">new_pulse_measurement</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/slope_threshold_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_threshold_xing</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/cfd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd</obj_property>
+         <obj_property name="ObjectShortName">cfd</obj_property>
       </wvobject>
    </wvobject>
-   <wvobject fp_name="group252" type="group">
+   <wvobject fp_name="group337" type="group">
       <obj_property name="label">UUT</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <wvobject fp_name="/dsp_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="DisplayName">label</obj_property>
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
+         <obj_property name="label">clk</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/reset" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">reset</obj_property>
          <obj_property name="ObjectShortName">reset</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/baseline_subtraction" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline_subtraction</obj_property>
-         <obj_property name="ObjectShortName">baseline_subtraction</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/adc_sample" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
@@ -196,21 +252,66 @@
          <obj_property name="ElementShortName">adc_baseline[13:0]</obj_property>
          <obj_property name="ObjectShortName">adc_baseline[13:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/sample" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">sample[14:0]</obj_property>
-         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+      <wvobject fp_name="divider164" type="divider">
+         <obj_property name="label">peak detection</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="BkColor">128 128 255</obj_property>
+         <obj_property name="TextColor">230 230 230</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_out[24:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_out[24:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/baseline_estimate" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline_estimate[15:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline_estimate[15:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/slope_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_out[24:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_out[24:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage1_input" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_input[17:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_input[17:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/slope_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_xing</obj_property>
+         <obj_property name="ObjectShortName">slope_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/slope_armed" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_armed</obj_property>
+         <obj_property name="ObjectShortName">slope_armed</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_at_slope_xing" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_at_slope_xing[24:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_at_slope_xing[24:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_for_cfd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_for_cfd[24:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_for_cfd[24:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/constant_fraction" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">constant_fraction[16:0]</obj_property>
+         <obj_property name="ObjectShortName">constant_fraction[16:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/slope_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_threshold[23:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold[23:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider163" type="divider">
+         <obj_property name="label">outputs</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="BkColor">128 128 255</obj_property>
+         <obj_property name="TextColor">230 230 230</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/baseline" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline[15:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/raw" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">raw[15:0]</obj_property>
@@ -219,60 +320,176 @@
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/raw_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_int[15:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_int[15:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/raw_fir_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_fir_delay[15:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_fir_delay[15:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/raw_extrema_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_extrema_int[15:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_extrema_int[15:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/raw_extrema" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_extrema[15:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_extrema[15:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/filtered" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered[15:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered[15:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/raw_area_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_area_int[33:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_area_int[33:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/peak" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak</obj_property>
+         <obj_property name="ObjectShortName">peak</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_detected" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_detected</obj_property>
+         <obj_property name="ObjectShortName">pulse_detected</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider165" type="divider">
+         <obj_property name="label">CFD</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="BkColor">128 128 255</obj_property>
+         <obj_property name="TextColor">230 230 230</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_pending" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_pending</obj_property>
+         <obj_property name="ObjectShortName">cfd_pending</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/cfd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd</obj_property>
+         <obj_property name="ObjectShortName">cfd</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_queue_wr_en" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_queue_wr_en</obj_property>
+         <obj_property name="ObjectShortName">cfd_queue_wr_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_threshold_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_threshold_in[24:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_threshold_in[24:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_queue_rd_en" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_queue_rd_en</obj_property>
+         <obj_property name="ObjectShortName">cfd_queue_rd_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_threshold_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_threshold_out[24:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_threshold_out[24:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_threshold[24:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_threshold[24:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_cfd_delay" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_cfd_delay[24:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_cfd_delay[24:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_queue_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_queue_empty</obj_property>
+         <obj_property name="ObjectShortName">cfd_queue_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_below_threshold" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_below_threshold</obj_property>
+         <obj_property name="ObjectShortName">signal_below_threshold</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_was_below_threshold" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_was_below_threshold</obj_property>
+         <obj_property name="ObjectShortName">signal_was_below_threshold</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_above_threshold" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_above_threshold</obj_property>
+         <obj_property name="ObjectShortName">signal_above_threshold</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_was_above_threshold" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_was_above_threshold</obj_property>
+         <obj_property name="ObjectShortName">signal_was_above_threshold</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_equal_threshold" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_equal_threshold</obj_property>
+         <obj_property name="ObjectShortName">signal_equal_threshold</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_was_equal_threshold" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_was_equal_threshold</obj_property>
+         <obj_property name="ObjectShortName">signal_was_equal_threshold</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_start</obj_property>
+         <obj_property name="ObjectShortName">pulse_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_end" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_end</obj_property>
+         <obj_property name="ObjectShortName">pulse_end</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_threshold[23:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold[23:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/slope" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope[15:0]</obj_property>
+         <obj_property name="ObjectShortName">slope[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/slope_threshold_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_threshold_xing</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider163" type="divider">
+         <obj_property name="label">Pulse measurements</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="BkColor">128 128 255</obj_property>
+         <obj_property name="TextColor">230 230 230</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/new_pulse_measurement" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_pulse_measurement</obj_property>
+         <obj_property name="ObjectShortName">new_pulse_measurement</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ffffff</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/raw_above_0" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_above_0</obj_property>
-         <obj_property name="ObjectShortName">raw_above_0</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_length_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_length_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_length_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_area_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_area_int[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_area_int[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_area[31:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_length" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_length[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_length[15:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ffffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/raw_was_above_0" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_was_above_0</obj_property>
-         <obj_property name="ObjectShortName">raw_was_above_0</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_extrema[15:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ffffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/raw_below_0" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_below_0</obj_property>
-         <obj_property name="ObjectShortName">raw_below_0</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ffffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/raw_was_below_0" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_was_below_0</obj_property>
-         <obj_property name="ObjectShortName">raw_was_below_0</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/raw_area" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">raw_area[31:0]</obj_property>
@@ -281,150 +498,73 @@
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/new_raw_area" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">new_raw_area</obj_property>
-         <obj_property name="ObjectShortName">new_raw_area</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/raw_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_extrema[15:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/pulse_detected" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_detected</obj_property>
-         <obj_property name="ObjectShortName">pulse_detected</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage1" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1[15:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1[15:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/new_raw_measurement" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_raw_measurement</obj_property>
+         <obj_property name="ObjectShortName">new_raw_measurement</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/signal_out" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">signal_out[23:0]</obj_property>
-         <obj_property name="ObjectShortName">signal_out[23:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/filtered_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_area[31:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage1_area" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_area[31:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_area[31:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/filtered_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_extrema[15:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/new_stage1_area" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">new_stage1_area</obj_property>
-         <obj_property name="ObjectShortName">new_stage1_area</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/new_filtered_measurement" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_filtered_measurement</obj_property>
+         <obj_property name="ObjectShortName">new_filtered_measurement</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage2" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2[15:0]</obj_property>
-         <obj_property name="ObjectShortName">stage2[15:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ffffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/slope_out" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_out[23:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_out[23:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/slope_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_area[31:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage2_area" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_area[31:0]</obj_property>
-         <obj_property name="ObjectShortName">stage2_area[31:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/slope_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_extrema[15:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/new_stage2_area" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">new_stage2_area</obj_property>
-         <obj_property name="ObjectShortName">new_stage2_area</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/new_slope_measurement" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_slope_measurement</obj_property>
+         <obj_property name="ObjectShortName">new_slope_measurement</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/pulse_detected" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_detected</obj_property>
-         <obj_property name="ObjectShortName">pulse_detected</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/pulse_area_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_area_threshold[30:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_area_threshold[30:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/pulse_area" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_area[31:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_area[31:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/pulse_length" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_length[15:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_length[15:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/accept_pulse" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">accept_pulse</obj_property>
-         <obj_property name="ObjectShortName">accept_pulse</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/reject_pulse" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">reject_pulse</obj_property>
-         <obj_property name="ObjectShortName">reject_pulse</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/peak" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">peak[15:0]</obj_property>
-         <obj_property name="ObjectShortName">peak[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/new_peak" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">new_peak</obj_property>
-         <obj_property name="ObjectShortName">new_peak</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/minima_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">minima_int[23:0]</obj_property>
-         <obj_property name="ObjectShortName">minima_int[23:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/minima_time_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">minima_time_int[15:0]</obj_property>
-         <obj_property name="ObjectShortName">minima_time_int[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/minima" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">minima[15:0]</obj_property>
-         <obj_property name="ObjectShortName">minima[15:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/minima_time" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">minima_time[15:0]</obj_property>
-         <obj_property name="ObjectShortName">minima_time[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/cfd_value" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_value[15:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_value[15:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/new_cfd_value" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">new_cfd_value</obj_property>
-         <obj_property name="ObjectShortName">new_cfd_value</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/baseline_subtraction" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_subtraction</obj_property>
+         <obj_property name="ObjectShortName">baseline_subtraction</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/baseline_timeconstant" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">baseline_timeconstant[31:0]</obj_property>
          <obj_property name="ObjectShortName">baseline_timeconstant[31:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/baseline_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline_threshold[9:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline_threshold[9:0]</obj_property>
+         <obj_property name="ElementShortName">baseline_threshold[10:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_threshold[10:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/baseline_count_threshold" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">baseline_count_threshold[17:0]</obj_property>
@@ -434,77 +574,65 @@
          <obj_property name="ElementShortName">baseline_average_order</obj_property>
          <obj_property name="ObjectShortName">baseline_average_order</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage1_config_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_config_data[7:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_config_data[7:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/filter_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_config_data[7:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage1_config_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_config_valid</obj_property>
-         <obj_property name="ObjectShortName">stage1_config_valid</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/filter_config_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_valid</obj_property>
+         <obj_property name="ObjectShortName">filter_config_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage1_config_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_config_ready</obj_property>
-         <obj_property name="ObjectShortName">stage1_config_ready</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/filter_config_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_ready</obj_property>
+         <obj_property name="ObjectShortName">filter_config_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage1_reload_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_reload_data[31:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_reload_data[31:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/filter_reload_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_data[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage1_reload_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_reload_valid</obj_property>
-         <obj_property name="ObjectShortName">stage1_reload_valid</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/filter_reload_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_valid</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage1_reload_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_reload_ready</obj_property>
-         <obj_property name="ObjectShortName">stage1_reload_ready</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/filter_reload_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_ready</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage1_reload_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_reload_last</obj_property>
-         <obj_property name="ObjectShortName">stage1_reload_last</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/filter_reload_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_last</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_last</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage2_config_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_config_data[7:0]</obj_property>
-         <obj_property name="ObjectShortName">stage2_config_data[7:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/differentiator_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_config_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">differentiator_config_data[7:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage2_config_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_config_valid</obj_property>
-         <obj_property name="ObjectShortName">stage2_config_valid</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/differentiator_config_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_config_valid</obj_property>
+         <obj_property name="ObjectShortName">differentiator_config_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage2_config_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_config_ready</obj_property>
-         <obj_property name="ObjectShortName">stage2_config_ready</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/differentiator_config_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_config_ready</obj_property>
+         <obj_property name="ObjectShortName">differentiator_config_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage2_reload_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_reload_data[31:0]</obj_property>
-         <obj_property name="ObjectShortName">stage2_reload_data[31:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/differentiator_reload_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_data[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage2_reload_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_reload_valid</obj_property>
-         <obj_property name="ObjectShortName">stage2_reload_valid</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/differentiator_reload_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_valid</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage2_reload_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_reload_ready</obj_property>
-         <obj_property name="ObjectShortName">stage2_reload_ready</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/differentiator_reload_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_ready</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/stage2_reload_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">stage2_reload_last</obj_property>
-         <obj_property name="ObjectShortName">stage2_reload_last</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/differentiator_reload_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_last</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_last</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/constant_fraction" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">constant_fraction[15:0]</obj_property>
-         <obj_property name="ObjectShortName">constant_fraction[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/pulse_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_threshold[22:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_threshold[22:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/slope_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_threshold[22:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_threshold[22:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/baseline" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline[15:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline[15:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_relative" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_relative</obj_property>
+         <obj_property name="ObjectShortName">cfd_relative</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/stage1_out" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">stage1_out[47:0]</obj_property>
@@ -514,13 +642,25 @@
          <obj_property name="ElementShortName">stage2_out[47:0]</obj_property>
          <obj_property name="ObjectShortName">stage2_out[47:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/signal_reg" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">signal_reg[23:0]</obj_property>
-         <obj_property name="ObjectShortName">signal_reg[23:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[14:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/stage1_input" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_input[17:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_input[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/baseline_estimate" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_estimate[15:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_estimate[15:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/baseline_range_error" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">baseline_range_error</obj_property>
          <obj_property name="ObjectShortName">baseline_range_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/raw_fir_delay" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_fir_delay[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_fir_delay[15:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/raw_cfd_delay" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">raw_cfd_delay[15:0]</obj_property>
@@ -533,10 +673,6 @@
       <wvobject fp_name="/dsp_tb/UUT/baseline_cfd_delay" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">baseline_cfd_delay[15:0]</obj_property>
          <obj_property name="ObjectShortName">baseline_cfd_delay[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/signal_cfd_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">signal_cfd_delay[23:0]</obj_property>
-         <obj_property name="ObjectShortName">signal_cfd_delay[23:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/slope_positive" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">slope_positive</obj_property>
@@ -554,17 +690,13 @@
          <obj_property name="ElementShortName">slope_was_below_threshold</obj_property>
          <obj_property name="ObjectShortName">slope_was_below_threshold</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/slope_armed" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_armed</obj_property>
-         <obj_property name="ObjectShortName">slope_armed</obj_property>
-      </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/cfd_threshold_reg" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_threshold_reg[40:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_threshold_reg[40:0]</obj_property>
+         <obj_property name="ElementShortName">cfd_threshold_reg[42:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_threshold_reg[42:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/cfd_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_threshold[40:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_threshold[40:0]</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_threshold_reg2" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_threshold_reg2[42:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_threshold_reg2[42:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/above_cfd_threshold" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">above_cfd_threshold</obj_property>
@@ -574,17 +706,9 @@
          <obj_property name="ElementShortName">was_above_cfd_threshold</obj_property>
          <obj_property name="ObjectShortName">was_above_cfd_threshold</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/cfd_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_valid</obj_property>
-         <obj_property name="ObjectShortName">cfd_valid</obj_property>
-      </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/slope_cfd_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_cfd_delay[23:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_cfd_delay[23:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/signal_below_threshold" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">signal_below_threshold</obj_property>
-         <obj_property name="ObjectShortName">signal_below_threshold</obj_property>
+         <obj_property name="ElementShortName">slope_cfd_delay[15:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_cfd_delay[15:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/signal_above_0" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">signal_above_0</obj_property>
@@ -594,6 +718,10 @@
          <obj_property name="ElementShortName">slope_above_0</obj_property>
          <obj_property name="ObjectShortName">slope_above_0</obj_property>
       </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/raw_above_0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_above_0</obj_property>
+         <obj_property name="ObjectShortName">raw_above_0</obj_property>
+      </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/signal_below_0" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">signal_below_0</obj_property>
          <obj_property name="ObjectShortName">signal_below_0</obj_property>
@@ -602,21 +730,21 @@
          <obj_property name="ElementShortName">slope_below_0</obj_property>
          <obj_property name="ObjectShortName">slope_below_0</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/signal_above_threshold" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">signal_above_threshold</obj_property>
-         <obj_property name="ObjectShortName">signal_above_threshold</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/pulse_start" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_start</obj_property>
-         <obj_property name="ObjectShortName">pulse_start</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/raw_below_0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_below_0</obj_property>
+         <obj_property name="ObjectShortName">raw_below_0</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/signal_area_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">signal_area_int[39:0]</obj_property>
-         <obj_property name="ObjectShortName">signal_area_int[39:0]</obj_property>
+         <obj_property name="ElementShortName">signal_area_int[40:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_area_int[40:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/slope_area_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_area_int[39:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_area_int[39:0]</obj_property>
+         <obj_property name="ElementShortName">slope_area_int[40:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_area_int[40:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/raw_area_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_area_int[33:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_area_int[33:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/signal_was_above_0" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">signal_was_above_0</obj_property>
@@ -633,6 +761,62 @@
       <wvobject fp_name="/dsp_tb/UUT/slope_was_below_0" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">slope_was_below_0</obj_property>
          <obj_property name="ObjectShortName">slope_was_below_0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/raw_was_above_0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_was_above_0</obj_property>
+         <obj_property name="ObjectShortName">raw_was_above_0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/raw_was_below_0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_was_below_0</obj_property>
+         <obj_property name="ObjectShortName">raw_was_below_0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_end" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_end</obj_property>
+         <obj_property name="ObjectShortName">pulse_end</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/slope_negative" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_negative</obj_property>
+         <obj_property name="ObjectShortName">slope_negative</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/raw_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/slope_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/raw_extrema_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_extrema_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_extrema_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_extrema_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_extrema_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_extrema_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/slope_extrema_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_extrema_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_extrema_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/pulse_extrema_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_extrema_int[24:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_extrema_int[24:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/signal_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_xing</obj_property>
+         <obj_property name="ObjectShortName">signal_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/flags" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">flags[1:0]</obj_property>
+         <obj_property name="ObjectShortName">flags[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/flags_cfd_delay" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">flags_cfd_delay[1:0]</obj_property>
+         <obj_property name="ObjectShortName">flags_cfd_delay[1:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

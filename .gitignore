@@ -50,3 +50,4 @@ matlab/.Xil/
 matlab/slprj/
 matlab/tes_traces/
 matlab/wavedata/
+*.mat

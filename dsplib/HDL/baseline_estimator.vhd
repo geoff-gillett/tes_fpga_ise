@@ -57,7 +57,7 @@ architecture most_frequent of baseline_estimator is
 
 signal baseline_sample:std_logic_vector(BASELINE_BITS-1 downto 0);
 signal baseline_sample_valid:boolean;
-signal most_frequent :std_logic_vector(BASELINE_BITS-1 downto 0);
+signal most_frequent:std_logic_vector(BASELINE_BITS-1 downto 0);
 
 signal most_frequent_av:signed(OUT_BITS-1 downto 0);
 signal new_most_frequent:boolean;

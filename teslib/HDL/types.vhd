@@ -36,7 +36,7 @@ constant SAMPLE_BITS:integer:=ADC_BITS+1;
 -- Bits in a processed sample
 constant SIGNAL_BITS:integer:=16;
 constant SIGNAL_FRAC:integer:=1;
-constant SLOPE_FRAC:integer:=9;
+constant SLOPE_FRAC:integer:=8;
 -- Bits in the size field of an event
 constant SIZE_BITS:integer:=16; 
 -- Bits in a relative time

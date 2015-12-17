@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="baseline_estimator_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="baseline_estimator_tb" />
+            <top_module name="functions" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="types" />
+            <top_module name="types" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="6" />
+   <wvobject fp_name="group38" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/baseline_estimator_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[14:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/sample_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/timeconstant" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">threshold[6:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[6:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/count_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">count_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/average_order" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">average_order</obj_property>
+         <obj_property name="ObjectShortName">average_order</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/baseline_estimate" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_estimate[15:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_estimate[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/range_error" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">range_error</obj_property>
+         <obj_property name="ObjectShortName">range_error</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group37" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[14:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/sample_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/timeconstant" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">threshold[6:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[6:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/count_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">count_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/average_order" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">average_order</obj_property>
+         <obj_property name="ObjectShortName">average_order</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/baseline_estimate" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_estimate[15:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_estimate[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/range_error" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">range_error</obj_property>
+         <obj_property name="ObjectShortName">range_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/baseline_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_sample[7:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_sample[7:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/baseline_sample_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_sample_valid</obj_property>
+         <obj_property name="ObjectShortName">baseline_sample_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/most_frequent_av" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent_av[15:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_av[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/most_frequent" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent[7:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[7:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/new_most_frequent" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_most_frequent</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group63" type="group">
+      <obj_property name="label">most frequent</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/timeconstant" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[7:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[7:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/sample_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/most_frequent" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent[7:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[7:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/new_value" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_value</obj_property>
+         <obj_property name="ObjectShortName">new_value</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_ready</obj_property>
+         <obj_property name="ObjectShortName">mca_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/timer" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">timer[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timer[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/timeout" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">timeout</obj_property>
+         <obj_property name="ObjectShortName">timeout</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/readable" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/most_frequent_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent_int[7:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_int[7:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/max_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">max_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_count[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/new_max" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_max</obj_property>
+         <obj_property name="ObjectShortName">new_max</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/address_to_clear" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">address_to_clear[7:0]</obj_property>
+         <obj_property name="ObjectShortName">address_to_clear[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/clear_mca" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">clear_mca</obj_property>
+         <obj_property name="ObjectShortName">clear_mca</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/clear_done" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">clear_done</obj_property>
+         <obj_property name="ObjectShortName">clear_done</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group99" type="group">
+      <obj_property name="label">MCA</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/bin" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">bin[7:0]</obj_property>
+         <obj_property name="ObjectShortName">bin[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/bin_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bin_valid</obj_property>
+         <obj_property name="ObjectShortName">bin_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">overflow</obj_property>
+         <obj_property name="ObjectShortName">overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/swap_buffer" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">swap_buffer</obj_property>
+         <obj_property name="ObjectShortName">swap_buffer</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/readable" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/total" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">total[0:0]</obj_property>
+         <obj_property name="ObjectShortName">total[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/most_frequent" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent[7:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/max_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">max_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_count[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/new_max" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_max</obj_property>
+         <obj_property name="ObjectShortName">new_max</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/bin_to_read" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">bin_to_read[7:0]</obj_property>
+         <obj_property name="ObjectShortName">bin_to_read[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/read_bin" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">read_bin</obj_property>
+         <obj_property name="ObjectShortName">read_bin</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/wr_buffer" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">wr_buffer</obj_property>
+         <obj_property name="ObjectShortName">wr_buffer</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/rd_buffer" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">rd_buffer</obj_property>
+         <obj_property name="ObjectShortName">rd_buffer</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/write0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">write0</obj_property>
+         <obj_property name="ObjectShortName">write0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/write1" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">write1</obj_property>
+         <obj_property name="ObjectShortName">write1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/ready0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready0</obj_property>
+         <obj_property name="ObjectShortName">ready0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/new_max0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_max0</obj_property>
+         <obj_property name="ObjectShortName">new_max0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/new_max1" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_max1</obj_property>
+         <obj_property name="ObjectShortName">new_max1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/read_en0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">read_en0</obj_property>
+         <obj_property name="ObjectShortName">read_en0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/read_en1" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">read_en1</obj_property>
+         <obj_property name="ObjectShortName">read_en1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/swap_buffer_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">swap_buffer_int</obj_property>
+         <obj_property name="ObjectShortName">swap_buffer_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/swap_buffer_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">swap_buffer_reg</obj_property>
+         <obj_property name="ObjectShortName">swap_buffer_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/valid_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid_reg</obj_property>
+         <obj_property name="ObjectShortName">valid_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/most_frequent0" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent0[7:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent0[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/most_frequent1" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent1[7:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent1[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/max_count0" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">max_count0[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_count0[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/max_count1" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">max_count1[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_count1[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/count0" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">count0[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count0[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/count1" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">count1[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count1[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/readable0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">readable0</obj_property>
+         <obj_property name="ObjectShortName">readable0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/readable1" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">readable1</obj_property>
+         <obj_property name="ObjectShortName">readable1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/readable_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">readable_int</obj_property>
+         <obj_property name="ObjectShortName">readable_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/total_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">total_reg[0:0]</obj_property>
+         <obj_property name="ObjectShortName">total_reg[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/total_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">total_int[0:0]</obj_property>
+         <obj_property name="ObjectShortName">total_int[0:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group141" type="group">
+      <obj_property name="label">MCA buffer0</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/bin" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">bin[7:0]</obj_property>
+         <obj_property name="ObjectShortName">bin[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/bin_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bin_valid</obj_property>
+         <obj_property name="ObjectShortName">bin_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">overflow</obj_property>
+         <obj_property name="ObjectShortName">overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/write" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">write</obj_property>
+         <obj_property name="ObjectShortName">write</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/most_frequent" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent[7:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/max_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">max_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_count[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/new_max" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_max</obj_property>
+         <obj_property name="ObjectShortName">new_max</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/readable" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/bin_to_read" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">bin_to_read[7:0]</obj_property>
+         <obj_property name="ObjectShortName">bin_to_read[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/read_count" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">read_count</obj_property>
+         <obj_property name="ObjectShortName">read_count</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/mca" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mca[0:255]</obj_property>
+         <obj_property name="ObjectShortName">mca[0:255]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/wr_en" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">wr_en</obj_property>
+         <obj_property name="ObjectShortName">wr_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/clear" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">clear</obj_property>
+         <obj_property name="ObjectShortName">clear</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/clear_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">clear_reg</obj_property>
+         <obj_property name="ObjectShortName">clear_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/rd_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">rd_addr[7:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_addr[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/wr_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">wr_addr[7:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_addr[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/clear_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">clear_addr[7:0]</obj_property>
+         <obj_property name="ObjectShortName">clear_addr[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/ram_out1" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ram_out1[17:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_out1[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/old_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">old_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">old_count[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/newcount" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">newcount[17:0]</obj_property>
+         <obj_property name="ObjectShortName">newcount[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/maxcount_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">maxcount_int[17:0]</obj_property>
+         <obj_property name="ObjectShortName">maxcount_int[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/ram_out2" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ram_out2[17:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_out2[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream[17:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/inc" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">inc[1:0]</obj_property>
+         <obj_property name="ObjectShortName">inc[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/incremented_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">incremented_count[18:0]</obj_property>
+         <obj_property name="ObjectShortName">incremented_count[18:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/saturated" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">saturated</obj_property>
+         <obj_property name="ObjectShortName">saturated</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/newcount_pipe" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">newcount_pipe[1:2]</obj_property>
+         <obj_property name="ObjectShortName">newcount_pipe[1:2]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/rw_collision" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">rw_collision[1:2]</obj_property>
+         <obj_property name="ObjectShortName">rw_collision[1:2]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/collided" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">collided</obj_property>
+         <obj_property name="ObjectShortName">collided</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/write_pipe" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">write_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">write_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/bin_pipe" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">bin_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">bin_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/valid_pipe" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">valid_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">valid_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/overflow_pipe" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">overflow_pipe[1:5]</obj_property>
+         <obj_property name="ObjectShortName">overflow_pipe[1:5]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/collision" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">collision[1:3]</obj_property>
+         <obj_property name="ObjectShortName">collision[1:3]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/address_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">address_bits</obj_property>
+         <obj_property name="ObjectShortName">address_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/counter_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">counter_bits</obj_property>
+         <obj_property name="ObjectShortName">counter_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/mostFrequent/mca/buffer0/inc_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">inc_bits</obj_property>
+         <obj_property name="ObjectShortName">inc_bits</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group141" type="group">
+      <obj_property name="label">average</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/averageing/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/averageing/enable" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">enable</obj_property>
+         <obj_property name="ObjectShortName">enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/averageing/enable_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">enable_reg</obj_property>
+         <obj_property name="ObjectShortName">enable_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/averageing/sample_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">sample_int[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/averageing/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[7:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[7:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/averageing/order" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">order</obj_property>
+         <obj_property name="ObjectShortName">order</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/averageing/average" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">average[15:0]</obj_property>
+         <obj_property name="ObjectShortName">average[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/averageing/stage" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage[1:6]</obj_property>
+         <obj_property name="ObjectShortName">stage[1:6]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/baseline_estimator_tb/UUT/averageing/reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reg[0:5]</obj_property>
+         <obj_property name="ObjectShortName">reg[0:5]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
