@@ -1,4 +1,5 @@
 function [c,norm] = differentiator(n)
+
 %SMOOTHER calculate the coefficients for a noise robust FIR smoother
 % see
 % http://www.holoborodko.com/pavel/numerical-methods/noise-robust-smoothing-filter/#id3103080513"
@@ -8,6 +9,7 @@ function [c,norm] = differentiator(n)
 % n (odd) filter length
 % c the vector of coefficients
 % norm the normaisation = 1/(2^(2m)+1) where m=(n-1)/2
+
 if mod(n,2) == 0
     error('n must be odd')
 end

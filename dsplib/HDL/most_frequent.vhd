@@ -174,7 +174,7 @@ if rising_edge(clk) then
       else
         timer <= timeconstant;
       end if;
-    elsif mca_ready then
+    elsif mca_ready and not timeout then
       timer <= timer-1;
     end if;
   end if;

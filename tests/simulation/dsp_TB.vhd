@@ -27,19 +27,18 @@ library dsplib;
 
 entity dsp_TB is
 generic(
-	THRESHOLD_BITS:integer:=25;
-	THRESHOLD_FRAC:integer:=9;
-	INTERSTAGE_SHIFT:integer:=25;
+	THRESHOLD_BITS:integer:=18;
+	THRESHOLD_FRAC:integer:=3;
 	STAGE1_IN_BITS:integer:=18;
 	STAGE1_IN_FRAC:integer:=3;
-	STAGE1_BITS:integer:=48;
-	STAGE1_FRAC:integer:=28;
-	STAGE2_BITS:integer:=48;
-	STAGE2_FRAC:integer:=28;
-  BASELINE_BITS:integer:=12;
+	STAGE1_BITS:integer:=23;
+	STAGE1_FRAC:integer:=3;
+	STAGE2_BITS:integer:=28;
+	STAGE2_FRAC:integer:=8;
+  BASELINE_BITS:integer:=10;
   BASELINE_COUNTER_BITS:integer:=18;
   BASELINE_TIMECONSTANT_BITS:integer:=32;
-  BASELINE_MAX_AVERAGE_ORDER:integer:=8;
+  BASELINE_MAX_AVERAGE_ORDER:integer:=12;
   CFD_BITS:integer:=18;
   CFD_FRAC:integer:=17
 );
@@ -71,10 +70,9 @@ signal baseline_threshold:unsigned(BASELINE_BITS-2 downto 0);
 signal baseline_count_threshold:unsigned(BASELINE_COUNTER_BITS-1 downto 0);
 signal baseline_average_order:natural range 0 to BASELINE_MAX_AVERAGE_ORDER;
 signal raw:signal_t;
-signal baseline:signal_t;
 signal adc_baseline:adc_sample_t;
 signal constant_fraction:unsigned(CFD_BITS-2 downto 0);
-signal slope_threshold:unsigned(THRESHOLD_BITS-2 downto 0);
+signal slope_threshold:unsigned(SIGNAL_BITS-1 downto 0);
 signal filtered:signal_t;
 signal slope:signal_t;
 signal raw_area,filtered_area,slope_area:area_t;
@@ -91,18 +89,15 @@ signal pulse_extrema:signal_t;
 signal new_pulse_measurement:boolean;
 signal slope_threshold_xing:boolean;
 signal cfd:boolean;
-signal pulse_length:time_t;
+signal minima:signal_t;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
---
 
---
 UUT:entity dsplib.dsp
 generic map(
-  THRESHOLD_BITS => THRESHOLD_BITS,
-  THRESHOLD_FRAC => THRESHOLD_FRAC,
-  INTERSTAGE_SHIFT => INTERSTAGE_SHIFT,
+  WIDTH => THRESHOLD_BITS,
+  FRAC => THRESHOLD_FRAC,
   STAGE1_IN_BITS => STAGE1_IN_BITS,
   STAGE1_IN_FRAC => STAGE1_IN_FRAC,
   STAGE1_BITS => STAGE1_BITS,
@@ -146,27 +141,28 @@ port map(
   slope_threshold => slope_threshold,
   raw_area => raw_area,
   raw_extrema => raw_extrema,
-  new_raw_measurement => new_raw_measurement,
+  raw_measurement_valid => new_raw_measurement,
   filtered_area => filtered_area,
   filtered_extrema => filtered_extrema,
-  new_filtered_measurement => new_filtered_measurement,
+  filtered_measurement_valid => new_filtered_measurement,
   slope_area => slope_area,
   slope_extrema => slope_extrema,
-  new_slope_measurement => new_slope_measurement,
+  slope_measuremen_validt => new_slope_measurement,
   pulse_area => pulse_area,
-  pulse_length => pulse_length,
+  --pulse_length => pulse_length,
   pulse_extrema => pulse_extrema,
-  new_pulse_measurement => new_pulse_measurement,
-  baseline => baseline,
+  pulse_measurement_valid => new_pulse_measurement,
+  --baseline => baseline,
   raw => raw,
   filtered => filtered,
   slope => slope,
   slope_threshold_xing => slope_threshold_xing,
   pulse_detected => pulse_detected,
   peak => peak,
+  minima => minima,
   cfd => cfd
 );
---
+
 stimulus:process is
 begin
 adc_sample <= (others => '0');
@@ -180,16 +176,16 @@ differentiator_config_valid <= FALSE;
 differentiator_reload_data <= (others => '0');
 differentiator_reload_valid <= FALSE;
 differentiator_reload_last <= FALSE;
-pulse_threshold <= to_unsigned(400,THRESHOLD_BITS-THRESHOLD_FRAC-1) & 
+pulse_threshold <= to_unsigned(300,THRESHOLD_BITS-THRESHOLD_FRAC-1) & 
 										to_unsigned(0,THRESHOLD_FRAC);
-slope_threshold <= to_unsigned(10,THRESHOLD_BITS-THRESHOLD_FRAC-1) & 
-										to_unsigned(0,THRESHOLD_FRAC);
-baseline_timeconstant <= to_unsigned(2**16,BASELINE_TIMECONSTANT_BITS);
+slope_threshold <= to_unsigned(10,SIGNAL_BITS-SLOPE_FRAC) & 
+										to_unsigned(0,SLOPE_FRAC);
+baseline_timeconstant <= to_unsigned(2**15,BASELINE_TIMECONSTANT_BITS);
 baseline_threshold <= to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
 baseline_count_threshold <= to_unsigned(100,BASELINE_COUNTER_BITS);
-baseline_average_order <= 5;
-adc_baseline <= to_std_logic(to_unsigned(300,ADC_BITS));
-constant_fraction <= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); -- 20%
+baseline_average_order <= 4;
+adc_baseline <= to_std_logic(to_unsigned(0,ADC_BITS));
+constant_fraction <= to_unsigned((2**17)/5,CFD_BITS-1); -- 20%
 baseline_subtraction <= TRUE;
 cfd_relative <= TRUE;
 wait for CLK_PERIOD;
@@ -212,11 +208,11 @@ wait for CLK_PERIOD;
 adc_sample <= to_std_logic(to_unsigned(512,ADC_BITS));
 wait for CLK_PERIOD;
 adc_sample <= to_std_logic(to_unsigned(256,ADC_BITS));
-wait for CLK_PERIOD;
-adc_sample <= (others => '0');
-wait for CLK_PERIOD*32;
-adc_sample <= to_std_logic(to_unsigned(256,ADC_BITS));
-wait for CLK_PERIOD;
+wait for CLK_PERIOD*16;
+--adc_sample <= (others => '0');
+--wait for CLK_PERIOD*32;
+--adc_sample <= to_std_logic(to_unsigned(256,ADC_BITS));
+--wait for CLK_PERIOD;
 adc_sample <= to_std_logic(to_unsigned(512,ADC_BITS));
 wait for CLK_PERIOD;
 adc_sample <= to_std_logic(to_unsigned(1024,ADC_BITS));

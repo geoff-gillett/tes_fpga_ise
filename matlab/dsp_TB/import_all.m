@@ -5,3 +5,5 @@ import_peaks
 import_pulsemeasurements
 import_pulsestarts
 import_slopexings
+import_mostfrequent
+import_mftimeout

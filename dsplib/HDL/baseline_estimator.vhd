@@ -47,20 +47,25 @@ port(
   -- count required before adding to average
   count_threshold:in unsigned(COUNTER_BITS-1 downto 0);
   average_order:natural range 0 to MAX_AVERAGE_ORDER;
+  --only include a value in average if it different from the previous value
+  new_only:in boolean;
   --
   baseline_estimate:out signed(OUT_BITS-1 downto 0);
   range_error:out boolean
 );
 end entity baseline_estimator;
---TODO bring start_threshold into the picture
+
 architecture most_frequent of baseline_estimator is
 
 signal baseline_sample:std_logic_vector(BASELINE_BITS-1 downto 0);
 signal baseline_sample_valid:boolean;
 signal most_frequent:std_logic_vector(BASELINE_BITS-1 downto 0);
-
+signal previous_mf:std_logic_vector(BASELINE_BITS-1 downto 0);
+signal mf_value:signed(BASELINE_BITS-1 downto 0);
+signal av_enable:boolean;
 signal most_frequent_av:signed(OUT_BITS-1 downto 0);
 signal new_most_frequent:boolean;
+signal new_mf:boolean;
 
 begin
 --FIXME I think the timing might be off for sample_valid
@@ -88,7 +93,7 @@ if rising_edge(clk) then
 	end if;
 end if;
 end process baselineControl;
---
+
 mostFrequent:entity work.most_frequent
 generic map(
   ADDRESS_BITS => BASELINE_BITS,
@@ -105,8 +110,36 @@ port map(
   most_frequent => most_frequent,
   new_value => new_most_frequent
 );
---
-averageing:entity work.average_filter
+
+new_mf <= previous_mf /= most_frequent;
+newOnly:process (clk) is
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			previous_mf <= (others => '0');
+			av_enable <= FALSE;
+		else
+			if new_most_frequent then
+				previous_mf <= most_frequent;
+				if new_only then
+					if new_mf then
+						av_enable <= TRUE;
+						mf_value <= signed(most_frequent);
+					else
+						av_enable <= FALSE;	
+					end if;
+				else
+					mf_value <= signed(most_frequent);
+					av_enable <= TRUE;
+				end if;
+			else
+				av_enable <= FALSE;
+			end if;
+		end if;
+	end if;
+end process newOnly;
+
+average:entity work.average_filter
 generic map(
   MAX_ORDER => MAX_AVERAGE_ORDER,
   IN_BITS   => BASELINE_BITS,
@@ -114,8 +147,8 @@ generic map(
 )
 port map(
   clk => clk,
-  enable => new_most_frequent,
-  sample => signed(most_frequent),
+  enable => av_enable,
+  sample => mf_value,
   order => average_order,
   average => most_frequent_av
 );

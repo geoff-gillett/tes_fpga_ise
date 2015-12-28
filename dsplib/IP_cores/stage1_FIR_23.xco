@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 14.7
-# Date: Thu Nov 12 05:05:27 2015
+# Date: Thu Nov 12 04:54:05 2015
 #
 ##############################################################
 #
@@ -43,7 +43,7 @@ CSET bestprecision=false
 CSET channel_sequence=Basic
 CSET clock_frequency=300.0
 CSET coefficient_buffer_type=Automatic
-CSET coefficient_file=C:\TES_project\fpga_ise\vivado_sysgen\lowpass.coe
+CSET coefficient_file=C:\TES_project\fpga_ise\dsplib\IP_cores\lowpass_gaussian.coe
 CSET coefficient_fractional_bits=25
 CSET coefficient_reload=true
 CSET coefficient_sets=1
@@ -53,13 +53,13 @@ CSET coefficient_width=25
 CSET coefficientsource=COE_File
 CSET coefficientvector=6,0,-4,-3,5,6,-6,-13,7,44,64,44,7,-13,-6,6,5,-3,-4,0,6
 CSET columnconfig=23
-CSET component_name=stage2_FIR_23
+CSET component_name=stage1_FIR_23
 CSET data_buffer_type=Automatic
-CSET data_fractional_bits=3
+CSET data_fractional_bits=0
 CSET data_has_tlast=Not_Required
 CSET data_sign=Signed
 CSET data_tuser_width=1
-CSET data_width=18
+CSET data_width=15
 CSET decimation_rate=1
 CSET displayreloadorder=false
 CSET filter_architecture=Systolic_Multiply_Accumulate
@@ -84,7 +84,7 @@ CSET number_paths=1
 CSET optimization_goal=Speed
 CSET output_buffer_type=Automatic
 CSET output_rounding_mode=Full_Precision
-CSET output_width=48
+CSET output_width=45
 CSET passband_max=0.5
 CSET passband_min=0.0
 CSET pattern_list=P4-0,P4-1,P4-2,P4-3,P4-4
@@ -109,4 +109,4 @@ CSET zero_pack_factor=1
 MISC pkg_timestamp=2013-07-22T10:45:45Z
 # END Extra information
 GENERATE
-# CRC:  6021f36
+# CRC: b2377969

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="signal_measurement_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="signal_measurement_tb" />
+            <top_module name="std_logic_1164" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group10" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/signal_measurement_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/signal_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_in[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">area[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">extrema[17:0]</obj_property>
+         <obj_property name="ObjectShortName">extrema[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group27" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/signal_measurement_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/signal_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_in[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">xing</obj_property>
+         <obj_property name="ObjectShortName">xing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/above0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">above0</obj_property>
+         <obj_property name="ObjectShortName">above0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/was_above0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">was_above0</obj_property>
+         <obj_property name="ObjectShortName">was_above0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/below0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">below0</obj_property>
+         <obj_property name="ObjectShortName">below0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/was_below0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">was_below0</obj_property>
+         <obj_property name="ObjectShortName">was_below0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/area_int" type="array" db_ref_id="1">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">area_int[33:0]</obj_property>
+         <obj_property name="ObjectShortName">area_int[33:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="label">area_int[33:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/extrema_int" type="array" db_ref_id="1">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">extrema_int[17:0]</obj_property>
+         <obj_property name="ObjectShortName">extrema_int[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="label">area_int[33:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/signal_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_out[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/pos_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_xing</obj_property>
+         <obj_property name="ObjectShortName">pos_xing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/neg_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_xing</obj_property>
+         <obj_property name="ObjectShortName">neg_xing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">area[31:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffff00</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">extrema[17:0]</obj_property>
+         <obj_property name="ObjectShortName">extrema[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffff00</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffff00</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
