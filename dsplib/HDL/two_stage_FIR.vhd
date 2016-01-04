@@ -162,7 +162,7 @@ generic map(
 port map(
   clk => clk,
   data_in => stage1_out(WIDTH-1 downto 0),
-  delay => 42,
+  delay => 41,
   delayed => stage1_delayed
 );
 stage1 <= signed(stage1_delayed);

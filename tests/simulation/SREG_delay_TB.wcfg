@@ -14,7 +14,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="5" />
+   <WVObjectSize size="7" />
    <wvobject fp_name="/sreg_delay_tb/clk" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -23,16 +23,20 @@
       <obj_property name="ElementShortName">data_in[17:0]</obj_property>
       <obj_property name="ObjectShortName">data_in[17:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/sreg_delay_tb/delay" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">delay[5:0]</obj_property>
-      <obj_property name="ObjectShortName">delay[5:0]</obj_property>
+   <wvobject fp_name="/sreg_delay_tb/delay" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">delay</obj_property>
+      <obj_property name="ObjectShortName">delay</obj_property>
    </wvobject>
-   <wvobject fp_name="/sreg_delay_tb/delayed" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">delayed[17:0]</obj_property>
-      <obj_property name="ObjectShortName">delayed[17:0]</obj_property>
+   <wvobject fp_name="/sreg_delay_tb/delayed_sreg" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">delayed_sreg[17:0]</obj_property>
+      <obj_property name="ObjectShortName">delayed_sreg[17:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sreg_delay_tb/delayed_ram" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">delayed_ram[17:0]</obj_property>
+      <obj_property name="ObjectShortName">delayed_ram[17:0]</obj_property>
    </wvobject>
    <wvobject fp_name="group15" type="group">
-      <obj_property name="label">UUT</obj_property>
+      <obj_property name="label">SREG delay</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <wvobject fp_name="/sreg_delay_tb/UUT/clk" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">clk</obj_property>
@@ -42,13 +46,61 @@
          <obj_property name="ElementShortName">data_in[17:0]</obj_property>
          <obj_property name="ObjectShortName">data_in[17:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/sreg_delay_tb/UUT/delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">delay[5:0]</obj_property>
-         <obj_property name="ObjectShortName">delay[5:0]</obj_property>
+      <wvobject fp_name="/sreg_delay_tb/UUT/delay" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">delay</obj_property>
+         <obj_property name="ObjectShortName">delay</obj_property>
       </wvobject>
       <wvobject fp_name="/sreg_delay_tb/UUT/delayed" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">delayed[17:0]</obj_property>
          <obj_property name="ObjectShortName">delayed[17:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group23" type="group">
+      <obj_property name="label">RAM delay</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/data_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">data_in[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/delay" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">delay</obj_property>
+         <obj_property name="ObjectShortName">delay</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/delayed" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">delayed[17:0]</obj_property>
+         <obj_property name="ObjectShortName">delayed[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/ring" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ring[0:31]</obj_property>
+         <obj_property name="ObjectShortName">ring[0:31]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/delay_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">delay_addr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">delay_addr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/ring_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ring_addr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ring_addr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/data_out_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data_out_int[17:0]</obj_property>
+         <obj_property name="ObjectShortName">data_out_int[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/data_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">data_out[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/depth" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">depth</obj_property>
+         <obj_property name="ObjectShortName">depth</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sreg_delay_tb/UUT2/data_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">data_bits</obj_property>
+         <obj_property name="ObjectShortName">data_bits</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

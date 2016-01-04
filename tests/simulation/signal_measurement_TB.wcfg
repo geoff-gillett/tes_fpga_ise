@@ -61,9 +61,9 @@
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/signal_measurement_tb/UUT/xing" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">xing</obj_property>
-         <obj_property name="ObjectShortName">xing</obj_property>
+      <wvobject fp_name="/signal_measurement_tb/UUT/signal_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_reg[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_reg[17:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
@@ -83,6 +83,20 @@
          <obj_property name="ElementShortName">was_below0</obj_property>
          <obj_property name="ObjectShortName">was_below0</obj_property>
       </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/signal_reg2" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_reg2[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_reg2[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/above" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">above</obj_property>
+         <obj_property name="ObjectShortName">above</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/was_above" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">was_above</obj_property>
+         <obj_property name="ObjectShortName">was_above</obj_property>
+      </wvobject>
       <wvobject fp_name="/signal_measurement_tb/UUT/area_int" type="array" db_ref_id="1">
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="ElementShortName">area_int[33:0]</obj_property>
@@ -91,11 +105,9 @@
          <obj_property name="label">area_int[33:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/signal_measurement_tb/UUT/extrema_int" type="array" db_ref_id="1">
-         <obj_property name="DisplayName">label</obj_property>
          <obj_property name="ElementShortName">extrema_int[17:0]</obj_property>
          <obj_property name="ObjectShortName">extrema_int[17:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         <obj_property name="label">area_int[33:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/signal_measurement_tb/UUT/signal_out" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">signal_out[17:0]</obj_property>
@@ -104,11 +116,19 @@
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/pos_0xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_0xing</obj_property>
+         <obj_property name="ObjectShortName">pos_0xing</obj_property>
+      </wvobject>
       <wvobject fp_name="/signal_measurement_tb/UUT/pos_xing" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">pos_xing</obj_property>
          <obj_property name="ObjectShortName">pos_xing</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/signal_measurement_tb/UUT/neg_0xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_0xing</obj_property>
+         <obj_property name="ObjectShortName">neg_0xing</obj_property>
       </wvobject>
       <wvobject fp_name="/signal_measurement_tb/UUT/neg_xing" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">neg_xing</obj_property>

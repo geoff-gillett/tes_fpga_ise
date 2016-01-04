@@ -1,7 +1,7 @@
 #
 package require isim
 namespace import isim::*
-set fp [open "../dsp_TB.long_input" r]
+set fp [open "../dsp_TB.double_peak" r]
 fconfigure $fp -buffering line
 set out [open "../dsp_TB.output" w]
 set rawmeasurements [open "../dsp_TB.rawmeasurements" w]
@@ -38,16 +38,18 @@ puts -nonewline $settings [getsig baseline_average_order dec]
 puts -nonewline $settings ","
 puts $settings [getsig UUT/BASELINE_AV_FRAC dec] 
 close $settings
-#while {[gets $fp hexsample] >= 0} {}
-while {$i < 500000} {
-  gets $fp hexsample
+while {[gets $fp hexsample] >= 0} {
+#while {$i < 500000} {}
+  #gets $fp hexsample
 	incr i
 	setsig adc_sample $hexsample hex
 	puts -nonewline $out [getsig filtered dec]
 	puts -nonewline $out ","
 	puts -nonewline $out [getsig slope dec]
 	puts -nonewline $out ","
-	puts -nonewline $out [getsig raw dec]
+	puts -nonewline $out [getsig UUT/stage1_input dec]
+	puts -nonewline $out ","
+	puts -nonewline $out [getsig UUT/adc_sample dec]
 	puts -nonewline $out ","
 	puts $out [getsig UUT/baseline_estimate dec]
 	if [getsig new_raw_measurement] {
@@ -105,7 +107,7 @@ while {$i < 500000} {
 		puts -nonewline $slopexings ","
 		puts -nonewline $slopexings [getsig filtered dec]
 		puts -nonewline $slopexings ","
-		puts -nonewline $slopexings [getsig slope dec]
+		puts $slopexings [getsig slope dec]
 	}
 	if [getsig UUT/baselineEstimator/mostFrequent/timeout dec] {
 		puts $mftimeout $i

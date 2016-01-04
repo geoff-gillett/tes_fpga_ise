@@ -32,11 +32,23 @@ signal clk:std_logic:='1';
 constant CLK_PERIOD:time:=4 ns;
 signal data_in:std_logic_vector(DATA_BITS-1 downto 0);
 signal delay:natural range 0 to DEPTH-1;
-signal delayed:std_logic_vector(DATA_BITS-1 downto 0);
+signal delayed_sreg,delayed_ram:std_logic_vector(DATA_BITS-1 downto 0);
 begin
 clk <= not clk after CLK_PERIOD/2;
 
 UUT:entity dsplib.SREG_delay
+generic map(
+  DEPTH     => DEPTH,
+  DATA_BITS => DATA_BITS
+)
+port map(
+  clk     => clk,
+  data_in => data_in,
+  delay   => delay,
+  delayed => delayed_sreg
+);
+
+UUT2:entity dsplib.RAM_delay
 	generic map(
 		DEPTH     => DEPTH,
 		DATA_BITS => DATA_BITS
@@ -45,11 +57,12 @@ UUT:entity dsplib.SREG_delay
 		clk     => clk,
 		data_in => data_in,
 		delay   => delay,
-		delayed => delayed
+		delayed => delayed_ram
 	);
+
 stimulus:process is
 begin
-delay <= 31;
+delay <= 0;
 data_in <= (others => '0');
 wait for CLK_PERIOD*2;
 data_in <= to_std_logic(1,DATA_BITS);

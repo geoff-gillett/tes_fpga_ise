@@ -17,8 +17,8 @@ use teslib.types.all;
 use teslib.functions.all;
 --------------------------------------------------------------------------------
 --! ring buffer single clock domain 
---! implemented as SDP BRAM
---! actual delay is delay+2 due to latency
+--! implemented as shift register
+--! actual delay is delay+3 due to latency (matches RAM architecture)
 -- maximum delay is DEPTH-1
 --------------------------------------------------------------------------------
 entity SREG_delay is
@@ -40,14 +40,17 @@ architecture sreg of SREG_delay is
 subtype word is std_logic_vector(DATA_BITS-1 downto 0);
 type pipeline is array (0 to DEPTH-1) of word;
 signal shifter:pipeline;
+signal delay_reg:word;
 --
        
 begin
 shift:process (clk) is
 begin
 if rising_edge(clk) then
-  shifter <= data_in & shifter(0 to DEPTH-2);
-  delayed <= shifter(delay);
+	shifter <= data_in & shifter(0 to DEPTH-2);
+ 	--this register is to match RAM implementation 
+  delay_reg <= shifter(delay);
+  delayed <= delay_reg;
 end if;
 end process shift;
 --

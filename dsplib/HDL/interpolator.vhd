@@ -27,6 +27,8 @@ port (
   --
   signal_in:in signed(WIDTH-1 downto 0);
   threshold:in signed(WIDTH-1 downto 0);
+  frac_delay:in signed(TIME_FRAC-1 downto 0);
+  
   clk_frac:out unsigned(TIME_FRAC-1 downto 0);
   valid:out boolean
 );
@@ -64,14 +66,26 @@ port map (
   m_axis_dout_tdata => data
 );
 
+delay:entity work.SREG_delay
+generic map(
+  DEPTH => 32,
+  DATA_BITS => WIDTH
+)
+port map(
+  clk => clk,
+  data_in => to_std_logic(signal_in),
+  delay => 27,
+  delayed => delayed
+);
+	
 name:process (clk) is
 begin
 	if rising_edge(clk) then
 		was_below <= below;
 		signal_reg <= signal_in;
 		signal_reg2 <= signal_reg;
-		dividend <= signal_reg2-signal_reg;
-		divisor <= threshold-signal_reg;
+		divisor <= signal_in-signal_reg;
+		dividend <= threshold-signal_reg;
 		xing <= not below and was_below;
 	end if;
 end process name;

@@ -1,10 +1,10 @@
 --------------------------------------------------------------------------------
 -- Engineer: Geoff Gillett
--- Date:29 Dec 2015
+-- Date:4 Jan 2016
 --
 -- Design Name: TES_digitiser
--- Module Name: interpolator_TB
--- Project Name: tests 
+-- Module Name: closest_xing_TB
+-- Project Name: 
 -- Target Devices: virtex6
 -- Tool versions: ISE 14.7
 --------------------------------------------------------------------------------
@@ -15,50 +15,60 @@ use ieee.numeric_std.all;
 --
 library teslib;
 use teslib.types.all;
-use teslib.functions.all;
 
 library dsplib;
 
-entity interpolator_TB is
+entity closest_xing_TB is
 generic(
-	WIDTH:integer:=18;
-	TIME_FRAC:integer:=8
+	WIDTH:integer:=18
 );
-end entity interpolator_TB;
+end entity closest_xing_TB;
 
-architecture testbench of interpolator_TB is
+architecture testbench of closest_xing_TB is
 
 signal clk:std_logic:='1';	
 constant CLK_PERIOD:time:=4 ns;
 signal signal_in:signed(WIDTH-1 downto 0);
 signal threshold:signed(WIDTH-1 downto 0);
-signal clk_frac:unsigned(TIME_FRAC-1 downto 0);
-signal valid:boolean;
+signal signal_out:signed(WIDTH-1 downto 0);
+signal pos:boolean;
+signal neg:boolean;
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity dsplib.interpolator
+UUT:entity dsplib.closest_xing
 generic map(
-  WIDTH => WIDTH,
-  TIME_FRAC => TIME_FRAC
+  WIDTH => WIDTH
 )
 port map(
   clk => clk,
   signal_in => signal_in,
   threshold => threshold,
-  clk_frac => clk_frac,
-  valid => valid
+  signal_out => signal_out,
+  pos => pos,
+  neg => neg
 );
 
 stimulus:process is
 begin
 signal_in <= (others => '0');
-threshold <= to_signed(128,WIDTH);
+threshold <= to_signed(32,WIDTH);
 wait for CLK_PERIOD*4;
-signal_in <= to_signed(256,WIDTH);
-wait for CLK_PERIOD;
+signal_in <= to_signed(32,WIDTH);
+wait for CLK_PERIOD*2;
 signal_in <= to_signed(0,WIDTH);
-
+wait for CLK_PERIOD;
+signal_in <= to_signed(33,WIDTH);
+wait for CLK_PERIOD;
+signal_in <= to_signed(30,WIDTH);
+wait for CLK_PERIOD;
+signal_in <= to_signed(131,WIDTH);
+wait for CLK_PERIOD*3;
+signal_in <= to_signed(-90,WIDTH);
+wait for CLK_PERIOD;
+signal_in <= to_signed(50,WIDTH);
+wait for CLK_PERIOD;
+signal_in <= to_signed(10,WIDTH);
 wait;
 end process stimulus;
 

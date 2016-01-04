@@ -36,8 +36,11 @@ signal area:signed(AREA_BITS-1 downto 0);
 signal extrema:signed(WIDTH-1 downto 0);
 signal valid:boolean;
 signal signal_out:signed(WIDTH-1 downto 0);
-signal pos_xing:boolean;
-signal neg_xing:boolean;
+signal pos_xing,pos0_xing:boolean;
+signal neg_xing,neg0_xing:boolean;
+signal pos_closest:boolean;
+signal neg_closest:boolean;
+signal threshold:signed(WIDTH-1 downto 0);
 
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -52,8 +55,13 @@ port map(
   reset => reset,
   signal_in => signal_in,
   signal_out => signal_out,
+  threshold => threshold,
   pos_xing => pos_xing,
   neg_xing => neg_xing,
+  pos_0xing => pos0_xing,
+  neg_0xing => neg0_xing,
+  pos_0closest => pos_closest,
+  neg_0closest => neg_closest,
   area => area,
   extrema => extrema,
   valid => valid
@@ -64,7 +72,8 @@ begin
 wait for CLK_PERIOD;
 reset <= '0';
 signal_in <= (others => '0');
-wait for CLK_PERIOD;
+threshold <= to_signed(32,WIDTH);
+wait for CLK_PERIOD*4;
 signal_in <= to_signed(128,WIDTH);
 wait for CLK_PERIOD*2;
 signal_in <= to_signed(0,WIDTH);

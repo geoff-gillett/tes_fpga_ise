@@ -18,9 +18,15 @@ use teslib.functions.all;
 --
 library dsplib;
 --
+--------------------------------------------------------------------------------
+--! ring buffer single clock domain 
+--! implemented as BRAM
+--! actual delay is delay+3 due to latency (matches RAM architecture)
+-- maximum delay is DEPTH-1
+--------------------------------------------------------------------------------
 entity RAM_delay_TB is
 generic(
-  ADDRESS_BITS:integer:=4; 
+  DEPTH:integer:=2**10; 
   DATA_BITS:integer:=18
 );
 end entity RAM_delay_TB;
@@ -31,15 +37,15 @@ signal clk:std_logic:='1';
 	
 constant CLK_PERIOD:time:=4 ns;
 signal data_in:std_logic_vector(DATA_BITS-1 downto 0);
-signal delay:unsigned(ADDRESS_BITS-1 downto 0);
+signal delay:natural range 0 to DEPTH-1;
 signal delayed:std_logic_vector(DATA_BITS-1 downto 0);
 begin
 clk <= not clk after CLK_PERIOD/2;
 
 UUT:entity  dsplib.RAM_delay
 	generic map(
-		ADDRESS_BITS => ADDRESS_BITS,
-		DATA_BITS    => DATA_BITS
+		DEPTH => DEPTH,
+		DATA_BITS  => DATA_BITS
 	)
 	port map(
 		clk     => clk,
@@ -50,7 +56,7 @@ UUT:entity  dsplib.RAM_delay
 
 stimulus:process is
 begin
-delay <= to_unsigned(0,ADDRESS_BITS);
+delay <= 0;
 data_in <= (others => '0');
 wait for CLK_PERIOD*2;
 data_in <= to_std_logic(1,DATA_BITS);
