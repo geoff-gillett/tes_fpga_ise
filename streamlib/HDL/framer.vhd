@@ -25,7 +25,7 @@ use work.all;
 entity framer is
 generic(
   BUS_CHUNKS:integer:=4;
-  ADDRESS_BITS:integer:=9
+  ADDRESS_BITS:integer:=10
 );
 port(
   clk:in std_logic;

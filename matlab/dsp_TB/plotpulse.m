@@ -11,42 +11,44 @@ peaks=evalin('base','peaks');
 cfd=evalin('base','cfd');
 slopexings=evalin('base','slopexings');
 
-s=pulsestarts(i)-pre;
-e=pulsestarts(i)+post;
+s=pulsestarts(1,i)-pre;
+e=pulsestarts(1,i)+post;
 
 %stairs(output(s:e,3)/2,'k')
 
-stairs(output(s:e,2)/256,'b')
+stairs(output(2,s:e)/256,'b')
 hold on
-stairs(output(s:e,1)/2,'r')
-plot(pulsestarts(i)-s+1,output(pulsestarts(i),1)/2,'xr')
+stairs(output(1,s:e)/2,'r')
+plot(pulsestarts(1,i)-s+1,output(1,pulsestarts(1,i))/2,'xr')
 
 %plot(output(s:e,4)/2,'g','linewidth',2)
-t=settings{4}/2^3;
+t=settings(4)/2^3;
 plot([1 pre+post+1],[t t],':k','linewidth',1);
-t=settings{5}/2^8;
+t=settings(5)/2^8;
 plot([1 pre+post+1],[t t],':k','linewidth',1);
 plot([1 pre+post+1],[0 0],'k','linewidth',1);
 
-for j=1:size(peaks,1)
-    if peaks(j,1) >= s && peaks(j,1) <= e
-        plot(peaks(j,1)-s+1,peaks(j,2)/2,'dr');        
-        plot([peaks(j,1)-s+1 peaks(j,1)-s+1], ...
-          [peaks(j,3)/2 peaks(j,2)/2],'-.k');
-        plot(peaks(j,1)-s+1,peaks(j,4)/256,'db');
+for j=1:size(peaks,2)
+    if peaks(1,j) >= s && peaks(1,j) <= e
+        plot(peaks(1,j)-s+1,peaks(2,j)/2,'dr'); 
+        plot(peaks(3,j)-s+1,peaks(4,j)/2,'dr'); 
+        plot(peaks(3,j)-s+1,peaks(6,j)/256,'db');
+        plot([peaks(1,j) peaks(3,j)]-s+1,[peaks(2,j) peaks(2,j)]/2,'-k');
+        plot([peaks(3,j) peaks(3,j)]-s+1,[peaks(2,j) peaks(4,j)]/2,'-k');
+        
     end
 end
 
-for j=1:size(slopexings,1)
-    if slopexings(j) >= s && slopexings(j) <= e
-        plot(slopexings(j,1)-s+1,slopexings(j,2)/2,'sr');
-        plot(slopexings(j,1)-s+1,slopexings(j,3)/256,'sb');
+for j=1:size(slopexings,2)
+    if slopexings(1,j) >= s && slopexings(1,j) <= e
+        plot(slopexings(1,j)-s+1,slopexings(2,j)/2,'sr');
+        plot(slopexings(1,j)-s+1,slopexings(3,j)/256,'sb');
     end
 end
 
-for j=1:size(cfd,1)
-    if cfd(j) >= s && cfd(j) <= e
-        plot(cfd(j)-s+1,cfd(j,2)/2,'ok');
+for j=1:size(cfd,2)
+    if cfd(1,j) >= s && cfd(1,j) <= e
+        plot(cfd(1,j)-s+1,cfd(2,j)/2,'ok');
     end
 end
 

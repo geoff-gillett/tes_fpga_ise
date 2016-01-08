@@ -85,6 +85,7 @@ signal slope_threshold_xing:boolean;
 signal cfd:boolean;
 signal minima:signal_t;
 signal cfd_error:boolean;
+signal peak_start:boolean;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -146,9 +147,10 @@ port map(
   filtered => filtered,
   pulse_valid => new_pulse_measurement,
   slope_threshold_xing => slope_threshold_xing,
-  pulse_detected => pulse_detected,
+  pulse_threshold_xing => pulse_detected,
   peak => peak,
-  minima => minima,
+  peak_start => peak_start,
+  peak_minima => minima,
   cfd => cfd,
   cfd_error => cfd_error
 );
@@ -165,16 +167,16 @@ differentiator_config_valid <= FALSE;
 differentiator_reload_data <= (others => '0');
 differentiator_reload_valid <= FALSE;
 differentiator_reload_last <= FALSE;
-pulse_threshold <= to_unsigned(10,WIDTH-FRAC-1) & 
+pulse_threshold <= to_unsigned(300,WIDTH-FRAC-1) & 
 										to_unsigned(0,FRAC);
-slope_threshold <= to_unsigned(3,WIDTH-SLOPE_FRAC-1) & 
+slope_threshold <= to_unsigned(10,WIDTH-SLOPE_FRAC-1) & 
 										to_unsigned(0,SLOPE_FRAC);
 baseline_timeconstant <= to_unsigned(2**15,BASELINE_TIMECONSTANT_BITS);
 baseline_threshold <= to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
 baseline_count_threshold <= to_unsigned(150,BASELINE_COUNTER_BITS);
 baseline_average_order <= 4;
 adc_baseline <= to_std_logic(to_unsigned(260,ADC_BITS));
-constant_fraction <= to_unsigned((2**17)/2,CFD_BITS-1); -- 20%
+constant_fraction <= to_unsigned((2**17)/4,CFD_BITS-1); -- 20%
 baseline_subtraction <= TRUE;
 cfd_relative <= TRUE;
 adc_sample <= adc_baseline;

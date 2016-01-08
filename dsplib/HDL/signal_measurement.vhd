@@ -44,6 +44,7 @@ port (
 end entity signal_measurement;
 
 architecture RTL of signal_measurement is
+--FIXME add saturation check on area remove shifts and do them outside
 constant AREA_WIDTH:integer:=AREA_BITS+FRAC-AREA_FRAC;
 signal area_int:signed(AREA_WIDTH-1 downto 0);
 signal extrema_int:signed(WIDTH-1 downto 0);

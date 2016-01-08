@@ -43,13 +43,13 @@ signal neg_xing_next,pos_xing_next:boolean;
 	
 begin
 	
-above <= to_0IfX(signal_reg) > threshold;
-below <= to_0IfX(signal_reg) < threshold;
+above <= to_0IfX(signal_reg) > to_0IfX(threshold);
+below <= to_0IfX(signal_reg) < to_0IfX(threshold);
 
 pos_int <= not below and was_below;
 neg_int <= not above and was_above;
 
-first_closest <= diff_reg < diff;
+first_closest <= to_0ifX(diff_reg) < to_0ifX(diff);
 
 reg:process (clk) is
 begin

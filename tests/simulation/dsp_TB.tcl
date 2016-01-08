@@ -1,20 +1,50 @@
 #
 package require isim
 namespace import isim::*
-set fp [open "../dsp_TB.double_peak" r]
+
+#TODO move this to isim package
+proc writeInt32 { fp signal } {
+	set val [getsig $signal dec]
+	if { [string equal $val TRUE] } {
+		set val 1
+  } 
+	if { [string equal $val FALSE] } {
+		set val 0
+  } 
+	if { [string equal $val x] } {
+		set val 0
+	}
+	set i [binary format i $val]
+	puts -nonewline $fp $i
+	return i
+}
+
+set fp [open "../dsp_TB.long_input" r]
 fconfigure $fp -buffering line
 set out [open "../dsp_TB.output" w]
+fconfigure $out -translation binary
 set rawmeasurements [open "../dsp_TB.rawmeasurements" w]
+fconfigure $rawmeasurements -translation binary
 set filteredmeasurements [open "../dsp_TB.filteredmeasurements" w]
+fconfigure $filteredmeasurements -translation binary
 set slopemeasurements [open "../dsp_TB.slopemeasurements" w]
+fconfigure $slopemeasurements -translation binary
 set mostfrequent [open "../dsp_TB.mostfrequent" w]
+fconfigure $mostfrequent -translation binary
 set pulsemeasurements [open "../dsp_TB.pulsemeasurements" w]
+fconfigure $pulsemeasurements -translation binary
 set pulsestarts [open "../dsp_TB.pulsestarts" w]
+fconfigure $pulsestarts -translation binary
 set peaks [open "../dsp_TB.peaks" w]
+fconfigure $peaks -translation binary
 set cfd [open "../dsp_TB.cfd" w]
+fconfigure $cfd -translation binary
 set slopexings [open "../dsp_TB.slopexings" w]
+fconfigure $slopexings -translation binary
 set settings [open "../dsp_TB.settings" w]
+fconfigure $settings -translation binary
 set mftimeout [open "../dsp_TB.mftimeout" w]
+fconfigure $mftimeout -translation binary
 restart
 wave add /
 wave add /dsp_TB
@@ -24,93 +54,77 @@ wave add /dsp_TB/UUT/baselineEstimator/mostFrequent
 wave add /dsp_TB/UUT/baselineEstimator/average
 runclks
 set i 0
-puts -nonewline $settings [getsig baseline_subtraction dec] 
-puts -nonewline $settings ","
-puts -nonewline $settings [getsig adc_baseline dec] 
-puts -nonewline $settings ","
-puts -nonewline $settings [getsig constant_fraction dec] 
-puts -nonewline $settings ","
-puts -nonewline $settings [getsig pulse_threshold dec] 
-puts -nonewline $settings ","
-puts -nonewline $settings [getsig slope_threshold dec] 
-puts -nonewline $settings ","
-puts -nonewline $settings [getsig baseline_average_order dec] 
-puts -nonewline $settings ","
-puts $settings [getsig UUT/BASELINE_AV_FRAC dec] 
+
+writeInt32 $settings baseline_subtraction
+writeInt32 $settings adc_baseline
+writeInt32 $settings constant_fraction
+writeInt32 $settings pulse_threshold
+writeInt32 $settings slope_threshold 
+writeInt32 $settings baseline_average_order 
+writeInt32 $settings UUT/BASELINE_AV_FRAC 
 close $settings
 while {[gets $fp hexsample] >= 0} {
 #while {$i < 500000} {}
   #gets $fp hexsample
 	incr i
+	if {![expr $i % 10000]} {
+		puts sample:$i
+	}
 	setsig adc_sample $hexsample hex
-	puts -nonewline $out [getsig filtered dec]
-	puts -nonewline $out ","
-	puts -nonewline $out [getsig slope dec]
-	puts -nonewline $out ","
-	puts -nonewline $out [getsig UUT/stage1_input dec]
-	puts -nonewline $out ","
-	puts -nonewline $out [getsig UUT/adc_sample dec]
-	puts -nonewline $out ","
-	puts $out [getsig UUT/baseline_estimate dec]
+	writeInt32 $out filtered
+	writeInt32 $out slope
+	writeInt32 $out UUT/stage1_input
+	writeInt32 $out UUT/sample
+	writeInt32 $out UUT/baseline_estimate
 	if [getsig new_raw_measurement] {
-		puts -nonewline $rawmeasurements [getsig raw_area dec]
-		puts -nonewline $rawmeasurements ","
-		puts $rawmeasurements [getsig raw_extrema dec]
+		writeInt32 $rawmeasurements raw_area
+		writeInt32 $rawmeasurements raw_extrema
 	}
 	if [getsig new_filtered_measurement] {
-		puts -nonewline $filteredmeasurements [getsig filtered_area dec]
-		puts -nonewline $filteredmeasurements ","
-		puts $filteredmeasurements [getsig filtered_extrema dec]
+		writeInt32 $filteredmeasurements filtered_area
+		writeInt32 $filteredmeasurements filtered_extrema
 	}
 	if [getsig new_slope_measurement] {
-		puts -nonewline $slopemeasurements [getsig slope_area dec]
-		puts -nonewline $slopemeasurements ","
-		puts $slopemeasurements [getsig slope_extrema dec]
+		writeInt32 $slopemeasurements slope_area
+		writeInt32 $slopemeasurements slope_extrema
 	}
 	if [getsig UUT/baselineEstimator/new_most_frequent] {
-		puts -nonewline $mostfrequent $i
-		puts -nonewline $mostfrequent ","
-		puts -nonewline $mostfrequent [getsig UUT/baselineEstimator/most_frequent dec]
-		puts -nonewline $mostfrequent ","
-		if {[string equal [getsig UUT/baselineEstimator/new_mf dec] TRUE]} {
-			puts $mostfrequent 1
-		} {
-			puts $mostfrequent 0
-		}
+		puts -nonewline $mostfrequent [binary format i $i]
+		writeInt32 $mostfrequent UUT/baselineEstimator/most_frequent
+		writeInt32 $mostfrequent UUT/baselineEstimator/new_mf
 	}
 	if [getsig new_pulse_measurement dec] {
-		puts -nonewline $pulsemeasurements [getsig pulse_area dec]
-		puts -nonewline $pulsemeasurements ","
-		puts $pulsemeasurements [getsig pulse_extrema dec]
+		puts -nonewline $pulsemeasurements [binary format i $i]
+		writeInt32 $pulsemeasurements pulse_area
+		writeInt32 $pulsemeasurements pulse_extrema
 	}
 	if [getsig pulse_detected] {
-		puts -nonewline $pulsestarts $i
-		puts -nonewline $pulsestarts ","
-		puts $pulsestarts [getsig filtered dec]
+		puts -nonewline $pulsestarts [binary format i $i]
+		writeInt32 $pulsestarts filtered
 	}
-	if [getsig peak] {
-		puts -nonewline $peaks $i
-		puts -nonewline $peaks ","
-		puts -nonewline $peaks [getsig filtered dec]
-		puts -nonewline $peaks ","
-		puts -nonewline $peaks [getsig minima dec]
-		puts -nonewline $peaks ","
-		puts $peaks [getsig slope dec]
+	if [getsig peak_start] {
+		puts -nonewline $peaks [binary format i $i]
+		writeInt32 $peaks filtered
+	}
+	if { [getsig peak] } {
+		puts -nonewline $peaks [binary format i $i]
+		writeInt32 $peaks filtered
+		writeInt32 $peaks minima
+		writeInt32 $peaks slope
+		writeInt32 $peaks slope_area
+		writeInt32 $peaks cfd_error
 	}
 	if [getsig cfd] {
-		puts -nonewline $cfd $i
-		puts -nonewline $cfd ","
-		puts $cfd [getsig filtered dec]
+		puts -nonewline $cfd [binary format i $i]
+		writeInt32 $cfd filtered
 	}
 	if [getsig slope_threshold_xing] {
-		puts -nonewline $slopexings $i 
-		puts -nonewline $slopexings ","
-		puts -nonewline $slopexings [getsig filtered dec]
-		puts -nonewline $slopexings ","
-		puts $slopexings [getsig slope dec]
+		puts -nonewline $slopexings [binary format i $i]
+		writeInt32 $slopexings filtered
+		writeInt32 $slopexings slope
 	}
 	if [getsig UUT/baselineEstimator/mostFrequent/timeout dec] {
-		puts $mftimeout $i
+		puts -nonewline $mftimeout [binary format i $i]
 	}
 	runclks
 }

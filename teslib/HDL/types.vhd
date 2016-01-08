@@ -41,6 +41,7 @@ constant SLOPE_FRAC:integer:=8;
 constant SIZE_BITS:integer:=16; 
 -- Bits in a relative time
 constant TIME_BITS:integer:=16; --CHUNK_DATA_BITS;
+constant TIME_FRAC:integer:=0;
 -- Bits in an area measurement
 constant AREA_BITS:integer:=32;
 constant AREA_FRAC:integer:=1;

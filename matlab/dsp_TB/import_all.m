@@ -1,4 +1,4 @@
-import_output
+import_traces
 import_settings
 import_cfd
 import_peaks
