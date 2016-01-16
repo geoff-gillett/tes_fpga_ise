@@ -37,8 +37,10 @@ set pulsestarts [open "../dsp_TB.pulsestarts" w]
 fconfigure $pulsestarts -translation binary
 set peaks [open "../dsp_TB.peaks" w]
 fconfigure $peaks -translation binary
-set cfd [open "../dsp_TB.cfd" w]
-fconfigure $cfd -translation binary
+set cfdlow [open "../dsp_TB.cfdlow" w]
+fconfigure $cfdlow -translation binary
+set cfdhigh [open "../dsp_TB.cfdhigh" w]
+fconfigure $cfdhigh -translation binary
 set slopexings [open "../dsp_TB.slopexings" w]
 fconfigure $slopexings -translation binary
 set settings [open "../dsp_TB.settings" w]
@@ -52,6 +54,7 @@ wave add /dsp_TB/UUT
 wave add /dsp_TB/UUT/baselineEstimator
 wave add /dsp_TB/UUT/baselineEstimator/mostFrequent
 wave add /dsp_TB/UUT/baselineEstimator/average
+wave add /dsp_TB/UUT/rawMeasurement
 runclks
 set i 0
 
@@ -77,14 +80,17 @@ while {[gets $fp hexsample] >= 0} {
 	writeInt32 $out UUT/sample
 	writeInt32 $out UUT/baseline_estimate
 	if [getsig new_raw_measurement] {
+		puts -nonewline $rawmeasurements [binary format i $i]
 		writeInt32 $rawmeasurements raw_area
 		writeInt32 $rawmeasurements raw_extrema
 	}
 	if [getsig new_filtered_measurement] {
+		puts -nonewline $filteredmeasurements [binary format i $i]
 		writeInt32 $filteredmeasurements filtered_area
 		writeInt32 $filteredmeasurements filtered_extrema
 	}
 	if [getsig new_slope_measurement] {
+		puts -nonewline $slopemeasurements [binary format i $i]
 		writeInt32 $slopemeasurements slope_area
 		writeInt32 $slopemeasurements slope_extrema
 	}
@@ -114,9 +120,13 @@ while {[gets $fp hexsample] >= 0} {
 		writeInt32 $peaks slope_area
 		writeInt32 $peaks cfd_error
 	}
-	if [getsig cfd] {
-		puts -nonewline $cfd [binary format i $i]
-		writeInt32 $cfd filtered
+	if { [getsig cfd_low] } {
+		puts -nonewline $cfdlow [binary format i $i]
+		writeInt32 $cfdlow filtered
+	}
+	if { [getsig cfd_high] } {
+		puts -nonewline $cfdhigh [binary format i $i]
+		writeInt32 $cfdhigh filtered
 	}
 	if [getsig slope_threshold_xing] {
 		puts -nonewline $slopexings [binary format i $i]
@@ -137,6 +147,7 @@ close $mostfrequent
 close $pulsemeasurements
 close $pulsestarts
 close $peaks
-close $cfd
+close $cfdlow
+close $cfdhigh
 close $slopexings
 close $mftimeout

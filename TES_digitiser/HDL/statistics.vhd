@@ -52,7 +52,7 @@ port(
   ------------------------------------------------------------------------------
   -- control signals
   ------------------------------------------------------------------------------
-  bin_n:in unsigned(bits(ADDRESS_BITS)-1 downto 0);
+  bin_n:in unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
   lowest_value:in signed(VALUE_BITS-1 downto 0);
   last_bin:in unsigned(ADDRESS_BITS-1 downto 0);
   --number of ticks to sum over
@@ -93,7 +93,7 @@ end entity statistics;
 architecture RTL of statistics is
 -- control registers -----------------------------------------------------------
 signal channel_next,channel_cur:unsigned(CHANNEL_BITS-1 downto 0);
-signal bin_n_next,bin_n_cur:unsigned(bits(ADDRESS_BITS)-1 downto 0);
+signal bin_n_next,bin_n_cur:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal lowest_value_next,lowest_value_cur:signed(VALUE_BITS-1 downto 0);
 signal last_bin_next,last_bin_cur:unsigned(ADDRESS_BITS-1 downto 0);
 signal ticks_next,ticks_cur:unsigned(TICK_COUNT_BITS-1 downto 0);

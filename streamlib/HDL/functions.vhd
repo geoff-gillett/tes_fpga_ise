@@ -34,10 +34,37 @@ function SetEndianness(data:unsigned;endianness:string)
          return std_logic_vector;
 function SetEndianness(data:signed;endianness:string) 
 	return std_logic_vector;
+
+function to_streambus(slv:std_logic_vector) return streambus;
+function to_std_logic(sb:streambus) return std_logic_vector;
 	
 end package functions;
 
 package body functions is
+
+function to_streambus(slv:std_logic_vector) return streambus is
+variable sb:streambus;
+begin
+	for chunk in 0 to EVENTBUS_CHUNKS-1 loop
+		sb.keeps(chunk):=slv(chunk*CHUNK_DATABITS+CHUNK_LASTBIT);
+		sb.lasts(chunk):=slv(chunk*CHUNK_DATABITS+CHUNK_KEEPBIT);
+		sb.data(CHUNK_DATABITS*(chunk+1)-1 downto CHUNK_DATABITS*chunk):=
+			slv(CHUNK_DATABITS+(CHUNK_BITS*(chunk+1))-1 downto CHUNK_BITS*chunk);
+	end loop;
+	return sb;
+end function;
+
+function to_std_logic(sb:streambus) return std_logic_vector is
+variable slv:std_logic_vector(CHUNK_BITS*EVENTBUS_CHUNKS-1 downto 0);
+begin
+	for chunk in 0 to EVENTBUS_CHUNKS-1 loop
+		slv(CHUNK_KEEPBIT+(CHUNK_BITS*chunk)):=sb.keeps(chunk);
+		slv(CHUNK_LASTBIT+(CHUNK_BITS*chunk)):=sb.lasts(chunk);
+		slv((CHUNK_BITS*chunk)+CHUNK_DATABITS-1 downto CHUNK_BITS*chunk):=
+			sb.data(CHUNK_DATABITS*(chunk+1)-1 downto CHUNK_DATABITS*chunk);
+	end loop;
+	return slv;
+end function;
 
 function getChunkLast(busword:std_logic_vector;chunk:integer) 
          return std_logic is

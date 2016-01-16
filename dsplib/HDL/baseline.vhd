@@ -41,7 +41,7 @@ port(
   count_threshold:in unsigned(COUNTER_BITS-1 downto 0);
   --offset to center of mca range 
   fixed_baseline:in sample_t;
-  avn:in unsigned(bits(AVN_BITS) downto 0);
+  avn:in unsigned(ceilLog2(AVN_BITS) downto 0);
   avn_updated:in boolean;
   --FIXME make this adc_sample_t
   sample:in sample_t;

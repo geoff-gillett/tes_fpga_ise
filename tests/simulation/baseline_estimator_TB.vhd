@@ -18,6 +18,7 @@ use teslib.types.all;
 --
 library dsplib;
 
+
 entity baseline_estimator_TB is
 generic(
   --number of bins (channels) = 2**ADDRESS_BITS
@@ -43,6 +44,7 @@ signal count_threshold:unsigned(COUNTER_BITS-1 downto 0);
 signal average_order:natural range 0 to MAX_AVERAGE_ORDER;
 signal baseline_estimate:signed(OUT_BITS-1 downto 0);
 signal range_error:boolean;
+signal new_only:boolean;
 begin
 	
 clk <= not clk after CLK_PERIOD/2;
@@ -56,6 +58,7 @@ generic map(
   OUT_BITS => OUT_BITS
 )
 port map(
+  new_only => new_only,
   clk => clk,
   reset => reset,
   sample => sample,
@@ -76,6 +79,7 @@ sample_valid <= TRUE;
 threshold <= to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
 count_threshold <= to_unsigned(30,COUNTER_BITS);
 average_order <= 7;
+new_only <= TRUE;
 wait for CLK_PERIOD;
 reset <= '0';
 wait;

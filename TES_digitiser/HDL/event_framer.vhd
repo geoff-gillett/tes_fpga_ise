@@ -61,7 +61,7 @@ end entity event_framer;
 architecture packed of event_framer is
 --
 constant DATA_BITS:integer:=BUS_CHUNKS*CHUNK_DATABITS;
-constant PEAK_COUNT_BITS:integer:=bits(MAX_PEAKS);
+constant PEAK_COUNT_BITS:integer:=ceilLog2(MAX_PEAKS);
 --
 signal relative_time,rel_time:time_t;
 signal data,headerdata:std_logic_vector(DATA_BITS-1 downto 0);

@@ -1,6 +1,7 @@
 import_traces
 import_settings
-import_cfd
+import_cfdlow
+import_cfdhigh
 import_peaks
 import_pulsemeasurements
 import_pulsestarts

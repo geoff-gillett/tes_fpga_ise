@@ -104,19 +104,19 @@ if rising_edge(clk) then
     neg_0closest <= (neg0 and first_closest) or neg_xing_next;
     
   	if xing0 then
-  		area_int <= resize(signal_in,AREA_WIDTH);
+  		area_int <= resize(signal_reg,AREA_WIDTH);
   		area <= resize(shift_right(area_int,FRAC-AREA_FRAC),AREA_BITS);
-  		extrema_int <= signal_in;
+  		extrema_int <= signal_reg;
   		extrema <= extrema_int;
   	else
-  		area_int <= area_int+signal_in;
+  		area_int <= area_int+signal_reg;
   		if above0 then
-  			if signal_in > extrema_int then
-  				extrema_int <= signal_in;
+  			if signal_reg > extrema_int then
+  				extrema_int <= signal_reg;
   			end if;
   		else
-  			if signal_in < extrema_int then
-  				extrema_int <= signal_in;
+  			if signal_reg < extrema_int then
+  				extrema_int <= signal_reg;
   			end if;
   		end if;
   	end if;

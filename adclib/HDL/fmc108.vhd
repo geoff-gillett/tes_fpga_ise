@@ -41,7 +41,7 @@ port (
   -- iodelay control
   inc:in std_logic_vector(ADC_BITS/2-1 downto 0);
   dec:in std_logic_vector(ADC_BITS/2-1 downto 0);
-  channel:in unsigned(bits(ADC_CHIPS*CHIP_CHANNELS)-1 downto 0);
+  channel:in unsigned(ceilLog2(ADC_CHIPS*CHIP_CHANNELS)-1 downto 0);
   update:in boolean;
   --
   samples:out adc_sample_array(ADC_CHIPS*CHIP_CHANNELS-1 downto 0);

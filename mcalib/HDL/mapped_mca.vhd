@@ -46,7 +46,7 @@ port (
   --mca_ready when cleared after reset and the stream is read after swap_buffer.
   can_swap:out boolean;
   --!control signals mapping values to bins registered on swap_buffer
-  bin_n:in unsigned(bits(ADDRESS_BITS)-1 downto 0); --bin width = 2**bin_n
+  bin_n:in unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0); --bin width = 2**bin_n
   --number of bins = last_bin+1, values that map to a bin >= last_bin 
   --are counted in last_bin
   last_bin:in unsigned(ADDRESS_BITS-1 downto 0); 
@@ -68,7 +68,7 @@ end entity mapped_mca;
 architecture RTL of mapped_mca is
 --
 signal bin,last_bin_reg,last_bin_temp:unsigned(ADDRESS_BITS-1 downto 0);
-signal bin_n_reg,bin_n_temp:unsigned(bits(ADDRESS_BITS)-1 downto 0);
+signal bin_n_reg,bin_n_temp:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal bin_valid,swap_int,swapping,MCA_can_swap,can_swap_int,just_reset:boolean;
 signal lowest_value_reg,offset_value:signed(VALUE_BITS-1 downto 0);
 signal bin_value:unsigned(VALUE_BITS-1 downto 0);

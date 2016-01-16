@@ -26,7 +26,7 @@ port (
   reset:in std_logic;
   --
   data:signed(DATA_BITS-1 downto 0);
-  slope_n:in unsigned(bits(ADDRESS_BITS) downto 0); --difference over 2^n
+  slope_n:in unsigned(ceilLog2(ADDRESS_BITS) downto 0); --difference over 2^n
   slope_n_updated:in boolean;
   --
   slope_y:out signed(DATA_BITS-1 downto 0);

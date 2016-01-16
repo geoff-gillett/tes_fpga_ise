@@ -42,8 +42,8 @@ subtype word is std_logic_vector(DATA_BITS-1 downto 0);
 type ram is array (0 to DEPTH-1) of word;
 signal ring:ram:=(others => (others => '0'));
 --
-signal delay_addr:unsigned(bits(DEPTH)-1 downto 0);
-signal ring_addr:unsigned(bits(DEPTH)-1 downto 0):=(others => '0');
+signal delay_addr:unsigned(ceilLog2(DEPTH)-1 downto 0);
+signal ring_addr:unsigned(ceilLog2(DEPTH)-1 downto 0):=(others => '0');
 signal data_out_int,data_out:std_logic_vector(DATA_BITS-1 downto 0);
 begin
 delayed <= data_out;

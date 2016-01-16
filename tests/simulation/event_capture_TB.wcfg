@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="event_capture_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="event_capture_tb" />
+            <top_module name="events" />
+            <top_module name="functions" />
+            <top_module name="functions" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="types" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group27" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/event_capture_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/use_cfd_height" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">use_cfd_height</obj_property>
+         <obj_property name="ObjectShortName">use_cfd_height</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/rel_to_min" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">rel_to_min</obj_property>
+         <obj_property name="ObjectShortName">rel_to_min</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/use_cfd_timing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">use_cfd_timing</obj_property>
+         <obj_property name="ObjectShortName">use_cfd_timing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/signal_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_in[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/peak" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak</obj_property>
+         <obj_property name="ObjectShortName">peak</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/peak_start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_start</obj_property>
+         <obj_property name="ObjectShortName">peak_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">overflow</obj_property>
+         <obj_property name="ObjectShortName">overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/pulse_pos_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_pos_xing</obj_property>
+         <obj_property name="ObjectShortName">pulse_pos_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/pulse_neg_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_neg_xing</obj_property>
+         <obj_property name="ObjectShortName">pulse_neg_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/cfd_low" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low</obj_property>
+         <obj_property name="ObjectShortName">cfd_low</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/cfd_high" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high</obj_property>
+         <obj_property name="ObjectShortName">cfd_high</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/cfd_error" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_error</obj_property>
+         <obj_property name="ObjectShortName">cfd_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/minima" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">minima[15:0]</obj_property>
+         <obj_property name="ObjectShortName">minima[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/slope_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_area[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/enqueue" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">enqueue</obj_property>
+         <obj_property name="ObjectShortName">enqueue</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/dump" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump</obj_property>
+         <obj_property name="ObjectShortName">dump</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/peak_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_count[3:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/height" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">height[15:0]</obj_property>
+         <obj_property name="ObjectShortName">height[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/eventstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream[71:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstream[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group77" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/event_capture_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/rel_to_min" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">rel_to_min</obj_property>
+         <obj_property name="ObjectShortName">rel_to_min</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/use_cfd_timing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">use_cfd_timing</obj_property>
+         <obj_property name="ObjectShortName">use_cfd_timing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/signal_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_in[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">overflow</obj_property>
+         <obj_property name="ObjectShortName">overflow</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/pulse_pos_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_pos_xing</obj_property>
+         <obj_property name="ObjectShortName">pulse_pos_xing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/pulse_neg_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_neg_xing</obj_property>
+         <obj_property name="ObjectShortName">pulse_neg_xing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/above_threshold" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">above_threshold</obj_property>
+         <obj_property name="ObjectShortName">above_threshold</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/peak" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak</obj_property>
+         <obj_property name="ObjectShortName">peak</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/peak_start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_start</obj_property>
+         <obj_property name="ObjectShortName">peak_start</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/cfd_low" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low</obj_property>
+         <obj_property name="ObjectShortName">cfd_low</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/cfd_high" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high</obj_property>
+         <obj_property name="ObjectShortName">cfd_high</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/cfd_error" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_error</obj_property>
+         <obj_property name="ObjectShortName">cfd_error</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/minima" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">minima[15:0]</obj_property>
+         <obj_property name="ObjectShortName">minima[15:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ff00</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/slope_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_area[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/enqueue" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">enqueue</obj_property>
+         <obj_property name="ObjectShortName">enqueue</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/dump" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump</obj_property>
+         <obj_property name="ObjectShortName">dump</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/peak_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_count[3:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/height" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">height[15:0]</obj_property>
+         <obj_property name="ObjectShortName">height[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/eventstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream[71:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstream[71:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/header" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">header</obj_property>
+         <obj_property name="ObjectShortName">header</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data[63:0]</obj_property>
+         <obj_property name="ObjectShortName">data[63:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/free" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">free[9:0]</obj_property>
+         <obj_property name="ObjectShortName">free[9:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/chunk_wr_en" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">chunk_wr_en[3:0]</obj_property>
+         <obj_property name="ObjectShortName">chunk_wr_en[3:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/commit_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_int</obj_property>
+         <obj_property name="ObjectShortName">commit_int</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/dump_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump_int</obj_property>
+         <obj_property name="ObjectShortName">dump_int</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/peak_count_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_count_int[4:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count_int[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/eventstream_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream_int[71:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstream_int[71:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/valid_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid_int</obj_property>
+         <obj_property name="ObjectShortName">valid_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/ready_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready_int</obj_property>
+         <obj_property name="ObjectShortName">ready_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/last_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">last_int</obj_property>
+         <obj_property name="ObjectShortName">last_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/start_signal" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">start_signal[15:0]</obj_property>
+         <obj_property name="ObjectShortName">start_signal[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/enqueue_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">enqueue_int</obj_property>
+         <obj_property name="ObjectShortName">enqueue_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/event_capture_tb/UUT/max" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">max</obj_property>
+         <obj_property name="ObjectShortName">max</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

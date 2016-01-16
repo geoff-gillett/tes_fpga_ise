@@ -114,12 +114,12 @@ architecture wrapper of channel_pipeline is
 --------------------------------------------------------------------------------
 signal baseline_timeconstant:unsigned(BASELINE_TIMECONSTANT_BITS-1 downto 0);
 signal baseline_timeconstant_updated:boolean;
-signal baseline_avn:unsigned(bits(BASELINE_AV_BITS) downto 0);
+signal baseline_avn:unsigned(ceilLog2(BASELINE_AV_BITS) downto 0);
 signal baseline_avn_updated:boolean;
 signal delay:unsigned(DELAY_BITS-1 downto 0);
-signal signal_avn:unsigned(bits(SIGNAL_AV_BITS) downto 0);
+signal signal_avn:unsigned(ceilLog2(SIGNAL_AV_BITS) downto 0);
 signal signal_avn_updated:boolean;
-signal slope_n:unsigned(bits(SLOPE_ADDRESS_BITS) downto 0);
+signal slope_n:unsigned(ceilLog2(SLOPE_ADDRESS_BITS) downto 0);
 signal slope_n_updated:boolean;
 signal sync_clks:unsigned(SYNC_ADDRESS_BITS downto 0);
 signal sync_clks_updated:boolean;

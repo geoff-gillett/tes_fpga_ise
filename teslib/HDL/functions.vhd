@@ -64,7 +64,7 @@ function shift(arg:std_logic;pipe:std_logic_vector) return std_logic_vector;
 --------------------------------------------------------------------------------
 function is_saturated(arg:unsigned) return boolean;
 function is_saturated(arg:std_logic_vector) return boolean;
-function bits(a:integer) return integer;
+function ceilLog2(a:integer) return integer;
 function maximum(l,r:integer) return integer;
 function minimum(l,r:integer) return integer;
 function oneHotToInteger(oneHot:std_logic_vector) return integer;
@@ -248,12 +248,12 @@ function is_saturated(arg:std_logic_vector) return boolean is
 begin
   return unaryAnd(arg);
 end function;
-function bits(a:integer) return integer is
+function ceilLog2(a:integer) return integer is
 begin
   if a<=1 then return 1;
   else return integer(ceil(log2(real(a))));
   end if;
-end function bits;
+end function ceilLog2;
 function maximum(l,r:integer) return integer is
 begin
   if l>r then return l;
@@ -268,11 +268,11 @@ begin
 end function minimum;
 function oneHotToInteger(oneHot:std_logic_vector) return integer is
 variable binary:integer range oneHot'range;
-variable bin:std_logic_vector(bits(oneHot'high)-1 downto 0):=(others => '0');
+variable bin:std_logic_vector(ceilLog2(oneHot'high)-1 downto 0):=(others => '0');
 begin 
   for i in oneHot'range loop
     if oneHot(i)='1' then
-      bin:=bin or std_logic_vector(to_unsigned(i,bits(oneHot'high)));
+      bin:=bin or std_logic_vector(to_unsigned(i,ceilLog2(oneHot'high)));
     end if;
   end loop;
   binary:=to_integer(unsigned(bin));

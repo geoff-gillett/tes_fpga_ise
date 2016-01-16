@@ -23,6 +23,8 @@ entity dsp is
 generic(
 	WIDTH:integer:=18;
 	FRAC:integer:=3;
+	TIME_BITS:integer:=16;
+	TIME_FRAC:integer:=0;
   BASELINE_BITS:integer:=10;
   BASELINE_COUNTER_BITS:integer:=18;
   BASELINE_TIMECONSTANT_BITS:integer:=32;
@@ -90,13 +92,16 @@ port(
   -- flags
   peak_start:out boolean; -- minima that starts the peak/pulse;
   peak:out boolean;
-  pulse_threshold_xing:out boolean; -- 
+  pulse_pos_xing:out boolean; -- 
+  pulse_neg_xing:out boolean; -- 
   peak_minima:out signal_t; --value at bottom of peak
-  cfd:out boolean;
+  cfd_low:out boolean;
+  cfd_high:out boolean;
   pulse_area:out area_t;
   pulse_extrema:out signal_t; --always a maxima
   pulse_valid:out boolean;
-  cfd_error:out boolean
+  cfd_error:out boolean;
+  time_overflow:out boolean
 );
 end entity dsp;
 
@@ -143,7 +148,7 @@ end component;
 --end component;
 
 constant CFD_DELAY_DEPTH:integer:=256;
-constant CFD_DELAY:integer:=180;
+constant CFD_DELAY:integer:=200;
 constant BASELINE_AV_FRAC:integer:=SIGNAL_BITS-BASELINE_BITS;
 --
 signal signal_FIR:signed(WIDTH-1 downto 0);	
@@ -157,7 +162,7 @@ signal signal_CFD_delay:std_logic_vector(WIDTH-1 downto 0);
 --signal slope_above:boolean;
 signal cf_of_peak,cf_of_peak_reg:signed(CFD_BITS+WIDTH-1 downto 0);
 signal cf_of_peak_reg2:signed(CFD_BITS+WIDTH-1 downto 0);
-signal cfd_threshold_in:signed(WIDTH-1 downto 0);
+signal cfd_low_in:signed(WIDTH-1 downto 0);
 signal slope_CFD_delay:std_logic_vector(WIDTH-1 downto 0);
 signal pulse_start:boolean;
 signal pulse_area_reg:area_t;
@@ -167,24 +172,20 @@ signal slope_extrema_int:signed(WIDTH-1 downto 0);
 signal pulse_extrema_reg:signed(WIDTH-1 downto 0);
 signal signal_for_cfd:signed(WIDTH-1 downto 0);
 signal flags,flags_CFD_delay:std_logic_vector(4 downto 0);
-signal cfd_threshold_out:std_logic_vector(WIDTH-1 downto 0);
-signal cfd_threshold:signed(WIDTH-1 downto 0);
+signal cfd_low_out:std_logic_vector(WIDTH-1 downto 0);
+signal cfd_low_threshold:signed(WIDTH-1 downto 0);
 constant MULT_PIPE_DEPTH:integer:=4;
 signal peak_pipe:boolean_vector(1 to MULT_PIPE_DEPTH);
-signal cfd_overflow:boolean;
+signal first_rise_pipe:boolean_vector(1 to MULT_PIPE_DEPTH);
 signal minima_int,minima_reg:signed(WIDTH-1 downto 0);
-signal signal_above,signal_was_below:boolean;
-signal slope_above:boolean;
-signal cfd_queue_rd_en:std_logic;
+signal queue_rd_en:std_logic;
 signal minima_out:std_logic_vector(WIDTH-1 downto 0);
-signal cfd_queue_full:std_logic;
-signal cfd_queue_empty:std_logic;
-signal start:boolean;
-type cfdFSMstate is (IDLE,WAIT_MIN,WAIT_CFD);
+signal queue_full:std_logic;
+signal queue_empty:std_logic;
+type cfdFSMstate is (IDLE,WAIT_MIN,WAIT_PEAK);
 signal cfd_state,cfd_nextstate:cfdFSMstate;
-signal min_state,min_nextstate:cfdFSMstate;
 signal minima_cfd:signed(WIDTH-1 downto 0);
-signal cfd_int:boolean;
+signal cfd_low_int:boolean;
 signal min,max:boolean;
 --signal slope_pos_xing:boolean;
 signal slope_out:signed(WIDTH-1 downto 0);
@@ -194,14 +195,14 @@ signal min_at_cfd:boolean;
 signal peak_at_cfd:boolean;
 type peakFSMstate is (WAITING,ARMED);
 signal pd_state,pd_nextstate:peakFSMstate;
-type pulseFSMstate is (IDLE,PULSE);
+type pulseFSMstate is (IDLE,FIRST_RISE,PEAKED);
 signal pulse_state,pulse_nextstate:pulseFSMstate;
-
+--
 signal peak_int:boolean;
 signal queue_overflow:boolean;
-signal cfd_queue_wr_en:std_logic;
-signal peaked:boolean;
-signal write_queue:boolean;
+signal queue_wr_en:std_logic;
+--signal peaked:boolean;
+--signal write_queue:boolean;
 signal slope_pos_xing:boolean;
 signal signal_pos_xing,signal_neg_xing:boolean;
 signal filtered_area_int:signed(AREA_BITS-1 downto 0);
@@ -213,17 +214,23 @@ signal pulse_valid_int:boolean;
 signal signal_cfd_reg,signal_cfd_reg2:signed(WIDTH-1 downto 0);
 signal signal_is_min:boolean;
 signal start_int,stop_int:boolean;
-signal cfd_xing:boolean;
-signal slope_threshold_xing_int:boolean;
+signal cfd_low_xing:boolean;
 signal pulse_length:unsigned(TIME_BITS-TIME_FRAC-1 downto 0);
-signal time_overflow:boolean;
+signal time_overflow_int:boolean;
 signal arming:boolean;
-signal min_queue_wr_en:std_logic;
-signal min_queue_rd_en:std_logic;
-signal min_queue_full,min_queue_empty:std_logic;
 signal cfd_error_int:boolean;
 signal min_valid:boolean;
 signal slope_xing_at_cfd:boolean;
+signal cfd_high_out:std_logic_vector(WIDTH-1 downto 0);
+signal cfd_high_in:signed(WIDTH-1 downto 0);
+signal peak_for_cfd:signed(WIDTH-1 downto 0);
+signal cfd_high_threshold:signed(WIDTH-1 downto 0);
+signal cfd_high_xing:boolean;
+signal cfd_high_int:boolean;
+signal minima_for_cfd:signed(WIDTH-1 downto 0);
+signal cfd_reset:boolean;
+signal cfd_low_crossed,cfd_high_crossed:boolean;
+signal cfd_high_done,cfd_low_done:boolean;
 begin
 
 sampleoffset:process(clk)
@@ -271,7 +278,6 @@ if rising_edge(clk) then
 end if;
 end process baselineSubraction;
 
--- delay baseline and raw to sync with FIR outputs
 FIR:entity work.two_stage_FIR
 generic map(
 	WIDTH => 18
@@ -300,7 +306,6 @@ port map(
   stage2 => slope_FIR
 );
 
--- signal measurements
 rawMeasurement:entity work.signal_measurement
 generic map(
   WIDTH => WIDTH,
@@ -372,15 +377,15 @@ port map(
 );
 
 --thresholds
-slope_above <= slope_out > resize(signed('0' & slope_threshold),WIDTH);
-signal_above <= signal_out > resize(signed('0' & pulse_threshold),WIDTH);
-start <= not signal_above and signal_was_below;
+--slope_above <= slope_out > resize(signed('0' & slope_threshold),WIDTH);
+--signal_above <= signal_out > resize(signed('0' & pulse_threshold),WIDTH);
+--start <= not signal_above and signal_was_below;
 --slope_pos_xing <= not slope_below and slope_was_below;
 
 pdNextstate:process(clk)
 begin
 	if rising_edge(clk) then
-		if reset = '1' then
+		if cfd_reset then
 			pd_state <= WAITING;
 			pulse_state <= IDLE;
 		else
@@ -406,124 +411,139 @@ begin
 end process pdTransition;
 
 pulseTransition:process(pulse_state,signal_pos_xing,signal_neg_xing,
-												time_overflow)
+												time_overflow_int,max)
 begin
 	pulse_nextstate <= pulse_state;
 	case pulse_state is 
 	when IDLE =>
 		if signal_pos_xing then
-			pulse_nextstate <= PULSE;
+			pulse_nextstate <= FIRST_RISE;
 		end if;
-	when PULSE =>
-		if signal_neg_xing or time_overflow then
+	when FIRST_RISE =>
+		if signal_neg_xing or time_overflow_int then
+			pulse_nextstate <= IDLE;
+		elsif max then 
+			pulse_nextstate <= PEAKED;
+		end if;
+	when PEAKED =>
+		if signal_neg_xing or time_overflow_int then
 			pulse_nextstate <= IDLE;
 		end if;
 	end case;
 end process pulseTransition;
 
-peak_int <= pd_state=ARMED and pulse_state=PULSE and max;
+peak_int <= pd_state=ARMED and pulse_state/=IDLE and max;
 start_int <= pulse_state=IDLE and signal_pos_xing;
-stop_int <= (pulse_state=PULSE and signal_neg_xing) or time_overflow;
-write_queue <= cfd_queue_full='0' and peak_pipe(MULT_PIPE_DEPTH);
-cfd_overflow <= cfd_queue_full='1' and peak_pipe(MULT_PIPE_DEPTH);
-time_overflow <= pulse_length=0;
+time_overflow_int <= pulse_length=0;
+stop_int <= (pulse_state/=IDLE and signal_neg_xing) or time_overflow_int;
+--write_queue <= cfd_queue_full='0' and peak_pipe(MULT_PIPE_DEPTH);
 arming <= pd_state=WAITING and slope_pos_xing;
 
 pdReg:process(clk)
 begin
 	if rising_edge(clk) then
-		if reset='1' then
+		if cfd_reset then
 			minima_int <= (others => '0');
-			cfd_queue_wr_en <= '0';
 			pulse_length <= to_unsigned(1,TIME_BITS-TIME_FRAC);
-			cfd_queue_wr_en <= '0';
-			min_queue_wr_en <= '0';
+			queue_wr_en <= '0';
 		else
 			
 			if start_int then
-				peaked <= FALSE;
 				pulse_length <= to_unsigned(1,TIME_BITS-TIME_FRAC);
 			else
 				pulse_length <= pulse_length+1;
 			end if;
 			
-      if min then	
-        if pulse_state=PULSE then
-          if pd_state=WAITING and signal_out < minima_int then
-              minima_int <= signal_out;	
-          end if;
-        else
-          minima_int <= signal_out;
-        end if;
+      if min and pd_state=WAITING then	
+      	minima_int <= signal_out;	
       end if;
       
      	if arming then 
      		minima_reg <= minima_int;
-     	  min_queue_wr_en <= '1';
-     	else
-     		min_queue_wr_en <= '0';	
       end if;
       
       if peak_int then
-      	peaked <= TRUE;
-        minima_reg <= minima_int;
-        minima_int <= signal_out;
-        if peaked and not cfd_relative then
+        --minima_reg <= minima_int;
+        minima_for_cfd <= minima_reg;
+        peak_for_cfd <= signal_out;
+        if  pulse_state=FIRST_RISE and not cfd_relative then
           signal_for_cfd <= signal_out;
         else
           signal_for_cfd <= signal_out-minima_int;
         end if;
       end if;
-
+ 			
+ 			time_overflow <= time_overflow_int;
+ 			
       peak_pipe(1) <= peak_int;
       peak_pipe(2 to MULT_PIPE_DEPTH) <= peak_pipe(1 to MULT_PIPE_DEPTH-1);
-      
+      first_rise_pipe(1) <= pulse_state=FIRST_RISE; 
+      first_rise_pipe(2 to MULT_PIPE_DEPTH) 
+      	<= first_rise_pipe(1 to MULT_PIPE_DEPTH-1);
       --registers to be absorbed into multiplier macro
       cf_of_peak <= signal_for_cfd*signed('0' & constant_fraction);
       cf_of_peak_reg <= cf_of_peak;
       cf_of_peak_reg2 <= cf_of_peak_reg;
-      
-      queue_overflow <= cfd_queue_full='1' and peak_pipe(MULT_PIPE_DEPTH);
-      
-      if write_queue then
-        cfd_queue_wr_en <= '1';
-        if not cfd_relative then
-          cfd_threshold_in 
-          	<= resize(shift_right(cf_of_peak_reg2,CFD_FRAC),WIDTH);
+     
+      if peak_pipe(MULT_PIPE_DEPTH) then
+      	if queue_full='0' then
+		      queue_overflow <= FALSE;
+      		queue_wr_en <= '1';
+      		--FIXME this will fail if pulse ends within 4 clocks of peak
+          if first_rise_pipe(MULT_PIPE_DEPTH) and not cfd_relative then
+            cfd_low_in <= resize(shift_right(cf_of_peak_reg2,CFD_FRAC),WIDTH);
+          else
+            cfd_low_in 
+              <= resize(shift_right(cf_of_peak_reg2,CFD_FRAC),WIDTH)+
+                 minima_for_cfd;
+          end if;
+          cfd_high_in 
+            <= peak_for_cfd-resize(shift_right(cf_of_peak_reg2,CFD_FRAC),WIDTH);
         else
-          cfd_threshold_in 
-          	<= resize(shift_right(cf_of_peak_reg2,CFD_FRAC),WIDTH)+
-               minima_reg;
-        end if;
+		      queue_overflow <= TRUE;
+       	end if;
       else
-        cfd_queue_wr_en <= '0';
+	      queue_overflow <= FALSE;
+        queue_wr_en <= '0';
       end if;
     end if;
 	end if;
 end process pdReg;
 
-cfdThresholdQueue:cfd_threshold_queue
+cfdLowQueue:cfd_threshold_queue
 port map (
   clk => clk,
-  srst => reset,
-  din => to_std_logic(cfd_threshold_in),
-  wr_en => cfd_queue_wr_en,
-  rd_en => cfd_queue_rd_en,
-  dout => cfd_threshold_out,
-  full => cfd_queue_full,
-  empty => cfd_queue_empty
+  srst => to_std_logic(cfd_reset),
+  din => to_std_logic(cfd_low_in),
+  wr_en => queue_wr_en,
+  rd_en => queue_rd_en,
+  dout => cfd_low_out,
+  full => queue_full,
+  empty => queue_empty
+);
+
+cfdHighQueue:cfd_threshold_queue
+port map (
+  clk => clk,
+  srst => to_std_logic(cfd_reset),
+  din => to_std_logic(cfd_high_in),
+  wr_en => queue_wr_en,
+  rd_en => queue_rd_en,
+  dout => cfd_high_out,
+  full => open,
+  empty => open
 );
 
 minimaQueue:cfd_threshold_queue
 port map (
   clk => clk,
-  srst => reset,
+  srst => to_std_logic(cfd_reset),
   din => to_std_logic(minima_reg),
-  wr_en => min_queue_wr_en,
-  rd_en => min_queue_rd_en,
+  wr_en => queue_wr_en,
+  rd_en => queue_rd_en,
   dout => minima_out,
-  full => min_queue_full,
-  empty => min_queue_empty
+  full => open,
+  empty => open
 );
 
 flags <= (to_std_logic(start_int),
@@ -610,7 +630,7 @@ port map(
   signal_out => slope_at_cfd,
   pos_0xing => open,
   neg_0xing => open,
-  pos_xing => slope_threshold_xing_int,
+  pos_xing => open,
   neg_xing => open,
   pos_0closest => open,
   neg_0closest => open,
@@ -664,18 +684,32 @@ if rising_edge(clk) then
 end if;
 end process pulseMeasurement;
 --
-cfdXing:entity work.closest_xing
+cfdLowXing:entity work.closest_xing
 generic map(
   WIDTH => WIDTH
 )
 port map(
   clk => clk,
   signal_in => signed(signal_cfd_delay),
-  threshold => cfd_threshold,
+  threshold => cfd_low_threshold,
   signal_out => open,
-  pos => cfd_xing,
+  pos => cfd_low_xing,
   neg => open
 );
+
+cfdHighXing:entity work.closest_xing
+generic map(
+  WIDTH => WIDTH
+)
+port map(
+  clk => clk,
+  signal_in => signed(signal_cfd_delay),
+  threshold => cfd_high_threshold,
+  signal_out => open,
+  pos => cfd_high_xing,
+  neg => open
+);
+
 -- signal_cfd_reg2 is 1 clock before signal_cfd
 -- equivalent register removal should optimise this and equate with the 
 -- registers inside fiteredMeasurement and cfdXing.
@@ -691,11 +725,9 @@ end process signalCFDreg;
 cfdFSMnextstate:process(clk)
 begin
 	if rising_edge(clk) then
-		if reset = '1' then
+		if cfd_reset then
 			cfd_state <= IDLE;
-			min_state <= IDLE;
 		else
-			min_state <= min_nextstate;
 			cfd_state <= cfd_nextstate;
 		end if;
 	end if;
@@ -704,91 +736,90 @@ end process cfdFSMnextstate;
 --FIXME The CFD process will not work properly on arbitrary signals. With some 
 --further thought I think it could. Meanwhile this should be OK for TES signals.
 min_valid <= min_at_cfd and signal_is_min;
-minFSMtransition:process(min_queue_empty,min_state,cfd_error_int,cfd_int,
-												 min_valid)
+--cfd_low_int <= cfd_low_xing and cfd_state=WAIT_PEAK;
+--cfd_high_int <= cfd_high_xing and cfd_state=WAIT_PEAK;
+--cfd_error_int <= (peak_at_cfd and cfd_state/=IDLE) or cfd_overflow;
+
+cfdFSMtransition:process(peak_at_cfd,queue_empty,cfd_state,min_valid, 
+												 cfd_high_xing,cfd_low_xing)
 begin
-	min_nextstate <= min_state;
-	case min_state is 
+	cfd_nextstate <= cfd_state;
+	cfd_low_int <= FALSE;
+	cfd_high_int <= FALSE;
+	case cfd_state is 
 	when IDLE =>
-		if min_queue_empty='0' then
-			min_nextstate <= WAIT_MIN;
+		if queue_empty='0' then
+			cfd_nextstate <= WAIT_MIN;
 		end if;
 	when WAIT_MIN =>
 		if min_valid then
-			min_nextstate <= WAIT_CFD;
-		elsif cfd_error_int then
-			-- there is an error in the cfd process
-			min_nextstate <= IDLE;
+			cfd_nextstate <= WAIT_PEAK;
+      cfd_low_int <= cfd_low_xing;
+      cfd_high_int <= cfd_high_xing;
 		end if;
-	when WAIT_CFD =>
-		if cfd_int or cfd_error_int then
-			min_nextstate <= IDLE;
-		end if;
-	end case;
-end process minFSMtransition;
-cfd_int <= cfd_xing and cfd_state=WAIT_CFD;
-cfd_error_int <= (peak_at_cfd and cfd_state/=IDLE) or cfd_overflow;
---
-cfdFSMtransition:process(peak_at_cfd,min_state,cfd_int,cfd_queue_empty,
-												 cfd_state,min_valid)
-begin
-	cfd_nextstate <= cfd_state;
-	case cfd_state is 
-	when IDLE =>
-		if cfd_queue_empty='0' then
-			if min_valid or min_state=WAIT_CFD then
-				cfd_nextstate <= WAIT_CFD;
-			else
-				cfd_nextstate <= WAIT_MIN;
-			end if;
-		end if;
-	when WAIT_MIN =>
-		if min_valid or min_state=WAIT_CFD then
-			cfd_nextstate <= WAIT_CFD;
-		elsif peak_at_cfd then
-			-- there is an error in the cfd process
+	when WAIT_PEAK =>
+		if peak_at_cfd then
 			cfd_nextstate <= IDLE;
 		end if;
-	when WAIT_CFD =>
-		if cfd_int or peak_at_cfd then
-			cfd_nextstate <= IDLE;
-		end if;
+    cfd_low_int <= cfd_low_xing;
+    cfd_high_int <= cfd_high_xing;
 	end case;
 end process cfdFSMtransition;
 --
+cfd_high_done <= cfd_high_crossed or (peak_at_cfd and cfd_high_xing);
+cfd_low_done <= cfd_high_crossed or (peak_at_cfd and cfd_high_xing);
+cfd_error_int <= (peak_at_cfd and not (cfd_low_done and cfd_high_done)) 
+									or queue_overflow;
+                 
 constantFraction:process(clk)
 begin
 	if rising_edge(clk) then
-    if cfd_state=IDLE and cfd_queue_empty='0' then
-      cfd_queue_rd_en <= '1';
-      cfd_threshold <= signed(cfd_threshold_out);
-    else
-      cfd_queue_rd_en <= '0';
-    end if;
-    --
-    if min_state=IDLE and min_queue_empty='0' then
-      min_queue_rd_en <= '1';
+		
+    if cfd_state=IDLE and queue_empty='0' then
+      queue_rd_en <= '1';
+      cfd_low_threshold <= signed(cfd_low_out);
+      cfd_high_threshold <= signed(cfd_high_out);
       minima_cfd <= signed(minima_out);
     else
-      min_queue_rd_en <= '0';
+      queue_rd_en <= '0';
     end if;
+   
+    if cfd_state=IDLE then
+    	cfd_low_crossed <= FALSE;
+    	cfd_high_crossed <= FALSE;
+    end if;
+
+    if cfd_low_int then
+    	cfd_low_crossed <= TRUE;
+    end if;
+
+    if cfd_high_int then
+    	cfd_high_crossed <= TRUE;
+    end if; 
+
+    if peak_at_cfd then
+      peak_minima 
+        <= resize(shift_right(minima_cfd,FRAC-SIGNAL_FRAC),SIGNAL_BITS);
+    end if;
+    
     --
-    cfd_error <= cfd_error_int;
+    --cfd_error <= cfd_error_int;
     --if not signal_below_cfd and signal_was_below_cfd
-    filtered <= resize(shift_right(signal_at_cfd,FRAC-SIGNAL_FRAC),SIGNAL_BITS);
+    cfd_error <= cfd_error_int;
+		cfd_reset <= cfd_error_int or reset='1';
+    filtered 
+      <= resize(shift_right(signal_at_cfd,FRAC-SIGNAL_FRAC),SIGNAL_BITS);
     slope <= resize(slope_at_cfd,SIGNAL_BITS);
     --raw <= signed(raw_CFD_delay);
     --baseline <= signed(baseline_CFD_delay);
     peak <= peak_at_cfd;
-    pulse_threshold_xing <= pulse_start;
-    slope_threshold_xing <= slope_threshold_xing_int;
-    cfd <= cfd_int;
-    peak_start <= min_valid and min_state=WAIT_MIN;
+    pulse_pos_xing <= pulse_start;
+    pulse_neg_xing <= pulse_stop;
+    slope_threshold_xing <= slope_xing_at_cfd;
+    cfd_low <= cfd_low_int;
+    cfd_high <= cfd_high_int;
+    peak_start <= min_valid and cfd_state=WAIT_MIN;
   end if;
 end process constantFraction;
-peak_minima <= resize(shift_right(minima_cfd,FRAC-SIGNAL_FRAC),SIGNAL_BITS);
 --
---filtered_threshold_xing <= to_boolean(flags_CFD_delay(0));
---
-
 end architecture RTL;

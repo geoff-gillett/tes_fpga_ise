@@ -8,7 +8,8 @@ settings=evalin('base','settings');
 figure('name',sprintf('dsp_TB pulse:%d',i));
 
 peaks=evalin('base','peaks');
-cfd=evalin('base','cfd');
+cfdlow=evalin('base','cfdlow');
+cfdhigh=evalin('base','cfdhigh');
 slopexings=evalin('base','slopexings');
 
 s=pulsestarts(1,i)-pre;
@@ -46,9 +47,15 @@ for j=1:size(slopexings,2)
     end
 end
 
-for j=1:size(cfd,2)
-    if cfd(1,j) >= s && cfd(1,j) <= e
-        plot(cfd(1,j)-s+1,cfd(2,j)/2,'ok');
+for j=1:size(cfdlow,2)
+    if cfdlow(1,j) >= s && cfdlow(1,j) <= e
+        plot(cfdlow(1,j)-s+1,cfdlow(2,j)/2,'ok');
+    end
+end
+
+for j=1:size(cfdhigh,2)
+    if cfdhigh(1,j) >= s && cfdhigh(1,j) <= e
+        plot(cfdhigh(1,j)-s+1,cfdhigh(2,j)/2,'ok');
     end
 end
 

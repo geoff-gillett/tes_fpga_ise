@@ -43,7 +43,7 @@ port (
   --
   channel_sel:in unsigned(CHANNEL_BITS-1 downto 0);
   value_sel:in boolean_vector(VALUES-1 downto 0);
-  bin_n:in unsigned(bits(ADDRESS_BITS)-1 downto 0);
+  bin_n:in unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
   lowest_value:in signed(VALUE_BITS-1 downto 0);
   last_bin:in unsigned(ADDRESS_BITS-1 downto 0);
   --
@@ -67,7 +67,7 @@ signal state,nextstate:FSMstate;
 --
 signal channel_sel_reg:unsigned(CHANNEL_BITS-1 downto 0);
 signal value_sel_reg:boolean_vector(VALUES-1 downto 0);
-signal bin_n_reg:unsigned(bits(ADDRESS_BITS)-1 downto 0);
+signal bin_n_reg:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal lowest_value_reg:signed(2*CHUNK_DATABITS-1 downto 0);
 signal last_bin_reg:unsigned(CHUNK_DATABITS-1 downto 0);
 signal start_time_reg,stop_time_reg:unsigned(4*CHUNK_DATABITS-1 downto 0);

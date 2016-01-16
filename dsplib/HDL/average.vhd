@@ -25,7 +25,7 @@ generic(
 port (
   clk:in std_logic;
   reset:in std_logic;
-  n:in unsigned(bits(ADDRESS_BITS) downto 0); --av over 2^n
+  n:in unsigned(ceilLog2(ADDRESS_BITS) downto 0); --av over 2^n
   n_updated:in boolean;
   data_in:in std_logic_vector(DATA_BITS-1 downto 0);
   enable:in boolean;

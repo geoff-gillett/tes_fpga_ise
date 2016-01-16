@@ -24,9 +24,10 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="4" />
+   <WVObjectSize size="5" />
    <wave_markers>
       <marker time="16089204000000" label="" />
+      <marker time="230340000000" label="" />
    </wave_markers>
    <wvobject fp_name="group203" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -151,17 +152,18 @@
          <obj_property name="ElementShortName">slope_threshold[16:0]</obj_property>
          <obj_property name="ObjectShortName">slope_threshold[16:0]</obj_property>
       </wvobject>
+      <wvobject fp_name="/dsp_tb/new_raw_measurement" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_raw_measurement</obj_property>
+         <obj_property name="ObjectShortName">new_raw_measurement</obj_property>
+      </wvobject>
       <wvobject fp_name="/dsp_tb/raw_area" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">raw_area[31:0]</obj_property>
          <obj_property name="ObjectShortName">raw_area[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/filtered_area" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">filtered_area[31:0]</obj_property>
          <obj_property name="ObjectShortName">filtered_area[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/new_raw_measurement" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">new_raw_measurement</obj_property>
-         <obj_property name="ObjectShortName">new_raw_measurement</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/new_filtered_measurement" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">new_filtered_measurement</obj_property>
@@ -208,10 +210,6 @@
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/minima" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">minima[15:0]</obj_property>
-         <obj_property name="ObjectShortName">minima[15:0]</obj_property>
-      </wvobject>
       <wvobject fp_name="/dsp_tb/raw_extrema" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">raw_extrema[15:0]</obj_property>
          <obj_property name="ObjectShortName">raw_extrema[15:0]</obj_property>
@@ -234,10 +232,6 @@
       <wvobject fp_name="/dsp_tb/slope_threshold_xing" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">slope_threshold_xing</obj_property>
          <obj_property name="ObjectShortName">slope_threshold_xing</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd</obj_property>
-         <obj_property name="ObjectShortName">cfd</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group337" type="group">
@@ -289,23 +283,53 @@
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CustomSignalColor">#00ffff</obj_property>
          </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_error_int" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_error_int</obj_property>
+            <obj_property name="ObjectShortName">cfd_error_int</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_reset" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_reset</obj_property>
+            <obj_property name="ObjectShortName">cfd_reset</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/slope_pos_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_pos_xing</obj_property>
+            <obj_property name="ObjectShortName">slope_pos_xing</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/pd_state" type="other" db_ref_id="1">
             <obj_property name="ElementShortName">pd_state</obj_property>
             <obj_property name="ObjectShortName">pd_state</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CustomSignalColor">#ffff00</obj_property>
          </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/signal_pos_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">signal_pos_xing</obj_property>
+            <obj_property name="ObjectShortName">signal_pos_xing</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/time_overflow" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">time_overflow</obj_property>
+            <obj_property name="ObjectShortName">time_overflow</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/signal_neg_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">signal_neg_xing</obj_property>
+            <obj_property name="ObjectShortName">signal_neg_xing</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/pulse_state" type="other" db_ref_id="1">
             <obj_property name="ElementShortName">pulse_state</obj_property>
             <obj_property name="ObjectShortName">pulse_state</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CustomSignalColor">#ffff00</obj_property>
-         </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/start" type="other" db_ref_id="1">
-            <obj_property name="ElementShortName">start</obj_property>
-            <obj_property name="ObjectShortName">start</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-            <obj_property name="CustomSignalColor">#00ffff</obj_property>
          </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/max" type="other" db_ref_id="1">
             <obj_property name="ElementShortName">max</obj_property>
@@ -326,30 +350,12 @@
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CustomSignalColor">#ff0000</obj_property>
          </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/slope_pos_xing" type="other" db_ref_id="1">
-            <obj_property name="ElementShortName">slope_pos_xing</obj_property>
-            <obj_property name="ObjectShortName">slope_pos_xing</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-            <obj_property name="CustomSignalColor">#00ffff</obj_property>
-         </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/signal_out" type="array" db_ref_id="1">
             <obj_property name="ElementShortName">signal_out[17:0]</obj_property>
             <obj_property name="ObjectShortName">signal_out[17:0]</obj_property>
             <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CustomSignalColor">#ff0000</obj_property>
-         </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/signal_pos_xing" type="other" db_ref_id="1">
-            <obj_property name="ElementShortName">signal_pos_xing</obj_property>
-            <obj_property name="ObjectShortName">signal_pos_xing</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-            <obj_property name="CustomSignalColor">#00ffff</obj_property>
-         </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/signal_neg_xing" type="other" db_ref_id="1">
-            <obj_property name="ElementShortName">signal_neg_xing</obj_property>
-            <obj_property name="ObjectShortName">signal_neg_xing</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-            <obj_property name="CustomSignalColor">#00ffff</obj_property>
          </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/peak_int" type="other" db_ref_id="1">
             <obj_property name="ElementShortName">peak_int</obj_property>
@@ -395,26 +401,13 @@
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CustomSignalColor">#00ffff</obj_property>
          </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/cfd_threshold_in" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">cfd_threshold_in[17:0]</obj_property>
-            <obj_property name="ObjectShortName">cfd_threshold_in[17:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/arming" type="other" db_ref_id="1">
             <obj_property name="ElementShortName">arming</obj_property>
             <obj_property name="ObjectShortName">arming</obj_property>
          </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/peaked" type="other" db_ref_id="1">
-            <obj_property name="ElementShortName">peaked</obj_property>
-            <obj_property name="ObjectShortName">peaked</obj_property>
-         </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/cfd_queue_wr_en" type="logic" db_ref_id="1">
-            <obj_property name="ElementShortName">cfd_queue_wr_en</obj_property>
-            <obj_property name="ObjectShortName">cfd_queue_wr_en</obj_property>
-         </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/min_queue_wr_en" type="logic" db_ref_id="1">
-            <obj_property name="ElementShortName">min_queue_wr_en</obj_property>
-            <obj_property name="ObjectShortName">min_queue_wr_en</obj_property>
+         <wvobject fp_name="/dsp_tb/UUT/queue_wr_en" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_wr_en</obj_property>
+            <obj_property name="ObjectShortName">queue_wr_en</obj_property>
          </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/minima_reg" type="array" db_ref_id="1">
             <obj_property name="ElementShortName">minima_reg[17:0]</obj_property>
@@ -442,34 +435,25 @@
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd</obj_property>
-         <obj_property name="ObjectShortName">cfd</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/peak" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">peak</obj_property>
          <obj_property name="ObjectShortName">peak</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_low" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low</obj_property>
+         <obj_property name="ObjectShortName">cfd_low</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/cfd_high" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high</obj_property>
+         <obj_property name="ObjectShortName">cfd_high</obj_property>
+      </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/cfd_error" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">cfd_error</obj_property>
          <obj_property name="ObjectShortName">cfd_error</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/minima" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">minima[15:0]</obj_property>
-         <obj_property name="ObjectShortName">minima[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/pulse_detected" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_detected</obj_property>
-         <obj_property name="ObjectShortName">pulse_detected</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="divider165" type="divider">
          <obj_property name="label">CFD</obj_property>
@@ -480,6 +464,24 @@
       <wvobject fp_name="group194" type="group">
          <obj_property name="label">CFD</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_reset" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_reset</obj_property>
+            <obj_property name="ObjectShortName">cfd_reset</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_error" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_error</obj_property>
+            <obj_property name="ObjectShortName">cfd_error</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_error_int" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_error_int</obj_property>
+            <obj_property name="ObjectShortName">cfd_error_int</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/pulse_start" type="other" db_ref_id="1">
             <obj_property name="ElementShortName">pulse_start</obj_property>
             <obj_property name="ObjectShortName">pulse_start</obj_property>
@@ -506,9 +508,33 @@
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CustomSignalColor">#00ffff</obj_property>
          </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/cfd_queue_empty" type="logic" db_ref_id="1">
-            <obj_property name="ElementShortName">cfd_queue_empty</obj_property>
-            <obj_property name="ObjectShortName">cfd_queue_empty</obj_property>
+         <wvobject fp_name="/dsp_tb/UUT/queue_empty" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_empty</obj_property>
+            <obj_property name="ObjectShortName">queue_empty</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_high_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high_xing</obj_property>
+            <obj_property name="ObjectShortName">cfd_high_xing</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_high_crossed" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high_crossed</obj_property>
+            <obj_property name="ObjectShortName">cfd_high_crossed</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_low_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low_xing</obj_property>
+            <obj_property name="ObjectShortName">cfd_low_xing</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_low_crossed" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low_crossed</obj_property>
+            <obj_property name="ObjectShortName">cfd_low_crossed</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
          </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/cfd_state" type="other" db_ref_id="1">
             <obj_property name="ElementShortName">cfd_state</obj_property>
@@ -516,15 +542,17 @@
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CustomSignalColor">#ffff00</obj_property>
          </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/min_queue_empty" type="logic" db_ref_id="1">
-            <obj_property name="ElementShortName">min_queue_empty</obj_property>
-            <obj_property name="ObjectShortName">min_queue_empty</obj_property>
-         </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/min_state" type="other" db_ref_id="1">
-            <obj_property name="ElementShortName">min_state</obj_property>
-            <obj_property name="ObjectShortName">min_state</obj_property>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_low_threshold" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low_threshold[17:0]</obj_property>
+            <obj_property name="ObjectShortName">cfd_low_threshold[17:0]</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
-            <obj_property name="CustomSignalColor">#ffff00</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/dsp_tb/UUT/cfd_high_threshold" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high_threshold[17:0]</obj_property>
+            <obj_property name="ObjectShortName">cfd_high_threshold[17:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
          </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/signal_at_cfd" type="array" db_ref_id="1">
             <obj_property name="ElementShortName">signal_at_cfd[17:0]</obj_property>
@@ -539,27 +567,12 @@
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CustomSignalColor">#00ffff</obj_property>
          </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/cfd_threshold" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">cfd_threshold[17:0]</obj_property>
-            <obj_property name="ObjectShortName">cfd_threshold[17:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-            <obj_property name="CustomSignalColor">#00ffff</obj_property>
-         </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/cfd_xing" type="other" db_ref_id="1">
-            <obj_property name="ElementShortName">cfd_xing</obj_property>
-            <obj_property name="ObjectShortName">cfd_xing</obj_property>
-         </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/slope_at_cfd" type="array" db_ref_id="1">
             <obj_property name="ElementShortName">slope_at_cfd[17:0]</obj_property>
             <obj_property name="ObjectShortName">slope_at_cfd[17:0]</obj_property>
             <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CustomSignalColor">#ff0000</obj_property>
-         </wvobject>
-         <wvobject fp_name="/dsp_tb/UUT/cfd_int" type="other" db_ref_id="1">
-            <obj_property name="ElementShortName">cfd_int</obj_property>
-            <obj_property name="ObjectShortName">cfd_int</obj_property>
          </wvobject>
          <wvobject fp_name="/dsp_tb/UUT/minima_out" type="array" db_ref_id="1">
             <obj_property name="ElementShortName">minima_out[17:0]</obj_property>
@@ -779,12 +792,12 @@
          <obj_property name="ObjectShortName">slope_extrema_int[17:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/flags" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">flags[3:0]</obj_property>
-         <obj_property name="ObjectShortName">flags[3:0]</obj_property>
+         <obj_property name="ElementShortName">flags[4:0]</obj_property>
+         <obj_property name="ObjectShortName">flags[4:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_tb/UUT/flags_cfd_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">flags_cfd_delay[3:0]</obj_property>
-         <obj_property name="ObjectShortName">flags_cfd_delay[3:0]</obj_property>
+         <obj_property name="ElementShortName">flags_cfd_delay[4:0]</obj_property>
+         <obj_property name="ObjectShortName">flags_cfd_delay[4:0]</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group196" type="group">
@@ -932,17 +945,186 @@
          <obj_property name="ElementShortName">enable_reg</obj_property>
          <obj_property name="ObjectShortName">enable_reg</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/baselineEstimator/average/max_order" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">max_order</obj_property>
-         <obj_property name="ObjectShortName">max_order</obj_property>
+   </wvobject>
+   <wvobject fp_name="group228" type="group">
+      <obj_property name="label">rawmeasurement</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/baselineEstimator/average/in_bits" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">in_bits</obj_property>
-         <obj_property name="ObjectShortName">in_bits</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_tb/UUT/baselineEstimator/average/out_bits" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">out_bits</obj_property>
-         <obj_property name="ObjectShortName">out_bits</obj_property>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/signal_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_in[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/signal_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_out[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/pos_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_xing</obj_property>
+         <obj_property name="ObjectShortName">pos_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/neg_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_xing</obj_property>
+         <obj_property name="ObjectShortName">neg_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/pos_0xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_0xing</obj_property>
+         <obj_property name="ObjectShortName">pos_0xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/neg_0xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_0xing</obj_property>
+         <obj_property name="ObjectShortName">neg_0xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/pos_0closest" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_0closest</obj_property>
+         <obj_property name="ObjectShortName">pos_0closest</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/neg_0closest" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_0closest</obj_property>
+         <obj_property name="ObjectShortName">neg_0closest</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">area[31:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">extrema[17:0]</obj_property>
+         <obj_property name="ObjectShortName">extrema[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/above0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">above0</obj_property>
+         <obj_property name="ObjectShortName">above0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/was_above0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">was_above0</obj_property>
+         <obj_property name="ObjectShortName">was_above0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/below0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">below0</obj_property>
+         <obj_property name="ObjectShortName">below0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/was_below0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">was_below0</obj_property>
+         <obj_property name="ObjectShortName">was_below0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/signal_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_reg[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_reg[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/area_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">area_int[33:0]</obj_property>
+         <obj_property name="ObjectShortName">area_int[33:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/extrema_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">extrema_int[17:0]</obj_property>
+         <obj_property name="ObjectShortName">extrema_int[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/xing0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">xing0</obj_property>
+         <obj_property name="ObjectShortName">xing0</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/pos0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos0</obj_property>
+         <obj_property name="ObjectShortName">pos0</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/neg0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg0</obj_property>
+         <obj_property name="ObjectShortName">neg0</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/pos_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_reg</obj_property>
+         <obj_property name="ObjectShortName">pos_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/neg_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_reg</obj_property>
+         <obj_property name="ObjectShortName">neg_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/diff" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">diff[17:0]</obj_property>
+         <obj_property name="ObjectShortName">diff[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/diff_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">diff_reg[17:0]</obj_property>
+         <obj_property name="ObjectShortName">diff_reg[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/signal_reg2" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_reg2[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_reg2[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/first_closest" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">first_closest</obj_property>
+         <obj_property name="ObjectShortName">first_closest</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/pos_xing_next" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_xing_next</obj_property>
+         <obj_property name="ObjectShortName">pos_xing_next</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/neg_xing_next" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_xing_next</obj_property>
+         <obj_property name="ObjectShortName">neg_xing_next</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/above" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">above</obj_property>
+         <obj_property name="ObjectShortName">above</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/was_above" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">was_above</obj_property>
+         <obj_property name="ObjectShortName">was_above</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/width" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">width</obj_property>
+         <obj_property name="ObjectShortName">width</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/frac" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">frac</obj_property>
+         <obj_property name="ObjectShortName">frac</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_tb/UUT/rawMeasurement/area_width" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">area_width</obj_property>
+         <obj_property name="ObjectShortName">area_width</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

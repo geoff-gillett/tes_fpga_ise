@@ -3,6 +3,11 @@
 	<name>tests</name>
 	<comment></comment>
 	<projects>
+		<project>adclib</project>
+		<project>controllerlib</project>
+		<project>dsplib</project>
+		<project>ethernetlib</project>
+		<project>mcalib</project>
 		<project>streamlib</project>
 		<project>TES_digitiser</project>
 		<project>teslib</project>

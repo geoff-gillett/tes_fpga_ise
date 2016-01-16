@@ -259,7 +259,7 @@ attribute keep of CPU_reset:signal is "true";
 --------------------------------------------------------------------------------
 -- FMC108 signals
 --------------------------------------------------------------------------------
-constant IODELAY_CONTROL_BITS:integer:=ADC_BITS+bits(ADC_CHANNELS);
+constant IODELAY_CONTROL_BITS:integer:=ADC_BITS+ceilLog2(ADC_CHANNELS);
 -- DDR
 signal adc_clk,adc_clk_bufds:std_logic_vector(ADC_CHIPS-1 downto 0);
 signal adc_ddr:ddr_sample_array(ADC_CHANNELS-1 downto 0);
@@ -339,10 +339,10 @@ signal framebuffer_full,framebuffer_empty:std_logic;
 signal mca_updated,mca_updated_sclk:boolean;
 signal mca_update_asap,mca_update_on_completion:boolean;
 signal mca_ticks:unsigned(TICK_COUNT_BITS-1 downto 0);
-signal mca_bin_n:unsigned(bits(MCA_ADDRESS_BITS)-1 downto 0);
+signal mca_bin_n:unsigned(ceilLog2(MCA_ADDRESS_BITS)-1 downto 0);
 signal mca_lowest_value:signed(MCA_VALUE_BITS-1 downto 0);
 signal mca_last_bin:unsigned(MCA_ADDRESS_BITS-1 downto 0);
-signal mca_channel_select:unsigned(bits(TES_CHANNELS)-1 downto 0);
+signal mca_channel_select:unsigned(ceilLog2(TES_CHANNELS)-1 downto 0);
 signal mca_value_select:boolean_vector(MCA_VALUES-1 downto 0);
 signal mcastream:std_logic_vector(MCASTREAM_CHUNKS*CHUNK_BITS-1 downto 0);
 signal mcastream_valid,mcastream_ready:boolean;

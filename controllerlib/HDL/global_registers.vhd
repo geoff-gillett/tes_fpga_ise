@@ -64,7 +64,7 @@ port (
   -- mca control
   mca_update_asap:out boolean;
   mca_update_on_completion:out boolean;
-  mca_bin_n:out unsigned(bits(MCA_ADDRESS_BITS)-1 downto 0);
+  mca_bin_n:out unsigned(ceilLog2(MCA_ADDRESS_BITS)-1 downto 0);
   mca_lowest_value:out signed(MCA_VALUE_BITS-1 downto 0);
   mca_last_bin:out unsigned(MCA_ADDRESS_BITS-1 downto 0);
   mca_ticks:out unsigned(TICK_COUNT_BITS-1 downto 0);
@@ -89,7 +89,7 @@ signal event_threshold_reg:unsigned(EVENT_THRESHOLD_BITS-1 downto 0);
 signal event_timeout_reg:unsigned(EVENT_TIMEOUT_BITS-1 downto 0);
 signal tick_period_reg:unsigned(TICK_PERIOD_BITS-1 downto 0);
 signal adc_enables_reg:std_logic_vector(ADC_CHANNELS-1 downto 0);
-signal mca_bin_n_reg:unsigned(bits(MCA_ADDRESS_BITS)-1 downto 0);
+signal mca_bin_n_reg:unsigned(ceilLog2(MCA_ADDRESS_BITS)-1 downto 0);
 signal mca_lowest_value_reg:signed(MCA_VALUE_BITS-1 downto 0);
 signal mca_last_bin_reg:unsigned(MCA_ADDRESS_BITS-1 downto 0);
 signal mca_ticks_reg:unsigned(TICK_COUNT_BITS-1 downto 0);
@@ -237,7 +237,7 @@ if rising_edge(clk) then
       end if;
       if address(MCA_BIN_N_ADDR_BIT)='1' then
         mca_bin_n_reg 
-          <= unsigned(data(bits(MCA_ADDRESS_BITS)-1 downto 0));
+          <= unsigned(data(ceilLog2(MCA_ADDRESS_BITS)-1 downto 0));
       end if;
       if address(MCA_LOWEST_VALUE_ADDR_BIT)='1' then
         mca_lowest_value_reg <= signed(data(MCA_VALUE_BITS-1 downto 0));

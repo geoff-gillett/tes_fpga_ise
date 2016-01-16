@@ -48,6 +48,13 @@ constant EVENTBUS_DATA_BITS:integer:=CHUNK_DATABITS*EVENTBUS_CHUNKS;
 subtype eventbus_t is std_logic_vector(EVENTBUS_CHUNKS*CHUNK_BITS-1 downto 0);
 type eventbus_array is array (natural range <>) of eventbus_t;
 
+type streambus is record
+	keeps:std_logic_vector(EVENTBUS_CHUNKS-1 downto 0);
+	lasts:std_logic_vector(EVENTBUS_CHUNKS-1 downto 0);
+	data:std_logic_vector(EVENTBUS_CHUNKS*CHUNK_DATABITS-1 downto 0);
+end record;
+
+
 end package types;
 
 package body types is

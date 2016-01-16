@@ -59,16 +59,16 @@ port (
   --registers
   -- all *_updated signals are pulses synced to the register_clk domain 
   delay:out unsigned(DELAY_BITS-1 downto 0);
-  signal_avn:out unsigned(bits(SIGNAL_AV_ADDRESS_BITS) downto 0);
+  signal_avn:out unsigned(ceilLog2(SIGNAL_AV_ADDRESS_BITS) downto 0);
   signal_avn_updated:out boolean;
-  slope_n:out unsigned(bits(SLOPE_ADDRESS_BITS) downto 0);
+  slope_n:out unsigned(ceilLog2(SLOPE_ADDRESS_BITS) downto 0);
   slope_n_updated:out boolean;
   sync_clks:out unsigned(SYNC_ADDRESS_BITS downto 0);
   sync_clks_updated:out boolean;
   baseline_timeconstant:out unsigned(TIMECONSTANT_BITS-1 downto 0);
   fixed_baseline:out sample_t;
   baseline_timeconstant_updated:out boolean;
-  baseline_avn:out unsigned(bits(BASELINE_AV_ADDRESS_BITS) downto 0);
+  baseline_avn:out unsigned(ceilLog2(BASELINE_AV_ADDRESS_BITS) downto 0);
   baseline_avn_updated:out boolean;
   start_threshold:out sample_t;
   stop_threshold:out sample_t;
@@ -85,11 +85,11 @@ architecture RTL of channel_registers is
 -- Registers
 --------------------------------------------------------------------------------
 signal delay_reg:unsigned(DELAY_BITS-1 downto 0);
-signal signal_avn_reg:unsigned(bits(SIGNAL_AV_ADDRESS_BITS) downto 0);
-signal slope_n_reg:unsigned(bits(SLOPE_ADDRESS_BITS) downto 0);
+signal signal_avn_reg:unsigned(ceilLog2(SIGNAL_AV_ADDRESS_BITS) downto 0);
+signal slope_n_reg:unsigned(ceilLog2(SLOPE_ADDRESS_BITS) downto 0);
 signal sync_clks_reg:unsigned(SYNC_ADDRESS_BITS downto 0);
 signal baseline_timeconstant_reg:unsigned(TIMECONSTANT_BITS-1 downto 0);
-signal baseline_avn_reg:unsigned(bits(BASELINE_AV_ADDRESS_BITS) downto 0);
+signal baseline_avn_reg:unsigned(ceilLog2(BASELINE_AV_ADDRESS_BITS) downto 0);
 signal start_threshold_reg:sample_t;
 signal stop_threshold_reg:sample_t;
 signal baseline_relative_reg:boolean;
@@ -142,13 +142,13 @@ if rising_edge(clk) then
   if reset='1' then
     delay_reg <= to_unsigned(DEFAULT_DELAY,DELAY_BITS); 
     signal_avn_reg 
-      <= to_unsigned(DEFAULT_SIGNAL_AVN,bits(SIGNAL_AV_ADDRESS_BITS)+1); 
-    slope_n_reg<= to_unsigned(DEFAULT_SLOPE_N,bits(SLOPE_ADDRESS_BITS)+1); 
+      <= to_unsigned(DEFAULT_SIGNAL_AVN,ceilLog2(SIGNAL_AV_ADDRESS_BITS)+1); 
+    slope_n_reg<= to_unsigned(DEFAULT_SLOPE_N,ceilLog2(SLOPE_ADDRESS_BITS)+1); 
     sync_clks_reg <= to_unsigned(DEFAULT_SYNC_CLKS,SYNC_ADDRESS_BITS+1); 
     baseline_timeconstant_reg 
       <= to_unsigned(DEFAULT_BASELINE_TIMECONSTANT,TIMECONSTANT_BITS); 
     baseline_avn_reg 
-      <= to_unsigned(DEFAULT_BASELINE_AVN,bits(BASELINE_AV_ADDRESS_BITS)+1);
+      <= to_unsigned(DEFAULT_BASELINE_AVN,ceilLog2(BASELINE_AV_ADDRESS_BITS)+1);
     baseline_relative_reg <= TRUE;
     start_threshold_reg <= to_signed(DEFAULT_START_THRESHOLD,SAMPLE_BITS);
     stop_threshold_reg <= to_signed(DEFAULT_STOP_THRESHOLD,SAMPLE_BITS);
@@ -170,11 +170,11 @@ if rising_edge(clk) then
       end if;
       if address(SIGNAL_AVN_ADDR_BIT)='1' then
         signal_avn_reg 
-          <= unsigned(data_in(bits(SIGNAL_AV_ADDRESS_BITS) downto 0)); 
+          <= unsigned(data_in(ceilLog2(SIGNAL_AV_ADDRESS_BITS) downto 0)); 
         signal_avn_updated <= TRUE; 
       end if;
       if address(SLOPE_N_ADDR_BIT)='1' then
-        slope_n_reg <= unsigned(data_in(bits(SLOPE_ADDRESS_BITS) downto 0)); 
+        slope_n_reg <= unsigned(data_in(ceilLog2(SLOPE_ADDRESS_BITS) downto 0)); 
         slope_n_updated <= TRUE;
       end if;
       if address(SYNC_CLKS_ADDR_BIT)='1' then
@@ -188,7 +188,7 @@ if rising_edge(clk) then
       end if;
       if address(BASELINE_AVN_ADDR_BIT)='1' then
         baseline_avn_reg 
-          <= unsigned(data_in(bits(BASELINE_AV_ADDRESS_BITS) downto 0)); 
+          <= unsigned(data_in(ceilLog2(BASELINE_AV_ADDRESS_BITS) downto 0)); 
         baseline_avn_updated <= TRUE;
       end if;
       if address(START_THRESHOLD_ADDR_BIT)='1' then

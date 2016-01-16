@@ -1,1 +1,1 @@
-rawmeasurements=importsimdata('C:\TES_project\fpga_ise\tests\PlanAhead\tests.sim\dsp_TB\dsp_TB.rawmeasurements',2);
+rawmeasurements=importsimdata('C:\TES_project\fpga_ise\tests\PlanAhead\tests.sim\dsp_TB\dsp_TB.rawmeasurements',3);
