@@ -59,7 +59,7 @@ signal eventstream:eventbus_t;
 signal valid:boolean;
 signal ready:boolean;
 signal last:boolean;
-signal height_format:height_form;
+signal height_format:heighttype;
 
 begin
 clk <= not clk after CLK_PERIOD/2;

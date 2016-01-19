@@ -19,6 +19,12 @@ proc writeInt32 { fp signal } {
 	return i
 }
 
+proc writeInt64 { fp signal } {
+	set i [getsig $signal dec]
+	puts -nonewline $fp [binary format W $i]
+	return $i
+}
+
 set fp [open "../dsp_capture_TB.double_peak" r]
 fconfigure $fp -buffering line
 set settings [open "../dsp_capture_TB.settings" w]
@@ -35,6 +41,8 @@ set pulsestarts [open "../dsp_capture_TB.pulsestarts" w]
 fconfigure $pulsestarts -translation binary
 set stream [open "../dsp_capture_TB.stream" w]
 fconfigure $stream -translation binary
+set timing [open "../dsp_capture_TB.timing" w]
+fconfigure $timing -translation binary
 restart
 wave add /
 wave add /dsp_capture_TB
@@ -51,6 +59,7 @@ writeInt32 $settings baseline_average_order
 writeInt32 $settings dspProcessor/BASELINE_AV_FRAC 
 writeInt32 $settings rel_to_min
 writeInt32 $settings use_cfd_timing
+writeInt32 $settings height_slv
 close $settings
 while {[gets $fp hexsample] >= 0} {
 #while {$i < 500000} {}
@@ -87,8 +96,12 @@ while {[gets $fp hexsample] >= 0} {
 		writeInt32 $cfdhigh filtered
 	}
 	if { [getsig ready] && [getsig valid] } {
-		writeInt32 $stream eventstream_LE(63:32)
-		writeInt32 $stream eventstream_LE(31:0)
+		writeInt32 $stream event_LE(63:32)
+		writeInt32 $stream event_LE(31:0)
+	}
+	if { [getsig enqueue] } {
+		puts -nonewline $timing [binary format i $i]
+		writeInt32 $timing filtered
 	}
 	runclks
 }
@@ -99,3 +112,4 @@ close $peaks
 close $cfdlow
 close $cfdhigh
 close $stream
+close $timing

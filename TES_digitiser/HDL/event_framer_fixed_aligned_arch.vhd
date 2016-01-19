@@ -23,12 +23,12 @@ signal relative_time,rel_time:unsigned(TIME_BITS-1 downto 0);
 signal data,headerdata:std_logic_vector(DATA_BITS-1 downto 0);
 signal frame_addr:unsigned(ADDRESS_BITS-1 downto 0);
 signal free:unsigned(ADDRESS_BITS downto 0);
-signal chunk_wr_en,lasts,keeps:std_logic_vector(EVENTBUS_CHUNKS-1 downto 0);
+signal chunk_wr_en,lasts,keeps:std_logic_vector(BUS_CHUNKS-1 downto 0);
 signal commit_int,commit_reg,dump_int,local_rollover,started:boolean;
 signal peak_data:std_logic_vector(2*CHUNK_DATABITS-1 downto 0);
 signal peak_detected:boolean;
 signal peaks_lost,overflow:boolean;
-signal eventstream_int:std_logic_vector(EVENTBUS_CHUNKS*CHUNK_BITS-1 downto 0);
+signal eventstream_int:std_logic_vector(BUS_CHUNKS*CHUNK_BITS-1 downto 0);
 signal valid_int,ready_int,last_int:boolean;
 signal flags:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 --
@@ -61,7 +61,7 @@ event_lost <= overflow;
 --------------------------------------------------------------------------------
 framer:entity streamlib.framer
 generic map(
-  BUS_CHUNKS => EVENTBUS_CHUNKS,
+  BUS_CHUNKS => BUS_CHUNKS,
   ADDRESS_BITS => ADDRESS_BITS
 )
 port map(
@@ -79,9 +79,9 @@ port map(
   valid => valid_int,
   ready => ready_int
 );
-last_int <= busLast(eventstream_int,EVENTBUS_CHUNKS);
+last_int <= busLast(eventstream_int,BUS_CHUNKS);
 streamreg:entity streamlib.register_slice
-generic map(STREAM_BITS => EVENTBUS_CHUNKS*CHUNK_BITS)
+generic map(STREAM_BITS => BUS_CHUNKS*CHUNK_BITS)
 port map(
 	clk => clk,
   reset => reset,

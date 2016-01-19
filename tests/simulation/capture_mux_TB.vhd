@@ -26,7 +26,7 @@ use streamlib.events.all;
 library adclib;
 use adclib.types.all;
 
-entity dsp_capture_TB is
+entity capture_mux_TB is
 generic(
 	WIDTH:integer:=18;
 	FRAC:integer:=3;
@@ -43,9 +43,9 @@ generic(
   ADDRESS_BITS:integer:=9;
   BUS_CHUNKS:integer:=4
 );
-end entity dsp_capture_TB;
+end entity capture_mux_TB;
 
-architecture testbench of dsp_capture_TB is
+architecture testbench of capture_mux_TB is
 
 signal clk:std_logic:='1';	
 signal reset:std_logic:='1';	

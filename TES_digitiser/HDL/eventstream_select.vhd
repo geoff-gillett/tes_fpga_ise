@@ -39,7 +39,7 @@ port(
 end entity eventstream_select;
 
 architecture combinatorial of eventstream_select is
-constant BUS_BITS:integer:=CHUNK_BITS*EVENTBUS_CHUNKS;
+constant BUS_BITS:integer:=CHUNK_BITS*BUS_CHUNKS;
 type input_array is array(0 to BUS_BITS-1) of 
 										std_logic_vector(CHANNELS-1 downto 0);
 signal inputs:input_array;

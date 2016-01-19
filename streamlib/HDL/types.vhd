@@ -40,20 +40,22 @@ constant CHUNK_CONTROLBITS:integer:=CHUNK_BITS-CHUNK_DATABITS;
 
 -- Was in events 
 -- Number of chunks in the eventbus SEE TES.stream library
-constant EVENTBUS_CHUNKS:integer:=4;
+constant BUS_CHUNKS:integer:=4;
 -- total bits in the eventbus (including control bits)
-constant EVENTBUS_BITS:integer:=CHUNK_BITS*EVENTBUS_CHUNKS;
+constant EVENTBUS_BITS:integer:=CHUNK_BITS*BUS_CHUNKS;
 -- data only bits of the eventbus
-constant EVENTBUS_DATA_BITS:integer:=CHUNK_DATABITS*EVENTBUS_CHUNKS;
-subtype eventbus_t is std_logic_vector(EVENTBUS_CHUNKS*CHUNK_BITS-1 downto 0);
+constant EVENTBUS_DATA_BITS:integer:=CHUNK_DATABITS*BUS_CHUNKS;
+subtype eventbus_t is std_logic_vector(BUS_CHUNKS*CHUNK_BITS-1 downto 0);
 type eventbus_array is array (natural range <>) of eventbus_t;
 
+subtype streamvector is std_logic_vector(BUS_CHUNKS*CHUNK_BITS-1 downto 0);
 type streambus is record
-	keeps:std_logic_vector(EVENTBUS_CHUNKS-1 downto 0);
-	lasts:std_logic_vector(EVENTBUS_CHUNKS-1 downto 0);
-	data:std_logic_vector(EVENTBUS_CHUNKS*CHUNK_DATABITS-1 downto 0);
+	keeps:std_logic_vector(BUS_CHUNKS-1 downto 0);
+	lasts:std_logic_vector(BUS_CHUNKS-1 downto 0);
+	data:std_logic_vector(BUS_CHUNKS*CHUNK_DATABITS-1 downto 0);
 end record;
-
+type streambus_array is array (natural range <>) of streambus;
+type streamvector_array is array (natural range <>) of streamvector;
 
 end package types;
 

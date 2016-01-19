@@ -17,7 +17,7 @@ signal lasts,keeps:std_logic_vector(STREAM_CHUNKS-1 downto 0);
 signal address,length:unsigned(ADDRESS_BITS-1 downto 0);
 signal free:unsigned(ADDRESS_BITS downto 0);
 signal wr_en:boolean_vector(STREAM_CHUNKS-1 downto 0);
-signal tickstream_int:std_logic_vector(EVENTBUS_CHUNKS*CHUNK_BITS-1 downto 0);
+signal tickstream_int:std_logic_vector(BUS_CHUNKS*CHUNK_BITS-1 downto 0);
 signal valid_int,ready_int,last_int:boolean;
 --
 begin
@@ -77,7 +77,7 @@ if rising_edge(clk) then
     missed_tick <= FALSE;
     full <= FALSE;
   else
-    full <= free < to_unsigned(2,EVENTBUS_CHUNKS*CHUNK_BITS);
+    full <= free < to_unsigned(2,BUS_CHUNKS*CHUNK_BITS);
     case state is 
       when WRITE_TIMESTAMP =>
         if (tick_int or missed_tick) then
@@ -155,7 +155,7 @@ begin
 end process parameterReg;
 framer:entity streamlib.framer
 generic map(
-  BUS_CHUNKS => EVENTBUS_CHUNKS,
+  BUS_CHUNKS => BUS_CHUNKS,
   ADDRESS_BITS => 9
 )
 port map(
@@ -173,9 +173,9 @@ port map(
   valid => valid_int,
   ready => ready_int
 );
-last_int <= busLast(tickstream_int,EVENTBUS_CHUNKS);
+last_int <= busLast(tickstream_int,BUS_CHUNKS);
 streamReg:entity streamlib.register_slice
-generic map(STREAM_BITS => EVENTBUS_CHUNKS*CHUNK_BITS)
+generic map(STREAM_BITS => BUS_CHUNKS*CHUNK_BITS)
 port map(
 	clk => clk,
   reset => reset,

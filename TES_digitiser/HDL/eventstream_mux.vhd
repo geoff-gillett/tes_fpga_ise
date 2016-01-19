@@ -151,7 +151,7 @@ inputRegGen:for i in CHANNELS downto 1 generate
 begin
 	inputReg:entity streamlib.register_slice
 		generic map(
-			STREAM_BITS => CHUNK_BITS*EVENTBUS_CHUNKS
+			STREAM_BITS => CHUNK_BITS*BUS_CHUNKS
 		)
 		port map(
 			clk       => clk,
@@ -169,7 +169,7 @@ end generate;
 
 tickInputReg:entity streamlib.register_slice
 generic map(
-  STREAM_BITS => CHUNK_BITS*EVENTBUS_CHUNKS
+  STREAM_BITS => CHUNK_BITS*BUS_CHUNKS
 )
 port map(
   clk       => clk,

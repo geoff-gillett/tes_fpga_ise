@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="C:/TES_project/fpga_ise/tests/PlanAhead/tests.sim/dsp_capture_TB/behav/isim.wdb" id="1" type="auto">
+      <db_ref path="dsp_capture_TB.wdb" id="1" type="auto">
          <top_modules>
             <top_module name="bip_utils_pkg_v2_0" />
             <top_module name="dsp_capture_tb" />
@@ -26,7 +26,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="2" />
+   <WVObjectSize size="5" />
    <wvobject fp_name="group83" type="group">
       <obj_property name="label">testbench</obj_property>
       <obj_property name="DisplayName">label</obj_property>
@@ -358,10 +358,6 @@
          <obj_property name="ElementShortName">dump</obj_property>
          <obj_property name="ObjectShortName">dump</obj_property>
       </wvobject>
-      <wvobject fp_name="/dsp_capture_tb/eventCapture/commit" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">commit</obj_property>
-         <obj_property name="ObjectShortName">commit</obj_property>
-      </wvobject>
       <wvobject fp_name="/dsp_capture_tb/eventCapture/peak_count" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">peak_count[3:0]</obj_property>
          <obj_property name="ObjectShortName">peak_count[3:0]</obj_property>
@@ -389,6 +385,7 @@
       <wvobject fp_name="/dsp_capture_tb/eventCapture/data" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">data[63:0]</obj_property>
          <obj_property name="ObjectShortName">data[63:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_capture_tb/eventCapture/free" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">free[9:0]</obj_property>
@@ -407,12 +404,13 @@
          <obj_property name="ObjectShortName">dump_int</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_capture_tb/eventCapture/peak_count_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_count_int[4:0]</obj_property>
-         <obj_property name="ObjectShortName">peak_count_int[4:0]</obj_property>
+         <obj_property name="ElementShortName">peak_count_int[3:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count_int[3:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_capture_tb/eventCapture/eventstream_int" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">eventstream_int[71:0]</obj_property>
          <obj_property name="ObjectShortName">eventstream_int[71:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_capture_tb/eventCapture/valid_int" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">valid_int</obj_property>
@@ -437,6 +435,8 @@
       <wvobject fp_name="/dsp_capture_tb/eventCapture/header" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">header</obj_property>
          <obj_property name="ObjectShortName">header</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/dsp_capture_tb/eventCapture/above_threshold" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">above_threshold</obj_property>
@@ -446,9 +446,45 @@
          <obj_property name="ElementShortName">enqueue_int</obj_property>
          <obj_property name="ObjectShortName">enqueue_int</obj_property>
       </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/peak_count_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_count_int[3:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count_int[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
       <wvobject fp_name="/dsp_capture_tb/eventCapture/max" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">max</obj_property>
          <obj_property name="ObjectShortName">max</obj_property>
       </wvobject>
+   </wvobject>
+   <wvobject fp_name="/dsp_capture_tb/eventstream_le" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">eventstream_le[63:0]</obj_property>
+      <obj_property name="ObjectShortName">eventstream_le[63:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/dsp_capture_tb/stream_bus" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">stream_bus</obj_property>
+      <obj_property name="ObjectShortName">stream_bus</obj_property>
+      <wvobject fp_name="/dsp_capture_tb/stream_bus.keeps" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">.keeps</obj_property>
+         <obj_property name="ObjectShortName">stream_bus.keeps</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/stream_bus.lasts" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">.lasts</obj_property>
+         <obj_property name="ObjectShortName">stream_bus.lasts</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/stream_bus.data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">.data</obj_property>
+         <obj_property name="ObjectShortName">stream_bus.data</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/dsp_capture_tb/height_slv" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">height_slv[1:0]</obj_property>
+      <obj_property name="ObjectShortName">height_slv[1:0]</obj_property>
    </wvobject>
 </wave_config>

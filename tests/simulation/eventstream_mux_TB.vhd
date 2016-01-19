@@ -66,7 +66,7 @@ begin
 				pulsestream_lasts(i) <= FALSE;
 				pulsestream_valids(i) <= FALSE;
 				commitdump_toggle(i) <= TRUE; --i mod 2 = 0;
-				pulsestreams(i) <= to_std_logic(i,EVENTBUS_CHUNKS*CHUNK_BITS);
+				pulsestreams(i) <= to_std_logic(i,BUS_CHUNKS*CHUNK_BITS);
 			else
 				commit(i) <= FALSE;
 				dump(i) <= FALSE;

@@ -16,24 +16,24 @@ library teslib;
 use teslib.types.all;
 use teslib.functions.all;
 --
-use work.types.all;
-use work.functions.all;
+--use work.types.all;
+--use work.functions.all;
+use work.stream.all;
 use work.events.all;
 --use streamlib.all;
 --
 entity event_capture is
 generic(
   CHANNEL:integer:=1;
-  PEAK_COUNT_BITS:integer:=4;
+  PEAK_COUNT_BITS:integer:=MAX_PEAK_COUNT_BITS;
   ADDRESS_BITS:integer:=9;
-  BUS_CHUNKS:integer:=4;
-  ENDIANNESS:string:="LITTLE"
+  BUS_CHUNKS:integer:=4
 );
 port (
   clk:in std_logic;
   reset:in std_logic;
   --
-  height_format:in height_form;
+  height_format:in heighttype;
   rel_to_min:in boolean;
   --
   use_cfd_timing:in boolean;
@@ -58,13 +58,12 @@ port (
   enqueue:out boolean;
   dump:out boolean;
   commit:out boolean;
-  peak_count:out unsigned(MAX_PEAK_COUNT_BITS-1 downto 0);
+  peak_count:out unsigned(PEAK_COUNT_BITS-1 downto 0);
   height:out signal_t;
   --
-  eventstream:out eventbus_t;
+  eventstream:out streambus;
   valid:out boolean;
-  ready:in boolean;
-  last:out boolean
+  ready:in boolean
 );
 end entity event_capture;
 
@@ -72,32 +71,29 @@ end entity event_capture;
 -- only records peaks as 8 byte event;
 architecture peak_only of event_capture is
 --
-constant DATA_BITS:integer:=BUS_CHUNKS*CHUNK_DATABITS;
---constant PEAK_COUNT_BITS:integer:=bits(MAX_PEAKS);
---
-signal data:std_logic_vector(DATA_BITS-1 downto 0);
+signal data:streambus;
 signal free:unsigned(ADDRESS_BITS downto 0);
-signal chunk_wr_en:boolean_vector(EVENTBUS_CHUNKS-1 downto 0);
+signal chunk_wr_en:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal commit_int,dump_int:boolean;
-signal peak_count_int:unsigned(PEAK_COUNT_BITS downto 0); 
-signal eventstream_int:std_logic_vector(EVENTBUS_CHUNKS*CHUNK_BITS-1 downto 0);
-signal valid_int,ready_int,last_int:boolean;
+signal peak_count_int:unsigned(PEAK_COUNT_BITS-1 downto 0); 
 
 type FSMstate is (IDLE,STARTED,QUEUED);
 signal state,nextstate:FSMstate;
 signal start_signal:signal_t;
-signal header:event_header;
+signal header:eventheader;
 signal above_threshold:boolean;
 signal enqueue_int:boolean;
 signal max:boolean;
+signal not_first:boolean;
+
 --
 begin
 --------------------------------------------------------------------------------
 -- Buffers event frames and prepares stream 
 --------------------------------------------------------------------------------
-framer:entity work.framer
+framer:entity work.stream_framer
 generic map(
-  BUS_CHUNKS => EVENTBUS_CHUNKS,
+  BUS_CHUNKS => BUS_CHUNKS,
   ADDRESS_BITS => ADDRESS_BITS
 )
 port map(
@@ -105,29 +101,12 @@ port map(
   reset => reset,
   data => data,
   address => to_unsigned(0,ADDRESS_BITS),
-  lasts => "0001", 
-  keeps => "1111",
   chunk_we => chunk_wr_en,
   free => free,
   length => to_unsigned(1,ADDRESS_BITS),
   commit => commit_int,
-  stream => eventstream_int,
-  valid => valid_int,
-  ready => ready_int
-);
-last_int <= busLast(eventstream_int,EVENTBUS_CHUNKS);
-streamreg:entity work.register_slice
-generic map(STREAM_BITS => EVENTBUS_CHUNKS*CHUNK_BITS)
-port map(
-	clk => clk,
-  reset => reset,
-  stream_in => eventstream_int,
-  valid_in => valid_int,
-  last_in => last_int,
-  ready_out => ready_int,
   stream => eventstream,
   valid => valid,
-  last => last,
   ready => ready
 );
 
@@ -193,7 +172,9 @@ begin
 	end case;
 end process FSMtrasition;
 
-data <= to_std_logic(header);
+data.data <= to_std_logic(header);
+data.keeps <= to_boolean("1111");
+data.lasts <= to_boolean("0001");
 
 --dump_int <= state=QUEUED and 
 --            (cfd_error or (max and not above_threshold)); 
@@ -207,22 +188,24 @@ captureProcess:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
-  	peak_count_int <= (others => '0');
   	above_threshold <= FALSE;
  		header.flags.channel <= to_unsigned(CHANNEL,MAX_CHANNEL_BITS);
+ 		header.size <= to_unsigned(8,SIZE_BITS);
  		header.timestamp <= (others => '0');
   	enqueue <= FALSE;
   else
   	
   	if peak_start then
   		header.flags.peak_overflow <= FALSE;
-  		header.flags.multipeak <= FALSE;
+  		header.flags.not_first <= FALSE;
   		start_signal <= signal_in;
-  		header.size <= to_unsigned(8,SIZE_BITS);
-	  	peak_count_int <= (others => '0');
+	  	header.flags.rel_to_min <= rel_to_min;
+	  	header.flags.height_type <= height_format;
   	end if;
   	
-  	if pulse_pos_xing then
+  	if pulse_pos_xing then -- pulse_start
+  		not_first <= FALSE;
+	  	peak_count_int <= (others => '0');
   		above_threshold <= TRUE;
   		header.flags.peak_count <= (others => '0');
   	end if;
@@ -234,11 +217,18 @@ if rising_edge(clk) then
   	enqueue <= enqueue_int;
   	
   	if max then
-  		header.flags.peak_count <= header.flags.peak_count+1;
-  		header.flags.multipeak <= TRUE;
+  		if peak_count_int=to_unsigned((2**PEAK_COUNT_BITS)-1,PEAK_COUNT_BITS) then
+  			header.flags.peak_overflow <= TRUE;
+  		else
+  			peak_count_int <= peak_count_int+1;
+  			header.flags.peak_overflow <= FALSE;
+  		end if;
+  		header.flags.peak_count <= peak_count_int;
+  		not_first <= TRUE;
+  		header.flags.not_first <= not_first;
   		case height_format is 
   		when PEAK_HEIGHT | CFD_HEIGHT =>
-        if rel_to_min then
+        if header.flags.rel_to_min then
           header.height <= signal_in-start_signal;
         else
         	header.height <= signal_in;

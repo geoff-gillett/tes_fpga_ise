@@ -615,8 +615,7 @@ port map(
   extrema => signal_extrema_int,
   valid => filtered_valid_int
 );
---
-										
+
 slopeMeasurement:entity work.signal_measurement
 generic map(
   WIDTH => WIDTH,
@@ -638,7 +637,6 @@ port map(
   extrema => slope_extrema_int,
   valid => slope_valid_int
 );
---
 
 pulseMeasurement:process(clk)
 begin
@@ -683,7 +681,7 @@ if rising_edge(clk) then
   end if;
 end if;
 end process pulseMeasurement;
---
+
 cfdLowXing:entity work.closest_xing
 generic map(
   WIDTH => WIDTH
@@ -736,9 +734,6 @@ end process cfdFSMnextstate;
 --FIXME The CFD process will not work properly on arbitrary signals. With some 
 --further thought I think it could. Meanwhile this should be OK for TES signals.
 min_valid <= min_at_cfd and signal_is_min;
---cfd_low_int <= cfd_low_xing and cfd_state=WAIT_PEAK;
---cfd_high_int <= cfd_high_xing and cfd_state=WAIT_PEAK;
---cfd_error_int <= (peak_at_cfd and cfd_state/=IDLE) or cfd_overflow;
 
 cfdFSMtransition:process(peak_at_cfd,queue_empty,cfd_state,min_valid, 
 												 cfd_high_xing,cfd_low_xing)
