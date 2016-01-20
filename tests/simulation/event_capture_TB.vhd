@@ -17,8 +17,7 @@ library teslib;
 use teslib.types.all;
 
 library streamlib;
-use streamlib.types.all;
-use streamlib.functions.all;
+use streamlib.stream.all;
 use streamlib.events.all;
 
 entity event_capture_TB is
@@ -26,8 +25,7 @@ generic(
   CHANNEL:integer:=1;
   PEAK_COUNT_BITS:integer:=4;
   ADDRESS_BITS:integer:=9;
-  BUS_CHUNKS:integer:=4;
-  ENDIANNESS:string:="LITTLE"
+  BUS_CHUNKS:integer:=4
 );
 end entity event_capture_TB;
 
@@ -55,10 +53,9 @@ signal dump:boolean;
 signal commit:boolean;
 signal peak_count:unsigned(MAX_PEAK_COUNT_BITS-1 downto 0);
 signal height:signal_t;
-signal eventstream:eventbus_t;
+signal eventstream:streambus;
 signal valid:boolean;
 signal ready:boolean;
-signal last:boolean;
 signal height_format:heighttype;
 
 begin
@@ -69,8 +66,7 @@ generic map(
   CHANNEL => CHANNEL,
   PEAK_COUNT_BITS => PEAK_COUNT_BITS,
   ADDRESS_BITS => ADDRESS_BITS,
-  BUS_CHUNKS => BUS_CHUNKS,
-  ENDIANNESS => ENDIANNESS
+  BUS_CHUNKS => BUS_CHUNKS
 )
 port map(
   clk => clk,
@@ -96,8 +92,7 @@ port map(
   height => height,
   eventstream => eventstream,
   valid => valid,
-  ready => ready,
-  last => last
+  ready => ready
 );
 
 stimulus:process is

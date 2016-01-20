@@ -3,8 +3,8 @@
 -- Date:09/02/2014 
 --
 -- Design Name: TES_digitiser
--- Module Name: frame_to_stream
--- Project Name: channel
+-- Module Name: stream_framer_TDP arch
+-- Project Name: streamlib
 -- Target Devices: virtex6
 -- Tool versions: ISE 14.7
 --------------------------------------------------------------------------------
@@ -21,6 +21,7 @@ use work.stream.all;
 --use stream.events.all;
 -- random access writes frame converted to a stream
 -- uses chunk lasts to set last output
+--
 entity stream_framer is
 generic(
   BUS_CHUNKS:integer:=4;
@@ -36,7 +37,7 @@ port(
   --! control bits for the dataword 
   -- FIXME: why are these SLV while chunk_we is boolean_vector?
   chunk_we:in boolean_vector(BUS_CHUNKS-1 downto 0);
-  wr_valid:out boolean; --Write success 1 clk after chunk_we
+  success:out boolean; --Write or commit success 1 clk after
   -- length of frame to commit
   length:in unsigned(ADDRESS_BITS-1 downto 0);
   commit:in boolean;
@@ -48,14 +49,13 @@ port(
   --last:out boolean -- true if any lasts set 
 );
 end entity stream_framer;
---
-architecture serialiser of stream_framer is
+architecture TDP of stream_framer is
 --
 --RAM read_latency is 2 but the address increments 1clk after read_ram asserted
 constant LATENCY:integer:=3; -- LATENCY for serialiser
 --
 type frame_buffer is array (0 to 2**ADDRESS_BITS-1) of streamvector;
-signal frame_ram:frame_buffer:=(others => (others => '0'));
+shared variable frame_ram:frame_buffer:=(others => (others => '0'));
 --signal last_int,valid_int,valid_reg,ready_int:boolean;
 --signal stream_int:std_logic_vector(BUS_BITS-1 downto 0);
 signal input_word,ram_dout,ram_data,stream_vector:streamvector;
@@ -70,7 +70,7 @@ signal wr_valid_int:boolean;
 --
 begin
 free <= free_ram;
-wr_valid <= wr_valid_int; 
+success <= wr_valid_int; 
 --------------------------------------------------------------------------------
 -- Frame buffer
 --------------------------------------------------------------------------------
@@ -90,16 +90,20 @@ if rising_edge(clk) then
   for i in 0 to BUS_CHUNKS-1 loop
     if we(i) then
       frame_ram(to_integer(to_0IfX(wr_addr)))
-               ((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS)
-        <= input_word((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS);
+      					((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS)
+        :=input_word((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS);
     end if;
   end loop;
 end if;
 end process framePortA;
+
 framePortB:process(clk)
 begin
 if rising_edge(clk) then
-  ram_dout <= frame_ram(to_integer(to_0IfX(rd_ptr)));
+	ram_dout <= frame_ram(to_integer(to_0IfX(rd_ptr)));
+	if read_en then
+		frame_ram(to_integer(to_0Ifx(rd_ptr))):=(others => '0');
+	end if;
   ram_data <= ram_dout; -- register output
 end if;
 end process framePortB;
@@ -182,4 +186,4 @@ port map(
   last => open
 );
 stream <= to_streambus(stream_vector);
-end architecture serialiser;
+end architecture TDP;

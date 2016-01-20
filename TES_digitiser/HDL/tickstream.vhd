@@ -61,7 +61,7 @@ signal tick_bus:streambus_array(1 downto 0);
 --
 begin
 tick <= tick_int;
-tick_event.timestamp <= (others => '0');
+tick_event.header.timestamp <= (others => '0');
 timestamp <= tick_event.full_timestamp;
 
 framer:entity streamlib.stream_framer

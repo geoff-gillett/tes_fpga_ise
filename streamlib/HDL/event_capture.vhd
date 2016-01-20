@@ -80,11 +80,10 @@ signal peak_count_int:unsigned(PEAK_COUNT_BITS-1 downto 0);
 type FSMstate is (IDLE,STARTED,QUEUED);
 signal state,nextstate:FSMstate;
 signal start_signal:signal_t;
-signal header:eventheader;
+signal peak_event:peakevent;
 signal above_threshold:boolean;
 signal enqueue_int:boolean;
 signal max:boolean;
-signal not_first:boolean;
 
 --
 begin
@@ -146,7 +145,7 @@ begin
 	end case;
 end process maximum;
 
-height <= header.height; 
+height <= peak_event.height; 
 
 FSMtrasition:process(state,cfd_error,enqueue_int,max,peak_start)
 begin
@@ -172,9 +171,7 @@ begin
 	end case;
 end process FSMtrasition;
 
-data.data <= to_std_logic(header);
-data.keeps <= to_boolean("1111");
-data.lasts <= to_boolean("0001");
+data <= to_streambus(peak_event);
 
 --dump_int <= state=QUEUED and 
 --            (cfd_error or (max and not above_threshold)); 
@@ -184,30 +181,29 @@ data.lasts <= to_boolean("0001");
 commit <= commit_int;
 dump <= dump_int;
 							
+peak_event.header.timestamp <= (others => '0');
+peak_event.flags.channel <= to_unsigned(CHANNEL,MAX_CHANNEL_BITS);
+peak_event.header.size <= to_unsigned(8,SIZE_BITS);
+
 captureProcess:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
   	above_threshold <= FALSE;
- 		header.flags.channel <= to_unsigned(CHANNEL,MAX_CHANNEL_BITS);
- 		header.size <= to_unsigned(8,SIZE_BITS);
- 		header.timestamp <= (others => '0');
   	enqueue <= FALSE;
   else
   	
   	if peak_start then
-  		header.flags.peak_overflow <= FALSE;
-  		header.flags.not_first <= FALSE;
+  		peak_event.flags.peak_overflow <= FALSE;
   		start_signal <= signal_in;
-	  	header.flags.rel_to_min <= rel_to_min;
-	  	header.flags.height_type <= height_format;
+	  	peak_event.flags.rel_to_min <= rel_to_min;
+	  	peak_event.flags.height_type <= height_format;
   	end if;
   	
   	if pulse_pos_xing then -- pulse_start
-  		not_first <= FALSE;
 	  	peak_count_int <= (others => '0');
   		above_threshold <= TRUE;
-  		header.flags.peak_count <= (others => '0');
+  		peak_event.flags.peak_count <= (others => '0');
   	end if;
   	
   	if pulse_neg_xing then
@@ -218,23 +214,21 @@ if rising_edge(clk) then
   	
   	if max then
   		if peak_count_int=to_unsigned((2**PEAK_COUNT_BITS)-1,PEAK_COUNT_BITS) then
-  			header.flags.peak_overflow <= TRUE;
+  			peak_event.flags.peak_overflow <= TRUE;
   		else
   			peak_count_int <= peak_count_int+1;
-  			header.flags.peak_overflow <= FALSE;
+  			peak_event.flags.peak_overflow <= FALSE;
   		end if;
-  		header.flags.peak_count <= peak_count_int;
-  		not_first <= TRUE;
-  		header.flags.not_first <= not_first;
+  		peak_event.flags.peak_count <= peak_count_int;
   		case height_format is 
   		when PEAK_HEIGHT | CFD_HEIGHT =>
-        if header.flags.rel_to_min then
-          header.height <= signal_in-start_signal;
+        if peak_event.flags.rel_to_min then
+          peak_event.height <= signal_in-start_signal;
         else
-        	header.height <= signal_in;
+        	peak_event.height <= signal_in;
         end if;
   		when SLOPE_INTEGRAL =>
-  			header.height <= slope_area;
+  			peak_event.height <= slope_area;
   		end case;	
   	end if;
   	
@@ -249,7 +243,7 @@ if rising_edge(clk) then
   			else
   				if max then
   					commit_int <= TRUE;
-  					peak_count <= header.flags.peak_count;
+  					peak_count <= peak_event.flags.peak_count;
   					if free=0 then
   						overflow <= TRUE;
 						else

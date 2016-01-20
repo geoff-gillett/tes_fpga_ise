@@ -173,6 +173,55 @@ proc ::xilinx::update_version {synth} {
 	}
 }
 	
+proc ::xilinx::process_simdir {simDir projname buildDir} {
+	# add linkfiles file
+	#handle structural
+	puts "processing $simDir"
+	set files [glob -nocomplain  $simDir/*]
+	set TBfile [ lsearch -all -inline -regexp $files {_TB\.(vhd|vhdl)$} ]
+	set vhdlFiles [ lsearch -all -inline -regexp $files {\.(vhd|vhdl)$} ]
+
+	if {[llength $TBfile] != 1} {
+		error "$dir does not contain exactly one test-bench file (*_TB.vhd)"
+	}
+	#Create_simset $TBfiles
+	set name [file tail [file rootname $TBfile]]
+	puts "Creating simulation set $name"
+	create_fileset -simset $name
+	set simset [get_filesets $name]
+	set_property SOURCE_SET sources_1 $simset
+	add_files -fileset $name -norecurse $vhdlFiles
+	if {[file exists $simDir/structural]} {
+		puts "adding structural simulation files"
+		add_files -fileset $name $simDir/structural
+	}
+	#update_compile_order -fileset $name
+	#update_compile_order -fileset $name
+	#update_compile_order -fileset $name
+	# Disabling source management mode.  
+	#This is to allow the top design properties to be set without GUI intervention.
+	set_property top $name $simset
+	set_property top_lib {} $simset
+	set_property top_arch {} $simset
+	set_property top_file {} $simset
+	update_compile_order -fileset $name
+	set wcfgName [file rootname $TBfile].wcfg
+	if {[file exists $wcfgName]} { 
+		#puts "Using $wcfgName"
+		set_property isim.wcfg [file nativename [file normalize $wcfgName]]	$simset
+	}
+	
+	if [file exists $simDir/linkfiles] {
+    set links [open $simDir/linkfiles]
+    set isedir $buildDir/PlanAhead/$projname.sim/$name
+    file mkdir $isedir
+    foreach lfile [split [read $links] \n] {
+      file link $isedir/[file tail $lfile] $lfile
+    }
+	}
+	
+}
+
 # optional args dependency HDL dirs 
 # sourceDir is the source project directory
 proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} { 
@@ -193,32 +242,37 @@ proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} {
   } 
 	if [file exists $sourceDir/IP_cores] { Process_IP_cores $sourceDir/IP_cores }
 	Process_deps $name $buildDir $scriptsDir
-	puts "Processing simulation directory"
-	set simFiles [glob -nocomplain $sourceDir/simulation/* ]
+	## changes start here
+	puts "Processing simulation directorys"
+	set simDirs [glob -nocomplain -type d $sourceDir/simulation/*_TB]
+	foreach simdir $simDirs { process_simdir $simdir $name $buildDir  }
+	
+	
 	#puts "simfiles:$simFiles"
-	set TBfiles [ lsearch -all -inline -regexp $simFiles {_TB\.(vhd|vhdl)$} ]
-	set othersimFiles [ lsearch -all -inline -regexp $simFiles {[^_TB\.(vhd|vhdl|wcfg)]$}]
-	set tclTB [ lsearch -all -inline -regexp $simFiles {_TB\.tcl$}]
-	puts "Testbenches:$TBfiles"
-	puts "Other simulation files:$othersimFiles"
-	puts "TCL testbench scripts:$tclTB"
-	foreach TBfile $TBfiles { Create_simset $TBfile}
-#	if { [llength $tclTB] != 0 } {
-#    foreach tclfile $tclTB {
-#      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $tclfile ]]/
+#	set TBfiles [ lsearch -all -inline -regexp $simFiles {_TB\.(vhd|vhdl)$} ]
+#	set othersimFiles [ lsearch -all -inline -regexp $simFiles {[^_TB\.(vhd|vhdl|wcfg)]$}]
+#	set tclTB [ lsearch -all -inline -regexp $simFiles {_TB\.tcl$}]
+#	puts "Testbenches:$TBfiles"
+#	puts "Other simulation files:$othersimFiles"
+#	puts "TCL testbench scripts:$tclTB"
+#	foreach TBfile $TBfiles { Create_simset $TBfile}
+##	if { [llength $tclTB] != 0 } {
+##    foreach tclfile $tclTB {
+##      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $tclfile ]]/
+##      file mkdir $simdir
+##      file link -hard $simdir/[file tail $tclfile] $tclfile
+##    }
+##	}
+#	# link auxilary files into planahead simulation directory
+#	set linkFiles [concat $tclTB $othersimFiles]
+#	if { [llength $linkFiles] != 0 } {
+#    foreach lfile $linkFiles {
+#      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $lfile ]]/
 #      file mkdir $simdir
-#      file link -hard $simdir/[file tail $tclfile] $tclfile
+#      file link -hard $simdir/[file tail $lfile] $lfile
 #    }
 #	}
-	# link auxilary files into planahead simulation directory
-	set linkFiles [concat $tclTB $othersimFiles]
-	if { [llength $linkFiles] != 0 } {
-    foreach lfile $linkFiles {
-      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $lfile ]]/
-      file mkdir $simdir
-      file link -hard $simdir/[file tail $lfile] $lfile
-    }
-	}
+	
 	puts "Creating constraint sets"
 	set constraintDirs [glob -nocomplain -type d $sourceDir/constraints/*]
 	if {[llength $constraintDirs]} {
@@ -238,7 +292,7 @@ proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} {
     	add_files -fileset $constraintName -norecurse $constraint
     }	
 	}
-	if [file exists $sourceDir/scripts/runs.tcl] {
+	if [file exists $sourceDir/scripts/runs.tcl ] {
 		puts "creating runs"
 		source $sourceDir/scripts/runs.tcl
 	}

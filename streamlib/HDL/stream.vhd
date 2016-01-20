@@ -38,8 +38,8 @@ constant BUS_DATABITS:integer:=CHUNK_DATABITS*BUS_CHUNKS;
 
 subtype streamvector is std_logic_vector(BUS_BITS-1 downto 0);
 type streambus is record
-	keeps:boolean_vector(BUS_CHUNKS-1 downto 0);
-	lasts:boolean_vector(BUS_CHUNKS-1 downto 0);
+	keep_n:boolean_vector(BUS_CHUNKS-1 downto 0); -- keep chunk if set to 0
+	last:boolean_vector(BUS_CHUNKS-1 downto 0); -- end of frame
 	data:std_logic_vector(BUS_DATABITS-1 downto 0);
 end record;
 type streambus_array is array (natural range <>) of streambus;
@@ -63,8 +63,8 @@ function to_streambus(slv:std_logic_vector) return streambus is
 variable sb:streambus;
 begin
 	for chunk in 0 to BUS_CHUNKS-1 loop
-		sb.lasts(chunk):=to_boolean(slv(chunk*CHUNK_BITS+CHUNK_LASTBIT));
-		sb.keeps(chunk):=to_boolean(slv(chunk*CHUNK_BITS+CHUNK_KEEPBIT));
+		sb.last(chunk):=to_boolean(slv(chunk*CHUNK_BITS+CHUNK_LASTBIT));
+		sb.keep_n(chunk):=to_boolean(slv(chunk*CHUNK_BITS+CHUNK_KEEPBIT));
 		sb.data(CHUNK_DATABITS*(chunk+1)-1 downto CHUNK_DATABITS*chunk):=
 			slv(CHUNK_DATABITS+(CHUNK_BITS*(chunk))-1 downto CHUNK_BITS*chunk);
 	end loop;
@@ -93,8 +93,8 @@ function to_std_logic(sb:streambus) return std_logic_vector is
 variable slv:streamvector;
 begin
 	for chunk in 0 to BUS_CHUNKS-1 loop
-		slv(CHUNK_KEEPBIT+(CHUNK_BITS*chunk)):=to_std_logic(sb.keeps(chunk));
-		slv(CHUNK_LASTBIT+(CHUNK_BITS*chunk)):=to_std_logic(sb.lasts(chunk));
+		slv(CHUNK_KEEPBIT+(CHUNK_BITS*chunk)):=to_std_logic(sb.keep_n(chunk));
+		slv(CHUNK_LASTBIT+(CHUNK_BITS*chunk)):=to_std_logic(sb.last(chunk));
 		slv((CHUNK_BITS*chunk)+CHUNK_DATABITS-1 downto CHUNK_BITS*chunk):=
 			sb.data(CHUNK_DATABITS+(CHUNK_DATABITS*chunk)-1 
 				downto CHUNK_DATABITS*chunk
@@ -107,12 +107,12 @@ function busLast(slv:std_logic_vector) return boolean is
 variable sb:streambus;
 begin
 	sb:=to_streambus(slv);
-  return unaryOr(sb.lasts);
+  return unaryOr(sb.last);
 end function;
 
 function busLast(sb:streambus) return boolean is
 begin
-  return unaryOr(sb.lasts);
+  return unaryOr(sb.last);
 end function;
 
 -- assumes data is a multiple of 8 bits and big endian and downto 

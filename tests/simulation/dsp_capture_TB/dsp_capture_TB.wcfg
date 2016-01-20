@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="dsp_capture_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="bip_utils_pkg_v2_0" />
+            <top_module name="dsp_capture_tb" />
+            <top_module name="events" />
+            <top_module name="fir_compiler_v6_3_sim_pkg" />
+            <top_module name="functions" />
+            <top_module name="functions" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_textio" />
+            <top_module name="textio" />
+            <top_module name="types" />
+            <top_module name="types" />
+            <top_module name="types" />
+            <top_module name="vcomponents" />
+            <top_module name="vital_primitives" />
+            <top_module name="vital_timing" />
+            <top_module name="vpkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="5" />
+   <wvobject fp_name="group83" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/dsp_capture_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/adc_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/adc_baseline" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_baseline[13:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_baseline[13:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/baseline_subtraction" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_subtraction</obj_property>
+         <obj_property name="ObjectShortName">baseline_subtraction</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/baseline_timeconstant" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/baseline_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_threshold[8:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_threshold[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/baseline_count_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_count_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_count_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/baseline_average_order" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_average_order</obj_property>
+         <obj_property name="ObjectShortName">baseline_average_order</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filter_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_config_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filter_config_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_valid</obj_property>
+         <obj_property name="ObjectShortName">filter_config_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filter_config_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_ready</obj_property>
+         <obj_property name="ObjectShortName">filter_config_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filter_reload_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filter_reload_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_valid</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filter_reload_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_ready</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filter_reload_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_reload_last</obj_property>
+         <obj_property name="ObjectShortName">filter_reload_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/differentiator_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_config_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">differentiator_config_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/differentiator_config_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_config_valid</obj_property>
+         <obj_property name="ObjectShortName">differentiator_config_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/differentiator_config_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_config_ready</obj_property>
+         <obj_property name="ObjectShortName">differentiator_config_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/differentiator_reload_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/differentiator_reload_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_valid</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/differentiator_reload_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_ready</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/differentiator_reload_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">differentiator_reload_last</obj_property>
+         <obj_property name="ObjectShortName">differentiator_reload_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/cfd_relative" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_relative</obj_property>
+         <obj_property name="ObjectShortName">cfd_relative</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/constant_fraction" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">constant_fraction[16:0]</obj_property>
+         <obj_property name="ObjectShortName">constant_fraction[16:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/pulse_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_threshold[16:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold[16:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/slope_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_threshold[16:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold[16:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/raw_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_area[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/raw_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_extrema[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/raw_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_valid</obj_property>
+         <obj_property name="ObjectShortName">raw_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filtered" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered[15:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filtered_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_area[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filtered_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_extrema[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/filtered_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_valid</obj_property>
+         <obj_property name="ObjectShortName">filtered_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/slope" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope[15:0]</obj_property>
+         <obj_property name="ObjectShortName">slope[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/slope_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_area[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/slope_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_extrema[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/slope_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_valid</obj_property>
+         <obj_property name="ObjectShortName">slope_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/slope_threshold_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_threshold_xing</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/peak_start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_start</obj_property>
+         <obj_property name="ObjectShortName">peak_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/peak" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak</obj_property>
+         <obj_property name="ObjectShortName">peak</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/peak_minima" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_minima[15:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_minima[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/cfd_low" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low</obj_property>
+         <obj_property name="ObjectShortName">cfd_low</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/cfd_high" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high</obj_property>
+         <obj_property name="ObjectShortName">cfd_high</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/pulse_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_area[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/pulse_extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_extrema[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_extrema[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/pulse_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_valid</obj_property>
+         <obj_property name="ObjectShortName">pulse_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/cfd_error" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_error</obj_property>
+         <obj_property name="ObjectShortName">cfd_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/time_overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">time_overflow</obj_property>
+         <obj_property name="ObjectShortName">time_overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/height_format" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">height_format</obj_property>
+         <obj_property name="ObjectShortName">height_format</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/rel_to_min" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">rel_to_min</obj_property>
+         <obj_property name="ObjectShortName">rel_to_min</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/use_cfd_timing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">use_cfd_timing</obj_property>
+         <obj_property name="ObjectShortName">use_cfd_timing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">overflow</obj_property>
+         <obj_property name="ObjectShortName">overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/pulse_pos_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_pos_xing</obj_property>
+         <obj_property name="ObjectShortName">pulse_pos_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/pulse_neg_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_neg_xing</obj_property>
+         <obj_property name="ObjectShortName">pulse_neg_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/enqueue" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">enqueue</obj_property>
+         <obj_property name="ObjectShortName">enqueue</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/dump" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump</obj_property>
+         <obj_property name="ObjectShortName">dump</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/peak_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_count[3:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/height" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">height[15:0]</obj_property>
+         <obj_property name="ObjectShortName">height[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream[71:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstream[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group114" type="group">
+      <obj_property name="label">event capture</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/height_format" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">height_format</obj_property>
+         <obj_property name="ObjectShortName">height_format</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/rel_to_min" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">rel_to_min</obj_property>
+         <obj_property name="ObjectShortName">rel_to_min</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/use_cfd_timing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">use_cfd_timing</obj_property>
+         <obj_property name="ObjectShortName">use_cfd_timing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/signal_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_in[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/peak" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak</obj_property>
+         <obj_property name="ObjectShortName">peak</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/peak_start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_start</obj_property>
+         <obj_property name="ObjectShortName">peak_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">overflow</obj_property>
+         <obj_property name="ObjectShortName">overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/pulse_pos_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_pos_xing</obj_property>
+         <obj_property name="ObjectShortName">pulse_pos_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/pulse_neg_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_neg_xing</obj_property>
+         <obj_property name="ObjectShortName">pulse_neg_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/cfd_low" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low</obj_property>
+         <obj_property name="ObjectShortName">cfd_low</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/cfd_high" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high</obj_property>
+         <obj_property name="ObjectShortName">cfd_high</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/cfd_error" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_error</obj_property>
+         <obj_property name="ObjectShortName">cfd_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/slope_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_area[31:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_area[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/enqueue" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">enqueue</obj_property>
+         <obj_property name="ObjectShortName">enqueue</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/dump" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump</obj_property>
+         <obj_property name="ObjectShortName">dump</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/peak_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_count[3:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/height" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">height[15:0]</obj_property>
+         <obj_property name="ObjectShortName">height[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/eventstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream[71:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstream[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data[63:0]</obj_property>
+         <obj_property name="ObjectShortName">data[63:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/free" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">free[9:0]</obj_property>
+         <obj_property name="ObjectShortName">free[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/chunk_wr_en" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">chunk_wr_en[3:0]</obj_property>
+         <obj_property name="ObjectShortName">chunk_wr_en[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/commit_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_int</obj_property>
+         <obj_property name="ObjectShortName">commit_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/dump_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump_int</obj_property>
+         <obj_property name="ObjectShortName">dump_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/peak_count_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_count_int[3:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count_int[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/eventstream_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream_int[71:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstream_int[71:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/valid_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid_int</obj_property>
+         <obj_property name="ObjectShortName">valid_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/ready_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready_int</obj_property>
+         <obj_property name="ObjectShortName">ready_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/last_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">last_int</obj_property>
+         <obj_property name="ObjectShortName">last_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/start_signal" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">start_signal[15:0]</obj_property>
+         <obj_property name="ObjectShortName">start_signal[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/header" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">header</obj_property>
+         <obj_property name="ObjectShortName">header</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/above_threshold" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">above_threshold</obj_property>
+         <obj_property name="ObjectShortName">above_threshold</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/enqueue_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">enqueue_int</obj_property>
+         <obj_property name="ObjectShortName">enqueue_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/peak_count_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_count_int[3:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count_int[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/eventCapture/max" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">max</obj_property>
+         <obj_property name="ObjectShortName">max</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/dsp_capture_tb/eventstream_le" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">eventstream_le[63:0]</obj_property>
+      <obj_property name="ObjectShortName">eventstream_le[63:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/dsp_capture_tb/stream_bus" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">stream_bus</obj_property>
+      <obj_property name="ObjectShortName">stream_bus</obj_property>
+      <wvobject fp_name="/dsp_capture_tb/stream_bus.keeps" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">.keeps</obj_property>
+         <obj_property name="ObjectShortName">stream_bus.keeps</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/stream_bus.lasts" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">.lasts</obj_property>
+         <obj_property name="ObjectShortName">stream_bus.lasts</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/dsp_capture_tb/stream_bus.data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">.data</obj_property>
+         <obj_property name="ObjectShortName">stream_bus.data</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/dsp_capture_tb/height_slv" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">height_slv[1:0]</obj_property>
+      <obj_property name="ObjectShortName">height_slv[1:0]</obj_property>
+   </wvobject>
+</wave_config>
