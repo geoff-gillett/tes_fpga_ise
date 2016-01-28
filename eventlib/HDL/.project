@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>tests</name>
+	<name>eventlib</name>
 	<comment></comment>
 	<projects>
-		<project>adclib</project>
-		<project>controllerlib</project>
-		<project>dsplib</project>
-		<project>ethernetlib</project>
-		<project>eventlib</project>
-		<project>mcalib</project>
 		<project>streamlib</project>
-		<project>TES_digitiser</project>
 		<project>teslib</project>
 	</projects>
 	<buildSpec>
@@ -36,11 +29,6 @@
 			<locationURI>PARENT-1-PROJECT_LOC/IP_cores</locationURI>
 		</link>
 		<link>
-			<name>constraints</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/constraints</locationURI>
-		</link>
-		<link>
 			<name>scripts</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/scripts</locationURI>
@@ -48,7 +36,7 @@
 		<link>
 			<name>simulation</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/simulation</locationURI>
+			<locationURI>SIMULATION</locationURI>
 		</link>
 		<link>
 			<name>Common Libraries/DRAG_REUSABLE_LIBRARIES_HERE.txt</name>
@@ -71,4 +59,10 @@
 			<locationURI>sigasiresource:/vhdl/93/IEEE%20Synopsys</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>SIMULATION</name>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D/simulation</value>
+		</variable>
+	</variableList>
 </projectDescription>

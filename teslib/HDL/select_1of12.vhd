@@ -80,7 +80,7 @@ port map(
 );
 
 
-selection2_lut: LUT6
+selection2_lut:LUT6
 generic map (INIT => X"0000000F003355FF")
 port map( 
 	I0 => input(6),

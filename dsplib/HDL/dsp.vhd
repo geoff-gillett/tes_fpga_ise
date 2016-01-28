@@ -120,33 +120,6 @@ port(
 );
 end component;
 	
---component minima_queue
---port( 
---  clk:in std_logic;
---  srst:in std_logic;
---  din:in std_logic_vector(SIGNAL_BITS-1 downto 0);
---  wr_en:in std_logic;
---  rd_en:in std_logic;
---  dout:out std_logic_vector(SIGNAL_BITS-1 downto 0);
---  full:out std_logic;
---  empty:out std_logic
---);
---end component;
-
---component threshold_divider
---port(
---  aclk:in std_logic;
---  s_axis_divisor_tvalid:in std_logic;
---  s_axis_divisor_tready:out std_logic;
---  s_axis_divisor_tdata:in std_logic_vector(15 downto 0);
---  s_axis_dividend_tvalid:in std_logic;
---  s_axis_dividend_tready:out std_logic;
---  s_axis_dividend_tdata:in std_logic_vector(15 downto 0);
---  m_axis_dout_tvalid:out std_logic;
---  m_axis_dout_tdata:out std_logic_vector(23 downto 0)
---);
---end component;
-
 constant CFD_DELAY_DEPTH:integer:=256;
 constant CFD_DELAY:integer:=200;
 constant BASELINE_AV_FRAC:integer:=SIGNAL_BITS-BASELINE_BITS;
@@ -376,12 +349,6 @@ port map(
   valid => open
 );
 
---thresholds
---slope_above <= slope_out > resize(signed('0' & slope_threshold),WIDTH);
---signal_above <= signal_out > resize(signed('0' & pulse_threshold),WIDTH);
---start <= not signal_above and signal_was_below;
---slope_pos_xing <= not slope_below and slope_was_below;
-
 pdNextstate:process(clk)
 begin
 	if rising_edge(clk) then
@@ -434,10 +401,10 @@ end process pulseTransition;
 
 peak_int <= pd_state=ARMED and pulse_state/=IDLE and max;
 start_int <= pulse_state=IDLE and signal_pos_xing;
-time_overflow_int <= pulse_length=0;
 stop_int <= (pulse_state/=IDLE and signal_neg_xing) or time_overflow_int;
 --write_queue <= cfd_queue_full='0' and peak_pipe(MULT_PIPE_DEPTH);
 arming <= pd_state=WAITING and slope_pos_xing;
+time_overflow_int <= pulse_length=0;
 
 pdReg:process(clk)
 begin
@@ -648,11 +615,11 @@ if rising_edge(clk) then
   	pulse_valid_int <= pulse_end;
   	--FIXME make this a flag
   	if pulse_start then
-  		pulse_length <= to_unsigned(1,TIME_BITS-TIME_FRAC);
+  		--pulse_length <= to_unsigned(1,TIME_BITS-TIME_FRAC);
   		pulse_area_reg <= resize(signed(signal_at_cfd),AREA_BITS);
   		pulse_extrema_reg <= signed(signal_at_cfd); 
   	else
-  		pulse_length <= pulse_length+1;
+  		--pulse_length <= pulse_length+1;
   		if signed(signal_at_cfd) > pulse_extrema_reg then
   			pulse_extrema_reg <= signed(signal_at_cfd);
   		end if;

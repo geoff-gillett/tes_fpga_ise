@@ -7,6 +7,7 @@
 		<project>controllerlib</project>
 		<project>dsplib</project>
 		<project>ethernetlib</project>
+		<project>eventlib</project>
 		<project>mcalib</project>
 		<project>streamlib</project>
 		<project>TES_library</project>
@@ -44,6 +45,11 @@
 			<locationURI>SCRIPTS</locationURI>
 		</link>
 		<link>
+			<name>simulation</name>
+			<type>2</type>
+			<locationURI>SIMULATION</locationURI>
+		</link>
+		<link>
 			<name>Common Libraries/DRAG_REUSABLE_LIBRARIES_HERE.txt</name>
 			<type>1</type>
 			<locationURI>sigasiresource:/vhdl/readme2.txt</locationURI>
@@ -68,6 +74,10 @@
 		<variable>
 			<name>SCRIPTS</name>
 			<value>$%7BPARENT-1-PROJECT_LOC%7D/scripts</value>
+		</variable>
+		<variable>
+			<name>SIMULATION</name>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D/simulation</value>
 		</variable>
 	</variableList>
 </projectDescription>

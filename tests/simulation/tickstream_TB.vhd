@@ -41,7 +41,7 @@ signal tick:boolean;
 signal timestamp:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal tick_period:unsigned(PERIOD_BITS-1 downto 0);
 signal overflow,overflow_out:boolean_vector(2**CHANNEL_BITS-1 downto 0);
-signal tickstream:streambus;
+signal tickstream:streambus_t;
 signal valid:boolean;
 signal ready:boolean;
 begin

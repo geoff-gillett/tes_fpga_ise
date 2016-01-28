@@ -18,7 +18,9 @@ use teslib.types.all;
 
 library streamlib;
 use streamlib.stream.all;
-use streamlib.events.all;
+
+use eventlib;
+use eventlib.events.all;
 
 entity event_capture_TB is
 generic(
@@ -53,7 +55,7 @@ signal dump:boolean;
 signal commit:boolean;
 signal peak_count:unsigned(MAX_PEAK_COUNT_BITS-1 downto 0);
 signal height:signal_t;
-signal eventstream:streambus;
+signal eventstream:streambus_t;
 signal valid:boolean;
 signal ready:boolean;
 signal height_format:heighttype;

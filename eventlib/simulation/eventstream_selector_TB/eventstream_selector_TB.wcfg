@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="eventstream_selector_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="eventstream_selector_tb" />
+            <top_module name="functions" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="stream" />
+            <top_module name="textio" />
+            <top_module name="types" />
+            <top_module name="vcomponents" />
+            <top_module name="vital_primitives" />
+            <top_module name="vital_timing" />
+            <top_module name="vpkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group89" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/eventstream_selector_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/sel" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sel[3:0]</obj_property>
+         <obj_property name="ObjectShortName">sel[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/done" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">done</obj_property>
+         <obj_property name="ObjectShortName">done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/instreams" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">instreams[3:0]</obj_property>
+         <obj_property name="ObjectShortName">instreams[3:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/valids" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">valids[3:0]</obj_property>
+         <obj_property name="ObjectShortName">valids[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/readys" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">readys[3:0]</obj_property>
+         <obj_property name="ObjectShortName">readys[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/mux_stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_stream</obj_property>
+         <obj_property name="ObjectShortName">mux_stream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/mux_valid" type="other" db_ref_id="1">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">mux_valid</obj_property>
+         <obj_property name="ObjectShortName">mux_valid</obj_property>
+         <obj_property name="label">mux_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/mux_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_ready</obj_property>
+         <obj_property name="ObjectShortName">mux_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/sim_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sim_count[59:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_count[59:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group114" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/sel" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sel[3:0]</obj_property>
+         <obj_property name="ObjectShortName">sel[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/sel_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sel_int[3:0]</obj_property>
+         <obj_property name="ObjectShortName">sel_int[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/done" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">done</obj_property>
+         <obj_property name="ObjectShortName">done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/instreams" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">instreams[3:0]</obj_property>
+         <obj_property name="ObjectShortName">instreams[3:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/valids" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">valids[3:0]</obj_property>
+         <obj_property name="ObjectShortName">valids[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/readys" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">readys[3:0]</obj_property>
+         <obj_property name="ObjectShortName">readys[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/mux_stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_stream</obj_property>
+         <obj_property name="ObjectShortName">mux_stream</obj_property>
+         <wvobject fp_name="/eventstream_selector_tb/UUT/mux_stream.keep_n" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.keep_n</obj_property>
+            <obj_property name="ObjectShortName">mux_stream.keep_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/eventstream_selector_tb/UUT/mux_stream.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">mux_stream.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/eventstream_selector_tb/UUT/mux_stream.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">mux_stream.data</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/mux_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_valid</obj_property>
+         <obj_property name="ObjectShortName">mux_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/mux_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_ready</obj_property>
+         <obj_property name="ObjectShortName">mux_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/mux_valid_int" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_valid_int</obj_property>
+         <obj_property name="ObjectShortName">mux_valid_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/muxstream_vector" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_vector[71:0]</obj_property>
+         <obj_property name="ObjectShortName">muxstream_vector[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/selected" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">selected</obj_property>
+         <obj_property name="ObjectShortName">selected</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/input_lasts" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">input_lasts[3:0]</obj_property>
+         <obj_property name="ObjectShortName">input_lasts[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/muxstream_last" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_last</obj_property>
+         <obj_property name="ObjectShortName">muxstream_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/eventstream_selector_tb/UUT/last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

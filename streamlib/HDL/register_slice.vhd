@@ -4,33 +4,34 @@ use ieee.std_logic_1164.all;
 library teslib;
 use teslib.types.all;
 
+use work.stream.all;
+
 entity register_slice is
-generic(STREAM_BITS:integer:=8);
 port (
   clk:in std_logic;
   reset:in std_logic;
   -- Input interface
-  stream_in:in std_logic_vector(STREAM_BITS-1 downto 0);
+  stream_in:in streambus_t;
   ready_out:out boolean;
   valid_in:in boolean;
-  last_in:boolean;
+  --last_in:boolean;
   -- Output interface
-  stream:out std_logic_vector(STREAM_BITS-1 downto 0);
+  stream:out streambus_t;
   ready:in boolean;
-  valid:out boolean;
-  last:out boolean
+  valid:out boolean
+  --last:out boolean
 );
 end entity register_slice;
 --
 architecture RTL of register_slice is
-signal store:std_logic_vector(STREAM_BITS-1 downto 0);
+signal stream_reg:streambus_t;
 signal valid_int,store_valid,last_int,store_last,ready_int:boolean;
 signal sel:boolean_vector(3 downto 0);
 --
 begin
 ready_out <= ready_int;
 valid <= valid_int; --valid1 when read_sel='0' else valid2;
-last <= last_int;
+--last <= last_int;
 --
 sel(0) <= store_valid;
 sel(1) <= valid_int;
@@ -45,7 +46,7 @@ if rising_edge(clk) then
     ready_int <= TRUE;
     last_int <= FALSE;
     store_last <= FALSE;
-    store <= (others => '-');
+    --stream_reg <= (others => '-');
   else
     case sel is
 		--straight through
@@ -54,20 +55,20 @@ if rising_edge(clk) then
       valid_int <= TRUE;
       ready_int <= TRUE;
       stream <= stream_in;
-      last_int <= last_in;
+      --last_int <= last_in;
 		--read in no read out, stream valid and store empty
     when (FALSE,TRUE,TRUE,FALSE) => 
       valid_int <= TRUE;
       ready_int <= FALSE;
-      store <= stream_in;
-      store_last <= last_in;
+      stream_reg <= stream_in;
+      --store_last <= last_in;
       store_valid <= TRUE;
     -- no read in read out and full;
     when (TRUE,FALSE,TRUE,TRUE) => 
       valid_int <= TRUE;
       ready_int <= TRUE;
-      store <= (others => '-');
-      stream <= store;
+      --stream_reg <= (others => '-');
+      stream <= stream_reg;
       last_int <= store_last;
       store_last <= FALSE;
       store_valid <= FALSE;
@@ -76,7 +77,7 @@ if rising_edge(clk) then
       valid_int <= FALSE;
       ready_int <= TRUE;
       last_int <= FALSE;
-      stream <= (others => '-');
+      --stream <= (others => '-');
     when others => 
       null;
     end case;

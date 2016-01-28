@@ -4,6 +4,7 @@
 ../../ethernetlib ethernetlib
 ../../streamlib streamlib
 ../../dsplib dsplib
+../../eventlib eventlib
 
 ../../ethernetlib/IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/v6_emac_v2_3_0_block.vhd ethernetlib
 ../../ethernetlib/IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/v6_emac_v2_3_0_fifo_block.vhd ethernetlib

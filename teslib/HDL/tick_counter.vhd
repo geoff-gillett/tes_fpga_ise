@@ -63,7 +63,7 @@ if rising_edge(clk) then
   end if;
 end if;
 end process tickLength;
---
+
 tickTimer:process(clk)
 begin
   if rising_edge(clk) then
@@ -81,7 +81,7 @@ begin
     end if;
   end if;
 end process tickTimer;
---
+
 globalTime:entity work.clock
 generic map(TIME_BITS => TIMESTAMP_BITS)
 port map(

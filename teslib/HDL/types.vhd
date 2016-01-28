@@ -77,6 +77,8 @@ type registerdata_array is array (natural range <>) of registerdata;
 subtype registeraddress is std_logic_vector(REGISTER_ADDRESS_BITS-1 downto 0);
 type registeraddress_array is array (natural range <>) of registeraddress;
 type boolean_vector is array (natural range <>) of boolean;
+type slv_32_array is array (natural range <>) of 
+		 unsigned(32 downto 0);
 end package types;
 package body types is  
 end package body types;

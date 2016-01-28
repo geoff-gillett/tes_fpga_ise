@@ -191,9 +191,15 @@ proc ::xilinx::process_simdir {simDir projname buildDir} {
 	set simset [get_filesets $name]
 	set_property SOURCE_SET sources_1 $simset
 	add_files -fileset $name -norecurse $vhdlFiles
+  set isedir $buildDir/PlanAhead/$projname.sim/$name
+  file mkdir $isedir
 	if {[file exists $simDir/structural]} {
 		puts "adding structural simulation files"
-		add_files -fileset $name $simDir/structural
+    set struct [open $simDir/structural]
+    foreach sfile [split [read $struct] \n] {
+    	add_files -fileset $name -norecurse $sfile
+			puts $sfile
+    }
 	}
 	#update_compile_order -fileset $name
 	#update_compile_order -fileset $name
@@ -213,8 +219,6 @@ proc ::xilinx::process_simdir {simDir projname buildDir} {
 	
 	if [file exists $simDir/linkfiles] {
     set links [open $simDir/linkfiles]
-    set isedir $buildDir/PlanAhead/$projname.sim/$name
-    file mkdir $isedir
     foreach lfile [split [read $links] \n] {
       file link $isedir/[file tail $lfile] $lfile
     }

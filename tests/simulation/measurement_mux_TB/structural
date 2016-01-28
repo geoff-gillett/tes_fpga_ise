@@ -1,0 +1,3 @@
+../../structural_cores/cfd_threshold_queue.vhd
+../../structural_cores/time_fifo.vhd
+../../structural_cores/commit_dump_fifo.vhd

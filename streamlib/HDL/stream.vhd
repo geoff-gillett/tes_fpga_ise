@@ -36,31 +36,34 @@ constant BUS_BITS:integer:=CHUNK_BITS*BUS_CHUNKS;
 -- data only bits of the bus
 constant BUS_DATABITS:integer:=CHUNK_DATABITS*BUS_CHUNKS;
 
+--subtype datachunk is std_logic_vector(CHUNK_DATABITS-1 downto 0);
+--type datachunk_array is array (natural range <>) of datachunk;
+
 subtype streamvector is std_logic_vector(BUS_BITS-1 downto 0);
-type streambus is record
+type streambus_t is record
 	keep_n:boolean_vector(BUS_CHUNKS-1 downto 0); -- keep chunk if set to 0
 	last:boolean_vector(BUS_CHUNKS-1 downto 0); -- end of frame
 	data:std_logic_vector(BUS_DATABITS-1 downto 0);
 end record;
-type streambus_array is array (natural range <>) of streambus;
+type streambus_array is array (natural range <>) of streambus_t;
 type streamvector_array is array (natural range <>) of streamvector;
 
 function busLast(slv:std_logic_vector) return boolean;
-function busLast(sb:streambus) return boolean;
+function busLast(sb:streambus_t) return boolean;
 function SwapEndianness(data:std_logic_vector) return std_logic_vector;
 function SwapEndianness(data:unsigned) return std_logic_vector;
 function SwapEndianness(data:signed) return std_logic_vector;
-function to_streambus(slv:std_logic_vector) return streambus;
+function to_streambus(slv:std_logic_vector) return streambus_t;
 function to_streambus(sva:streamvector_array) return streambus_array;
-function to_std_logic(sb:streambus) return std_logic_vector;
+function to_std_logic(sb:streambus_t) return std_logic_vector;
 function to_std_logic(sba:streambus_array) return streamvector_array;
 	
 end package stream;
 
 package body stream is
 
-function to_streambus(slv:std_logic_vector) return streambus is
-variable sb:streambus;
+function to_streambus(slv:std_logic_vector) return streambus_t is
+variable sb:streambus_t;
 begin
 	for chunk in 0 to BUS_CHUNKS-1 loop
 		sb.last(chunk):=to_boolean(slv(chunk*CHUNK_BITS+CHUNK_LASTBIT));
@@ -89,7 +92,7 @@ begin
 	return sva;
 end function;
 
-function to_std_logic(sb:streambus) return std_logic_vector is
+function to_std_logic(sb:streambus_t) return std_logic_vector is
 variable slv:streamvector;
 begin
 	for chunk in 0 to BUS_CHUNKS-1 loop
@@ -104,13 +107,13 @@ begin
 end function;
 	
 function busLast(slv:std_logic_vector) return boolean is
-variable sb:streambus;
+variable sb:streambus_t;
 begin
 	sb:=to_streambus(slv);
   return unaryOr(sb.last);
 end function;
 
-function busLast(sb:streambus) return boolean is
+function busLast(sb:streambus_t) return boolean is
 begin
   return unaryOr(sb.last);
 end function;
