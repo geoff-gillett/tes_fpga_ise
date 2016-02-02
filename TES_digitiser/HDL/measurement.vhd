@@ -131,6 +131,7 @@ port map(
   constant_fraction => registers.dsp.constant_fraction,
   pulse_threshold => registers.dsp.pulse_threshold,
   slope_threshold => registers.dsp.slope_threshold,
+  raw => measurements_int.raw_signal,
   raw_area => measurements_int.raw.area,
   raw_extrema => measurements_int.raw.extrema,
   raw_valid => measurements_int.raw.valid,
@@ -160,6 +161,7 @@ port map(
 measurements <= measurements_int;
 measurements_int.slope.area <= slope_area;
 measurements_int.filtered_signal <= filtered;
+measurements_int.filtered_xing <= pulse_pos_xing;
 measurements_int.peak <= peak;
 measurements_int.peak_start <= peak_start;
 measurements_int.pulse_start <= pulse_pos_xing;

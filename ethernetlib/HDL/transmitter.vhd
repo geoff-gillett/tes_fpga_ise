@@ -138,7 +138,7 @@ port map(
 eventbuffer_rd_en <= to_std_logic(eventbuffer_empty='0' and eventbuffer_ready);
 eventbuffer_valid 
 	<= eventbuffer_empty='0' and eventbuffer_dout(CHUNK_KEEPBIT)='1';
-eventchunkReg:entity streamlib.register_slice
+eventchunkReg:entity streamlib.streambus_register_slice
 generic map(STREAM_BITS => CHUNK_BITS)
 port map(
 	clk => clk,
@@ -169,7 +169,7 @@ port map(
 );
 mcabuffer_rd_en <= to_std_logic(mcabuffer_empty='0' and mcabuffer_ready);
 mcabuffer_valid <= mcabuffer_empty='0' and mcabuffer_dout(CHUNK_KEEPBIT)='1';
-mcachunkReg:entity streamlib.register_slice
+mcachunkReg:entity streamlib.streambus_register_slice
 generic map(STREAM_BITS => CHUNK_BITS)
 port map(
 	clk => clk,

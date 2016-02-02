@@ -71,6 +71,7 @@ port(
   --unsigned w=SIGNAL_BITS f=SLOPE_FRAC (16,8)
   slope_threshold:unsigned(WIDTH-2 downto 0);
   -- signal area and extrema measurements
+  raw:out signal_t;
   raw_area:out area_t;
   raw_extrema:out signal_t;
   raw_valid:out boolean;
@@ -288,7 +289,7 @@ port map(
   clk => clk,
   reset => reset,
   signal_in => stage1_input,
-  signal_out => open,
+  signal_out => raw,
   threshold => (others => '0'),
   pos_xing => open,
   neg_xing => open,

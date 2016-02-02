@@ -44,7 +44,7 @@ signal mux_inputs:input_array;
 signal unused:std_logic_vector(12-CHANNELS-1 downto 0):=(others => '0');
 signal valid_int:std_logic;
 signal input_streamvectors:streamvector_array(CHANNELS-1 downto 0);
-signal mux_streamvector:streamvector;
+signal mux_streamvector:streamvector_t;
 begin
 	
 mux_valid <= to_boolean(valid_int);

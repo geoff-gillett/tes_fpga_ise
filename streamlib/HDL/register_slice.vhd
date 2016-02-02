@@ -7,16 +7,19 @@ use teslib.types.all;
 use work.stream.all;
 
 entity register_slice is
+generic(
+	WIDTH:integer:=CHUNK_BITS*BUS_CHUNKS
+);
 port (
   clk:in std_logic;
   reset:in std_logic;
   -- Input interface
-  stream_in:in streambus_t;
+  stream_in:in std_logic_vector(WIDTH-1 downto 0);
   ready_out:out boolean;
   valid_in:in boolean;
   --last_in:boolean;
   -- Output interface
-  stream:out streambus_t;
+  stream:out std_logic_vector(WIDTH-1 downto 0);
   ready:in boolean;
   valid:out boolean
   --last:out boolean
@@ -24,7 +27,7 @@ port (
 end entity register_slice;
 --
 architecture RTL of register_slice is
-signal stream_reg:streambus_t;
+signal stream_reg:std_logic_vector(WIDTH-1 downto 0);
 signal valid_int,store_valid,last_int,store_last,ready_int:boolean;
 signal sel:boolean_vector(3 downto 0);
 --
@@ -44,9 +47,9 @@ if rising_edge(clk) then
     valid_int <= FALSE;
     store_valid <= FALSE;
     ready_int <= TRUE;
-    last_int <= FALSE;
+    --last_int <= FALSE;
     store_last <= FALSE;
-    --stream_reg <= (others => '-');
+    stream_reg <= (others => '-');
   else
     case sel is
 		--straight through
@@ -56,7 +59,7 @@ if rising_edge(clk) then
       ready_int <= TRUE;
       stream <= stream_in;
       --last_int <= last_in;
-		--read in no read out, stream valid and store empty
+		--read in no read out, stream valid and reg empty
     when (FALSE,TRUE,TRUE,FALSE) => 
       valid_int <= TRUE;
       ready_int <= FALSE;
@@ -72,7 +75,7 @@ if rising_edge(clk) then
       last_int <= store_last;
       store_last <= FALSE;
       store_valid <= FALSE;
-    -- no read in read out and store empty;
+    -- no read in read out and reg empty;
     when (TRUE,FALSE,TRUE,FALSE) => 
       valid_int <= FALSE;
       ready_int <= TRUE;

@@ -75,6 +75,7 @@ end record;
 type channel_measurements is record
 	filtered_signal:signal_t;
 	slope_signal:signal_t;
+	raw_signal:signal_t;
 	raw:signal_measurements;
 	filtered:signal_measurements;
 	pulse:signal_measurements;
@@ -89,6 +90,7 @@ type channel_measurements is record
 	cfd_low:boolean;
 	cfd_high:boolean;
 	slope_xing:boolean;
+	filtered_xing:boolean;
 end record;
 
 type measurement_register_array is array (natural range <>) 

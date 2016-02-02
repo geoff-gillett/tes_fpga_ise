@@ -126,7 +126,7 @@ if rising_edge(clk) then
 end if;
 end process eventLength; 
 --
-eventReg1:entity streamlib.register_slice
+eventReg1:entity streamlib.streambus_register_slice
 generic map(STREAM_BITS => CHUNK_BITS)
 port map(
   clk => clk,
@@ -141,7 +141,7 @@ port map(
   last => eventchunk_first_reg1
 );
 --
-eventReg2:entity streamlib.register_slice
+eventReg2:entity streamlib.streambus_register_slice
 generic map(STREAM_BITS => CHUNK_BITS)
 port map(
   clk => clk,

@@ -103,7 +103,7 @@ port map(
   pulsestream_ready => pulsestream_ready
 );
 
-streamReg:entity streamlib.register_slice
+streamReg:entity streamlib.streambus_register_slice
 	generic map(
 		STREAM_BITS => BUS_CHUNKS*CHUNK_BITS
 	)

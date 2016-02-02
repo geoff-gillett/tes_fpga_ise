@@ -55,7 +55,7 @@ signal unused:std_logic_vector(12-CHANNELS-1 downto 0):=(others => '0');
 signal muxstream_valid:std_logic;
 signal valid:boolean;
 signal input_streamvectors:streamvector_array(CHANNELS-1 downto 0);
-signal muxstream_vector:streamvector;
+signal muxstream_vector:streamvector_t;
 
 type inputFSMstate is (IDLE,WAIT_LAST);
 signal state,nextstate:inputFSMstate;
@@ -162,7 +162,7 @@ last <= muxstream_last='1' and muxstream_valid='1' and ready;
 
 
 
-streamRegisters:entity streamlib.register_slice
+streamRegisters:entity streamlib.streambus_register_slice
 port map(
   clk => clk,
   reset => reset,

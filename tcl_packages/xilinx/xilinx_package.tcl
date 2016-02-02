@@ -237,13 +237,14 @@ proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} {
 	set_property target_language VHDL [current_project]
 	puts "Adding $sourceDir/HDL"
   add_files $sourceDir/HDL 
-  if [regexp {lib$} $name] {
-    #puts "Adding library $name"
-    set libName [string range $name 0 end-8]
-    set libFiles [glob -nocomplain $sourceDir/HDL/*.{vhd,vhdl} ]
-    set_property library $libName [get_files $libFiles]
-    puts "Adding library $libName\n $libFiles]"
-  } 
+#  if [regexp {lib$} $name] {
+#    #puts "Adding library $name"
+##    set libName [string range $name 0 end-8]
+#    set libName $name
+#    set libFiles [glob -nocomplain $sourceDir/HDL/*.{vhd,vhdl} ]
+#    set_property library $libName [get_files $libFiles]
+#    puts "Adding library $libName\n $libFiles]"
+#  } 
 	if [file exists $sourceDir/IP_cores] { Process_IP_cores $sourceDir/IP_cores }
 	Process_deps $name $buildDir $scriptsDir
 	## changes start here

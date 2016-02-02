@@ -137,7 +137,7 @@ if rising_edge(clk) then
 end if;
 end process reg;
 
-outputstream:entity streamlib.register_slice
+outputstream:entity streamlib.streambus_register_slice
 port map(
   clk       => clk,
   reset     => reset,

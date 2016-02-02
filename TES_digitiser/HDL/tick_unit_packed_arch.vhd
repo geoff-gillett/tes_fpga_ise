@@ -174,7 +174,7 @@ port map(
   ready => ready_int
 );
 last_int <= busLast(tickstream_int,BUS_CHUNKS);
-streamReg:entity streamlib.register_slice
+streamReg:entity streamlib.streambus_register_slice
 generic map(STREAM_BITS => BUS_CHUNKS*CHUNK_BITS)
 port map(
 	clk => clk,

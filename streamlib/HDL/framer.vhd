@@ -54,11 +54,11 @@ architecture TDP of framer is
 --RAM read_latency is 2 but the address increments 1clk after read_ram asserted
 constant LATENCY:integer:=3; -- LATENCY for serialiser
 --
-type frame_buffer is array (0 to 2**ADDRESS_BITS-1) of streamvector;
+type frame_buffer is array (0 to 2**ADDRESS_BITS-1) of streamvector_t;
 shared variable frame_ram:frame_buffer:=(others => (others => '0'));
 --signal last_int,valid_int,valid_reg,ready_int:boolean;
 --signal stream_int:std_logic_vector(BUS_BITS-1 downto 0);
-signal input_word,ram_dout,ram_data,stream_vector:streamvector;
+signal input_word,ram_dout,ram_data,stream_vector:streamvector_t;
 signal we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal rd_ptr,wr_addr:unsigned(ADDRESS_BITS-1 downto 0);
 signal free_ram:unsigned(ADDRESS_BITS downto 0);

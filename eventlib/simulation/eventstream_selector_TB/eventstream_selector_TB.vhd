@@ -43,7 +43,7 @@ signal mux_stream:streambus_t;
 signal mux_valid:boolean;
 signal mux_ready:boolean;
 signal sim_count:unsigned(BUS_DATABITS-CHANNELS-1 downto 0);
-signal valid : boolean;
+signal go:boolean;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -72,10 +72,10 @@ generic map(
   CHANNELS => CHANNELS
 )
 port map(
+  go => go,
   clk => clk,
   reset => reset,
   sel => sel,
-  valid => valid,
   done => done,
   instreams => instreams,
   valids => valids,
@@ -90,21 +90,21 @@ begin
 valids <= (others => TRUE);
 mux_ready <= TRUE;	
 sel <= (others => FALSE);
-valid <= FALSE;
+go <= FALSE;
 mux_ready <= TRUE;
 wait for CLK_PERIOD;
 reset <= '0';
 wait for CLK_PERIOD;
-valid <= TRUE;
+go <= TRUE;
 sel <= (0 => TRUE,others => FALSE);
 wait for CLK_PERIOD;
-valid <= FALSE;
+go <= FALSE;
 sel <= (2 => TRUE,others => FALSE);
 wait until done;
-valid <= TRUE;
+go <= TRUE;
 sel <= (2 => TRUE,others => FALSE);
 wait for CLK_PERIOD;
-valid <= FALSE;
+go <= FALSE;
 wait;
 end process stimulus;
 

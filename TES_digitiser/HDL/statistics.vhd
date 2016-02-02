@@ -319,7 +319,7 @@ case stream_state is
     end if;
 end case;
 end process streamFSMtransition;
-streamReg:entity streamlib.register_slice
+streamReg:entity streamlib.streambus_register_slice
 generic map(STREAM_BITS => STREAM_CHUNKS*CHUNK_BITS)
 port map(
   clk => clk,

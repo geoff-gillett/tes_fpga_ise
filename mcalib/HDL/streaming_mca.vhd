@@ -17,8 +17,8 @@ use teslib.types.all;
 use teslib.functions.all;
 
 library streamlib;
-use streamlib.types.all;
-use streamlib.all;
+use streamlib.stream.all;
+--use streamlib.all;
 
 library mcalib;
 use mcalib.all;

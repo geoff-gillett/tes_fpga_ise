@@ -17,7 +17,7 @@ use teslib.types.all;
 use teslib.functions.all;
 
 library streamlib;
-use streamlib.types.all;
+use streamlib.stream.all;
 
 
 --! Adds value mapping to bins to basic MCA (MCA.vhd).

@@ -62,6 +62,8 @@ function shift(arg:std_logic;pipe:std_logic_vector) return std_logic_vector;
 --------------------------------------------------------------------------------
 -- Miscellaneous functions
 --------------------------------------------------------------------------------
+function to_onehot(u:unsigned;w:integer) return std_logic_vector;
+function to_onehot(i,w:integer) return std_logic_vector;
 function is_saturated(arg:unsigned) return boolean;
 function is_saturated(arg:std_logic_vector) return boolean;
 function ceilLog2(a:integer) return integer;
@@ -240,6 +242,16 @@ end function;
 --------------------------------------------------------------------------------
 -- Miscellaneous functions
 --------------------------------------------------------------------------------
+function to_onehot(u:unsigned;w:natural) return std_logic_vector is
+begin
+	return to_onehot(to_integer(u),w); 
+end function;
+function to_onehot(i,w:natural) return std_logic_vector is
+variable slv:std_logic_vector(w-1 downto 0):=(others => '0');
+begin
+	slv(i):='1';
+	return slv;
+end function;
 function is_saturated(arg:unsigned) return boolean is
 begin
   return unaryAnd(std_logic_vector(arg));

@@ -39,14 +39,16 @@ constant BUS_DATABITS:integer:=CHUNK_DATABITS*BUS_CHUNKS;
 --subtype datachunk is std_logic_vector(CHUNK_DATABITS-1 downto 0);
 --type datachunk_array is array (natural range <>) of datachunk;
 
-subtype streamvector is std_logic_vector(BUS_BITS-1 downto 0);
+subtype streamvector_t is std_logic_vector(BUS_BITS-1 downto 0);
 type streambus_t is record
 	keep_n:boolean_vector(BUS_CHUNKS-1 downto 0); -- keep chunk if set to 0
 	last:boolean_vector(BUS_CHUNKS-1 downto 0); -- end of frame
 	data:std_logic_vector(BUS_DATABITS-1 downto 0);
 end record;
 type streambus_array is array (natural range <>) of streambus_t;
-type streamvector_array is array (natural range <>) of streamvector;
+type streamvector_array is array (natural range <>) of streamvector_t;
+subtype datachunk is std_logic_vector(CHUNK_DATABITS-1 downto 0);
+type datachunk_array is array (natural range <>) of datachunk;
 
 function busLast(slv:std_logic_vector) return boolean;
 function busLast(sb:streambus_t) return boolean;
@@ -57,6 +59,8 @@ function to_streambus(slv:std_logic_vector) return streambus_t;
 function to_streambus(sva:streamvector_array) return streambus_array;
 function to_std_logic(sb:streambus_t) return std_logic_vector;
 function to_std_logic(sba:streambus_array) return streamvector_array;
+--function to_datachunks(bd:streambus_t) return datachunk_array;
+function to_chunks(slv:std_logic_vector;last:boolean) return std_logic_vector;
 	
 end package stream;
 
@@ -93,7 +97,7 @@ begin
 end function;
 
 function to_std_logic(sb:streambus_t) return std_logic_vector is
-variable slv:streamvector;
+variable slv:streamvector_t;
 begin
 	for chunk in 0 to BUS_CHUNKS-1 loop
 		slv(CHUNK_KEEPBIT+(CHUNK_BITS*chunk)):=to_std_logic(sb.keep_n(chunk));
@@ -104,6 +108,24 @@ begin
 			);
 	end loop;
 	return slv;
+end function;
+	
+function to_chunks(slv:std_logic_vector;last:boolean) return std_logic_vector is 
+	constant CHUNKS:integer:=slv'length/CHUNK_DATABITS;
+	variable output:std_logic_vector(CHUNKS*CHUNK_BITS-1 downto 0);
+begin
+	for c in 0 to CHUNKS-1 loop
+		if c = 0 then
+      output((c+1)*CHUNK_BITS-1 downto c*CHUNK_BITS) 
+        := '0' & to_std_logic(last) & 
+        	 slv((c+1)*CHUNK_DATABITS-1 downto c*CHUNK_DATABITS);
+    else
+      output((c+1)*CHUNK_BITS-1 downto c*CHUNK_BITS) 
+        := '0' & '0' & 
+        	 slv((c+1)*CHUNK_DATABITS-1 downto c*CHUNK_DATABITS);
+    end if;
+	end loop;
+	return output;
 end function;
 	
 function busLast(slv:std_logic_vector) return boolean is

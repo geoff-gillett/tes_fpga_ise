@@ -18,7 +18,7 @@ use teslib.functions.all;
 use teslib.types.all;
 --use TES.stream_register_slice;
 
-use work.types.all;
+use work.stream.all;
 
 --! buffer from RAM to stream interface, handling ram read latency
 entity serialiser is

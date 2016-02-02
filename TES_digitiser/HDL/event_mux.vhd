@@ -307,7 +307,7 @@ ready_for_instream <= to_boolean(current_grant) when ready_for_pulsestream
                       else (others => FALSE);
 pulsestream_end <= pulsestream_last and not next_granted; 
 --
-muxstreamReg:entity streamlib.register_slice
+muxstreamReg:entity streamlib.streambus_register_slice
 generic map(STREAM_BITS => STREAM_BITS)
 port map(
   clk => clk,
@@ -464,7 +464,7 @@ begin
   end case;
 end process muxFSMoutput;
 --
-eventstreamReg:entity streamlib.register_slice
+eventstreamReg:entity streamlib.streambus_register_slice
 generic map(STREAM_BITS => STREAM_BITS)
 port map(
   clk => clk,

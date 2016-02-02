@@ -19,8 +19,8 @@ use teslib.types.all;
 use teslib.functions.all;
 --
 library streamlib;
-use streamlib.types.all;
-use streamlib.all;
+use streamlib.stream.all;
+--use streamlib.all;
 --
 --! Multi-channel analyser buffer
 --! adder pipeline calculates increment to old value

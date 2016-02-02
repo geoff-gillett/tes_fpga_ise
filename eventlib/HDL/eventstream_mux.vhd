@@ -148,7 +148,7 @@ port map(
 --FIXME are these register slices needed?	
 inputRegGen:for i in CHANNELS downto 1 generate
 begin
-	inputReg:entity streamlib.register_slice
+	inputReg:entity streamlib.streambus_register_slice
   port map(
     clk => clk,
     reset => reset,
@@ -161,7 +161,7 @@ begin
   );
 end generate;
 
-tickInputReg:entity streamlib.register_slice
+tickInputReg:entity streamlib.streambus_register_slice
 port map(
   clk => clk,
   reset => reset,
@@ -345,7 +345,7 @@ stream_int.keep_n <= muxstream.keep_n;
 --FIXME is this right?							
 --stream_valid_int <= muxstream_valid and arb_state/=IDLE;
 
-outStreamReg:entity streamlib.register_slice
+outStreamReg:entity streamlib.streambus_register_slice
 port map(
   clk => clk,
   reset => reset,

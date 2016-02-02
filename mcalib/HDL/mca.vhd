@@ -18,7 +18,7 @@ use teslib.types.all;
 use teslib.functions.all;
 
 library streamlib;
-use streamlib.types.all;
+use streamlib.stream.all;
 
 --! double buffered MCA 
 entity mca is

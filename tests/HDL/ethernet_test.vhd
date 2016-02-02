@@ -257,7 +257,7 @@ port map(
 --valid <= not framebuffer_empty;
 --last <= framebuffer_dout(8) and not framebuffer_empty;
 framebuffer_rd_en <= to_std_logic(ready_out and framebuffer_empty='0');
-streamReg:entity streamlib.register_slice
+streamReg:entity streamlib.streambus_register_slice
 generic map(STREAM_BITS => 8)
 port map(
 	clk => IO_clk,

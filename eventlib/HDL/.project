@@ -54,6 +54,11 @@
 			<locationURI>sigasiresource:/vhdl/93/STD</locationURI>
 		</link>
 		<link>
+			<name>Common Libraries/xilinxcorelib</name>
+			<type>2</type>
+			<locationURI>SIGASI_TOOLCHAIN_XILINX_ISE/vhdl/src/XilinxCoreLib</locationURI>
+		</link>
+		<link>
 			<name>Common Libraries/IEEE/Synopsys</name>
 			<type>2</type>
 			<locationURI>sigasiresource:/vhdl/93/IEEE%20Synopsys</locationURI>
