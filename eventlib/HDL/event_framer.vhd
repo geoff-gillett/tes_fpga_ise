@@ -32,7 +32,7 @@ port (
   clk:in std_logic;
   reset:in std_logic;
   --
-  height_form:in height_form_t;
+  height_form:in height_t;
   rel_to_min:in boolean;
   --
   use_cfd_timing:in boolean;

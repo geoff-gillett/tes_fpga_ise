@@ -22,6 +22,10 @@ use streamlib.stream.all;
 
 --! Adds value mapping to bins to basic MCA (MCA.vhd).
 --FIXME comments out of date
+--FIXME the whole MCA hierarchy is pretty confusing the second time around
+-- Note: need swap buffer on first can swap to initialise everything.
+-- 
+
 entity mapped_mca is
 generic(
   ADDRESS_BITS:integer:=14;

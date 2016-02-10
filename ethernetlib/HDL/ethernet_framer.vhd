@@ -119,8 +119,7 @@ if rising_edge(clk) then
     end if;
     if eventchunk_first and eventchunk_valid then
       event_length <= unsigned(
-        eventchunk(CHUNK_DATABITS-1 downto CHUNK_DATABITS-EVENT_LENGTH_BITS)
-      );
+        eventchunk(CHUNK_DATABITS-1 downto CHUNK_DATABITS-EVENT_LENGTH_BITS));
     end if;
   end if;
 end if;

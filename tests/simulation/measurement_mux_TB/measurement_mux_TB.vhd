@@ -30,7 +30,8 @@ library adclib;
 use adclib.types.all;
 
 library main;
-use main.channel.all;
+use main.registers.all;
+use main.measurements.all;
 
 entity measurement_mux_TB is
 generic(
@@ -75,7 +76,7 @@ type heighttype_slv_array is array (natural range <>) of
 signal height_slvs:heighttype_slv_array(CHANNELS-1 downto 0);
 --
 signal registers:measurement_register_array(CHANNELS-1 downto 0);
-signal measurements:channel_measurement_array(CHANNELS-1 downto 0);
+signal measurements:measurement_array(CHANNELS-1 downto 0);
 signal starts:boolean_vector(CHANNELS-1 downto 0);
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -89,7 +90,7 @@ begin
 end process adcChans;
 
 chanGen:for c in 0 to CHANNELS-1 generate
-	measure:entity main.measurement
+	measure:entity main.measurement_unit
   generic map(
     CHANNEL => c,
     FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS
@@ -131,7 +132,7 @@ generic map(
   CHANNEL_BITS => CHANNEL_BITS,
   RELTIME_BITS => TIME_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
-  TICK_BITS => TICK_BITS,
+  TICKPERIOD_BITS => TICK_BITS,
   MIN_TICKPERIOD => MIN_TICKPERIOD
 )
 port map(
@@ -151,8 +152,8 @@ port map(
   ready => ready
 );
 
-height_slvs(0) <= to_std_logic(registers(0).capture.height_form);
-height_slvs(1) <= to_std_logic(registers(1).capture.height_form);
+height_slvs(0) <= to_std_logic(registers(0).capture.height_form,2);
+height_slvs(1) <= to_std_logic(registers(1).capture.height_form,2);
 
 stimulus:process is
 begin

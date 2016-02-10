@@ -28,7 +28,7 @@ end entity register_slice;
 --
 architecture RTL of register_slice is
 signal stream_reg:std_logic_vector(WIDTH-1 downto 0);
-signal valid_int,store_valid,last_int,store_last,ready_int:boolean;
+signal valid_int,store_valid,store_last,ready_int:boolean;
 signal sel:boolean_vector(3 downto 0);
 --
 begin
@@ -47,7 +47,6 @@ if rising_edge(clk) then
     valid_int <= FALSE;
     store_valid <= FALSE;
     ready_int <= TRUE;
-    --last_int <= FALSE;
     store_last <= FALSE;
     stream_reg <= (others => '-');
   else
@@ -72,14 +71,12 @@ if rising_edge(clk) then
       ready_int <= TRUE;
       --stream_reg <= (others => '-');
       stream <= stream_reg;
-      last_int <= store_last;
       store_last <= FALSE;
       store_valid <= FALSE;
     -- no read in read out and reg empty;
     when (TRUE,FALSE,TRUE,FALSE) => 
       valid_int <= FALSE;
       ready_int <= TRUE;
-      last_int <= FALSE;
       --stream <= (others => '-');
     when others => 
       null;

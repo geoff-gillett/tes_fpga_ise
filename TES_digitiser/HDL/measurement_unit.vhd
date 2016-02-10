@@ -28,9 +28,10 @@ use eventlib.events.all;
 library adclib;
 use adclib.types.all;
 
-use work.channel.all;
+use work.registers.all;
+use work.measurements.all;
 
-entity measurement is
+entity measurement_unit is
 generic(
 	CHANNEL:integer:=0;
 	FRAMER_ADDRESS_BITS:integer:=10
@@ -61,7 +62,7 @@ port (
   time_overflow:out boolean;
   cfd_error:out boolean;
   
-  measurements:out channel_measurements;
+  measurements:out measurement_t;
   
   -- mux signals
   start:out boolean;
@@ -72,9 +73,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity measurement;
+end entity measurement_unit;
 
-architecture wrapper of measurement is
+architecture wrapper of measurement_unit is
 
 signal filtered:signal_t;
 signal peak:boolean;
@@ -85,12 +86,12 @@ signal cfd_low:boolean;
 signal cfd_high:boolean;
 signal cfd_error_int:boolean;
 signal slope_area:area_t;
-signal measurements_int:channel_measurements;
+signal measurements_int:measurement_t;
 signal commit_int:boolean;
 	
 begin
 
-dspProcessor:entity dsplib.dsp
+SignalProcessor:entity dsplib.dsp
 generic map(
   WIDTH => DSP_BITS,
   FRAC => DSP_FRAC,

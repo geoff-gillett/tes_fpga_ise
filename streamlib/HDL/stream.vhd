@@ -117,7 +117,7 @@ begin
 	for c in 0 to CHUNKS-1 loop
 		if c = 0 then
       output((c+1)*CHUNK_BITS-1 downto c*CHUNK_BITS) 
-        := '0' & to_std_logic(last) & 
+        := to_std_logic(last) & '0' &
         	 slv((c+1)*CHUNK_DATABITS-1 downto c*CHUNK_DATABITS);
     else
       output((c+1)*CHUNK_BITS-1 downto c*CHUNK_BITS) 

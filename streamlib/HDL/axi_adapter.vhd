@@ -99,7 +99,6 @@ last_block <= block_count=0;
 --full <= state=REGISTERS_FULL;
 axi_ready_int <= not full;	
 
-
 outputReg:process (clk) is
 begin
 	if rising_edge(clk) then
@@ -110,21 +109,28 @@ begin
         if last_block then
           block_count <= NUM_BLOCKS-1;
           blocks_valid <= TRUE;
-          full <= streamvector_valid;
+          full <= streamvector_valid and not ready;
         else
           blocks_valid <= FALSE;
           block_count <= block_count-1;
         end if;
         blocks(block_count) <= to_chunks(axi_stream_int,axi_last_int);
       end if;
-      if streamvector_handshake then
-				full <= FALSE;
-      end if;
-			if blocks_valid and not (streamvector_valid and not ready) then
-				streamvector_valid <= TRUE;
-				streamvector <= to_streamvector(blocks);
-			elsif streamvector_handshake then
-				streamvector_valid <= FALSE;
+			if blocks_valid then 
+				if streamvector_valid then
+					if ready then
+						streamvector <= to_streamvector(blocks);
+						blocks_valid <= FALSE;
+					end if;
+        else
+					streamvector <= to_streamvector(blocks);
+					blocks_valid <= FALSE;
+					streamvector_valid <= TRUE;
+				end if;
+			else
+				if ready then
+					streamvector_valid <= FALSE;
+				end if;
 			end if;	
 		end if;
 	end if;

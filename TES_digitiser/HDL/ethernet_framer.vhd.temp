@@ -1,0 +1,468 @@
+--------------------------------------------------------------------------------
+-- Engineer: Geoff Gillett
+-- Date:7 Feb 2016
+--
+-- Design Name: TES_digitiser
+-- Module Name: output_mux
+-- Project Name: TES_digitiser 
+-- Target Devices: virtex6
+-- Tool versions: ISE 14.7
+--------------------------------------------------------------------------------
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+library teslib;
+use teslib.types.all;
+use teslib.functions.all;
+
+library streamlib;
+use streamlib.stream.all;
+
+library eventlib;
+use eventlib.events.all;
+
+use work.registers.all;
+use work.protocol.all;
+
+--TODO handle event length field to allow variable length events
+entity ethernet_framer is
+generic(
+	MTU_BITS:integer:=MTU_BITS;
+	TICK_LATENCY_BITS:integer:=TICK_LATENCY_BITS;
+	FRAMER_ADDRESS_BITS:integer:=ETHERNET_FRAMER_ADDRESS_BITS;
+	DEFAULT_MTU:integer:=DEFAULT_MTU;
+	DEFAULT_TICK_LATENCY:integer:=DEFAULT_TICK_LATENCY
+);
+port (
+  clk:in std_logic;
+  reset:in std_logic;
+  --
+  mtu:in unsigned(MTU_BITS-1 downto 0);
+  -- maximum clocks without transmitting a tick before dumping buffer
+  tick_latency:unsigned(TICK_LATENCY_BITS-1 downto 0);
+  --
+  eventstream:in streambus_t;
+  eventstream_valid:in boolean;
+  eventstream_ready:out boolean;
+  --
+  mcastream:in streambus_t;
+  mcastream_valid:in boolean;
+  mcastream_ready:out boolean;
+  --
+  ethernetstream:out streambus_t;
+  ethernetstream_valid:out boolean;
+  ethernetstream_ready:in boolean
+);
+end entity ethernet_framer;
+
+architecture RTL of ethernet_framer is
+	
+--------------------------------------------------------------------------------
+-- Signals used in input stage
+--------------------------------------------------------------------------------
+signal events:streambus_t;	
+signal eventstream_ready_int:boolean;
+signal events_ready,events_valid:boolean;
+signal is_tick,just_reset,eventstream_handshake,buffer_full:boolean;
+signal buffer_empty,empty_buffer:boolean;
+signal mcas:streambus_t;
+signal mcas_ready:boolean;
+signal mcas_valid:boolean;
+
+--------------------------------------------------------------------------------
+-- Signals used by FSMs
+--------------------------------------------------------------------------------
+
+type arbitorFSMstate is (IDLE,MCA,EVENT);
+signal arbiter_state,arbiter_nextstate:arbitorFSMstate;
+type frameFSMstate is (IDLE,HEADER0,HEADER1,HEADER2,PAYLOAD,LAST,TICK,LENGTH);
+signal frame_state,frame_nextstate:frameFSMstate;
+
+--------------------------------------------------------------------------------
+-- Signals used by framer
+--------------------------------------------------------------------------------
+
+signal muxstream:streambus_t;
+signal muxstream_ready,muxstream_valid:boolean;
+signal frame_word:streambus_t;
+signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal frame_chunk_we:boolean_vector(BUS_CHUNKS-1 downto 0);
+signal commit_frame:boolean;
+signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
+signal ethernet_header:ethernet_header_t;
+--signal frame_we:boolean;
+signal framer_full:boolean;
+signal frame_sequence,mca_sequence,event_sequence:unsigned(15 downto 0);
+signal frame_length:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal mtu_int,mtu_last:unsigned(MTU_BITS-1 downto 0);
+signal tick_latency_count:unsigned(TICK_LATENCY_BITS-1 downto 0);
+signal tick_latency_int:unsigned(TICK_LATENCY_BITS-1 downto 0);
+signal wait_for_tick:boolean;
+signal last_data:std_logic_vector(BUS_DATABITS-1 downto 0);
+signal last_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal ticked:boolean;
+signal end_frame,frame_full:boolean;
+signal events_lookahead:streambus_t;
+signal events_lookahead_valid:boolean;
+signal address,next_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+
+begin
+
+mtuCapture:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			mtu_int <= to_unsigned(DEFAULT_MTU/8,MTU_BITS);
+			tick_latency_int <= to_unsigned(DEFAULT_TICK_LATENCY,TICK_LATENCY_BITS);
+		else
+			if arbiter_state=IDLE then
+				mtu_int <= resize(shift_right(mtu,3),MTU_BITS);
+				mtu_last <= resize(shift_right(mtu,3),MTU_BITS)-1;
+				tick_latency_int <= tick_latency;
+			end if;
+		end if;
+	end if;
+end process mtuCapture;
+
+mcaReg:entity streamlib.streambus_register_slice
+port map(
+  clk => clk,
+  reset => reset,
+  stream_in => mcastream,
+  ready_out => mcastream_ready,
+  valid_in => mcastream_valid,
+  stream => mcas,
+  ready => mcas_ready,
+  valid => mcas_valid
+);
+
+eventstream_ready <= eventstream_ready_int;
+eventBuffer:entity streamlib.streambus_lookahead_buffer
+port map(
+  clk => clk,
+  reset => reset,
+  instream => eventstream,
+  instream_valid => eventstream_valid,
+  instream_ready => eventstream_ready_int,
+  lookahead => events_lookahead,
+  lookahead_valid => events_lookahead_valid,
+  stream => events,
+  valid => events_valid,
+  ready => events_ready
+);
+
+eventstream_handshake <= eventstream_ready_int and eventstream_valid;
+buffer_full <= not just_reset and not eventstream_ready_int;
+buffer_empty <= not events_valid;
+ticked <= events.data(TICK_BIT)='1';
+
+tickFinder:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			is_tick <= FALSE;
+			tick_latency_count <= (others => '0');
+		else
+			if eventstream_handshake then
+				is_tick <= not is_tick and ticked;
+			end if;
+			
+			if tick_latency_count=tick_latency_int then
+				wait_for_tick <= TRUE;
+			end if;
+			
+			if is_tick and eventstream_handshake then
+				tick_latency_count <= (others => '0');
+				wait_for_tick <= FALSE;
+			else
+				tick_latency_count <= tick_latency_count+1;
+			end if;
+			
+			if buffer_full then
+				empty_buffer <= TRUE;
+			end if;
+			
+			if buffer_empty then 
+				empty_buffer <= FALSE;
+			end if;
+			
+		end if;
+	end if;
+end process tickFinder;
+
+ethernetHeader:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			ethernet_header.source_address <= x"5A0102030405";
+			ethernet_header.destination_address <= x"DA0102030405";
+			frame_sequence <= (others => '0');
+			event_sequence <= (others => '0');
+			mca_sequence <= (others => '0');
+		else
+			if frame_state=IDLE then
+				if arbiter_nextstate=MCA then
+					ethernet_header.ethernet_type <= x"88B6";
+					ethernet_header.frame_sequence <= frame_sequence;
+					ethernet_header.protocol_sequence <= mca_sequence;
+				elsif arbiter_nextstate=EVENT then
+					ethernet_header.ethernet_type <= x"88B5";
+					ethernet_header.frame_sequence <= frame_sequence;
+					ethernet_header.protocol_sequence <= event_sequence;
+				end if;
+			elsif frame_state=LAST then
+				frame_sequence <= frame_sequence+1;
+				if arbiter_state=MCA then
+					mca_sequence <= mca_sequence+1;
+				elsif arbiter_state=EVENT then
+					event_sequence <= event_sequence+1;
+				end if;
+      end if;
+		end if;
+	end if;
+end process ethernetHeader;
+
+FSMnextstate:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			arbiter_state <= IDLE;
+			frame_state <= IDLE;
+		else
+			arbiter_state <= arbiter_nextstate;
+			frame_state <= frame_nextstate;
+		end if;
+	end if;
+end process FSMnextstate;
+
+muxFSMtransition:process(arbiter_state,empty_buffer,mcastream_valid,
+												 eventstream_valid,frame_state,events,
+												 events_valid,mcas_valid,muxstream_ready,wait_for_tick, 
+												 frame_full,mcastream.last(0),is_tick, mca, mcas) 
+begin
+	arbiter_nextstate <= arbiter_state;
+  
+	case arbiter_state is 
+		
+	when IDLE =>
+		mcas_ready <= FALSE;
+		events_ready <= FALSE;
+		muxstream_valid <= FALSE;
+		muxstream.data <= (others => '-');
+		muxstream.last <= (others => FALSE);
+	  muxstream.keep_n <= (others => FALSE);
+	  end_frame <= FALSE;
+	  
+		if empty_buffer or wait_for_tick then
+			arbiter_nextstate <= EVENT;
+		elsif mcastream_valid then
+			arbiter_nextstate <= MCA;
+		elsif eventstream_valid then
+			arbiter_nextstate <= EVENT;
+		end if;
+		
+	when MCA =>
+		events_ready <= FALSE;
+		mcas_ready <= muxstream_ready;
+		muxstream_valid <= mcas_valid;
+		muxstream <= mcas;
+		end_frame <= empty_buffer or wait_for_tick or frame_full or 
+								 mcastream.last(0);
+  	if frame_state=LENGTH then
+    	arbiter_nextstate <= IDLE;
+    end if;
+    
+  when EVENT =>
+		events_ready <= muxstream_ready;
+		mcas_ready <= FALSE;
+		muxstream_valid <= events_valid;
+		muxstream <= events;
+		end_frame <= frame_full or is_tick;
+  	if frame_state=LENGTH then
+  		arbiter_nextstate <= IDLE;
+  	end if;
+  	
+	end case;
+	
+end process muxFSMtransition;
+
+framer_full <= '0' & frame_address = framer_free;
+--frame_full <= frame_address = mtu_int;
+
+
+frameFSM:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset ='1' then
+			frame_address <= (others => '0');
+			frame_state <= IDLE;
+      frame_word.keep_n <= (others => FALSE);
+      frame_word.data <= (others => '-');
+     	commit_frame <= FALSE;
+		else
+			frame_full <= frame_address = mtu_last; 
+			case frame_state is 
+			when IDLE => 
+      	commit_frame <= FALSE;
+        if arbiter_nextstate /= IDLE and not framer_full then
+          frame_state <= HEADER0;
+	        frame_chunk_we <= (others =>TRUE);
+          frame_word <= to_streambus(ethernet_header,0);
+          frame_address <= (others => '0');
+          muxstream_ready <= TRUE; 
+        else 
+          muxstream_ready <= FALSE; 
+      		frame_chunk_we <= (others => FALSE);
+        end if;
+			when HEADER0 =>
+				if end_frame then
+					frame_state <= IDLE; --abort the mca header
+				elsif not framer_full then
+          frame_state <= HEADER1;
+	        frame_chunk_we <= (others =>TRUE);
+          frame_word <= to_streambus(ethernet_header,1);
+          frame_address <= to_unsigned(1,FRAMER_ADDRESS_BITS);
+          muxstream_ready <= TRUE; 
+				else
+          muxstream_ready <= FALSE; 
+	      	frame_chunk_we <= (others => FALSE);
+				end if;	
+			when HEADER1 =>
+				if end_frame then
+					frame_state <= IDLE; --abort the mca header
+				elsif not framer_full then
+          frame_state <= HEADER2;
+	        frame_chunk_we <= (others =>TRUE);
+          frame_word <= to_streambus(ethernet_header,2);
+          frame_address <= to_unsigned(2,FRAMER_ADDRESS_BITS);
+          muxstream_ready <= TRUE; 
+				else
+          muxstream_ready <= FALSE; 
+	      	frame_chunk_we <= (others => FALSE);
+				end if;	
+      when HEADER2 =>
+				if not framer_full and muxstream_valid then
+          frame_chunk_we <= (others => TRUE);
+          frame_word.data <= muxstream.data;
+          frame_address <= to_unsigned(3,FRAMER_ADDRESS_BITS);
+          if end_frame then 
+	          muxstream_ready <= TRUE; 
+          	frame_state <= LAST;
+	          frame_word.last <= (0 => TRUE,others => FALSE);
+          else
+	          muxstream_ready <= TRUE; 
+	          frame_state <= PAYLOAD;
+	          frame_word.last <= (others => FALSE);
+	        end if;
+        else
+					muxstream_ready <= FALSE; 
+          frame_chunk_we <= (others => FALSE);
+        end if;	
+      when PAYLOAD =>
+      	if not framer_full and muxstream_valid then
+          if arbiter_state=EVENT and ticked then
+          	frame_state <= TICK;
+	          frame_word.last <= (0 => TRUE,others => FALSE);
+	          frame_word.data <= last_data;
+	          frame_address <= last_address;
+						muxstream_ready <= FALSE; 
+          elsif end_frame then 
+          	frame_state <= LAST;
+	          frame_word.data <= muxstream.data;
+	          frame_word.last <= (0 => TRUE,others => FALSE);
+            frame_address <= frame_address+1;
+            frame_chunk_we <= (others => TRUE);
+						muxstream_ready <= TRUE; 
+          else
+            frame_address <= frame_address+1;
+	          frame_word.last <= (others => FALSE);
+	        end if;
+	      else
+					muxstream_ready <= FALSE; 
+          frame_chunk_we <= (others => FALSE);
+      	end if;
+      when LAST =>
+        frame_state <= LENGTH;
+        frame_word.data <= to_std_logic(resize(frame_address+1,64));
+        frame_length <= frame_address+1;
+        frame_address <= to_unsigned(1,FRAMER_ADDRESS_BITS);
+        frame_word.last <= (others => FALSE);
+        frame_chunk_we <= (0 => TRUE,others => FALSE); 
+        commit_frame <= TRUE;
+				muxstream_ready <= FALSE; 
+      when LENGTH =>
+      	frame_state <= IDLE;
+      	commit_frame <= FALSE;
+      	frame_address <= (others => '0');
+      	frame_chunk_we <= (others => FALSE);
+        frame_word.last <= (others => FALSE);
+				muxstream_ready <= FALSE; 
+			when TICK =>
+				frame_state <= LENGTH;
+        frame_word.data <= to_std_logic(resize(last_address+1,64));
+        frame_length <= last_address+1;
+        frame_address <= to_unsigned(1,FRAMER_ADDRESS_BITS);
+        frame_word.last <= (others => FALSE);
+        frame_chunk_we <= (0 => TRUE,others => FALSE); 
+        commit_frame <= TRUE;
+				muxstream_ready <= FALSE; 
+      end case;
+    end if;
+  end if;
+end process frameFSM;
+
+
+
+
+lastReg:process(clk)
+begin
+	if rising_edge(clk) then
+    if frame_chunk_we = (TRUE,TRUE,TRUE,TRUE) then
+      last_data <= frame_word.data;
+      last_address <= frame_address;
+    end if;
+	end if;
+end process lastReg;
+
+framer_full <= framer_free=0;
+
+payloadAddress:process(clk)
+variable next_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+begin
+	if rising_edge(clk) then
+		if commit_frame or reset='1' then
+			address <= (others => '0');
+			next_address:=to_unsigned(1,FRAMER_ADDRESS_BITS);
+		else
+			next_address:=address+1;
+			if write_frame then
+				address <= next_address;
+			end if;
+		end if;
+		framer_full <= next_address > framer_free;
+	end if;
+end process payloadAddress;
+
+framer:entity streamlib.framer
+generic map(
+  BUS_CHUNKS => BUS_CHUNKS,
+  ADDRESS_BITS => FRAMER_ADDRESS_BITS
+)
+port map(
+  clk => clk,
+  reset => reset,
+  data => frame_word,
+  address => frame_address,
+  chunk_we => frame_chunk_we,
+  success => open,
+  length => frame_length,
+  commit => commit_frame,
+  free => framer_free,
+  stream => ethernetstream,
+  valid => ethernetstream_valid,
+  ready => ethernetstream_ready
+);
+
+end architecture RTL;

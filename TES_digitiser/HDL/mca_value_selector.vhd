@@ -18,44 +18,46 @@ use teslib.types.all;
 use teslib.functions.all;
 
 use work.channel.all;
-use work.mca.all;
+use work.protocol.all;
+use work.registers.all;
+use work.measurements.all;
 
 --1 clk latency
-entity mca_distribution_select is
+entity mca_value_selector is
 generic (
-	MEASUREMENT_BITS:integer:=MCA_VALUE_BITS;
-	NUM_VALUES:integer:=NUM_MCA_VALUES;
-	NUM_VALIDS:integer:=NUM_MCA_TRIGGERS
+	VALUE_BITS:integer:=MCA_VALUE_BITS;
+	NUM_VALUES:integer:=MCA_VALUE_SELECT_BITS;
+	NUM_VALIDS:integer:=MCA_TRIGGER_SELECT_BITS
 );
 	
 port (
   clk:in std_logic;
   reset:in std_logic;
-  measurements:in channel_measurements;
-  measurement_select:in std_logic_vector(NUM_VALUES-1 downto 0);
-  valid_select:in std_logic_vector(NUM_VALIDS-1 downto 0);
-  value:out mca_value_t;
+  measurements:in measurement_t;
+  value_select:in std_logic_vector(NUM_VALUES-1 downto 0);
+  trigger_select:in std_logic_vector(NUM_VALIDS-1 downto 0);
+  value:out signed(MCA_VALUE_BITS-1 downto 0);
   valid:out boolean
 );
-end entity mca_distribution_select;
+end entity mca_value_selector;
 
-architecture registered of mca_distribution_select is
+architecture registered of mca_value_selector is
 signal values:mca_value_array(NUM_VALUES-1 downto 0);
-signal unused_measurements:std_logic_vector(12-NUM_VALUES-1 downto 0)
-													:=(others => '0');
-signal unused_valids:std_logic_vector(12-NUM_VALIDS-1 downto 0);
-
+signal unused_values:std_logic_vector(12-NUM_VALUES-1 downto 0)
+											:=(others => '0');
+signal unused_valids:std_logic_vector(12-NUM_VALIDS-1 downto 0)
+										:=(others => '0');
 type input_array is array (natural range <> ) of std_logic_vector(11 downto 0);
-signal inputs:input_array(MEASUREMENT_BITS-1 downto 0);
+signal inputs:input_array(VALUE_BITS-1 downto 0);
 signal valids:std_logic_vector(NUM_VALIDS-1 downto 0);
-signal measurement_int:signed(MEASUREMENT_BITS-1 downto 0);
+signal measurement_int:signed(VALUE_BITS-1 downto 0);
 signal valid_int:std_logic;
 
 begin
 
 values <= get_values(measurements);
 
-measurementMuxGen:for b in 0 to MEASUREMENT_BITS-1 generate
+measurementMuxGen:for b in 0 to VALUE_BITS-1 generate
 begin
   inputGen:for m in 0 to NUM_VALUES-1 generate
   begin
@@ -64,18 +66,18 @@ begin
   
 	selector:entity teslib.select_1of12
   port map(
-    input => unused_measurements & inputs(b),
-    sel => measurement_select,
+    input => inputs(b),
+    sel => unused_values & value_select,
     output => measurement_int(b)
   );
 end generate;
 
-valids <= get_valids(measurements);
+valids <= get_triggers(measurements);
 
 validSel:entity teslib.select_1of12
 port map(
   input => unused_valids & valids,
-  sel => valid_select,
+  sel => unused_valids & trigger_select,
   output => valid_int
 );
 

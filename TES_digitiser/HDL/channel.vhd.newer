@@ -3,7 +3,7 @@
 -- Date:15 Jan 2016
 --
 -- Design Name: TES_digitiser
--- Module Name: global
+-- Module Name: channel
 -- Project Name: TES_digitiser
 -- Target Devices: virtex6
 -- Tool versions: ISE 14.7
@@ -11,31 +11,34 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.math_real.all;
 
 library teslib;
 use teslib.types.all;
-use teslib.functions.all;
 
-library streamlib;
-use streamlib.stream.all;
+library eventlib;
+use eventlib.events.all;
 
---use work.mca.mca_registers;
+library adclib;
+use adclib.types.all;
 
-package global is
+library dsplib;
+use dsplib.types.all;
 
-constant CHANNEL_BITS:integer:=3;
-constant CHANNELS:integer:=2**CHANNEL_BITS;
-constant TICK_BITS:integer:=32;
-constant TICK_COUNT_BITS:integer:=16;
-
--- DEFAULTS
-constant DEFAULT_TICK_PERIOD:integer:=25000000;
+package channel is
 
 
-end package global;
+--type framer_registers is record
+--	height_form:height_form_t;
+--	rel_to_min:boolean;
+--	use_cfd_timing:boolean;
+--end record;	
 
-package body global is
 
 
-end package body global;
+
+
+end package channel;
+
+package body channel is
+	
+end package body channel;

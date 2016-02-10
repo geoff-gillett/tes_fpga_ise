@@ -29,16 +29,17 @@ use dsplib.types.all;
 library eventlib;
 use eventlib.events.all;
 
-use work.channel.all;
+use work.registers.all;
+use work.measurements.all;
 
-entity measurement_TB is
+entity measurement_unit_TB is
 generic(
 	CHANNEL:integer:=0;
 	FRAMER_ADDRESS_BITS:integer:=10
 );
-end entity measurement_TB;
+end entity measurement_unit_TB;
 
-architecture testbench of measurement_TB is
+architecture testbench of measurement_unit_TB is
 
 signal clk:std_logic:='1';	
 signal reset:std_logic:='1';	
@@ -47,7 +48,7 @@ signal adc_sample:adc_sample_t;
 signal registers:measurement_registers;
 signal overflow:boolean;
 signal time_overflow:boolean;
-signal measurements:channel_measurements;
+signal measurements:measurement_t;
 signal commit:boolean;
 signal dump:boolean;
 signal eventstream:streambus_t;
@@ -60,7 +61,7 @@ begin
 
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.measurement
+UUT:entity work.measurement_unit
 generic map(
   CHANNEL => CHANNEL,
   FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS
@@ -96,7 +97,7 @@ port map(
   ready => ready
 );
 
-height_slv <= to_std_logic(registers.capture.height_form);
+height_slv <= to_std_logic(registers.capture.height_form,2);
 
 stimulus:process is
 begin

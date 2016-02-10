@@ -28,7 +28,7 @@ generic(
   CHANNEL_BITS:integer:=3;
   RELTIME_BITS:integer:=16;
   TIMESTAMP_BITS:integer:=64;
-  TICK_BITS:integer:=32;
+  TICKPERIOD_BITS:integer:=32;
   MIN_TICKPERIOD:integer:=2**16
 );
 port(
@@ -45,7 +45,7 @@ port(
   instream_readys:out boolean_vector(2**CHANNEL_BITS-1 downto 0);
   full:out boolean;
   -- tick event
-  tick_period:in unsigned(TICK_BITS-1 downto 0);
+  tick_period:in unsigned(TICKPERIOD_BITS-1 downto 0);
   overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
   --dirty:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
   --
@@ -99,7 +99,7 @@ begin
 tickstreamer:entity work.tickstream
 generic map(
   CHANNEL_BITS => CHANNEL_BITS,
-  PERIOD_BITS => TICK_BITS,
+  PERIOD_BITS => TICKPERIOD_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
   MINIMUM_PERIOD => MIN_TICKPERIOD
 )

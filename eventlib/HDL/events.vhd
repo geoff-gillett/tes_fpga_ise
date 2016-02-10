@@ -14,13 +14,16 @@ package events is
 
 constant MAX_CHANNEL_BITS:integer:=4;
 constant MAX_PEAK_COUNT_BITS:integer:=4;
+constant TICK_BIT:integer:=31;
 
-type height_form_t is (PEAK_HEIGHT,CFD_HEIGHT,SLOPE_INTEGRAL);
-constant NUM_HEIGHT_TYPES:integer:=3;
+type height_t is (PEAK_HEIGHT,CFD_HEIGHT,SLOPE_INTEGRAL);
+
+constant NUM_HEIGHT_TYPES:integer:=height_t'pos(height_t'high)+1;
 constant HEIGHT_TYPE_BITS:integer:=ceilLog2(NUM_HEIGHT_TYPES);
 
+
 type headerflags is record
-	tick:boolean; -- always FALSE for event;
+	tick:boolean; -- always FALSE for event; 
 	trace:boolean; -- false for event
 	fixed:boolean; -- fixed length event
 	reserved:boolean;
@@ -35,7 +38,7 @@ end record;
 type eventflags is record
 	rel_to_min:boolean;
 	peak_overflow:boolean;
-	height_type:height_form_t; -- 2 bits
+	height_type:height_t; -- 2 bits
 	peak_count:unsigned(MAX_PEAK_COUNT_BITS-1 downto 0);
 	channel:unsigned(MAX_CHANNEL_BITS-1 downto 0);
 end record;
@@ -63,13 +66,14 @@ function to_std_logic(f:tickflags) return std_logic_vector;
 	
 function to_streambus(t:tickevent) return streambus_array;
 function to_streambus(e:peakevent) return streambus_t;	
-function to_std_logic(h:height_form_t) return std_logic_vector;
+function to_unsigned(h:height_t;w:integer) return unsigned;
+function to_std_logic(h:height_t;w:integer) return std_logic_vector;
 	
 function to_height_type(i:natural range 0 to NUM_HEIGHT_TYPES-1) 
-return height_form_t;
+return height_t;
 
 function to_height_type(s:unsigned(ceilLog2(NUM_HEIGHT_TYPES)-1 downto 0)) 
-return height_form_t;
+return height_t;
 
 end package events;
 
@@ -80,7 +84,7 @@ function to_std_logic(f:eventflags) return std_logic_vector is
 begin
 	return to_std_logic(f.rel_to_min) &
 				 to_std_logic(f.peak_overflow) &
-				 to_std_logic(f.height_type) & --2 bits
+				 to_std_logic(f.height_type,2) & --2 bits
 				 to_std_logic(f.peak_count) & --4 bits
 				 to_std_logic(f.channel); --4 bits
 end function;
@@ -129,22 +133,27 @@ begin
 end function;
 
 function to_height_type(s:unsigned(ceilLog2(NUM_HEIGHT_TYPES)-1 downto 0)) 
-return height_form_t is
+return height_t is
 variable i:integer range 0 to NUM_HEIGHT_TYPES;
 begin
 	i:=to_integer(s);
 	return to_height_type(i);
 end function;
 
-function to_std_logic(h:height_form_t) return std_logic_vector is
+function to_unsigned(h:height_t;w:integer) return unsigned is
 begin
-	return to_std_logic(height_form_t'pos(h),2);
+	return to_unsigned(height_t'pos(h),w);
+end function;
+
+function to_std_logic(h:height_t;w:integer) return std_logic_vector is
+begin
+	return to_std_logic(to_unsigned(h,w));
 end function;
 
 function to_height_type(i:natural range 0 to NUM_HEIGHT_TYPES-1) 
-return height_form_t is
+return height_t is
 begin
-	return height_form_t'val(i);
+	return height_t'val(i);
 end function;
 
 end package body events;

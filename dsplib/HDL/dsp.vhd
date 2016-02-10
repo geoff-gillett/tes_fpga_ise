@@ -205,6 +205,7 @@ signal minima_for_cfd:signed(WIDTH-1 downto 0);
 signal cfd_reset:boolean;
 signal cfd_low_crossed,cfd_high_crossed:boolean;
 signal cfd_high_done,cfd_low_done:boolean;
+signal raw_int:signed(WIDTH-1 downto 0);
 begin
 
 sampleoffset:process(clk)
@@ -289,7 +290,7 @@ port map(
   clk => clk,
   reset => reset,
   signal_in => stage1_input,
-  signal_out => raw,
+  signal_out => raw_int,
   threshold => (others => '0'),
   pos_xing => open,
   neg_xing => open,
@@ -305,6 +306,7 @@ raw_extrema <= resize(
 							   shift_right(raw_extrema_int,FRAC-SIGNAL_FRAC),
 								   SIGNAL_BITS
 								 );
+raw <= resize(shift_right(raw_int,FRAC-SIGNAL_FRAC),SIGNAL_BITS);
 								 
 slopeXing:entity work.signal_measurement
 generic map(

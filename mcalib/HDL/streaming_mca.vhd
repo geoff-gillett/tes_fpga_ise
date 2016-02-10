@@ -29,7 +29,7 @@ generic(
   --number of bins (channels) = 2**ADDRESS_BITS
   ADDRESS_BITS:integer:=14;
   --width of counters and stream
-  STREAM_CHUNKS:integer:=2;
+  --STREAM_CHUNKS:integer:=2;
   COUNTER_BITS:integer:=32;
   TOTAL_BITS:integer:=64
 );
@@ -51,7 +51,7 @@ port(
   max_count:out unsigned(COUNTER_BITS-1 downto 0);
   readable:out boolean;
   --
-  stream:out std_logic_vector(STREAM_CHUNKS*CHUNK_DATABITS-1 downto 0);
+  stream:out std_logic_vector(COUNTER_BITS-1 downto 0);
   valid:out boolean;
   last:out boolean;
   ready:in boolean
@@ -60,7 +60,7 @@ end entity streaming_mca;
 --
 architecture double_buffered_blockram of streaming_mca is
 --------------------------------------------------------------------------------
-constant STREAM_BITS:integer:=STREAM_CHUNKS*CHUNK_DATABITS;
+--constant STREAM_BITS:integer:=STREAM_CHUNKS*CHUNK_DATABITS;
 --------------------------------------------------------------------------------
 subtype MCA_count is unsigned(COUNTER_BITS-1 downto 0);
 subtype MCA_bin is unsigned(ADDRESS_BITS-1 downto 0); -- RAM buffer address
@@ -103,12 +103,12 @@ port map(
   read_bin => read_bin,
   count => count
 );
-data <= std_logic_vector(resize(count,STREAM_BITS));
+data <= std_logic_vector(count);
 last_read <= last_addr and state=STREAMING;
 streamer:entity streamlib.serialiser
 generic map(
   LATENCY => 3,
-  DATA_BITS => STREAM_BITS
+  DATA_BITS => COUNTER_BITS
 )
 port map(
   clk => clk,
