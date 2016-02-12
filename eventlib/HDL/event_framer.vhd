@@ -26,7 +26,8 @@ generic(
   CHANNEL:integer:=1;
   PEAK_COUNT_BITS:integer:=MAX_PEAK_COUNT_BITS;
   ADDRESS_BITS:integer:=9;
-  BUS_CHUNKS:integer:=4
+  BUS_CHUNKS:integer:=4;
+  RELATIVETIME_BITS:integer:=16
 );
 port (
   clk:in std_logic;
@@ -35,7 +36,8 @@ port (
   height_form:in height_t;
   rel_to_min:in boolean;
   --
-  use_cfd_timing:in boolean;
+  --use_cfd_timing:in boolean;
+  timing_trigger:in timing_trigger_t;
   --area_threshold:in area_t;
   --
   signal_in:in signal_t;
@@ -46,15 +48,16 @@ port (
   --! buffer overflow signal
   pulse_pos_xing:in boolean; -- from measurement
   pulse_neg_xing:in boolean;
+  slope_threshold_xing:in boolean;
   cfd_low:in boolean;
   cfd_high:in boolean;
   cfd_error:in boolean;
-  
   --minima:in signal_t;
   slope_area:in area_t;
   --pulse_area:in area_t;
   --! to mux
   enqueue:out boolean;
+  rise_time:out unsigned(RELATIVETIME_BITS-1 downto 0);
   dump:out boolean;
   commit:out boolean;
   peak_count:out unsigned(PEAK_COUNT_BITS-1 downto 0);
@@ -83,6 +86,7 @@ signal peak_event:peakevent;
 signal above_threshold:boolean;
 signal enqueue_int:boolean;
 signal max:boolean;
+signal rise_time_int:unsigned(RELATIVETIME_BITS-1 downto 0);
 
 --
 begin
@@ -123,24 +127,38 @@ begin
 	end if;
 end process FSMnextstate;
 
-enqueue_int <= state=STARTED and 
-               (
-                 (use_cfd_timing and cfd_low) or 
-                 (not use_cfd_timing and pulse_pos_xing)
-               );
+--enqueue_int <= state=STARTED and 
+--               (
+--                 (use_cfd_timing and cfd_low) or 
+--                 (not use_cfd_timing and pulse_pos_xing)
+--               );
+
+
+timingPoint:process(timing_trigger,state, pulse_pos_xing, slope_threshold_xing,
+										cfd_low)
+begin
+	if state=STARTED then
+		case timing_trigger is
+		when PULSE_THRESHOLD =>
+			enqueue_int <= pulse_pos_xing;
+		when SLOPE_THRESHOLD =>
+			enqueue_int <= slope_threshold_xing;
+		when CFD =>
+			enqueue_int <= cfd_low;
+		end case;
+	end if;
+end process timingPoint;
+
 
 maximum:process(height_form,cfd_high,peak)
 begin
 	case height_form is
 	when PEAK_HEIGHT =>
 		max <= peak;
-		--height_int <= signal_in;
 	when CFD_HEIGHT =>
 		max <= cfd_high;
-		--height_int <= signal_in;
 	when SLOPE_INTEGRAL =>
 		max <= peak;
-		---height_int <= slope_area;
 	end case;
 end process maximum;
 
@@ -179,6 +197,7 @@ data <= to_streambus(peak_event);
 
 commit <= commit_int;
 dump <= dump_int;
+rise_time <= rise_time_int;
 							
 peak_event.header.timestamp <= (others => '0');
 peak_event.flags.channel <= to_unsigned(CHANNEL,MAX_CHANNEL_BITS);
@@ -210,6 +229,12 @@ if rising_edge(clk) then
   	end if;
   	
   	enqueue <= enqueue_int;
+  	
+  	if enqueue_int then
+  		rise_time_int <= (others => '0');
+  	else
+  		rise_time_int <= rise_time_int+1;
+  	end if;
   	
   	if max then
   		if peak_count_int=to_unsigned((2**PEAK_COUNT_BITS)-1,PEAK_COUNT_BITS) then

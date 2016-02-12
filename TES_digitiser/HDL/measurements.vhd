@@ -46,8 +46,9 @@ type measurement_t is record
 	peak:boolean;
 	cfd_low:boolean;
 	cfd_high:boolean;
-	slope_xing:boolean;
+	slope_threshold_xing:boolean;
 	filtered_xing:boolean;
+	rise_time:unsigned(RELATIVETIME_BITS-1 downto 0);
 end record;
 
 type measurement_array is array (natural range <>)
@@ -74,6 +75,7 @@ begin
   va(8) := resize(m.raw_signal,MCA_VALUE_BITS);
   va(9) := resize(m.raw.area,MCA_VALUE_BITS);
   va(10) := resize(m.raw.extrema,MCA_VALUE_BITS);
+  va(11) := resize(signed('0' & m.rise_time),MCA_VALUE_BITS);
   return va;
 end function;
 
@@ -84,7 +86,7 @@ begin
 						o(1):=to_std_logic(m.filtered_xing);
 						o(2):=to_std_logic(m.filtered.valid);
 						o(2):=to_std_logic(m.slope.valid);
-						o(2):=to_std_logic(m.slope_xing);
+						o(2):=to_std_logic(m.slope_threshold_xing);
 						o(2):=to_std_logic(m.cfd_high);
 						o(2):=to_std_logic(m.cfd_low);
 						o(2):=to_std_logic(m.peak);

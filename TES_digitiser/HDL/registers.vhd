@@ -80,6 +80,7 @@ constant BASELINE_COUNTER_BITS:integer:=18;
 constant BASELINE_MAX_AV_ORDER:integer:=6;
 constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=10;
 
+
 type baseline_registers is record
 	offset:adc_sample_t;
 	subtraction:boolean;
@@ -100,7 +101,8 @@ end record;
 type event_framer_registers is record
 	height_form:height_t;
 	rel_to_min:boolean;
-	use_cfd_timing:boolean;
+	--use_cfd_timing:boolean;
+	timing_trigger:timing_trigger_t;
 end record;
 
 type measurement_registers is record
@@ -109,10 +111,12 @@ type measurement_registers is record
 end record;
 
 
+
 type measurement_register_array is array (natural range <>) 
 		 of measurement_registers;
 		 
 		 
+
 --------------------------------------------------------------------------------
 -- MCA Registers
 --------------------------------------------------------------------------------
@@ -139,7 +143,8 @@ type mca_values_t is (FILTERED, -- the output of the dsp filter
 											PULSE_EXTREMA, -- the maximum between threshold xings
 											RAW,
 											RAW_AREA,
-											RAW_EXTREMA);
+											RAW_EXTREMA,
+											RISE_TIME);
 											
 constant MCA_VALUE_SELECT_BITS:integer:=mca_values_t'pos(mca_values_t'high)+1;
 

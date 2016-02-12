@@ -88,6 +88,8 @@ signal cfd_error_int:boolean;
 signal slope_area:area_t;
 signal measurements_int:measurement_t;
 signal commit_int:boolean;
+signal slope_threshold_xing:boolean;
+signal rise_time:unsigned(RELATIVETIME_BITS-1 downto 0);
 	
 begin
 
@@ -144,7 +146,7 @@ port map(
   slope_area => slope_area,
   slope_extrema => measurements_int.slope.extrema,
   slope_valid => measurements_int.slope.valid,
-  slope_threshold_xing => measurements_int.slope_xing,
+  slope_threshold_xing => slope_threshold_xing,
   peak_start => peak_start,
   peak => peak,
   pulse_pos_xing => pulse_pos_xing,
@@ -170,6 +172,7 @@ measurements_int.pulse_stop <= pulse_neg_xing;
 measurements_int.height_valid <= commit_int;
 measurements_int.cfd_high <= cfd_high;
 measurements_int.cfd_low <= cfd_low;
+measurements_int.slope_threshold_xing <= slope_threshold_xing;
 
 commit <= commit_int;
 cfd_error <= cfd_error_int;
@@ -186,18 +189,21 @@ port map(
   reset => reset,
   height_form => registers.capture.height_form,
   rel_to_min => registers.capture.rel_to_min,
-  use_cfd_timing => registers.capture.use_cfd_timing,
+  timing_trigger => registers.capture.timing_trigger,
+  --use_cfd_timing => registers.capture.use_cfd_timing,
   signal_in => filtered,
   peak => peak,
   peak_start => peak_start,
   overflow => overflow,
   pulse_pos_xing => pulse_pos_xing,
   pulse_neg_xing => pulse_neg_xing,
+  slope_threshold_xing => slope_threshold_xing,
   cfd_low => cfd_low,
   cfd_high => cfd_high,
   cfd_error => cfd_error_int,
   slope_area => slope_area,
   enqueue => start,
+  rise_time => rise_time,
   dump => dump,
   commit => commit_int,
   peak_count => measurements_int.peak_count, --valid when pulse_neg_xing

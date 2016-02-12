@@ -80,6 +80,7 @@ signal mca_registers:mca_registers_t;
 
 type enum_unsigned_array is array (natural range <>) of unsigned(3 downto 0);
 signal height_unsigneds:enum_unsigned_array(CHANNELS-1 downto 0);
+signal timing_unsigneds:enum_unsigned_array(CHANNELS-1 downto 0);
 signal mca_value_unsigned:unsigned(3 downto 0);
 signal mca_trigger_unsigned:unsigned(3 downto 0);
 signal adc_sample:adc_sample_t;
@@ -253,6 +254,12 @@ height_unsigneds(0)
 	<= to_unsigned(measurement_registers(0).capture.height_form,4);
 height_unsigneds(1) 
 	<= to_unsigned(measurement_registers(1).capture.height_form,4);
+	
+timing_unsigneds(0) 
+	<= to_unsigned(measurement_registers(0).capture.timing_trigger,4);
+timing_unsigneds(1) 
+	<= to_unsigned(measurement_registers(1).capture.timing_trigger,4);
+	
 mca_value_unsigned <= to_unsigned(mca_registers.value,4);
 mca_trigger_unsigned <= to_unsigned(mca_registers.trigger,4);
 
@@ -308,8 +315,8 @@ measurement_registers(0).capture.height_form <= CFD_HEIGHT;
 measurement_registers(1).capture.height_form <= CFD_HEIGHT;
 measurement_registers(0).capture.rel_to_min <= TRUE;
 measurement_registers(1).capture.rel_to_min <= TRUE;
-measurement_registers(0).capture.use_cfd_timing <= TRUE;
-measurement_registers(1).capture.use_cfd_timing <= TRUE;
+measurement_registers(0).capture.timing_trigger <= CFD;
+measurement_registers(1).capture.timing_trigger <= CFD;
 --eventstream_ready <= TRUE;
 --
 tick_period <= to_unsigned(2**14-1,TICKPERIOD_BITS);

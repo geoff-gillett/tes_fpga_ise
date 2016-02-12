@@ -99,7 +99,7 @@ writeInt32 $chansettings measurement_registers(0).dsp.slope_threshold
 writeInt32 $chansettings measurement_registers(0).dsp.baseline.average_order 
 writeInt32 $chansettings \\changen(0)\\/measurement/SignalProcessor/BASELINE_AV_FRAC 
 writeInt32 $chansettings measurement_registers(0).capture.rel_to_min
-writeInt32 $chansettings measurement_registers(0).capture.use_cfd_timing
+writeInt32 $chansettings timing_unsigneds(0)
 writeInt32 $chansettings height_unsigneds(0)
 
 close $chansettings
@@ -161,7 +161,7 @@ while {[gets $fp hexsample] >= 0} {
 		writeInt32 $pulsestarts measurements(0).filtered_signal
 	}
 
-	if [getsig measurements(0).slope_xing] {
+	if [getsig measurements(0).slope_threshold_xing] {
 		puts -nonewline $slopexings [binary format i $i]
 		writeInt32 $slopexings measurements(0).filtered_signal
 	}

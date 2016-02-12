@@ -16,7 +16,18 @@ constant MAX_CHANNEL_BITS:integer:=4;
 constant MAX_PEAK_COUNT_BITS:integer:=4;
 constant TICK_BIT:integer:=31;
 
-type height_t is (PEAK_HEIGHT,CFD_HEIGHT,SLOPE_INTEGRAL);
+type timing_trigger_t is (
+	PULSE_THRESHOLD,
+	SLOPE_THRESHOLD,
+	CFD);
+
+constant NUM_TIMING_TRIGGER_TYPES:integer:=
+																	timing_trigger_t'pos(timing_trigger_t'high)+1;
+constant TIMING_TRIGGER_TYPE_BITS:integer:=ceilLog2(NUM_TIMING_TRIGGER_TYPES);
+	
+type height_t is (PEAK_HEIGHT,
+									CFD_HEIGHT,
+									SLOPE_INTEGRAL);
 
 constant NUM_HEIGHT_TYPES:integer:=height_t'pos(height_t'high)+1;
 constant HEIGHT_TYPE_BITS:integer:=ceilLog2(NUM_HEIGHT_TYPES);
@@ -24,9 +35,9 @@ constant HEIGHT_TYPE_BITS:integer:=ceilLog2(NUM_HEIGHT_TYPES);
 
 type headerflags is record
 	tick:boolean; -- always FALSE for event; 
-	trace:boolean; -- false for event
-	fixed:boolean; -- fixed length event
-	reserved:boolean;
+	area:boolean; -- area measurement
+	trace:boolean; -- false for event 
+	fixed:boolean; -- fixed length event -- 8 bytes size not used otherwise size is used
 end record;
 
 type eventheader is record
@@ -38,9 +49,10 @@ end record;
 type eventflags is record
 	rel_to_min:boolean;
 	peak_overflow:boolean;
+	timing_trigger:timing_trigger_t; -- 2 bits
 	height_type:height_t; -- 2 bits
-	peak_count:unsigned(MAX_PEAK_COUNT_BITS-1 downto 0);
-	channel:unsigned(MAX_CHANNEL_BITS-1 downto 0);
+	peak_count:unsigned(MAX_PEAK_COUNT_BITS-1 downto 0); -- 3
+	channel:unsigned(MAX_CHANNEL_BITS-1 downto 0); -- 3
 end record;
 
 type peakevent is record -- entire peak only event
@@ -68,6 +80,9 @@ function to_streambus(t:tickevent) return streambus_array;
 function to_streambus(e:peakevent) return streambus_t;	
 function to_unsigned(h:height_t;w:integer) return unsigned;
 function to_std_logic(h:height_t;w:integer) return std_logic_vector;
+	
+function to_unsigned(t:timing_trigger_t;w:integer) return unsigned;
+--function to_std_logic(h:height_t;w:integer) return std_logic_vector;
 	
 function to_height_type(i:natural range 0 to NUM_HEIGHT_TYPES-1) 
 return height_t;
@@ -148,6 +163,11 @@ end function;
 function to_std_logic(h:height_t;w:integer) return std_logic_vector is
 begin
 	return to_std_logic(to_unsigned(h,w));
+end function;
+
+function to_unsigned(t:timing_trigger_t;w:integer) return unsigned is
+begin
+	return to_unsigned(timing_trigger_t'pos(t),w);
 end function;
 
 function to_height_type(i:natural range 0 to NUM_HEIGHT_TYPES-1) 
