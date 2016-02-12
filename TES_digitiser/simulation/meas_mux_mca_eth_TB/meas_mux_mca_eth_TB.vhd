@@ -175,7 +175,8 @@ generic map(
   RELTIME_BITS => RELATIVETIME_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
   TICKPERIOD_BITS => TICKPERIOD_BITS,
-  MIN_TICKPERIOD => MIN_TICKPERIOD
+  MIN_TICKPERIOD => MIN_TICKPERIOD,
+  TICKPIPE_DEPTH => TICKPIPE_DEPTH
 )
 port map(
   clk => clk,
@@ -189,7 +190,7 @@ port map(
   full => eventstreammux_full,
   tick_period => tick_period,
   overflows => overflows,
-  outstream => eventstream,
+  stream => eventstream,
   valid => eventstream_valid,
   ready => eventstream_ready
 );
@@ -304,7 +305,7 @@ measurement_registers(1).dsp.baseline.subtraction <= TRUE;
 measurement_registers(0).dsp.cfd_relative <= TRUE;
 measurement_registers(1).dsp.cfd_relative <= TRUE;
 measurement_registers(0).capture.height_form <= CFD_HEIGHT;
-measurement_registers(0).capture.height_form <= CFD_HEIGHT;
+measurement_registers(1).capture.height_form <= CFD_HEIGHT;
 measurement_registers(0).capture.rel_to_min <= TRUE;
 measurement_registers(1).capture.rel_to_min <= TRUE;
 measurement_registers(0).capture.use_cfd_timing <= TRUE;

@@ -29,9 +29,9 @@ use eventlib.events.all;
 library adclib;
 use adclib.types.all;
 
-library main;
-use main.registers.all;
-use main.measurements.all;
+--library main;
+use work.registers.all;
+use work.measurements.all;
 
 entity measurement_mux_TB is
 generic(
@@ -85,12 +85,12 @@ adcChans:process (clk) is
 begin
 	if rising_edge(clk) then
 		adc_samples(0) <= adc_sample;
-		adc_samples(1) <= adc_samples(0);
+		adc_samples(1) <= adc_sample; --s(0);
 	end if;
 end process adcChans;
 
 chanGen:for c in 0 to CHANNELS-1 generate
-	measure:entity main.measurement_unit
+	measure:entity work.measurement_unit
   generic map(
     CHANNEL => c,
     FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS
@@ -198,7 +198,7 @@ registers(0).dsp.cfd_relative <= TRUE;
 registers(1).dsp.cfd_relative <= TRUE;
 
 registers(0).capture.height_form <= CFD_HEIGHT;
-registers(0).capture.height_form <= CFD_HEIGHT;
+registers(1).capture.height_form <= CFD_HEIGHT;
 
 registers(0).capture.rel_to_min <= TRUE;
 registers(1).capture.rel_to_min <= TRUE;

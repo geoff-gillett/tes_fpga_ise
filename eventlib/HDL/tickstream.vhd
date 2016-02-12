@@ -26,7 +26,8 @@ generic(
   CHANNEL_BITS:integer:=3;
   PERIOD_BITS:integer:=32;
   MINIMUM_PERIOD:integer:=2**TIME_BITS;
-  TIMESTAMP_BITS:integer:=64
+  TIMESTAMP_BITS:integer:=64;
+  TICKPIPE_DEPTH:integer:=2
 );
 port (
   clk:in std_logic;
@@ -60,6 +61,7 @@ signal wr_en:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal tick_event:tickevent;
 signal tick_bus:streambus_array(1 downto 0);
 signal time_stamp:unsigned(TIMESTAMP_BITS-1 downto 0);
+signal tick_pipe:boolean_vector(0 to TICKPIPE_DEPTH);
 --
 begin
 tick <= tick_int;
@@ -167,6 +169,18 @@ if rising_edge(clk) then
 end if;
 end process reg;
 
+tick_int <= tick_pipe(TICKPIPE_DEPTH);
+tickPipe:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			tick_pipe(1 to TICKPIPE_DEPTH) <= (others => FALSE);	
+		else
+			tick_pipe(1 to TICKPIPE_DEPTH) <= tick_pipe(0 to TICKPIPE_DEPTH-1);
+		end if;
+	end if;
+end process tickPipe;
+
 tickCounter:entity teslib.tick_counter
 generic map(
   MINIMUM_PERIOD => MINIMUM_PERIOD,
@@ -176,7 +190,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  tick => tick_int,
+  tick => tick_pipe(0),
   time_stamp => time_stamp,
   period => tick_period,
   current_period => open 

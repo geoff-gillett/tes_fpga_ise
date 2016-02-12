@@ -171,7 +171,8 @@ generic map(
   RELTIME_BITS => RELATIVETIME_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
   TICKPERIOD_BITS => TICKPERIOD_BITS,
-  MIN_TICKPERIOD => MIN_TICKPERIOD
+  MIN_TICKPERIOD => MIN_TICKPERIOD,
+  TICKPIPE_DEPTH => TICKPIPE_DEPTH
 )
 port map(
   clk => clk,
@@ -185,7 +186,7 @@ port map(
   full => eventstreammux_full,
   tick_period => tick_period,
   overflows => overflows,
-  outstream => eventstream,
+  stream => eventstream,
   valid => eventstream_valid,
   ready => eventstream_ready
 );

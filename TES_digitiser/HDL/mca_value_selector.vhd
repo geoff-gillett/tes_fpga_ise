@@ -17,7 +17,6 @@ library teslib;
 use teslib.types.all;
 use teslib.functions.all;
 
-use work.channel.all;
 use work.protocol.all;
 use work.registers.all;
 use work.measurements.all;

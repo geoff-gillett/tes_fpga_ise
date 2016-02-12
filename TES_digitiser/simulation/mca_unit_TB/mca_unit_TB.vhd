@@ -21,7 +21,6 @@ use streamlib.stream.all;
 
 use work.protocol.all;
 use work.registers.all;
-use work.channel.all;
 use work.measurements.all;
 
 entity mca_unit_TB is

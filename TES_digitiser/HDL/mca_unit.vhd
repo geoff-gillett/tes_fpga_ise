@@ -151,8 +151,8 @@ if rising_edge(clk) then
     if update_int then -- 3 clocks before tick
     	next_registers <= saved_registers;
     	header_registers <= to_mca_header_registers(next_registers,size);
-    	size <= shift_left(saved_registers.last_bin,1)+
-    										 2+MCA_PROTOCOL_HEADER_CHUNKS;
+    	size <= resize(shift_left(saved_registers.last_bin,1),SIZE_BITS)+
+    					2+MCA_PROTOCOL_HEADER_CHUNKS;
     	updating <= TRUE;
 	    -- change the selectors ahead of tick to adjust for the selector latency.
     	trigger_select <= to_onehot(saved_registers.trigger);	

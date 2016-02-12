@@ -103,7 +103,6 @@ writeInt32 $chansettings measurement_registers(0).capture.use_cfd_timing
 writeInt32 $chansettings height_unsigneds(0)
 
 close $chansettings
-close $settings1
 
 set initialised 0
 set toggle 0
@@ -119,8 +118,6 @@ while {[gets $fp hexsample] >= 0} {
 	
 	writeInt32 $traces measurements(0).filtered_signal
 	writeInt32 $traces measurements(0).slope_signal
-	writeInt32 $traces1 measurements(1).filtered_signal
-	writeInt32 $traces1 measurements(1).slope_signal
 
 #	if {$toggle} {
 #		setsig mca_update_asap 0

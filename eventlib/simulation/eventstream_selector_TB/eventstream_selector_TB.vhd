@@ -72,7 +72,7 @@ generic map(
   CHANNELS => CHANNELS
 )
 port map(
-  go => go,
+  sel_valid => go,
   clk => clk,
   reset => reset,
   sel => sel,

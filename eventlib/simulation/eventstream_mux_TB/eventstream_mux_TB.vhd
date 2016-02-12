@@ -64,7 +64,8 @@ generic map(
   RELTIME_BITS => RELTIME_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
   TICKPERIOD_BITS => TICK_BITS,
-  MIN_TICKPERIOD => MIN_TICKPERIOD
+  MIN_TICKPERIOD => MIN_TICKPERIOD,
+  TICKPIPE_DEPTH => 2
 )
 port map(
   clk => clk,
@@ -78,7 +79,7 @@ port map(
   full => full,
   tick_period => tick_period,
   overflows => overflows,
-  outstream => outstream,
+  stream => outstream,
   valid => valid,
   ready => ready
 );

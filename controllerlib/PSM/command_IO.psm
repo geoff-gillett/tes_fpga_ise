@@ -39,7 +39,7 @@
                     ;
                     ;     VVVVVVVV:RR:TERMINATOR
                     ;
-                    ; where VVVVVVV is the value read and RR is the response 
+                    ; where VVVVVVVV is the value read and RR is the response 
                     ; byte with bits.
                     ;
                     ;     DLAACCCC 
