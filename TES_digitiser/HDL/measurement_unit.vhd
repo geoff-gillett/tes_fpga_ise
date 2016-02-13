@@ -90,6 +90,7 @@ signal measurements_int:measurement_t;
 signal commit_int:boolean;
 signal slope_threshold_xing:boolean;
 signal rise_time:unsigned(RELATIVETIME_BITS-1 downto 0);
+signal area:area_t;
 	
 begin
 
@@ -180,7 +181,7 @@ cfd_error <= cfd_error_int;
 framer:entity eventlib.event_framer
 generic map(
   CHANNEL => CHANNEL,
-  PEAK_COUNT_BITS => MAX_PEAK_COUNT_BITS,
+  PEAK_COUNT_BITS => PEAK_COUNT_WIDTH,
   ADDRESS_BITS => FRAMER_ADDRESS_BITS,
   BUS_CHUNKS => BUS_CHUNKS
 )
@@ -189,7 +190,8 @@ port map(
   reset => reset,
   height_form => registers.capture.height_form,
   rel_to_min => registers.capture.rel_to_min,
-  timing_trigger => registers.capture.timing_trigger,
+  trigger => registers.capture.timing_trigger,
+  area_threshold => registers.capture.area_threshold,
   --use_cfd_timing => registers.capture.use_cfd_timing,
   signal_in => filtered,
   peak => peak,
@@ -207,6 +209,7 @@ port map(
   dump => dump,
   commit => commit_int,
   peak_count => measurements_int.peak_count, --valid when pulse_neg_xing
+  pulse_area => area,
   height => measurements_int.height,
   eventstream => eventstream,
   valid => valid,

@@ -27,6 +27,7 @@ use streamlib.stream.all;
 
 library eventlib;
 use eventlib.events.all;
+--use eventlib.eventstream_mux;
 
 library adclib;
 use adclib.types.all;

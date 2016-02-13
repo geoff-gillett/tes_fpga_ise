@@ -58,7 +58,7 @@ signal data:streambus_t;
 signal address:unsigned(ADDRESS_BITS-1 downto 0);
 signal free:unsigned(ADDRESS_BITS downto 0);
 signal wr_en:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal tick_event:tickevent;
+signal tick_event:tickevent_t;
 signal tick_bus:streambus_array(1 downto 0);
 signal time_stamp:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal tick_pipe:boolean_vector(0 to TICKPIPE_DEPTH);

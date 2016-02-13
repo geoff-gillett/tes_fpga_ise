@@ -26,7 +26,7 @@ package measurements is
 type signal_measurements is record
 	area:area_t;
 	extrema:signal_t;
-	valid:boolean;
+	valid:boolean; --FIXME this needed?
 end record;
 
 type measurement_t is record
@@ -40,7 +40,7 @@ type measurement_t is record
 	height:signal_t; --currently valid when commit true
 	height_valid:boolean; 	
 	peak_start:boolean;
-	peak_count:unsigned(MAX_PEAK_COUNT_BITS-1 downto 0);
+	peak_count:unsigned(PEAK_COUNT_WIDTH-1 downto 0);
 	pulse_start:boolean;
 	pulse_stop:boolean;
 	peak:boolean;

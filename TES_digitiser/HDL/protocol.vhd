@@ -91,6 +91,7 @@ package body protocol is
 --------------------------------------------------------------------------------
 -- Ethernet protocol
 --------------------------------------------------------------------------------
+--FIXME is a streambus_array a better option? c.f. tick_event
 function to_streambus(e:ethernet_header_t;
 											w:natural range 0 to ETHERNET_HEADER_WORDS-1)
  											return streambus_t is 

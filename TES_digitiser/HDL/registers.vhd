@@ -43,7 +43,7 @@ package registers is
 -- Globals
 --------------------------------------------------------------------------------
 
-constant CHANNEL_WIDTH:integer:=4;
+--constant CHANNEL_WIDTH:integer:=4;
 constant TICKPERIOD_BITS:integer:=32;
 constant TICKPIPE_DEPTH:integer:=2;
 constant RELATIVETIME_BITS:integer:=16;
@@ -101,8 +101,8 @@ end record;
 type event_framer_registers is record
 	height_form:height_t;
 	rel_to_min:boolean;
-	--use_cfd_timing:boolean;
-	timing_trigger:timing_trigger_t;
+	timing_trigger:trigger_t;
+	area_threshold:area_t;
 end record;
 
 type measurement_registers is record

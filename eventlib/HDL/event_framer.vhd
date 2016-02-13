@@ -21,10 +21,11 @@ use streamlib.stream.all;
 
 use work.events.all;
 --
+-- FIXME use measurement and register types.
 entity event_framer is
 generic(
   CHANNEL:integer:=1;
-  PEAK_COUNT_BITS:integer:=MAX_PEAK_COUNT_BITS;
+  PEAK_COUNT_BITS:integer:=PEAK_COUNT_WIDTH;
   ADDRESS_BITS:integer:=9;
   BUS_CHUNKS:integer:=4;
   RELATIVETIME_BITS:integer:=16
@@ -35,12 +36,11 @@ port (
   --
   height_form:in height_t;
   rel_to_min:in boolean;
-  --
-  --use_cfd_timing:in boolean;
-  timing_trigger:in timing_trigger_t;
-  --area_threshold:in area_t;
+  trigger:in trigger_t;
+  area_threshold:in area_t;
   --
   signal_in:in signal_t;
+  
   peak:in boolean;
   peak_start:in boolean;
   -- framer overflow
@@ -54,7 +54,7 @@ port (
   cfd_error:in boolean;
   --minima:in signal_t;
   slope_area:in area_t;
-  --pulse_area:in area_t;
+  pulse_area:in area_t;
   --! to mux
   enqueue:out boolean;
   rise_time:out unsigned(RELATIVETIME_BITS-1 downto 0);
@@ -82,14 +82,38 @@ signal peak_count_int:unsigned(PEAK_COUNT_BITS-1 downto 0);
 type FSMstate is (IDLE,STARTED,QUEUED);
 signal state,nextstate:FSMstate;
 signal start_signal:signal_t;
-signal peak_event:peakevent;
 signal above_threshold:boolean;
 signal enqueue_int:boolean;
 signal max:boolean;
 signal rise_time_int:unsigned(RELATIVETIME_BITS-1 downto 0);
+--
+signal peak_event:peakevent_t;
+signal event_flags:eventflags_t;
+signal tick_flags:tickflags_t;
+signal height_form_reg:height_t;
+signal trigger_reg:trigger_t;
+signal rel_to_min_reg:boolean;
+signal tick_lost_reg:boolean;
+--
 
 --
 begin
+event_flags.typeflags.tick <= FALSE;
+event_flags.typeflags.area <= FALSE;
+event_flags.typeflags.trace <= FALSE;
+event_flags.typeflags.fixed <= TRUE;
+event_flags.channel <= to_unsigned(CHANNEL,CHANNEL_WIDTH);
+event_flags.height <= height_form_reg;
+event_flags.trigger <= trigger_reg;
+event_flags.rel_to_min <= rel_to_min_reg;
+--
+tick_flags.typeflags.tick <= TRUE;
+tick_flags.typeflags.area <= FALSE;
+tick_flags.typeflags.trace <= FALSE;
+tick_flags.typeflags.fixed <= TRUE;
+tick_flags.tick_lost <= tick_lost_reg;
+
+
 --------------------------------------------------------------------------------
 -- Buffers event frames and prepares stream 
 --------------------------------------------------------------------------------
@@ -127,18 +151,11 @@ begin
 	end if;
 end process FSMnextstate;
 
---enqueue_int <= state=STARTED and 
---               (
---                 (use_cfd_timing and cfd_low) or 
---                 (not use_cfd_timing and pulse_pos_xing)
---               );
-
-
-timingPoint:process(timing_trigger,state, pulse_pos_xing, slope_threshold_xing,
+timingPoint:process(trigger,state, pulse_pos_xing, slope_threshold_xing,
 										cfd_low)
 begin
 	if state=STARTED then
-		case timing_trigger is
+		case trigger is
 		when PULSE_THRESHOLD =>
 			enqueue_int <= pulse_pos_xing;
 		when SLOPE_THRESHOLD =>
@@ -199,9 +216,9 @@ commit <= commit_int;
 dump <= dump_int;
 rise_time <= rise_time_int;
 							
-peak_event.header.timestamp <= (others => '0');
-peak_event.flags.channel <= to_unsigned(CHANNEL,MAX_CHANNEL_BITS);
-peak_event.header.size <= to_unsigned(8,SIZE_BITS);
+peak_event.reltimestamp <= (others => '0');
+peak_event.flags.channel <= to_unsigned(CHANNEL,CHANNEL_WIDTH);
+--peak_event.size <= to_unsigned(8,SIZE_BITS);
 
 captureProcess:process(clk)
 begin
@@ -212,10 +229,10 @@ if rising_edge(clk) then
   else
   	
   	if peak_start then
-  		peak_event.flags.peak_overflow <= FALSE;
+  		--peak_event.flags.peak_overflow <= FALSE;
   		start_signal <= signal_in;
 	  	peak_event.flags.rel_to_min <= rel_to_min;
-	  	peak_event.flags.height_type <= height_form;
+	  	peak_event.flags.height <= height_form;
   	end if;
   	
   	if pulse_pos_xing then -- pulse_start
@@ -238,10 +255,10 @@ if rising_edge(clk) then
   	
   	if max then
   		if peak_count_int=to_unsigned((2**PEAK_COUNT_BITS)-1,PEAK_COUNT_BITS) then
-  			peak_event.flags.peak_overflow <= TRUE;
+  			--peak_event.flags.peak_overflow <= TRUE;
   		else
   			peak_count_int <= peak_count_int+1;
-  			peak_event.flags.peak_overflow <= FALSE;
+  			--peak_event.flags.peak_overflow <= FALSE;
   		end if;
   		peak_event.flags.peak_count <= peak_count_int;
   		case height_form is 

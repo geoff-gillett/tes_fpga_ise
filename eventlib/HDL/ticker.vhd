@@ -52,7 +52,7 @@ signal overflow_reg:boolean_vector(CHANNELS-1 downto 0);
 signal tick_int,tick_reg,missed_tick,last_tick_missed:boolean;
 type FSMstate is (IDLE,FIRST,SECOND);
 signal state,nextstate:FSMstate;
-signal tick_event:tickevent;
+signal tick_event:tickevent_t;
 signal tick_bus:streambus_array(1 downto 0);
 signal tickstream_int:streambus_t;
 signal ready_int:boolean;

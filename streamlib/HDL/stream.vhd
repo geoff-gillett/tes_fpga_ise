@@ -55,6 +55,7 @@ function busLast(sb:streambus_t) return boolean;
 function SwapEndianness(data:std_logic_vector) return std_logic_vector;
 function SwapEndianness(data:unsigned) return std_logic_vector;
 function SwapEndianness(data:signed) return std_logic_vector;
+function SetEndianness(sb:streambus_t;e:string) return streambus_t;
 function to_streambus(slv:std_logic_vector) return streambus_t;
 function to_streambus(sva:streamvector_array) return streambus_array;
 function to_std_logic(sb:streambus_t) return std_logic_vector;
@@ -165,6 +166,19 @@ end function;
 function SwapEndianness(data:signed) return std_logic_vector is
 begin
   return(SwapEndianness(std_logic_vector(data)));
+end function;
+
+function SetEndianness(sb:streambus_t;e:string) return streambus_t is
+variable o:streambus_t;
+begin
+	if e="LITTLE" then
+		o.keep_n := sb.keep_n; 
+		o.last := sb.last;
+		o.data := SwapEndianness(sb.data);
+		return o;
+	else 
+		return sb;
+	end if;
 end function;
 
 end package body stream;
