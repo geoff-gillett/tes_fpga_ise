@@ -61,7 +61,7 @@ signal time_stamp:unsigned(TIMESTAMP_BITS-1 downto 0);
 --
 begin
 tick <= tick_int;
-tick_event.header.timestamp <= (others => '0');
+tick_event.full_timestamp <= (others => '0');
 timestamp <= time_stamp;
 tick_bus <= to_streambus(tick_event);
 

@@ -65,7 +65,7 @@ signal tick_pipe:boolean_vector(0 to TICKPIPE_DEPTH);
 --
 begin
 tick <= tick_int;
-tick_event.header.timestamp <= (others => '0');
+tick_event.full_timestamp <= (others => '0');
 timestamp <= time_stamp;
 
 --FIXME this is a waste of 2 BRAMS

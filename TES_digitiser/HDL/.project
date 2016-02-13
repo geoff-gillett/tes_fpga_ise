@@ -10,7 +10,6 @@
 		<project>eventlib</project>
 		<project>mcalib</project>
 		<project>streamlib</project>
-		<project>TES_library</project>
 		<project>teslib</project>
 	</projects>
 	<buildSpec>
