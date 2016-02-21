@@ -4,9 +4,8 @@
   <Mappings Location="Common Libraries" Library="not mapped"/>
   <Mappings Location="Common Libraries/unisim/primitive" Library="not mapped"/>
   <Mappings Location="Common Libraries/unisim/secureip" Library="not mapped"/>
-  <Mappings Location="scipts" Library="not mapped"/>
-  <Mappings Location="simulation" Library="not mapped"/>
+  <Mappings Location="simulation/signal_processor_TB/matlab" Library="not mapped"/>
   <Mappings Location="Common Libraries/STD" Library="std"/>
-  <Mappings Location="" Library="teslib"/>
+  <Mappings Location="" Library="tes"/>
   <Mappings Location="Common Libraries/unisim" Library="unisim"/>
 </com.sigasi.hdt.shared.librarymapping.model:LibraryMappings>

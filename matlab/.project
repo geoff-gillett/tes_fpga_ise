@@ -12,6 +12,5 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.eclipselabs.matclipse.MatlabNature</nature>
 	</natures>
 </projectDescription>

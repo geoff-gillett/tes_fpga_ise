@@ -11,12 +11,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
---
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
---
-use work.stream.all;
+
+library extensions;
+use extensions.boolean_vector.all;
+use extensions.logic.all;
+
+use work.types.all;
 
 --use stream.events.all;
 -- random access writes frame converted to a stream
@@ -34,8 +34,6 @@ port(
   data:streambus_t;
   --! frame address
   address:in unsigned(ADDRESS_BITS-1 downto 0);
-  --! control bits for the dataword 
-  -- FIXME: why are these SLV while chunk_we is boolean_vector?
   chunk_we:in boolean_vector(BUS_CHUNKS-1 downto 0);
   success:out boolean; --Write or commit success 1 clk after
   -- length of frame to commit

@@ -27,7 +27,7 @@ library eventlib;
 use eventlib.events.all;
 
 library adclib;
-use adclib.types.all;
+use adclib.adc.all;
 
 --library main;
 use work.registers.all;

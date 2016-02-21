@@ -22,7 +22,7 @@ use streamlib.types.all;
 use streamlib.functions.all;
 --
 library adclib;
-use adclib.types.all;
+use adclib.adc.all;
 --
 library mcalib;
 use mcalib.all;

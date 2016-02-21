@@ -12,12 +12,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
---
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
 
-use work.stream.all;
+library extensions;
+use extensions.boolean_vector.all;
+
+use work.types.all;
+
 -- resizes an input axi stream to streambus_t
 -- initial version only works with AXI_CHUNKS = 2 and BUS_CHUNKS = 4
 -- for converting the mca stream to streambus_t;

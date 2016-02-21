@@ -5,20 +5,19 @@
 --
 -- Design Name: TES_digitiser
 -- Module Name: ram_serialiser
--- Project Name: channel
+-- Project Name: teslib
 -- Target Devices: virtex6
 -- Tool versions: ISE 14.7
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
---
-library teslib;
-use teslib.functions.all;
-use teslib.types.all;
---use TES.stream_register_slice;
 
-use work.stream.all;
+library extensions;
+use extensions.boolean_vector.all;
+use extensions.logic.all;
+
+use work.types.all;
 
 --! buffer from RAM to stream interface, handling ram read latency
 entity serialiser is
@@ -72,6 +71,7 @@ last <= last_int;
 ready_int <= ready;
 read_stream <= (valid_int and ready_int) or not valid_int; -- stream read
 --
+
 shiftLogic:entity work.serialiser_logic
 generic map(LATENCY => LATENCY)
 port map(

@@ -17,7 +17,7 @@ use teslib.types.all;
 use teslib.functions.all;
 --
 library adclib;
-use adclib.types.all;
+use adclib.adc.all;
 --use TES.events.all;
 --select the channel to histogram
 entity statistics_mux is

@@ -3,8 +3,8 @@
 	<name>MCA_library</name>
 	<comment></comment>
 	<projects>
+		<project>extensions</project>
 		<project>streamlib</project>
-		<project>teslib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

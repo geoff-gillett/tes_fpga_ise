@@ -3,7 +3,7 @@
 	<name>stream_library</name>
 	<comment></comment>
 	<projects>
-		<project>teslib</project>
+		<project>extensions</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -3,6 +3,9 @@
 	<name>TES_library</name>
 	<comment></comment>
 	<projects>
+		<project>extensions</project>
+		<project>mcalib</project>
+		<project>streamlib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -20,6 +23,11 @@
 			<name>Common Libraries</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>IP_cores</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/IP_cores</locationURI>
 		</link>
 		<link>
 			<name>scipts</name>
@@ -57,6 +65,53 @@
 			<locationURI>sigasiresource:/vhdl/93/IEEE%20Synopsys</locationURI>
 		</link>
 	</linkedResources>
+	<filteredResources>
+		<filter>
+			<id>1455563266593</id>
+			<name>IP_cores</name>
+			<type>13</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.xco</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1455563266601</id>
+			<name>IP_cores</name>
+			<type>13</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.xci</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1455563266612</id>
+			<name>IP_cores</name>
+			<type>13</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.coe</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1455563054028</id>
+			<name>scipts</name>
+			<type>6</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.log</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1455563054041</id>
+			<name>scipts</name>
+			<type>6</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.jou</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 	<variableList>
 		<variable>
 			<name>SCRIPTS</name>

@@ -20,7 +20,7 @@ library dsplib;
 use dsplib.types.all;
 
 library adclib;
-use adclib.types.all;
+use adclib.adc.all;
 
 library streamlib;
 use streamlib.stream.all;
@@ -29,7 +29,7 @@ library eventlib;
 use eventlib.events.all;
 
 library adclib;
-use adclib.types.all;
+use adclib.adc.all;
 
 use work.registers.all;
 use work.measurements.all;

@@ -12,9 +12,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
+library extensions;
+use extensions.boolean_vector.all;
+use extensions.logic.all;
 
 entity serialiser_logic is
 generic(
@@ -88,11 +88,11 @@ if LATENCY=3 then
     -- addr=3
     when "0110" => new_addr <= 3;
     when "1110" => new_addr <= 3; -- should not happen
-      report "serialiser logic addr:" & to_string(LUT4_in) severity FAILURE;
+      report "serialiser logic addr:" severity FAILURE;
     when "0111" => new_addr <= 2;
     when "1111" => new_addr <= 3;
     when others  => new_addr <= 0; 
-      report "serialiser logic undef:" & to_string(LUT4_in) severity WARNING;
+      report "serialiser logic undef:" severity WARNING;
   end case; 
 elsif LATENCY=2 then
   case LUT4_in is
@@ -113,15 +113,15 @@ elsif LATENCY=2 then
     when "1101" => new_addr <= 2;
     -- addr=3 can't happen 
     when "0110" => new_addr <= 2;
-      report "serialiser logic failure:" & to_string(LUT4_in) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when "1110" => new_addr <= 2; 
-      report "serialiser logic failure:" & to_string(LUT4_in) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when "0111" => new_addr <= 2;
-      report "serialiser logic failure:" & to_string(LUT4_in) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when "1111" => new_addr <= 2;
-      report "serialiser logic failure:" & to_string(LUT4_in) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when others  => new_addr <= 0; 
-      report "serialiser logic undef:" & to_string(LUT4_in) severity WARNING;
+      report "serialiser logic undef:" severity WARNING;
   end case; 
 else
   report "LATENCY must be 2 or 3" severity FAILURE;
@@ -160,53 +160,53 @@ if LATENCY=2 then
     when "00100" => read <= FALSE;
     when "01100" => read <= FALSE; 
       --report "serialiser logic failure:" & to_string(LUT_in) severity FAILURE;
-      report "serialiser was failure:" & to_string(LUT_in) severity NOTE;
+      report "serialiser was failure:" severity NOTE;
     when "00101" => read <= TRUE;
     when "01101" => read <= FALSE;
     -- pending=0 addr=3
     when "00110" => read <= FALSE;
-      report "serialiser logic failure:" & to_string(LUT_in) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when "01110" => read <= FALSE;
-      report "serialiser logic failure:" & to_string(LUT_in) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when "00111" => read <= FALSE;
-      report "serialiser logic failure:" & to_string(LUT_in) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when "01111" => read <= FALSE;
-      report "serialiser logic failure:" & to_string(LUT_in) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     -- pending=1 addr=0
     when "10000" => read <= TRUE;
     -- pending=2 addr=0
     when "11000" => read <= FALSE; -- fails here 
       --report "serialiser logic failure:" & to_string(LUT_in) severity FAILURE;
-      report "was failure:" & to_string(LUT_in(4 downto 0)) severity NOTE;
+      report "was failure:" severity NOTE;
     when "10001" => read <= TRUE;
     when "11001" => read <= TRUE;
     -- pending=1 addr=1
     when "10010" => read <= FALSE;
     when "11010" => read <= FALSE;
       --report "serialiser logic failure:" & to_string(LUT_in) severity FAILURE;
-      report "was failure:" & to_string(LUT_in(4 downto 0)) severity NOTE;
+      report "was failure:" severity NOTE;
     when "10011" => read <= TRUE;
     when "11011" => read <= FALSE;
     -- pending=1 addr=2
     when "10100" => read <= FALSE;
-      report "serialiser logic failure:" & to_string(LUT_in(4 downto 0)) severity NOTE;
+      report "serialiser logic failure:" severity NOTE;
     when "11100" => read <= FALSE;  --here
-      report "was failure:" & to_string(LUT_in(4 downto 0)) severity NOTE;
+      report "was failure:" severity NOTE;
     when "10101" => read <= FALSE;
-      report "serialiser logic failure:" & to_string(LUT_in(4 downto 0)) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when "11101" => read <= FALSE; -- here
-      report "serialiser logic failure:" & to_string(LUT_in(4 downto 0)) severity NOTE;
+      report "serialiser logic failure:" severity NOTE;
     -- pending=1 addr=3
     when "10110" => read <= FALSE;
-      report "serialiser logic failure:" & to_string(LUT_in(4 downto 0)) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when "11110" => read <= FALSE;
-      report "serialiser logic failure:" & to_string(LUT_in(4 downto 0)) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when "10111" => read <= FALSE;
-      report "serialiser logic failure:" & to_string(LUT_in(4 downto 0)) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when "11111" => read <= FALSE;
-      report "serialiser logic failure:" & to_string(LUT_in(4 downto 0)) severity FAILURE;
+      report "serialiser logic failure:" severity FAILURE;
     when others  => read <= FALSE;
-      report "serialiser logic undef:" & to_string(LUT_in(4 downto 0)) severity WARNING;
+      report "serialiser logic undef:" severity WARNING;
   end case;
 elsif LATENCY=3 then
   case LUT_in is
@@ -293,7 +293,7 @@ elsif LATENCY=3 then
     when "110111" => read <= FALSE;
     when "111111" => read <= FALSE;
     when others  => read <= FALSE;
-      report "serialiser logic undef:" & to_string(LUT_in) severity WARNING;
+      report "serialiser logic undef:" severity WARNING;
   end case;
 end if;
 end process readRam;

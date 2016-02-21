@@ -11,15 +11,18 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
---use ieee.std_logic_unsigned.all;
-use ieee.math_real.all;
+--use ieee.math_real.all;
+
+library extensions;
+use extensions.boolean_vector.all;
+use extensions.logic.all;
 --
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
+--library teslib;
+--use teslib.types.all;
+--use teslib.functions.all;
 --
-library streamlib;
-use streamlib.stream.all;
+--library streaming;
+--use streaming.types.all;
 --use streamlib.all;
 --
 --! Multi-channel analyser buffer

@@ -2,10 +2,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library teslib;
-use teslib.types.all;
+library extensions;
+use extensions.boolean_vector.all;
 
-use work.stream.all;
+use work.types.all;
 
 entity lookahead_slice is
 generic(

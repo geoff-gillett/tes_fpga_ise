@@ -11,17 +11,13 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
---
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
+
+library extensions;
+use extensions.boolean_vector.all;
+use extensions.logic.all;
 
 library streamlib;
-use streamlib.stream.all;
---use streamlib.all;
-
-library mcalib;
-use mcalib.all;
+use streamlib.types.all;
 
 --! Streaming double buffered Multi-channel analyser
 entity streaming_mca is
@@ -80,7 +76,8 @@ last <= mca_last;
 can_swap <= can_swap_int; 
 readable <= readable_int;
 swap_buffer_int <= can_swap_int and mca_ready and swap_buffer;
-core:entity mcalib.mca
+
+core:entity work.mca
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
   COUNTER_BITS => COUNTER_BITS,
@@ -105,7 +102,8 @@ port map(
 );
 data <= std_logic_vector(count);
 last_read <= last_addr and state=STREAMING;
-streamer:entity streamlib.serialiser
+
+serialiser:entity streamlib.serialiser
 generic map(
   LATENCY => 3,
   DATA_BITS => COUNTER_BITS
@@ -123,6 +121,7 @@ port map(
   last => mca_last
 );
 read_bin_valid <= state=STREAMING;
+
 --------------------------------------------------------------------------------
 -- control registers
 --------------------------------------------------------------------------------

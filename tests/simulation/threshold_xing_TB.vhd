@@ -21,7 +21,7 @@ library streamlib;
 use streamlib.types.all;
 -- 
 library adclib;
-use adclib.types.all;
+use adclib.adc.all;
 --
 library dsplib;
 

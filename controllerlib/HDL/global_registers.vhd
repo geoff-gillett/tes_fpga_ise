@@ -17,7 +17,7 @@ use teslib.types.all;
 use teslib.functions.all;
 --
 library adclib;
-use adclib.types.all;
+use adclib.adc.all;
 
 entity global_registers is
 generic(

@@ -13,12 +13,12 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 --
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
+--library teslib;
+--use teslib.types.all;
+--use teslib.functions.all;
 
-library streamlib;
-use streamlib.stream.all;
+--library streamlib;
+--use streamlib.types.all;
 
 --! double buffered MCA 
 entity mca is

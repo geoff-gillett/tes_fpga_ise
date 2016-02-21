@@ -13,9 +13,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
+library extensions;
+use extensions.boolean_vector.all;
 
 entity lookahead_slice_TB is
 generic(

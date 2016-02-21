@@ -7,16 +7,13 @@
 -- Project Name:streamlib 
 -- Target Devices: virtex6
 -- Tool versions: ISE 14.7
---
--- 	if (not valid_reg) or valid_reg and ready_in
---	  ready_reg <= TRUE
---		if store_valid 	
 --------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 
-library teslib;
-use teslib.types.all;
+library extensions;
+use extensions.boolean_vector.all;
 
 -- used to break long ready signal paths
 entity stream_registers is

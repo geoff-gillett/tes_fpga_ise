@@ -1,0 +1,1058 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="C:/TES_project/fpga_ise/teslib/PlanAhead/teslib.sim/measurement_unit_TB/behav/isim.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="adc" />
+            <top_module name="bip_utils_pkg_v2_0" />
+            <top_module name="boolean_vector" />
+            <top_module name="dsptypes" />
+            <top_module name="events" />
+            <top_module name="fir_compiler_v6_3_sim_pkg" />
+            <top_module name="functions" />
+            <top_module name="logic" />
+            <top_module name="math_real" />
+            <top_module name="measurement_unit_tb" />
+            <top_module name="measurements" />
+            <top_module name="numeric_std" />
+            <top_module name="registers" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_textio" />
+            <top_module name="textio" />
+            <top_module name="types" />
+            <top_module name="types" />
+            <top_module name="vcomponents" />
+            <top_module name="vital_primitives" />
+            <top_module name="vital_timing" />
+            <top_module name="vpkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="3" />
+   <wave_markers>
+      <marker time="508000000" label="" />
+      <marker time="275716000000" label="" />
+   </wave_markers>
+   <wvobject fp_name="group208" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/measurement_unit_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/peak_overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_overflow</obj_property>
+         <obj_property name="ObjectShortName">peak_overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/time_overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">time_overflow</obj_property>
+         <obj_property name="ObjectShortName">time_overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/cfd_error" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_error</obj_property>
+         <obj_property name="ObjectShortName">cfd_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/measurements" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">measurements</obj_property>
+         <obj_property name="ObjectShortName">measurements</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/dump" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump</obj_property>
+         <obj_property name="ObjectShortName">dump</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/eventstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream</obj_property>
+         <obj_property name="ObjectShortName">eventstream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/adc_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/registers" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">registers</obj_property>
+         <obj_property name="ObjectShortName">registers</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/height_type" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">height_type[1:0]</obj_property>
+         <obj_property name="ObjectShortName">height_type[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/event_type" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">event_type[1:0]</obj_property>
+         <obj_property name="ObjectShortName">event_type[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/trigger_type" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">trigger_type[1:0]</obj_property>
+         <obj_property name="ObjectShortName">trigger_type[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/eventstream_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream_int</obj_property>
+         <obj_property name="ObjectShortName">eventstream_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/mca_value_select" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_value_select[11:0]</obj_property>
+         <obj_property name="ObjectShortName">mca_value_select[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/mca_value" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">mca_value[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/baseline_range_error" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_range_error</obj_property>
+         <obj_property name="ObjectShortName">baseline_range_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/framer_overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_overflow</obj_property>
+         <obj_property name="ObjectShortName">framer_overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/endianness" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">endianness[1:6]</obj_property>
+         <obj_property name="ObjectShortName">endianness[1:6]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group381" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="group237" type="group">
+         <obj_property name="label">errors</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/baseline_range_error" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">baseline_range_error</obj_property>
+            <obj_property name="ObjectShortName">baseline_range_error</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/cfd_error" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_error</obj_property>
+            <obj_property name="ObjectShortName">cfd_error</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/time_overflow" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">time_overflow</obj_property>
+            <obj_property name="ObjectShortName">time_overflow</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/peak_overflow" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">peak_overflow</obj_property>
+            <obj_property name="ObjectShortName">peak_overflow</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/framer_overflow" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">framer_overflow</obj_property>
+            <obj_property name="ObjectShortName">framer_overflow</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/registers" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">registers</obj_property>
+         <obj_property name="ObjectShortName">registers</obj_property>
+      </wvobject>
+      <wvobject fp_name="group256" type="group">
+         <obj_property name="label">output stream</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/eventstream" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">eventstream</obj_property>
+            <obj_property name="ObjectShortName">eventstream</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/ready" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">ready</obj_property>
+            <obj_property name="ObjectShortName">ready</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/valid" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">valid</obj_property>
+            <obj_property name="ObjectShortName">valid</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/dump" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump</obj_property>
+         <obj_property name="ObjectShortName">dump</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/measurements" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">measurements</obj_property>
+         <obj_property name="ObjectShortName">measurements</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/capture_pd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">capture_pd</obj_property>
+         <obj_property name="ObjectShortName">capture_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="group257" type="group">
+         <obj_property name="label">DSP</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/adc_sample" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
+            <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/baseline_estimate" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">baseline_estimate[15:0]</obj_property>
+            <obj_property name="ObjectShortName">baseline_estimate[15:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/sample" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">sample[14:0]</obj_property>
+            <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/stage1_input" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">stage1_input[17:0]</obj_property>
+            <obj_property name="ObjectShortName">stage1_input[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/slope_fir" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_fir[17:0]</obj_property>
+            <obj_property name="ObjectShortName">slope_fir[17:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/filtered_fir" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_fir[17:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_fir[17:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slope_pd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_pd[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_pd[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slope_pos_0xing_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_pos_0xing_pd</obj_property>
+         <obj_property name="ObjectShortName">slope_pos_0xing_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slope_neg_0xing_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_neg_0xing_pd</obj_property>
+         <obj_property name="ObjectShortName">slope_neg_0xing_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slope_zero_xing_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_zero_xing_pd</obj_property>
+         <obj_property name="ObjectShortName">slope_zero_xing_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slope_pos_thresh_xing_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_pos_thresh_xing_pd</obj_property>
+         <obj_property name="ObjectShortName">slope_pos_thresh_xing_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/arming_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">arming_pd</obj_property>
+         <obj_property name="ObjectShortName">arming_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pd_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pd_state</obj_property>
+         <obj_property name="ObjectShortName">pd_state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pd_pulse_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pd_pulse_state</obj_property>
+         <obj_property name="ObjectShortName">pd_pulse_state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/filtered_pd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_pd[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_pd[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/filtered_pos_threshxing_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_pos_threshxing_pd</obj_property>
+         <obj_property name="ObjectShortName">filtered_pos_threshxing_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/filtered_neg_threshxing_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_neg_threshxing_pd</obj_property>
+         <obj_property name="ObjectShortName">filtered_neg_threshxing_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/maxima_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">maxima_pd</obj_property>
+         <obj_property name="ObjectShortName">maxima_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/minima_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">minima_pd</obj_property>
+         <obj_property name="ObjectShortName">minima_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_start_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_start_pd</obj_property>
+         <obj_property name="ObjectShortName">pulse_start_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_stop_pd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_stop_pd</obj_property>
+         <obj_property name="ObjectShortName">pulse_stop_pd</obj_property>
+      </wvobject>
+      <wvobject fp_name="group274" type="group">
+         <obj_property name="label">cfd calculation</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/minima_value_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">minima_value_pd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">minima_value_pd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/last_minima_value" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">last_minima_value[17:0]</obj_property>
+            <obj_property name="ObjectShortName">last_minima_value[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/maxima_for_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">maxima_for_cfd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">maxima_for_cfd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/minima_for_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">minima_for_cfd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">minima_for_cfd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/queue_overflow" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_overflow</obj_property>
+            <obj_property name="ObjectShortName">queue_overflow</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/signal_for_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">signal_for_cfd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">signal_for_cfd[17:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/cf_of_peak_reg" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cf_of_peak_reg[35:0]</obj_property>
+            <obj_property name="ObjectShortName">cf_of_peak_reg[35:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/cf_of_peak_reg2" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cf_of_peak_reg2[35:0]</obj_property>
+            <obj_property name="ObjectShortName">cf_of_peak_reg2[35:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/cf_of_peak" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cf_of_peak[35:0]</obj_property>
+            <obj_property name="ObjectShortName">cf_of_peak[35:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/cfd_low_thresh_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low_thresh_pd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">cfd_low_thresh_pd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/cfd_high_thresh_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high_thresh_pd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">cfd_high_thresh_pd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/peak_pipe" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">peak_pipe[1:4]</obj_property>
+            <obj_property name="ObjectShortName">peak_pipe[1:4]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/first_rise_pipe" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">first_rise_pipe[1:4]</obj_property>
+            <obj_property name="ObjectShortName">first_rise_pipe[1:4]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_high_thresh_pd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high_thresh_pd[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_thresh_pd[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_low_thresh_pd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low_thresh_pd[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_thresh_pd[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="group275" type="group">
+         <obj_property name="label">Queues and delay</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/filtered_cfd_delay" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_cfd_delay[17:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_cfd_delay[17:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/slope_cfd_delay" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_cfd_delay[17:0]</obj_property>
+            <obj_property name="ObjectShortName">slope_cfd_delay[17:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/raw_cfd_delay" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">raw_cfd_delay[17:0]</obj_property>
+            <obj_property name="ObjectShortName">raw_cfd_delay[17:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/flags_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">flags_pd[5:0]</obj_property>
+            <obj_property name="ObjectShortName">flags_pd[5:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/flags_cfd_delay" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">flags_cfd_delay[5:0]</obj_property>
+            <obj_property name="ObjectShortName">flags_cfd_delay[5:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/queue_rd_en" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_rd_en</obj_property>
+            <obj_property name="ObjectShortName">queue_rd_en</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/queue_full" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_full</obj_property>
+            <obj_property name="ObjectShortName">queue_full</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/queue_empty" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_empty</obj_property>
+            <obj_property name="ObjectShortName">queue_empty</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/queue_wr_en" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_wr_en</obj_property>
+            <obj_property name="ObjectShortName">queue_wr_en</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_low_thresh" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low_thresh[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_thresh[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ff00</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_high_thresh" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high_thresh[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_thresh[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ff00</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/minima_value_cfd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">minima_value_cfd[17:0]</obj_property>
+         <obj_property name="ObjectShortName">minima_value_cfd[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/m" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">m</obj_property>
+         <obj_property name="ObjectShortName">m</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.raw" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.raw</obj_property>
+            <obj_property name="ObjectShortName">m.raw</obj_property>
+            <wvobject fp_name="/measurement_unit_tb/UUT/m.raw.sample" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">.sample</obj_property>
+               <obj_property name="ObjectShortName">m.raw.sample</obj_property>
+               <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+               <obj_property name="CustomSignalColor">#008080</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_unit_tb/UUT/m.raw.area" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">.area</obj_property>
+               <obj_property name="ObjectShortName">m.raw.area</obj_property>
+               <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_unit_tb/UUT/m.raw.extrema" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">.extrema</obj_property>
+               <obj_property name="ObjectShortName">m.raw.extrema</obj_property>
+               <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_unit_tb/UUT/m.raw.zero_xing" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">.zero_xing</obj_property>
+               <obj_property name="ObjectShortName">m.raw.zero_xing</obj_property>
+            </wvobject>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.filtered" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.filtered</obj_property>
+            <obj_property name="ObjectShortName">m.filtered</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.slope" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.slope</obj_property>
+            <obj_property name="ObjectShortName">m.slope</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.pulse" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.pulse</obj_property>
+            <obj_property name="ObjectShortName">m.pulse</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.height" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.height</obj_property>
+            <obj_property name="ObjectShortName">m.height</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.height_valid" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.height_valid</obj_property>
+            <obj_property name="ObjectShortName">m.height_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.peak_start" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.peak_start</obj_property>
+            <obj_property name="ObjectShortName">m.peak_start</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.trigger" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.trigger</obj_property>
+            <obj_property name="ObjectShortName">m.trigger</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.peak" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.peak</obj_property>
+            <obj_property name="ObjectShortName">m.peak</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.cfd_low" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.cfd_low</obj_property>
+            <obj_property name="ObjectShortName">m.cfd_low</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.cfd_high" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.cfd_high</obj_property>
+            <obj_property name="ObjectShortName">m.cfd_high</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.peak_count" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.peak_count</obj_property>
+            <obj_property name="ObjectShortName">m.peak_count</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.pulse_time" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.pulse_time</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_time</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_area[33:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_area[33:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="group276" type="group">
+         <obj_property name="label">signal measurements</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/raw_extrema" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">raw_extrema[17:0]</obj_property>
+            <obj_property name="ObjectShortName">raw_extrema[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/filtered_extrema" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_extrema[17:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_extrema[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/slope_extrema" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_extrema[17:0]</obj_property>
+            <obj_property name="ObjectShortName">slope_extrema[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/pulse_extrema" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">pulse_extrema[17:0]</obj_property>
+            <obj_property name="ObjectShortName">pulse_extrema[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/filtered_area" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_area[33:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_area[33:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/slope_area" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_area[33:0]</obj_property>
+            <obj_property name="ObjectShortName">slope_area[33:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/filtered_zero_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_zero_xing</obj_property>
+            <obj_property name="ObjectShortName">filtered_zero_xing</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/slope_zero_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_zero_xing</obj_property>
+            <obj_property name="ObjectShortName">slope_zero_xing</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/area_below_threshold" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">area_below_threshold</obj_property>
+         <obj_property name="ObjectShortName">area_below_threshold</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/peak_count_pd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_count_pd[2:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count_pd[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/height_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">height_valid</obj_property>
+         <obj_property name="ObjectShortName">height_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/peak_overflow_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_overflow_int</obj_property>
+         <obj_property name="ObjectShortName">peak_overflow_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_length" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_length[15:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_length[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_overflow" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_overflow</obj_property>
+         <obj_property name="ObjectShortName">pulse_overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/raw_area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_area[33:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_area[33:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/raw_zero_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_zero_xing</obj_property>
+         <obj_property name="ObjectShortName">raw_zero_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/capture_cfd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">capture_cfd</obj_property>
+         <obj_property name="ObjectShortName">capture_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slope_cfd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_cfd[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_cfd[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/raw_cfd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw_cfd[17:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_cfd[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_low_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slope_pos_thresh_xing_cfd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">slope_pos_thresh_xing_cfd</obj_property>
+         <obj_property name="ObjectShortName">slope_pos_thresh_xing_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/trigger" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">trigger</obj_property>
+         <obj_property name="ObjectShortName">trigger</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_pulse_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_pulse_state</obj_property>
+         <obj_property name="ObjectShortName">cfd_pulse_state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_state</obj_property>
+         <obj_property name="ObjectShortName">cfd_state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/filtered_cfd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_cfd[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_cfd[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_low_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_threshold[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_low" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low</obj_property>
+         <obj_property name="ObjectShortName">cfd_low</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_high_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_threshold[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_high" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high</obj_property>
+         <obj_property name="ObjectShortName">cfd_high</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/minima_cfd" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">minima_cfd[17:0]</obj_property>
+         <obj_property name="ObjectShortName">minima_cfd[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/filtered_is_min" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_is_min</obj_property>
+         <obj_property name="ObjectShortName">filtered_is_min</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/min_at_cfd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">min_at_cfd</obj_property>
+         <obj_property name="ObjectShortName">min_at_cfd</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_pulse_nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_pulse_nextstate</obj_property>
+         <obj_property name="ObjectShortName">cfd_pulse_nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/filtered_cfd_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_cfd_reg[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_cfd_reg[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/filtered_cfd_reg2" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered_cfd_reg2[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_cfd_reg2[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_low_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low_xing</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_high_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high_xing</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_xing</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_error_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_error_int</obj_property>
+         <obj_property name="ObjectShortName">cfd_error_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/minima_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">minima_valid</obj_property>
+         <obj_property name="ObjectShortName">minima_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_reset" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_reset</obj_property>
+         <obj_property name="ObjectShortName">cfd_reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_low_crossed" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low_crossed</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_crossed</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_high_crossed" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high_crossed</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_crossed</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_high_done" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_high_done</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/cfd_low_done" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_low_done</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/event_start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_start</obj_property>
+         <obj_property name="ObjectShortName">event_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/peaks_full" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peaks_full</obj_property>
+         <obj_property name="ObjectShortName">peaks_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/time_overflow_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">time_overflow_int</obj_property>
+         <obj_property name="ObjectShortName">time_overflow_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">data</obj_property>
+         <obj_property name="ObjectShortName">data</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/frame_free" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_free[10:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_free[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/chunk_we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">chunk_we[3:0]</obj_property>
+         <obj_property name="ObjectShortName">chunk_we[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/commit_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_int</obj_property>
+         <obj_property name="ObjectShortName">commit_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/dump_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump_int</obj_property>
+         <obj_property name="ObjectShortName">dump_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/trigger" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">trigger</obj_property>
+         <obj_property name="ObjectShortName">trigger</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_start_cfd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_start_cfd</obj_property>
+         <obj_property name="ObjectShortName">pulse_start_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_stop_cfd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_stop_cfd</obj_property>
+         <obj_property name="ObjectShortName">pulse_stop_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/max_at_cfd" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">max_at_cfd</obj_property>
+         <obj_property name="ObjectShortName">max_at_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/max_at_cfd_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">max_at_cfd_reg</obj_property>
+         <obj_property name="ObjectShortName">max_at_cfd_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/peak_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_count[3:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_count[3:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffff00</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/commit_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_reg</obj_property>
+         <obj_property name="ObjectShortName">commit_reg</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/framer_we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_we[3:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_we[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/peak_event" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_event</obj_property>
+         <obj_property name="ObjectShortName">peak_event</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffff00</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/peak_event.height" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.height</obj_property>
+            <obj_property name="ObjectShortName">peak_event.height</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ffff00</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/peak_event.rise_time" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.rise_time</obj_property>
+            <obj_property name="ObjectShortName">peak_event.rise_time</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ffff00</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/peak_event.flags" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.flags</obj_property>
+            <obj_property name="ObjectShortName">peak_event.flags</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ffff00</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/peak_event.reltimestamp" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.reltimestamp</obj_property>
+            <obj_property name="ObjectShortName">peak_event.reltimestamp</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ffff00</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/area_event" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">area_event</obj_property>
+         <obj_property name="ObjectShortName">area_event</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/event_flags" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">event_flags</obj_property>
+         <obj_property name="ObjectShortName">event_flags</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/event_type_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_type_reg</obj_property>
+         <obj_property name="ObjectShortName">event_type_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/frame_length" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_length[9:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_length[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/address" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">address[9:0]</obj_property>
+         <obj_property name="ObjectShortName">address[9:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/dump_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump_reg</obj_property>
+         <obj_property name="ObjectShortName">dump_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/framer_overflow_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_overflow_int</obj_property>
+         <obj_property name="ObjectShortName">framer_overflow_int</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group246" type="group">
+      <obj_property name="label">SlopeXing</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#0000ff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/pos_threshxing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_threshxing</obj_property>
+         <obj_property name="ObjectShortName">pos_threshxing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/neg_threshxing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_threshxing</obj_property>
+         <obj_property name="ObjectShortName">neg_threshxing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/pos_0xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_0xing</obj_property>
+         <obj_property name="ObjectShortName">pos_0xing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#0000ff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/neg_0xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_0xing</obj_property>
+         <obj_property name="ObjectShortName">neg_0xing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#0000ff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/pos_0closest" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_0closest</obj_property>
+         <obj_property name="ObjectShortName">pos_0closest</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffff00</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/neg_0closest" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_0closest</obj_property>
+         <obj_property name="ObjectShortName">neg_0closest</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffff00</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/zero_xing" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">zero_xing</obj_property>
+         <obj_property name="ObjectShortName">zero_xing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/signal_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_out[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/area" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">area[33:0]</obj_property>
+         <obj_property name="ObjectShortName">area[33:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#0000ff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/extrema" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">extrema[17:0]</obj_property>
+         <obj_property name="ObjectShortName">extrema[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#0000ff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/xing0_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">xing0_reg</obj_property>
+         <obj_property name="ObjectShortName">xing0_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/area_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">area_int[33:0]</obj_property>
+         <obj_property name="ObjectShortName">area_int[33:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/extrema_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">extrema_int[17:0]</obj_property>
+         <obj_property name="ObjectShortName">extrema_int[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/below0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">below0</obj_property>
+         <obj_property name="ObjectShortName">below0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/was_below0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">was_below0</obj_property>
+         <obj_property name="ObjectShortName">was_below0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/above0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">above0</obj_property>
+         <obj_property name="ObjectShortName">above0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/was_above0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">was_above0</obj_property>
+         <obj_property name="ObjectShortName">was_above0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/xing0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">xing0</obj_property>
+         <obj_property name="ObjectShortName">xing0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/signal_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_in[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/signal_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_reg[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_reg[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/signal_reg2" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">signal_reg2[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_reg2[17:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/pos0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos0</obj_property>
+         <obj_property name="ObjectShortName">pos0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/neg0" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg0</obj_property>
+         <obj_property name="ObjectShortName">neg0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/pos_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_reg</obj_property>
+         <obj_property name="ObjectShortName">pos_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/neg_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_reg</obj_property>
+         <obj_property name="ObjectShortName">neg_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/diff" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">diff[17:0]</obj_property>
+         <obj_property name="ObjectShortName">diff[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/diff_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">diff_reg[17:0]</obj_property>
+         <obj_property name="ObjectShortName">diff_reg[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/above" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">above</obj_property>
+         <obj_property name="ObjectShortName">above</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/first_closest" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">first_closest</obj_property>
+         <obj_property name="ObjectShortName">first_closest</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/pos_xing_next" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pos_xing_next</obj_property>
+         <obj_property name="ObjectShortName">pos_xing_next</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/neg_xing_next" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">neg_xing_next</obj_property>
+         <obj_property name="ObjectShortName">neg_xing_next</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/slopeXing/was_above" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">was_above</obj_property>
+         <obj_property name="ObjectShortName">was_above</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

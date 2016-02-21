@@ -12,12 +12,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
+library extensions;
+use extensions.boolean_vector.all;
+use extensions.logic.all;
 
 library streamlib;
-use streamlib.stream.all;
+use streamlib.types.all;
 
 
 --! Adds value mapping to bins to basic MCA (MCA.vhd).
@@ -68,9 +68,9 @@ port (
   last:out boolean
 );
 end entity mapped_mca;
---
+
 architecture RTL of mapped_mca is
---
+	
 signal bin,last_bin_reg,last_bin_temp:unsigned(ADDRESS_BITS-1 downto 0);
 signal bin_n_reg,bin_n_temp:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal bin_valid,swap_int,swapping,MCA_can_swap,can_swap_int,just_reset:boolean;
@@ -78,10 +78,9 @@ signal lowest_value_reg,offset_value:signed(VALUE_BITS-1 downto 0);
 signal bin_value:unsigned(VALUE_BITS-1 downto 0);
 signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to 3);
 signal overflowed,overflow,underflow,underflowed:boolean;
---signal total_int:unsigned(TOTAL_BITS-1 downto 0);
---
+
 begin
---
+	
 can_swap <= can_swap_int;
 controlRegisters:process(clk)
 begin
@@ -115,6 +114,7 @@ if rising_edge(clk) then
   end if;
 end if;
 end process controlRegisters;
+
 --------------------------------------------------------------------------------
 -- processing pipeline
 --------------------------------------------------------------------------------
@@ -131,6 +131,7 @@ begin
     end if;
   end if;
 end process valueOffset;
+
 --swap+2
 valueBin:process(clk)
 variable ordered:unsigned(VALUE_BITS-1 downto 0); 
@@ -157,7 +158,7 @@ if rising_edge(clk) then
   end if;
 end if;
 end process binOut;
---
+
 MCA:entity work.streaming_mca
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,

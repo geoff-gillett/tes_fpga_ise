@@ -3,7 +3,6 @@
 	<name>contoller_library</name>
 	<comment></comment>
 	<projects>
-		<project>adclib</project>
 		<project>teslib</project>
 	</projects>
 	<buildSpec>
