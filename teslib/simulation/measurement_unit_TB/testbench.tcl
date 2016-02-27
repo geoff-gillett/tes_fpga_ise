@@ -99,7 +99,7 @@ wave add /measurement_unit_TB/UUT
 wave add /measurement_unit_TB/UUT/SlopeXing
 
 runclks
-set clk 0
+set clk 1
 #baseline registers
 writeInt32 $settings registers.baseline.offset
 writeInt32 $settings registers.baseline.subtraction

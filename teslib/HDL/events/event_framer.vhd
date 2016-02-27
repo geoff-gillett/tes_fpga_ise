@@ -105,7 +105,7 @@ event_flags.peak_count <= measurements.peak_count;
 peak_event.flags <= event_flags;
 peak_event.reltimestamp <= (others => '0');
 peak_event.height <= measurements.height;
-peak_event.rise_time <= measurements.pulse_time;
+peak_event.minima <= measurements.pulse_time;
 area_event.flags <= event_flags;
 area_event.reltimestamp <= (others => '0');
 area_event.area <= measurements.filtered.area;

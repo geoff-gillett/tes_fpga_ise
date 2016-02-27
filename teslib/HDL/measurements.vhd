@@ -54,7 +54,7 @@ type pulse_measurement_t is record
 	extrema:signal_t;
 	pos_threshxing:boolean;
 	neg_threshxing:boolean;
-	pulse_time:unsigned(RELATIVETIME_BITS-1 downto 0);
+	time:unsigned(RELATIVETIME_BITS-1 downto 0);
 end record;
 	
 type measurement_t is record
@@ -66,6 +66,10 @@ type measurement_t is record
 	height:signal_t; 
 	height_valid:boolean;
 	
+	--time from trigger to height_valid
+	rise_time:time_t;
+
+	--FIXME include event_start?	
 	--event_start:boolean;
 	peak_start:boolean; -- event_start
 	trigger:boolean;

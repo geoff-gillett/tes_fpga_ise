@@ -82,9 +82,10 @@ type baseline_registers_t is record
 end record;
 
 type capture_registers_t is record
-	-- max peaks in pulse or trace event 0 sets to variable length 
-	-- if non zero the event is a fixed length
-	-- maximum value is 2**PEAK_COUNT_WIDTH
+	-- max peaks in pulse event 
+	-- a value of zero means only record the initial peak
+	-- maximum value is 2**PEAK_COUNT_WIDTH-1
+	-- if max_peaks(PEAK_COUNT_WIDTH)='1' generate variable length events
 	max_peaks:unsigned(PEAK_COUNT_WIDTH downto 0);
 	-- cfd calculation is relative to the minima befere the peak
 	-- if false calculation is relative to baseline

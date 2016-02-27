@@ -16,8 +16,7 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
---use teslib.types.all;
---use teslib.functions.all;
+--TODO add adapter that outputs a chunk stream and removes chunks with keep_n
 
 package types is
 constant CHUNK_BITS:integer:=18;
@@ -31,8 +30,7 @@ constant CHUNK_KEEPBIT:integer:=CHUNK_DATABITS;
 constant CHUNK_LASTBIT:integer:=CHUNK_DATABITS+1;
 constant CHUNK_CONTROLBITS:integer:=CHUNK_BITS-CHUNK_DATABITS;
 
--- Was in events 
--- Number of chunks in the eventbus SEE TES.stream library
+--TODO generalise -- remove BUS_CHUNKS and add parameter to functions.
 constant BUS_CHUNKS:integer:=4;
 -- total bits in the bus (including control bits)
 constant BUS_BITS:integer:=CHUNK_BITS*BUS_CHUNKS;
@@ -42,6 +40,8 @@ constant BUS_DATABITS:integer:=CHUNK_DATABITS*BUS_CHUNKS;
 --subtype datachunk is std_logic_vector(CHUNK_DATABITS-1 downto 0);
 --type datachunk_array is array (natural range <>) of datachunk;
 
+subtype streambus_keeps_n_t is boolean_vector(BUS_CHUNKS-1 downto 0);
+subtype streambus_lasts_t is boolean_vector(BUS_CHUNKS-1 downto 0);
 subtype streamvector_t is std_logic_vector(BUS_BITS-1 downto 0);
 type streambus_t is record
 	keep_n:boolean_vector(BUS_CHUNKS-1 downto 0); -- keep chunk if set to 0
@@ -50,8 +50,8 @@ type streambus_t is record
 end record;
 type streambus_array is array (natural range <>) of streambus_t;
 type streamvector_array is array (natural range <>) of streamvector_t;
-subtype datachunk is std_logic_vector(CHUNK_DATABITS-1 downto 0);
-type datachunk_array is array (natural range <>) of datachunk;
+subtype datachunk_t is std_logic_vector(CHUNK_DATABITS-1 downto 0);
+type datachunk_array_t is array (natural range <>) of datachunk_t;
 
 function busLast(slv:std_logic_vector) return boolean;
 function busLast(sb:streambus_t) return boolean;
@@ -64,6 +64,10 @@ function SetEndianness(s:signed;e:string) return std_logic_vector;
 function SetEndianness(sb:streambus_t;e:string) return streambus_t;
 function to_streambus(slv:std_logic_vector) return streambus_t;
 function to_streambus(sva:streamvector_array) return streambus_array;
+function to_streambus(chunks:datachunk_array_t;k:streambus_keeps_n_t;
+											l:streambus_lasts_t) return streambus_t;
+function to_streambus(data:std_logic_vector;k:streambus_keeps_n_t;
+											l:streambus_lasts_t) return streambus_t;
 function to_std_logic(sb:streambus_t) return std_logic_vector;
 function to_std_logic(sba:streambus_array) return streamvector_array;
 --function to_datachunks(bd:streambus_t) return datachunk_array;
@@ -94,6 +98,26 @@ begin
 	return sba;
 end function;
 
+function to_streambus(chunks:datachunk_array_t;k:streambus_keeps_n_t;
+											l:streambus_lasts_t) return streambus_t is
+variable sb:streambus_t;
+begin
+	sb.data:=chunks(3) & chunks(2) & chunks(1) & chunks(0);
+	sb.keep_n:=k;
+	sb.last:=l;
+	return sb;
+end function;
+	
+function to_streambus(data:std_logic_vector;k:streambus_keeps_n_t;
+											l:streambus_lasts_t) return streambus_t is
+variable sb:streambus_t;
+begin
+	sb.data:=data;
+	sb.keep_n:=k;
+	sb.last:=l;
+	return sb;
+end function;
+	
 function to_std_logic(sba:streambus_array) return streamvector_array is
 variable sva:streamvector_array(sba'range);
 begin

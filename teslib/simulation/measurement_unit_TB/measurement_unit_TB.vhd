@@ -130,11 +130,11 @@ registers.capture.constant_fraction --<= (CFD_BITS-2 => '1',others => '0');
 	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
 registers.capture.cfd_relative <= TRUE;
 registers.capture.height_type <= PEAK_HEIGHT_D;
-registers.capture.event_type <= AREA_EVENT_D;
+registers.capture.event_type <= PULSE_EVENT_D;
 registers.capture.trigger_type <= CFD_LOW_TRIGGER_D;
 registers.capture.threshold_rel2min <= TRUE;
 registers.capture.pulse_area_threshold <= to_signed(500,AREA_BITS);
-registers.capture.max_peaks <= to_unsigned(1,PEAK_COUNT_WIDTH+1);
+registers.capture.max_peaks <= (others => '1');--<= to_unsigned(1,PEAK_COUNT_WIDTH+1);
 wait for CLK_PERIOD;
 reset <= '0';
 ready <= TRUE;

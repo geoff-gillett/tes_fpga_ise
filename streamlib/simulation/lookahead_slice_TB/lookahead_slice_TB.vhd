@@ -15,6 +15,7 @@ use ieee.numeric_std.all;
 
 library extensions;
 use extensions.boolean_vector.all;
+use extensions.logic.all;
 
 entity lookahead_slice_TB is
 generic(

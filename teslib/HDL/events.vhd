@@ -111,10 +111,10 @@ end record;
 function to_std_logic(f:tickflags_t) return std_logic_vector;
 
 ---------------------------- peak event 8 bytes --------------------------------
---  | height | rise | event flags | time |
+--  | height | min | event flags | time |
 type peakevent_t is record -- entire peak only event
   height:signal_t; -- 16
-  rise_time:unsigned(TIME_BITS-1 downto 0); -- 16
+  minima:signal_t; -- 16 
   flags:eventflags_t;  -- 16
   reltimestamp:unsigned(TIME_BITS-1 downto 0); -- 16
 end record;
@@ -147,8 +147,8 @@ function to_streambus(t:tickevent_t) return streambus_array;
 -- can specify fixed size (fixed bit set)
 -- 0 to only get header 
 ---------------  pulse event (variable/fixed) 16 byte header -------------------
---  | size  | pulse_length | event flags |     time     |
---  |      area     |   ?    | ? |
+--  | size  |   ?   | event flags |     time     |
+--  | area1 | area0 |      ?      | pulse length |
 --  repeating 8 byte peak records -- up to 7
 -- TODO implement
 type pulseheader_t is record -- entire peak only event
@@ -161,17 +161,18 @@ type pulseheader_t is record -- entire peak only event
   --rise_time:unsigned(TIME_BITS-1 downto 0);
 end record;
 
+-- height | min | rise | trigger_time
 type peakrecord_t is record
-  min:signal_t;
-  max:signal_t;
-  height:signal_t;
 	trigger_time:time_t;
+  min:signal_t;
+  rise_time:time_t; -- to cfd_high?
+  height:signal_t;
 end record;
 
 type tracerecord_t is record
-	start_time:time_t;
-	rise_time:time_t;
 	trigger_time:time_t;
+	start_time:time_t;--minima
+	rise_time:time_t; --
 	height:signal_t;
 end record;
 
@@ -223,7 +224,7 @@ function to_streambus(e:peakevent_t) return	streambus_t is
 variable sba:streambus_t;
 begin
 	sba.data := to_std_logic(e.height) &
-							to_std_logic(e.rise_time) &
+							to_std_logic(e.minima) &
 							to_std_logic(e.flags) & 
 							to_std_logic(e.reltimestamp);
 	sba.keep_n := (others => FALSE);
