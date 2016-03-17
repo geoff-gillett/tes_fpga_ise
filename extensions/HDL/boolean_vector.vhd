@@ -16,7 +16,7 @@ package boolean_vector is
 type boolean_vector is array (natural range <>) of boolean;
 	
 --------------------------------------------------------------------------------
--- Conversions between std_logic_vector and boolean_vector
+-- Conversions between boolean_vector and std_logic or unsigned
 --------------------------------------------------------------------------------
 function to_boolean(a:std_logic) return boolean; 
 function to_boolean(sv:std_logic_vector) return boolean_vector;
@@ -24,7 +24,8 @@ function to_boolean(sv:std_logic_vector) return boolean_vector;
 function to_boolean(i,w:natural) return boolean_vector;
 function to_std_logic(a:boolean) return std_logic;
 function to_std_logic(b:boolean_vector) return std_logic_vector;
-	
+function to_unsigned(b:boolean) return unsigned;
+
 --------------------------------------------------------------------------------
 -- Bitwise boolean logic on boolean_vector
 --------------------------------------------------------------------------------
@@ -71,6 +72,14 @@ begin
 	return to_boolean(std_logic_vector(to_unsigned(i,w)));
 end function to_boolean;
 
+function to_unsigned(b:boolean) return unsigned is
+begin
+	if b then 
+		return to_unsigned(1,1);
+	else 
+		return to_unsigned(0,1);
+	end if;
+end function;
 --------------------------------------------------------------------------------
 -- Bitwise boolean logic on boolean_vector
 --------------------------------------------------------------------------------

@@ -4,8 +4,8 @@ namespace import isim::*
 
 #TODO move this to isim package
 # e=0 little endian 1=big endian
-proc writeInt32 { fp signal {e 0} } {
-	set val [getsig $signal dec]
+proc writeInt32 { fp signal {type dec} {e little} } {
+	set val [getsig $signal $type]
 	if { [string equal $val TRUE] } {
 		set val 1
   } 
@@ -18,7 +18,7 @@ proc writeInt32 { fp signal {e 0} } {
 	if { [string equal $val X] } {
 		set val 0
 	}
-	if {$e==0} { 
+	if { [string equal $e little] } { 
 		set i [binary format i $val]
 	} {
 		set i [binary format I $val]
@@ -36,7 +36,7 @@ proc writeInt64 { fp signal } {
 	return $dec
 }
 
-set fp [open "../input_signals/double_peak" r]
+set fp [open "../input_signals/long" r]
 fconfigure $fp -buffering line
 
 set settings [open "../settings" w]
@@ -99,7 +99,7 @@ wave add /measurement_unit_TB/UUT
 wave add /measurement_unit_TB/UUT/SlopeXing
 
 runclks
-set clk 1
+set clk 0
 #baseline registers
 writeInt32 $settings registers.baseline.offset
 writeInt32 $settings registers.baseline.subtraction
@@ -113,18 +113,35 @@ writeInt32 $settings registers.capture.constant_fraction
 writeInt32 $settings registers.capture.pulse_threshold
 writeInt32 $settings registers.capture.slope_threshold 
 writeInt32 $settings registers.capture.pulse_area_threshold 
-writeInt32 $settings height_type
+writeInt32 $settings height_type unsigned
 writeInt32 $settings registers.capture.threshold_rel2min
-writeInt32 $settings trigger_type
-writeInt32 $settings event_type
-
+writeInt32 $settings trigger_type unsigned
+writeInt32 $settings event_type unsigned
 close $settings
 
 while {[gets $fp hexsample] >= 0} {
 #while {$clk < 500000} {}
   #gets $fp hexsample
 	if {![expr $clk % 10000]} {
+		# print progress and flush files every 10000 clks
 		puts sample:$clk
+		flush $traces
+		flush $raw
+		flush $filtered
+		flush $slope
+		flush $pulse
+		flush $pulsestarts
+		flush $slopethreshxings
+		flush $peaks
+		flush $peak_starts
+		flush $heights
+		flush $cfdlow
+		flush $cfdhigh
+		flush $triggers
+		flush $eventstream
+		flush $cfderrors
+		flush $timeoverflows
+		flush $peakoverflows
 	}
 	setsig adc_sample $hexsample hex
 	
@@ -132,6 +149,7 @@ while {[gets $fp hexsample] >= 0} {
 	writeInt32 $traces measurements.raw.sample
 	writeInt32 $traces measurements.filtered.sample
 	writeInt32 $traces measurements.slope.sample
+	
 	
 	if [getsig measurements.raw.zero_xing] {
 		puts -nonewline $raw [binary format i $clk]
@@ -167,12 +185,12 @@ while {[gets $fp hexsample] >= 0} {
 	
 	if { [getsig measurements.peak] } {
 		puts -nonewline $peaks [binary format i $clk]
-		# FIXME (VHDL) peak is a closest crossing area may not be valid
-		writeInt32 $peaks measurements.slope.area
+		#writeInt32 $peaks measurements.slope.area
 	}
 	
 	if { [getsig measurements.peak_start] } {
-		puts -nonewline $peak_starts [binary format i $clk]
+		puts -nonewline $peak_starts [binary format i $clk]	
+		#writeInt32 $peak_starts measurements.filtered.sample
 	}
 	
 	if { [getsig measurements.height_valid] } {
@@ -192,10 +210,9 @@ while {[gets $fp hexsample] >= 0} {
 		puts -nonewline $triggers [binary format i $clk]
 	}
 	
-	
 	if { [getsig valid] && [getsig ready] } {
-		writeInt32 $eventstream eventstream.data(63:32) 1
-		writeInt32 $eventstream eventstream.data(31:0) 1
+		writeInt32 $eventstream eventstream.data(63:32) unsigned big
+		writeInt32 $eventstream eventstream.data(31:0) unsigned big
 	}
 	
 	if { [getsig cfd_error] } {

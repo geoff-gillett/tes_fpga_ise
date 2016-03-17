@@ -45,11 +45,12 @@ function to_std_logic(i,w:integer) return std_logic_vector;
 --------------------------------------------------------------------------------
 -- Miscellaneous functions
 --------------------------------------------------------------------------------
---used to suppress warnings from numeric_std during simulation
+-- to_0IfX is used to suppress warnings from numeric_std during simulation
 function to_0IfX(slv:std_logic_vector) return std_logic_vector;
 function to_0IfX(u:unsigned) return unsigned;
 function to_0IfX(s:signed) return signed;
 function ceilLog2(a:integer) return integer;
+-- reshape shifts and resizes to output width and frac
 function reshape(u:unsigned;in_frac,width,frac:integer) return unsigned;
 function reshape(s:signed;in_frac,width,frac:integer) return signed;
 	

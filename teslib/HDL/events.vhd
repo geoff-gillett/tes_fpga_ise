@@ -176,6 +176,13 @@ type tracerecord_t is record
 	height:signal_t;
 end record;
 
+type trace_type_d is (
+	NO_TRACE_D,
+	FILTERED_TRACE_D,
+	SLOPE_TRACE_D,
+	RAW_TRACE_D
+);
+
 end package events;
 
 package body events is
@@ -265,6 +272,7 @@ end function;
 --  | size  |  start  | event flags | time |
 --  |      area       | height      | rise | -- height and rise of first peak
 --  repeating 8 byte peak records (up to 7) for extra peaks.
+
 
 --------------------- Discrete type conversion functions -----------------------
 function to_height_type(s:unsigned(ceilLog2(NUM_HEIGHT_TYPES)-1 downto 0)) 

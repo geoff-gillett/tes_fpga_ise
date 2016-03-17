@@ -52,12 +52,12 @@ signal valid:boolean;
 signal ready:boolean;
 signal adc_sample:adc_sample_t;
 signal registers:measurement_registers_t;
-signal height_type:std_logic_vector(HEIGHT_TYPE_BITS-1 downto 0);
-signal event_type:std_logic_vector(EVENT_TYPE_BITS-1 downto 0);
-signal trigger_type:std_logic_vector(TIMING_TRIGGER_TYPE_BITS-1 downto 0);
+signal height_type:unsigned(HEIGHT_TYPE_BITS-1 downto 0);
+signal event_type:unsigned(EVENT_TYPE_BITS-1 downto 0);
+signal trigger_type:unsigned(TIMING_TRIGGER_TYPE_BITS-1 downto 0);
 signal eventstream_int:streambus_t;
----- mca selection
-signal mca_value_select : boolean_vector(MCA_VALUE_SELECT_BITS-1 downto 0);
+--
+signal mca_value_select:boolean_vector(MCA_VALUE_SELECT_BITS-1 downto 0);
 signal mca_value:signed(MCA_VALUE_BITS-1 downto 0);
 signal baseline_range_error:boolean;
 signal framer_overflow:boolean;
@@ -65,10 +65,10 @@ signal framer_overflow:boolean;
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-event_type <= to_std_logic(registers.capture.event_type,EVENT_TYPE_BITS);
-height_type <= to_std_logic(registers.capture.height_type,HEIGHT_TYPE_BITS);
+event_type <= to_unsigned(registers.capture.event_type,EVENT_TYPE_BITS);
+height_type <= to_unsigned(registers.capture.height_type,HEIGHT_TYPE_BITS);
 trigger_type 
-	<= to_std_logic(registers.capture.trigger_type,TIMING_TRIGGER_TYPE_BITS);
+	<= to_unsigned(registers.capture.trigger_type,TIMING_TRIGGER_TYPE_BITS);
 	
 UUT:entity work.measurement_unit
 generic map(
@@ -118,23 +118,23 @@ registers.capture.pulse_threshold <= to_unsigned(300,DSP_BITS-DSP_FRAC-1) &
 registers.capture.slope_threshold <= to_unsigned(10,DSP_BITS-SLOPE_FRAC-1) & 
 																 to_unsigned(0,SLOPE_FRAC);
 registers.baseline.timeconstant 
-	<= to_unsigned(2**18,BASELINE_TIMECONSTANT_BITS);
+	<= to_unsigned(2**15,BASELINE_TIMECONSTANT_BITS);
 registers.baseline.threshold 
 	<= to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
 registers.baseline.count_threshold 
-	<= to_unsigned(300,BASELINE_COUNTER_BITS);
+	<= to_unsigned(150,BASELINE_COUNTER_BITS);
 registers.baseline.average_order <= 4;
-registers.baseline.offset <= to_std_logic(200,ADC_BITS);
-registers.baseline.subtraction <= FALSE;
+registers.baseline.offset <= to_std_logic(260,ADC_BITS);
+registers.baseline.subtraction <= TRUE;
 registers.capture.constant_fraction --<= (CFD_BITS-2 => '1',others => '0');
 	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
 registers.capture.cfd_relative <= TRUE;
 registers.capture.height_type <= PEAK_HEIGHT_D;
-registers.capture.event_type <= PULSE_EVENT_D;
+registers.capture.event_type <= PEAK_EVENT_D;
 registers.capture.trigger_type <= CFD_LOW_TRIGGER_D;
-registers.capture.threshold_rel2min <= TRUE;
+registers.capture.threshold_rel2min <= FALSE;
 registers.capture.pulse_area_threshold <= to_signed(500,AREA_BITS);
-registers.capture.max_peaks <= (others => '1');--<= to_unsigned(1,PEAK_COUNT_WIDTH+1);
+registers.capture.max_peaks <= (others => '1');
 wait for CLK_PERIOD;
 reset <= '0';
 ready <= TRUE;

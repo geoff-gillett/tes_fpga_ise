@@ -100,6 +100,8 @@ type capture_registers_t is record
 	-- timing point
 	trigger_type:timing_trigger_d;
 	event_type:event_type_d;
+	trace0_type:trace_type_d;
+	trace1_type:trace_type_d;
 end record;
 
 type measurement_registers_t is record

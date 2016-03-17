@@ -52,3 +52,11 @@ matlab/slprj/
 matlab/tes_traces/
 matlab/wavedata/
 *.mat
+presentation/.idea/
+presentation/.ipynb_checkpoints/Untitled-checkpoint.ipynb
+python/simulation/__pycache__/__init__.cpython-35.pyc
+python/simulation/__pycache__/data.cpython-35.pyc
+teslib/simulation/measurement_unit_TB/.ipynb_checkpoints/Untitled-checkpoint.ipynb
+teslib/simulation/measurement_unit_TB/*.pickle
+python/simulation/__pycache__/plot.cpython-35.pyc
+teslib/simulation/measurement_unit_TB/.ipynb_checkpoints/testbench-checkpoint.ipynb
