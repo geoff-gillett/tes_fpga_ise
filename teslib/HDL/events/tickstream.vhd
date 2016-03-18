@@ -15,8 +15,8 @@ use ieee.numeric_std.all;
 library extensions;
 use extensions.boolean_vector.all;
 
-library streaming;
-use streaming.types.all;
+library streamlib;
+use streamlib.types.all;
 
 use work.events.all;
 use work.types.all;
@@ -60,7 +60,7 @@ signal address:unsigned(ADDRESS_BITS-1 downto 0);
 signal free:unsigned(ADDRESS_BITS downto 0);
 signal wr_en:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal tick_event:tickevent_t;
-signal tick_bus:streambus_array(1 downto 0);
+signal tick_bus:streambus_array_t(1 downto 0);
 signal time_stamp:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal tick_pipe:boolean_vector(0 to TICKPIPE_DEPTH);
 --
@@ -71,7 +71,7 @@ timestamp <= time_stamp;
 
 --FIXME this is a waste of 2 BRAMS
 --Only need to buffer a few ticks
-framer:entity streaming.framer
+framer:entity streamlib.framer
 generic map(
   BUS_CHUNKS => BUS_CHUNKS,
   ADDRESS_BITS => 9

@@ -13,12 +13,16 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 --
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
+
+library extensions;
+use extensions.boolean_vector.all;
+use extensions.logic.all;
+
+use work.types.all;
+use work.functions.all;
 
 library streamlib;
-use streamlib.stream.all;
+use streamlib.types.all;
 
 entity eventstream_mux_TB is
 generic(
@@ -39,13 +43,13 @@ constant CLK_PERIOD:time:=4 ns;
 signal start:boolean_vector(2**CHANNEL_BITS-1 downto 0);
 signal commit:boolean_vector(2**CHANNEL_BITS-1 downto 0);
 signal dump:boolean_vector(2**CHANNEL_BITS-1 downto 0);
-signal instreams:streambus_array(2**CHANNEL_BITS-1 downto 0);
+signal instreams:streambus_array_t(2**CHANNEL_BITS-1 downto 0);
 signal instream_valids:boolean_vector(2**CHANNEL_BITS-1 downto 0);
 signal instream_readys:boolean_vector(2**CHANNEL_BITS-1 downto 0);
 signal full:boolean;
 signal tick_period:unsigned(TICK_BITS-1 downto 0);
 signal overflows:boolean_vector(2**CHANNEL_BITS-1 downto 0);
-signal outstream:streambus_t;
+signal muxstream:streambus_t;
 signal valid:boolean;
 signal ready:boolean;
 begin
@@ -79,10 +83,36 @@ port map(
   full => full,
   tick_period => tick_period,
   overflows => overflows,
-  stream => outstream,
+  muxstream => muxstream,
   valid => valid,
   ready => ready
 );
+
+--UUT:entity work.eventstream_mux
+--generic map(
+--  CHANNEL_BITS => CHANNEL_BITS,
+--  RELTIME_BITS => RELTIME_BITS,
+--  TIMESTAMP_BITS => TIMESTAMP_BITS,
+--  TICKPERIOD_BITS => TICK_BITS,
+--  MIN_TICKPERIOD => MIN_TICKPERIOD,
+--  TICKPIPE_DEPTH => 2
+--)
+--port map(
+--  clk => clk,
+--  reset => reset,
+--  start => start,
+--  commit => commit,
+--  dump => dump,
+--  instreams => instreams,
+--  instream_valids => instream_valids,
+--  instream_readys => instream_readys,
+--  full => full,
+--  tick_period => tick_period,
+--  overflows => overflows,
+--  stream => outstream,
+--  valid => valid,
+--  ready => ready
+--);
 
 stimulus:process is
 begin

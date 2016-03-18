@@ -48,7 +48,7 @@ type streambus_t is record
 	last:boolean_vector(BUS_CHUNKS-1 downto 0); -- end of frame
 	data:std_logic_vector(BUS_DATABITS-1 downto 0);
 end record;
-type streambus_array is array (natural range <>) of streambus_t;
+type streambus_array_t is array (natural range <>) of streambus_t;
 type streamvector_array is array (natural range <>) of streamvector_t;
 subtype datachunk_t is std_logic_vector(CHUNK_DATABITS-1 downto 0);
 type datachunk_array_t is array (natural range <>) of datachunk_t;
@@ -63,13 +63,13 @@ function SetEndianness(u:unsigned;e:string) return std_logic_vector;
 function SetEndianness(s:signed;e:string) return std_logic_vector;
 function SetEndianness(sb:streambus_t;e:string) return streambus_t;
 function to_streambus(slv:std_logic_vector) return streambus_t;
-function to_streambus(sva:streamvector_array) return streambus_array;
+function to_streambus(sva:streamvector_array) return streambus_array_t;
 function to_streambus(chunks:datachunk_array_t;k:streambus_keeps_n_t;
 											l:streambus_lasts_t) return streambus_t;
 function to_streambus(data:std_logic_vector;k:streambus_keeps_n_t;
 											l:streambus_lasts_t) return streambus_t;
 function to_std_logic(sb:streambus_t) return std_logic_vector;
-function to_std_logic(sba:streambus_array) return streamvector_array;
+function to_std_logic(sba:streambus_array_t) return streamvector_array;
 --function to_datachunks(bd:streambus_t) return datachunk_array;
 function to_chunks(slv:std_logic_vector;last:boolean) return std_logic_vector;
 	
@@ -89,8 +89,8 @@ begin
 	return sb;
 end function;
 
-function to_streambus(sva:streamvector_array) return streambus_array is
-variable sba:streambus_array(sva'range);
+function to_streambus(sva:streamvector_array) return streambus_array_t is
+variable sba:streambus_array_t(sva'range);
 begin
 	for i in sva'range loop
 		sba(i):=to_streambus(sva(i));
@@ -118,7 +118,7 @@ begin
 	return sb;
 end function;
 	
-function to_std_logic(sba:streambus_array) return streamvector_array is
+function to_std_logic(sba:streambus_array_t) return streamvector_array is
 variable sva:streamvector_array(sba'range);
 begin
 	for i in sva'range loop

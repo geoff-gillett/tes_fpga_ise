@@ -63,7 +63,7 @@ class EventType(Enum):
     trace = 3
 
 
-def get_registers(project, testbench, file='settings', repo = DEFAULT_REPO_PATH):
+def get_registers(project, testbench, file='settings', repo=DEFAULT_REPO_PATH):
     registers = dict()
     settings = Data.fromfile(file, np.int32, project, testbench, repo)
     registers['baseline'] = dict()
@@ -91,8 +91,9 @@ class EventStream:
     def __init__(self, project, testbench, file='eventstream', repo=DEFAULT_REPO_PATH):
         self._stream64 = Data.fromfile(file, np.int64, project, testbench, repo)
 
-    def _index_stream(self):
-        self._stream32
+    def _index_stream(self, event_type):
+        pass
+
 
 class Data:
     @staticmethod
@@ -122,8 +123,7 @@ class Data:
                 attribute,
                 self._data[attribute][0]
             )
-        self.registers = get_registers(project, testbench, repo)
-
+        self.registers = get_registers(project, testbench, repo=repo)
 
     def slice(self, bounds):
         return self.Slice(self._data, bounds)

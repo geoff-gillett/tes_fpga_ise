@@ -24,6 +24,7 @@ function to_boolean(sv:std_logic_vector) return boolean_vector;
 function to_boolean(i,w:natural) return boolean_vector;
 function to_std_logic(a:boolean) return std_logic;
 function to_std_logic(b:boolean_vector) return std_logic_vector;
+function to_unsigned(b:boolean_vector) return unsigned;
 function to_unsigned(b:boolean) return unsigned;
 
 --------------------------------------------------------------------------------
@@ -52,6 +53,11 @@ begin
   end loop;
   return out_vector;
 end function to_std_logic;
+
+function to_unsigned(b:boolean_vector) return unsigned is
+begin
+  return unsigned(to_std_logic(b));
+end function;
 
 function to_boolean(a:std_logic) return boolean is
 begin

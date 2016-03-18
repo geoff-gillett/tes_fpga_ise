@@ -60,3 +60,7 @@ teslib/simulation/measurement_unit_TB/.ipynb_checkpoints/Untitled-checkpoint.ipy
 teslib/simulation/measurement_unit_TB/*.pickle
 python/simulation/__pycache__/plot.cpython-35.pyc
 teslib/simulation/measurement_unit_TB/.ipynb_checkpoints/testbench-checkpoint.ipynb
+*.bak
+teslib/simulation/measurement_mux_TB/.ipynb_checkpoints/
+*.pickle
+teslib/simulation/measurement_unit_TB/.ipynb_checkpoints/

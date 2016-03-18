@@ -87,6 +87,10 @@ function to_std_logic(f:eventtype_flags_t) return std_logic_vector;
 ----------------------- event flags - 16 bits-----------------------------------
 --        1      |      1      |     2    |   4   |    4     |    4
 --  peak_overflow|time_overflow|event_type|channel|peak_count|type_flags
+-- FIXME need to add a bit indicating the start of coincidence sequence
+-- make peakcount 3 bits *or* get rid of peak overflow? add flags to tick
+--        1      |      1      |     2    |   4   |1 |    3     |    4
+--  co_inc start |time_overflow|event_type|channel|po|peak_count|type_flags
 type eventflags_t is record -- 16 bits
 	peak_overflow:boolean; 
 	time_overflow:boolean; 
@@ -142,7 +146,7 @@ type tickevent_t is record
   full_timestamp:unsigned(TIMESTAMP_BITS-1 downto 0); --64
 end record;
 
-function to_streambus(t:tickevent_t) return streambus_array;
+function to_streambus(t:tickevent_t) return streambus_array_t;
 
 -- can specify fixed size (fixed bit set)
 -- 0 to only get header 
@@ -256,8 +260,8 @@ end function;
 -------------------------- tick event 16 bytes----------------------------------
 --  |         tick flags          | time |
 --  |          full time-stamp           |
-function to_streambus(t:tickevent_t) return	streambus_array is
-variable sba:streambus_array(1 downto 0);
+function to_streambus(t:tickevent_t) return	streambus_array_t is
+variable sba:streambus_array_t(1 downto 0);
 begin
 	sba(0).data :=  to_std_logic(t.flags) & to_std_logic(t.reltimestamp);
 	sba(0).keep_n := (others => FALSE);

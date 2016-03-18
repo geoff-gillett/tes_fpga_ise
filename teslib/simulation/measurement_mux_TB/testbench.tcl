@@ -93,10 +93,17 @@ fconfigure $cfderrors -translation binary
 set heights [open "../heights" w]
 fconfigure $heights -translation binary
 
+set muxfull [open "../muxfull" w]
+fconfigure $muxfull -translation binary
+
+set muxoverflows [open "../muxoverflows" w]
+fconfigure $muxoverflows -translation binary
+
 restart
-wave add /measurement_unit_TB
-wave add /measurement_unit_TB/UUT
-wave add /measurement_unit_TB/UUT/SlopeXing
+
+wave add /measurement_mux_TB
+wave add /measurement_mux_TB/\\chanGen(0)\\/measurementUnit
+wave add /measurement_mux_TB/mux
 
 runclks
 set clk 0
@@ -117,6 +124,7 @@ writeInt32 $settings height_type unsigned
 writeInt32 $settings registers.capture.threshold_rel2min
 writeInt32 $settings trigger_type unsigned
 writeInt32 $settings event_type unsigned
+writeInt32 $settings tick_period unsigned
 close $settings
 
 while {[gets $fp hexsample] >= 0} {
@@ -142,90 +150,102 @@ while {[gets $fp hexsample] >= 0} {
 		flush $cfderrors
 		flush $timeoverflows
 		flush $peakoverflows
+		flush $muxfull
+		flush $muxoverflows
 	}
 	setsig adc_sample $hexsample hex
 	
 	writeInt32 $traces adc_sample
-	writeInt32 $traces measurements.raw.sample
-	writeInt32 $traces measurements.filtered.sample
-	writeInt32 $traces measurements.slope.sample
+	writeInt32 $traces measurements(0).raw.sample
+	writeInt32 $traces measurements(0).filtered.sample
+	writeInt32 $traces measurements(0).slope.sample
 	
 	
-	if [getsig measurements.raw.zero_xing] {
+	if [getsig measurements(0).raw.zero_xing] {
 		puts -nonewline $raw [binary format i $clk]
-		writeInt32 $raw measurements.raw.area
-		writeInt32 $raw measurements.raw.extrema
+		writeInt32 $raw measurements(0).raw.area
+		writeInt32 $raw measurements(0).raw.extrema
 	}
 
-	if [getsig measurements.filtered.zero_xing] {
+	if [getsig measurements(0).filtered.zero_xing] {
 		puts -nonewline $filtered [binary format i $clk]
-		writeInt32 $filtered measurements.filtered.area
-		writeInt32 $filtered measurements.filtered.extrema
+		writeInt32 $filtered measurements(0).filtered.area
+		writeInt32 $filtered measurements(0).filtered.extrema
 	}
 
-	if [getsig measurements.slope.zero_xing] {
+	if [getsig measurements(0).slope.zero_xing] {
 		puts -nonewline $slope [binary format i $clk]
-		writeInt32 $slope measurements.slope.area
-		writeInt32 $slope measurements.slope.extrema
+		writeInt32 $slope measurements(0).slope.area
+		writeInt32 $slope measurements(0).slope.extrema
 	}
 
-	if [getsig measurements.pulse.neg_threshxing] {
+	if [getsig measurements(0).pulse.neg_threshxing] {
 		puts -nonewline $pulse [binary format i $clk]
-		writeInt32 $pulse measurements.pulse.area
-		writeInt32 $pulse measurements.pulse.extrema
+		writeInt32 $pulse measurements(0).pulse.area
+		writeInt32 $pulse measurements(0).pulse.extrema
 	}
 	
-	if [getsig measurements.pulse.pos_threshxing] {
+	if [getsig measurements(0).pulse.pos_threshxing] {
 		puts -nonewline $pulsestarts [binary format i $clk]
 	}
 
-	if [getsig measurements.slope.pos_threshxing] {
+	if [getsig measurements(0).slope.pos_threshxing] {
 		puts -nonewline $slopethreshxings [binary format i $clk]
 	}
 	
-	if { [getsig measurements.peak] } {
+	if { [getsig measurements(0).peak] } {
 		puts -nonewline $peaks [binary format i $clk]
 		#writeInt32 $peaks measurements.slope.area
 	}
 	
-	if { [getsig measurements.peak_start] } {
+	if { [getsig measurements(0).peak_start] } {
 		puts -nonewline $peak_starts [binary format i $clk]	
 		#writeInt32 $peak_starts measurements.filtered.sample
 	}
 	
-	if { [getsig measurements.height_valid] } {
+	if { [getsig measurements(0).height_valid] } {
 		puts -nonewline $heights [binary format i $clk]
-		writeInt32 $heights measurements.height
+		writeInt32 $heights measurements(0).height
 	}
 	
-	if { [getsig measurements.cfd_low] } {
+	if { [getsig measurements(0).cfd_low] } {
 		puts -nonewline $cfdlow [binary format i $clk]
 	}
 	
-	if { [getsig measurements.cfd_high] } {
+	if { [getsig measurements(0).cfd_high] } {
 		puts -nonewline $cfdhigh [binary format i $clk]
 	}
 
-	if { [getsig measurements.trigger] } {
+	if { [getsig measurements(0).trigger] } {
 		puts -nonewline $triggers [binary format i $clk]
 	}
 	
-	if { [getsig valid] && [getsig ready] } {
-		writeInt32 $eventstream eventstream.data(63:32) unsigned big
-		writeInt32 $eventstream eventstream.data(31:0) unsigned big
+	if { [getsig muxstream_valid] && [getsig muxstream_ready] } {
+		writeInt32 $eventstream muxstream.data(63:32) unsigned big
+		writeInt32 $eventstream muxstream.data(31:0) unsigned big
 	}
 	
-	if { [getsig cfd_error] } {
+	if { [getsig cfd_errors(0)] } {
 		puts -nonewline $cfderrors [binary format i $clk]
 	}
 	
-	if { [getsig time_overflow] } {
+	if { [getsig time_overflows(0)] } {
 		puts -nonewline $timeoverflows [binary format i $clk]
 	}
 	
-	if { [getsig peak_overflow] } {
+	if { [getsig peak_overflows(0)] } {
 		puts -nonewline $peakoverflows [binary format i $clk]
 	}
+	
+	if { [getsig mux_full] } {
+		puts -nonewline $muxfull [binary format i $clk]
+	}
+	
+	if { [getsig mux_overflows_u unsigned] != 0 } {
+		puts -nonewline $muxoverflows [binary format i $clk]
+		writeInt32 $muxstream mux_overflows_u unsigned
+	}
+	
 	runclks
 	#move incr to top for matlab indexing
 	incr clk 
@@ -249,3 +269,5 @@ close $timeoverflows
 close $peakoverflows
 close $cfderrors
 close $eventstream
+close $muxfull
+close $muxoverflows

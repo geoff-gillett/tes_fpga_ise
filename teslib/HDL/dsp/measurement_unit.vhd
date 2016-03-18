@@ -70,7 +70,7 @@ port(
   differentiator_reload_last:in boolean;
 
   measurements:out measurement_t;
-  
+  -- TODO implement
   mca_value_select:in boolean_vector(MCA_VALUE_SELECT_BITS-1 downto 0);
   mca_value:out signed(MCA_VALUE_BITS-1 downto 0);
 

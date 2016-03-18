@@ -30,7 +30,7 @@ generic(
 port(
   --
   sel:in std_logic_vector(CHANNELS-1 downto 0);
-  instreams:in streambus_array(CHANNELS-1 downto 0);
+  instreams:in streambus_array_t(CHANNELS-1 downto 0);
   valids:in boolean_vector(CHANNELS-1 downto 0);
   --
   mux_stream:out streambus_t;

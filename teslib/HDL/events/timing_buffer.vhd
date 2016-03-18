@@ -33,9 +33,11 @@ port (
   dump:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
   tick:in boolean;
   timestamp:in unsigned(TIMESTAMP_BITS-1 downto 0);
+  window:in unsigned(RELTIME_BITS-1 downto 0);
   --
   eventtime:out unsigned(TIMESTAMP_BITS-1 downto 0);
   reltime:out unsigned(RELTIME_BITS-1 downto 0);
+  new_window:out boolean;
   started:out std_logic_vector(2**CHANNEL_BITS-1 downto 0);
   ticked:out boolean;
   commited:out std_logic_vector(2**CHANNEL_BITS-1 downto 0);
@@ -54,14 +56,17 @@ architecture RTL of timing_buffer is
 constant CHANNELS:integer:=2**CHANNEL_BITS;
 constant TIMEFIFO_BITS:integer:=72;
 -- timestamp bits used in time_fifo that tags the events
+
 constant TIMETAG_BITS:integer:=minimum(TIMEFIFO_BITS-CHANNELS-1,TIMESTAMP_BITS);
 type bufferstate is (IDLE,WAITEVENT,VALIDEVENT);
 type timestate is (IDLE,VALIDTIME);
+--
 signal buffer_state,buffer_nextstate:bufferstate;
 signal reltime_state,reltime_nextstate:timestate;
 --
-signal timedif,last_eventtime,eventtime_reg
+signal timedif,last_eventtime,eventtime_reg,window_starttime
 			 :unsigned(TIMETAG_BITS-1 downto 0);
+signal window_time:unsigned(TIMETAG_BITS-1 downto 0);
 --
 component time_fifo
 port (
@@ -290,18 +295,27 @@ begin
 		if reset = '1' then
 			reltime <= (others => '1');
 			last_eventtime <= (others => '0');
+			window_starttime <= (others => '0');
 			--timedif <= (others => '0');
 			timedif_valid <= FALSE;
+			new_window <= TRUE;
 		else
 			if reltime_state=IDLE and timefifo_valid then
-				timedif <= eventtime_reg-last_eventtime;
+				timedif <= eventtime_reg-last_eventtime; 
+				window_time <= eventtime_reg-window_starttime;
 				timedif_valid <= TRUE;
 			end if;
-			if timedif_valid then
+			if timedif_valid then 
 				if unaryOR(timedif(TIMETAG_BITS-1 downto RELTIME_BITS)) then
 					reltime <= (others => '1');
 				else
 					reltime <= timedif(RELTIME_BITS-1 downto 0);
+				end if;
+				if window_time >= window then
+					new_window <= TRUE;
+					window_starttime <= eventtime_reg;
+				else 
+					new_window <= FALSE;
 				end if;
 			end if;
 			if time_rd_en='1' then

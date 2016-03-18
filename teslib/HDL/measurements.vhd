@@ -82,7 +82,7 @@ type measurement_t is record
 	pulse_time:unsigned(RELATIVETIME_BITS-1 downto 0);
 end record;
 
-type measurement_array is array (natural range <>)
+type measurement_array_t is array (natural range <>)
 		 of measurement_t;
 		 
 function get_values(m:measurement_t) return mca_value_array;

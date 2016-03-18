@@ -34,7 +34,7 @@ port(
   --mux sel stream until last read
  	-- last read into register slice (combinatorial)
   --done:out boolean;
-  instreams:in streambus_array(CHANNELS-1 downto 0);
+  instreams:in streambus_array_t(CHANNELS-1 downto 0);
   valids:in boolean_vector(CHANNELS-1 downto 0);
   -- use sel for readys
   --readys:out boolean_vector(CHANNELS-1 downto 0);
