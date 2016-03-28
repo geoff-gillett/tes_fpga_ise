@@ -19,6 +19,7 @@ use extensions.logic.all;
 --use work.types.all;
 use work.functions.all;
 
+-- FIXME rework this module
 entity timing_buffer is
 generic(
   CHANNEL_BITS:integer:=3;
@@ -106,6 +107,7 @@ signal time_full:std_logic;
 signal ticked_reg,valid_event,all_dumped,timedif_valid,timefifo_valid:boolean;
 signal no_starts,all_dumped_reg,ticked_int,no_starts_reg:boolean;
 signal started_int:std_logic_vector(CHANNELS-1 downto 0);
+signal commited_starts:boolean;
 --
 begin
 full <= buffers_full='1';
@@ -114,6 +116,7 @@ started <= started_reg;
 eventtime <= resize(eventtime_reg,TIMESTAMP_BITS);
 commited <= commited_reg;
 dumped <= dumped_reg;
+
 --------------------------------------------------------------------------------
 -- Event buffering while measurement is performed 
 --------------------------------------------------------------------------------
@@ -141,6 +144,7 @@ time_in(CHANNELS) <= to_std_logic(tick);
 time_in(CHANNELS-1 downto 0) <= to_std_logic(start); 
 ticked <= ticked_reg;
 --time_rd_en <= to_std_logic(read_next);
+
 --FIXME register this
 --------------------------------------------------------------------------------
 -- queue commits or dumps to match with starts
@@ -162,6 +166,7 @@ begin
   commited_int(i) <= commit_out(i) and not commit_empty(i);
 end generate;
 commit_wr_en <= to_std_logic(commit or dump);
+
 --------------------------------------------------------------------------------
 -- FIFO output registers
 --------------------------------------------------------------------------------
@@ -251,9 +256,10 @@ end process fsmNextstate;
 valid_event <= (ticked_reg or unaryOr(started_reg and commited_reg)) 
 							 and timefifo_valid;
 --							 
+commited_starts <= unsigned(started_reg and commited_reg) /= 0;
+
 bufferFsmTransition:process(buffer_state,reltime_state,all_dumped_reg,
-														timefifo_valid,read_next,ticked_reg,commited_reg,
-														started_reg)
+														timefifo_valid,read_next,ticked_reg,commited_starts)
 begin
 buffer_nextstate <= buffer_state;
 case buffer_state is 
@@ -262,7 +268,7 @@ when IDLE =>
     buffer_nextstate <= WAITEVENT;
   end if;
 when WAITEVENT =>
-	if ticked_reg or unsigned(started_reg and commited_reg) /= 0 then
+	if ticked_reg or commited_starts then
 		buffer_nextstate <= VALIDEVENT;	
 	elsif all_dumped_reg then
 		buffer_nextstate <= IDLE;
@@ -306,16 +312,22 @@ begin
 				timedif_valid <= TRUE;
 			end if;
 			if timedif_valid then 
+				--FIXME RELTIME_BITS needs changing
 				if unaryOR(timedif(TIMETAG_BITS-1 downto RELTIME_BITS)) then
 					reltime <= (others => '1');
 				else
 					reltime <= timedif(RELTIME_BITS-1 downto 0);
 				end if;
-				if window_time >= window then
-					new_window <= TRUE;
-					window_starttime <= eventtime_reg;
-				else 
-					new_window <= FALSE;
+				
+				-- FIXME need to ignore when *only* a tick
+				-- 
+				if unaryOR(commited_reg) then
+					if window_time > window then
+						new_window <= TRUE;
+						window_starttime <= eventtime_reg;
+					else 
+						new_window <= FALSE;
+					end if;
 				end if;
 			end if;
 			if time_rd_en='1' then

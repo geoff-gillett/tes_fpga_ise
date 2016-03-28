@@ -36,7 +36,7 @@ proc writeInt64 { fp signal } {
 	return $dec
 }
 
-set fp [open "../input_signals/long" r]
+set fp [open "../input_signals/short" r]
 fconfigure $fp -buffering line
 
 set settings [open "../settings" w]
@@ -99,11 +99,20 @@ fconfigure $muxfull -translation binary
 set muxoverflows [open "../muxoverflows" w]
 fconfigure $muxoverflows -translation binary
 
+set ethernet [open "../ethernet" w]
+fconfigure $ethernet -translation binary
+
 restart
 
-#wave add /measurement_unit_TB
-#wave add /measurement_unit_TB/UUT
-#wave add /measurement_unit_TB/UUT/SlopeXing
+wave add /measurement_mux_enet_TB
+wave add /measurement_mux_enet_TB/\\chanGen(0)\\/measurementUnit
+wave add /measurement_mux_enet_TB/mux
+wave add /measurement_mux_enet_TB/mux/buffers
+wave add /measurement_mux_enet_TB/enet
+wave add /measurement_mux_enet_TB/enet/eventbuffer
+wave add /measurement_mux_enet_TB/enet/eventbuffer/streambuffer
+wave add /measurement_mux_enet_TB/enet/eventbuffer/lookaheadslice
+
 
 runclks
 set clk 0
@@ -123,7 +132,7 @@ writeInt32 $settings registers.capture.pulse_area_threshold
 writeInt32 $settings height_type unsigned
 writeInt32 $settings registers.capture.threshold_rel2min
 writeInt32 $settings trigger_type unsigned
-writeInt32 $settings event_type unsigned
+writeInt32 $settings detection_type unsigned
 writeInt32 $settings tick_period unsigned
 close $settings
 
@@ -152,6 +161,7 @@ while {[gets $fp hexsample] >= 0} {
 		flush $peakoverflows
 		flush $muxfull
 		flush $muxoverflows
+		flush $ethernet
 	}
 	setsig adc_sample $hexsample hex
 	
@@ -159,7 +169,6 @@ while {[gets $fp hexsample] >= 0} {
 	writeInt32 $traces measurements(0).raw.sample
 	writeInt32 $traces measurements(0).filtered.sample
 	writeInt32 $traces measurements(0).slope.sample
-	
 	
 	if [getsig measurements(0).raw.zero_xing] {
 		puts -nonewline $raw [binary format i $clk]
@@ -219,7 +228,8 @@ while {[gets $fp hexsample] >= 0} {
 	if { [getsig measurements(0).trigger] } {
 		puts -nonewline $triggers [binary format i $clk]
 	}
-	
+
+	#FIXME change endianness
 	if { [getsig muxstream_valid] && [getsig muxstream_ready] } {
 		writeInt32 $eventstream muxstream.data(63:32) unsigned big
 		writeInt32 $eventstream muxstream.data(31:0) unsigned big
@@ -246,6 +256,12 @@ while {[gets $fp hexsample] >= 0} {
 		writeInt32 $muxstream mux_overflows_u unsigned
 	}
 	
+	if { [getsig ethernetstream_valid] && [getsig ethernetstream_ready] } {
+		writeInt32 $ethernet ethernetstream_int.data(63:32) unsigned big
+		writeInt32 $ethernet ethernetstream_int.data(31:0) unsigned big
+		writeInt32 $ethernet ethernetstream_int.last(0) unsigned
+	}
+
 	runclks
 	#move incr to top for matlab indexing
 	incr clk 
@@ -271,3 +287,4 @@ close $cfderrors
 close $eventstream
 close $muxfull
 close $muxoverflows
+close $ethernet

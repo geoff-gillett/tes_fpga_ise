@@ -36,7 +36,7 @@ package registers is
 --------------------------------------------------------------------------------
 
 --constant CHANNEL_WIDTH:integer:=4;
-constant TICKPERIOD_BITS:integer:=32;
+--constant TICKPERIOD_BITS:integer:=32;
 constant TICKPIPE_DEPTH:integer:=2;
 constant RELATIVETIME_BITS:integer:=16;
 constant MTU_BITS:integer:=16;
@@ -98,8 +98,8 @@ type capture_registers_t is record
 	-- the pulse threshold is relative to the minima, baseline if FALSE
 	threshold_rel2min:boolean;
 	-- timing point
-	trigger_type:timing_trigger_d;
-	event_type:event_type_d;
+	trigger_type:timing_d;
+	detection_type:detection_type_d;
 	trace0_type:trace_type_d;
 	trace1_type:trace_type_d;
 end record;

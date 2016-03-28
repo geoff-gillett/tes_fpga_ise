@@ -79,9 +79,9 @@ port map (
   almost_empty => almost_empty
 );
 
-stream <= to_streambus(outstream_vector);
 instream_handshake <= instream_valid and instream_ready_int;
 outstream_handshake <= outstream_valid_int and ready;
+stream <= to_streambus(outstream_vector); 
 
 input:process(clk)
 begin

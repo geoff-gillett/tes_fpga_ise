@@ -30,39 +30,34 @@ def adjust_yaxis(ax, ydif, v):
     ax.set_ylim(nminy + v, nmaxy + v)
 
 
-def plot_pulse(pulse_num, data, pre=100, length=1000):
+def plot_pulse(pulse_num, data, pre=100, length=1000, time_scale=4, voltage_scale=1.0/math.pow(2, 14)*1000):
 
     pulse_num -= 1
-    mV = 1.0/math.pow(2, 14)*1000
-    nS = 4
 
     start = data.pulse_start[pulse_num] - pre
     stop = start + length
     x = np.arange(start, stop)
-    t = x*nS
+    pulse_data = data.slice((start, stop))
 
-    pulse_data=data.slice((start, stop))
+    fig = plot_slice(pulse_data, time_scale=time_scale, voltage_scale=voltage_scale)
 
-    fig = plt.figure()
-
-    f_ax = host_subplot(111, label='f_ax')
-    s_ax = f_ax.twinx()
-    s_ax._label = 's_ax'
+    f_ax = fig._axstack.as_list()[0]
+    s_ax = f_ax.parasites[0]
 
     f_ax.set_xlabel("Time (ns)", fontsize=18)
     f_ax.set_ylabel("Voltage (mV)", fontsize=18, color='r')
     s_ax.set_ylabel("Slope (mv/ns)", fontsize=18, color='b')
 
-    f_sig = pulse_data.trace['filtered']*mV
-    s_sig = pulse_data.trace['slope']*mV/nS
+    f_sig = pulse_data.trace['filtered']*voltage_scale
+    s_sig = pulse_data.trace['slope']*voltage_scale/time_scale
 
-    f_ax.plot([t[0], t[-1]], [0, 0], 'k')  # zero line
+    f_ax.plot([start*time_scale, stop*time_scale], [0, 0], 'k')  # zero line
 
-    f_trace, = f_ax.step(t, f_sig, 'r', lw=2, label='filtered')
-    s_trace, = s_ax.step(t, s_sig, 'b', lw=1, label='slope')
+    f_ax.step(x*time_scale, f_sig, 'r', lw=2, label='filtered')
+    s_ax.step(x*time_scale, s_sig, 'b', lw=1, label='slope')
     s_ax.set_ylim(-15, 50)
 
-    plt.xlim(start*nS, stop*nS)
+    plt.xlim(start*time_scale, stop*time_scale)
     # plt.xlim(start, stop)
     align_yaxis(f_ax, 0, s_ax, 0)
     fig.suptitle('Pulse {:d} of {:d}'.format(pulse_num+1, len(data.pulse_start)), fontsize=24)
@@ -113,3 +108,26 @@ def plot_pulse(pulse_num, data, pre=100, length=1000):
 
     return fig
 
+
+def plot_slice(sl, time_scale=4, voltage_scale=1.0/math.pow(2, 14)*1000):
+
+    x = np.arange(sl.bounds[0], sl.bounds[1])
+
+    fig = plt.figure()
+
+    f_ax = host_subplot(111, label='f_ax')
+    s_ax = f_ax.twinx()
+    s_ax._label = 's_ax'
+
+    f_sig = sl.trace['filtered']*voltage_scale
+    s_sig = sl.trace['slope']*voltage_scale/time_scale
+
+    f_ax.plot([x[0]*time_scale, x[-1]*time_scale], [0, 0], 'k')  # zero line
+
+    f_ax.step(x*time_scale, f_sig, 'r', lw=2, label='filtered')
+    s_ax.step(x*time_scale, s_sig, 'b', lw=1, label='slope')
+    #s_ax.set_ylim(-15, 50)
+
+    plt.xlim(sl.bounds[0]*time_scale, sl.bounds[1]*time_scale)
+    align_yaxis(f_ax, 0, s_ax, 0)
+    return fig

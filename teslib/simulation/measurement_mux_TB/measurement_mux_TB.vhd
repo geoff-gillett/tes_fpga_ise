@@ -54,7 +54,7 @@ signal adc_sample_reg:adc_sample_array_t(CHANNELS-1 downto 0);
 signal adc_sample:adc_sample_t;
 signal registers:measurement_registers_t;
 signal height_type:unsigned(HEIGHT_TYPE_BITS-1 downto 0);
-signal event_type:unsigned(EVENT_TYPE_BITS-1 downto 0);
+signal event_type:unsigned(DETECTION_TYPE_BITS-1 downto 0);
 signal trigger_type:unsigned(TIMING_TRIGGER_TYPE_BITS-1 downto 0);
 signal eventstreams_int:streambus_array_t(CHANNELS-1 downto 0);
 --
@@ -65,14 +65,15 @@ signal tick_period:unsigned(TICKPERIOD_BITS-1 downto 0);
 signal starts:boolean_vector(CHANNELS-1 downto 0);
 signal mux_overflows:boolean_vector(CHANNELS-1 downto 0);
 signal mux_overflows_u:unsigned(CHANNELS-1 downto 0);
-signal muxstream:streambus_t;
+signal muxstream_int,muxstream:streambus_t;
 signal muxstream_valid:boolean;
 signal muxstream_ready:boolean;
+signal window:unsigned(TIME_BITS-1 downto 0);
 begin
 	
 clk <= not clk after CLK_PERIOD/2;
 
-event_type <= to_unsigned(registers.capture.event_type,EVENT_TYPE_BITS);
+event_type <= to_unsigned(registers.capture.event_type,DETECTION_TYPE_BITS);
 height_type <= to_unsigned(registers.capture.height_type,HEIGHT_TYPE_BITS);
 trigger_type 
 	<= to_unsigned(registers.capture.trigger_type,TIMING_TRIGGER_TYPE_BITS);
@@ -162,18 +163,21 @@ port map(
   instream_readys => eventstreams_ready,
   full => mux_full,
   tick_period => tick_period,
+  window => window,
   overflows => mux_overflows,
-  muxstream => muxstream,
+  muxstream => muxstream_int,
   valid => muxstream_valid,
   ready => muxstream_ready
 );
 
 mux_overflows_u <= to_unsigned(mux_overflows);
+muxstream <= SetEndianness(muxstream_int,ENDIANNESS);
 
 -- all channels see same register settings
 stimulus:process is
 begin
-tick_period <= to_unsigned(2**15, TICKPERIOD_BITS);
+tick_period <= to_unsigned(2**16-1, TICKPERIOD_BITS);
+window <= to_unsigned(1,TIME_BITS);
 
 registers.capture.pulse_threshold <= to_unsigned(300,DSP_BITS-DSP_FRAC-1) & 
 																 		 to_unsigned(0,DSP_FRAC);
@@ -192,8 +196,8 @@ registers.capture.constant_fraction --<= (CFD_BITS-2 => '1',others => '0');
 	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
 registers.capture.cfd_relative <= TRUE;
 registers.capture.height_type <= PEAK_HEIGHT_D;
-registers.capture.event_type <= PEAK_EVENT_D;
-registers.capture.trigger_type <= CFD_LOW_TRIGGER_D;
+registers.capture.event_type <= PEAK_DETECTION_D;
+registers.capture.trigger_type <= CFD_LOW_TIMING_D;
 registers.capture.threshold_rel2min <= FALSE;
 registers.capture.pulse_area_threshold <= to_signed(500,AREA_BITS);
 registers.capture.max_peaks <= (others => '1');

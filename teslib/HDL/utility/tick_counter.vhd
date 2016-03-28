@@ -37,28 +37,19 @@ constant MIN_PERIOD:unsigned(TICK_BITS-1 downto 0)
                    :=to_unsigned(MINIMUM_PERIOD,TICK_BITS);
 signal tickcount,current_period_int:unsigned(TICK_BITS-1 downto 0);
 signal tick_int:boolean;
+
 begin
 tick <= tick_int;
 tickLength:process(clk)
 begin
 if rising_edge(clk) then
-  if reset = '1' then
+  if reset = '1' or tick_int then
     if period < MIN_PERIOD then
       current_period_int <= MIN_PERIOD-1;
       current_period <= MIN_PERIOD;
     else
       current_period_int <= period-1;
       current_period <= period;
-    end if;
-  else
-    if tick_int then
-      if period < MIN_PERIOD then
-        current_period_int <= MIN_PERIOD-1;
-        current_period <= MIN_PERIOD;
-      else
-        current_period_int <= period-1;
-        current_period <= period;
-      end if;
     end if;
   end if;
 end if;
@@ -71,11 +62,11 @@ begin
       tickcount <= (others => '0'); 
       tick_int <= TRUE;
     else
-      tick_int <= FALSE;
       if tickcount=current_period_int then
         tickcount <= (others => '0');
         tick_int <= TRUE;
       else
+	      tick_int <= FALSE;
         tickcount <= tickcount+1;
       end if;
     end if;

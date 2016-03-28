@@ -43,11 +43,13 @@ constant ETHERNET_HEADER_WORDS:integer:=3;
 constant ETHERNET_SEQUENCE_BITS:integer:=32;
 
 function to_streambus(e:ethernet_header_t;
-											w:natural range 0 to ETHERNET_HEADER_WORDS-1)
+											w:natural range 0 to ETHERNET_HEADER_WORDS-1;
+											endianness:string)
 											return streambus_t;
 
 function to_std_logic(e:ethernet_header_t;
-											w:natural range 0 to ETHERNET_HEADER_WORDS-1)
+											w:natural range 0 to ETHERNET_HEADER_WORDS-1;
+											endianness:string)
 											return std_logic_vector;
 --------------------------------------------------------------------------------
 -- MCA protocol
@@ -95,36 +97,21 @@ package body protocol is
 --------------------------------------------------------------------------------
 -- Ethernet protocol
 --------------------------------------------------------------------------------
---FIXME is a streambus_array a better option? c.f. tick_event
 function to_streambus(e:ethernet_header_t;
-											w:natural range 0 to ETHERNET_HEADER_WORDS-1)
+											w:natural range 0 to ETHERNET_HEADER_WORDS-1;
+											endianness:string)
  											return streambus_t is 
 variable sb:streambus_t;
 begin
 	sb.keep_n := (others => FALSE); 
 	sb.last := (others => FALSE);
-	case w is
-	when 0 => 
-    sb.data := to_std_logic(e.source_address) &
-               to_std_logic(e.destination_address(47 downto 32));
-	when 1 =>
-		sb.data := to_std_logic(e.destination_address(31 downto 0)) &
-							 to_std_logic(e.ethernet_type) &
-							 to_std_logic(e.length);
-	when 2 => 
-		sb.data := to_std_logic(0,16) &
-							 to_std_logic(e.frame_sequence) &
-							 to_std_logic(0,16) &
-							 to_std_logic(e.protocol_sequence);
-	when others => 
-		assert FALSE report "bad word number in ethernet_header to_streambus()"	
-						 severity ERROR;
-	end case;
+  sb.data := to_std_logic(e,w,endianness);
 	return sb;
 end function;
 
 function to_std_logic(e:ethernet_header_t;
-											w:natural range 0 to ETHERNET_HEADER_WORDS-1)
+											w:natural range 0 to ETHERNET_HEADER_WORDS-1;
+											endianness:string)
  											return std_logic_vector is 
 variable slv:std_logic_vector(BUS_DATABITS-1 downto 0);
 begin
@@ -135,18 +122,18 @@ begin
 	when 1 =>
 		slv := to_std_logic(e.destination_address(31 downto 0)) &
 					 to_std_logic(e.ethernet_type) &
-					 to_std_logic(e.length);
+					 set_endianness(e.length, endianness);
 	when 2 => 
-		slv := to_std_logic(0,16) &
-					 to_std_logic(e.frame_sequence) &
-					 to_std_logic(0,16) &
-					 to_std_logic(e.protocol_sequence);
+    slv := set_endianness(e.frame_sequence,endianness) &
+           set_endianness(e.protocol_sequence,endianness) &
+           to_std_logic(0,32);
 	when others => 
 		assert FALSE report "bad word number in ethernet_header to_streambus()"	
 						 severity ERROR;
 	end case;
 	return slv;
 end function;
+
 --------------------------------------------------------------------------------
 -- MCA protocol functions
 --------------------------------------------------------------------------------
@@ -173,7 +160,7 @@ begin
 	return h;
 end function;
 
--- w should be a constant as logic is infered
+-- w should be a constant as logic is infered otherwise
 function to_streambus(r:mca_header_registers;m:mca_header_measurements;
 										  word:natural range 0 to MCA_PROTOCOL_HEADER_WORDS-1)
 											return streambus_t is

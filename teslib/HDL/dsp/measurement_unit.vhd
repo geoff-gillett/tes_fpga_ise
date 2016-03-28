@@ -43,7 +43,8 @@ generic(
   --FIXME remove this
   PEAK_COUNT_BITS:integer:=3;
   FRAMER_ADDRESS_BITS:integer:=10;
-  CHANNEL:integer:=7
+  CHANNEL:integer:=7;
+  ENDIANNESS:string:="LITTLE"
 );
 port(
   clk:in std_logic;
@@ -232,8 +233,9 @@ signal frame_length:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 
 -- fixed 8 byte events (single word)
-signal peak_event:datachunk_array_t(BUS_CHUNKS-1 downto 0); 
-signal area_event:datachunk_array_t(BUS_CHUNKS-1 downto 0);
+--signal peak_event:datachunk_array_t(BUS_CHUNKS-1 downto 0); 
+signal peak_event:peak_detection_t; 
+signal area_event:area_detection_t;
 signal peak_chunk_we,area_chunk_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal single_word_event:boolean;
 
@@ -256,11 +258,11 @@ signal trace_reg_valid:boolean;
 
 -- common signals
 
-signal event_flags:eventflags_t;
+signal detection_flags:detection_flags_t;
 signal dump_reg:boolean;
 signal frame_overflow_int:boolean;
 signal pulse_peak_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
-signal commit_peak_event,commit_area_event:boolean;
+signal commit_peak,commit_area:boolean;
 signal peak_start_reg:boolean;
 signal last_peak:boolean;
 signal last_peak_count:unsigned(PEAK_COUNT_WIDTH-1 downto 0);
@@ -584,9 +586,9 @@ generic map(
   DATA_BITS => NUM_FLAGS
 )
 port map(
-  clk     => clk,
+  clk => clk,
   data_in => flags_pd,
-  delay   => CFD_DELAY+3,
+  delay => CFD_DELAY+3,
   delayed => flags_cfd_delay
 );
 
@@ -706,16 +708,19 @@ triggerMux:process(capture_cfd.trigger_type,cfd_low,pulse_start_cfd,
 									 slope_pos_thresh_xing_cfd,cfd_pulse_state) 
 begin
 	case capture_cfd.trigger_type is
-	when PULSE_THRESH_TRIGGER_D => 
+	when PULSE_THRESH_TIMING_D => 
 		if cfd_pulse_state=FIRST_RISE then
 			trigger <= pulse_start_cfd;
 		else
 			trigger <= cfd_low;
 		end if;
-  when SLOPE_THRESH_TRIGGER_D =>
+  when SLOPE_THRESH_TIMING_D =>
     trigger <= slope_pos_thresh_xing_cfd;
-  when CFD_LOW_TRIGGER_D =>
+  when CFD_LOW_TIMING_D =>
     trigger <= cfd_low;
+  when RISE_START_TIMING_D =>
+  	-- FIXME implement
+  	null;
 	end case;
 end process triggerMux;
 
@@ -888,8 +893,8 @@ if rising_edge(clk) then
   	end if;
   	
   	--  FIXME the path for trigger is going to be a problem
-  	case capture_cfd.event_type is 
-  	when PEAK_EVENT_D | AREA_EVENT_D =>
+  	case capture_cfd.detection_type is 
+  	when PEAK_DETECTION_D | AREA_DETECTION_D =>
   		if event_start then
         event_time <= (others => '0');
         time_overflow_int <= FALSE;
@@ -901,7 +906,7 @@ if rising_edge(clk) then
         end if;
       end if;
 
-  	when PULSE_EVENT_D | TRACE_EVENT_D =>
+  	when PULSE_DETECTION_D | TRACE_DETECTION_D =>
       if event_start then
         event_time <= (others => '0');
         time_overflow_int <= FALSE;
@@ -1032,33 +1037,32 @@ m.pulse.extrema <= reshape(pulse_extrema,FRAC,SIGNAL_BITS,SIGNAL_FRAC);
 
 dump <= dump_reg;
 
-event_flags.channel <= to_unsigned(CHANNEL,CHANNEL_WIDTH);
-event_flags.event_type <= capture_cfd.event_type;
--- FIXME find other driver for tick
-event_flags.type_flags.tick <= FALSE;
-event_flags.type_flags.fixed <= single_word_event or fixed_length;
-event_flags.peak_count <= m.peak_count;
+detection_flags.channel <= to_unsigned(CHANNEL,CHANNEL_WIDTH);
+detection_flags.event_type.detection_type <= capture_cfd.detection_type;
+detection_flags.event_type.tick <= FALSE;
+detection_flags.peak_count <= m.peak_count;
 
-single_word_event <= capture_cfd.event_type=PEAK_EVENT_D or
-										 capture_cfd.event_type=AREA_EVENT_D;
+single_word_event <= capture_cfd.detection_type=PEAK_DETECTION_D or
+										 capture_cfd.detection_type=AREA_DETECTION_D;
 
-peak_event(3) <= to_std_logic(m.height); -- height
+peak_event.height <= m.height; 
 peak_chunk_we(3) <= m.height_valid; 
-peak_event(2) <= to_std_logic(m.filtered.sample);
+peak_event.minima <= m.filtered.sample;
 peak_chunk_we(2) <= m.peak_start;
-peak_event(1) <= to_std_logic(event_flags);
+peak_event.flags <= detection_flags;
 peak_chunk_we(1) <= m.peak_start;
-peak_event(0) <= (others => '0'); -- time-stamp added by MUX
-peak_chunk_we(0) <= m.peak_start;
-commit_peak_event <= m.height_valid;
+peak_event.rel_timestamp <= (others => '0'); -- time-stamp added by MUX
+peak_chunk_we(0) <= m.peak_start; -- clear it at start
+commit_peak <= m.height_valid;
 
-area_event(3) <= to_std_logic(m.pulse.area(31 downto 16));
-area_event(2) <= to_std_logic(m.pulse.area(15 downto 0));
-area_event(1) <= to_std_logic(event_flags);
-area_event(0) <= (others => '0'); -- time-stamp added by MUX
+-- FIXME do the same as peak_event
+area_event.area <= m.pulse.area;
+area_event.flags <= detection_flags;
+area_event.rel_timestamp <= (others => '-'); -- time-stamp added by MUX
 area_chunk_we <= (others => m.pulse.neg_threshxing);
-commit_area_event <= m.pulse.neg_threshxing;
+commit_area <= m.pulse.neg_threshxing;
 
+-- FIXME re-think remove variable length version
 pulse_peak(3) <= to_std_logic(m.filtered.sample);
 pulse_peak_we(3) <= m.height_valid;
 pulse_peak(2) <= to_std_logic(m.filtered.sample);
@@ -1068,6 +1072,7 @@ pulse_peak_we(1) <= m.height_valid;
 pulse_peak(0) <= to_std_logic(m.pulse_time);
 pulse_peak_we(0) <= m.trigger;
 
+--TODO go over traces code traces
 --------------------------------------------------------------------------------
 -- Framer FSMs
 --------------------------------------------------------------------------------
@@ -1208,7 +1213,7 @@ if rising_edge(clk) then
   else
   	
   	-- FIXME this may break on event_type change
-  	if (capture_cfd.event_type=PULSE_EVENT_D and pulse_state=PEAKS) then 
+  	if (capture_cfd.detection_type=PULSE_DETECTION_D and pulse_state=PEAKS) then 
 	    pulse_peak_we_reg <= (others => FALSE);
   	else
   		
@@ -1251,7 +1256,6 @@ if rising_edge(clk) then
   end if;
 end if;
 end process pulsePeakreg;
-
 
 pulsePeakMux:process(pulse_peak_we_reg,pulse_peak,pulse_peak_reg,pulse_peak_we)
 begin
@@ -1301,7 +1305,7 @@ if rising_edge(clk) then
           -- TODO check that this can happen -- handle it how?
           -- TODO dump?
         else
-          header0_chunk(1) <= to_std_logic(event_flags);
+          header0_chunk(1) <= to_std_logic(detection_flags);
           if fixed_length then
             header0_chunk(3) 
               <= to_std_logic(resize(capture_cfd.max_peaks+3,CHUNK_DATABITS));
@@ -1317,26 +1321,22 @@ if rising_edge(clk) then
       end if;
     end if;
       
-    case capture_cfd.event_type is
-    when PEAK_EVENT_D =>
-      frame_word <= to_streambus(peak_event,
-                                 (others => FALSE),
-                                (0 => TRUE, others => FALSE));
+    case capture_cfd.detection_type is
+    when PEAK_DETECTION_D =>
+      frame_word <= to_streambus(peak_event,ENDIANNESS);
       frame_address <= (others => '0');
       frame_length <= to_unsigned(1,FRAMER_ADDRESS_BITS);
       chunk_we <= peak_chunk_we;
-      commit_int <= m.height_valid;
+      commit_int <= commit_peak;
 
-    when AREA_EVENT_D =>
-      frame_word <= to_streambus(area_event,
-                                (others => FALSE),
-                                (0 => TRUE, others => FALSE));
+    when AREA_DETECTION_D =>
+      frame_word <= to_streambus(area_event,ENDIANNESS);
       frame_address <= (others => '0');
       frame_length <= to_unsigned(1,FRAMER_ADDRESS_BITS);
       chunk_we <= area_chunk_we;
-      commit_int <= m.height_valid;
+      commit_int <= commit_area;
       
-    when PULSE_EVENT_D =>
+    when PULSE_DETECTION_D =>
       case pulse_state is 
       when PEAKS =>
         commit_int <= FALSE;
@@ -1383,7 +1383,7 @@ if rising_edge(clk) then
         commit_int <= TRUE;
       end case;
       
-    when TRACE_EVENT_D =>
+    when TRACE_DETECTION_D =>
       null;
     end case;		
     

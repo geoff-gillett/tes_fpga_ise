@@ -1,0 +1,967 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="C:/TES_project/fpga_ise/teslib/PlanAhead/teslib.sim/measurement_mux_enet_TB/behav/isim.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="adc" />
+            <top_module name="bip_utils_pkg_v2_0" />
+            <top_module name="boolean_vector" />
+            <top_module name="dsptypes" />
+            <top_module name="events" />
+            <top_module name="fir_compiler_v6_3_sim_pkg" />
+            <top_module name="functions" />
+            <top_module name="logic" />
+            <top_module name="math_real" />
+            <top_module name="measurement_mux_enet_tb" />
+            <top_module name="measurements" />
+            <top_module name="numeric_std" />
+            <top_module name="protocol" />
+            <top_module name="registers" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_signed" />
+            <top_module name="std_logic_textio" />
+            <top_module name="textio" />
+            <top_module name="types" />
+            <top_module name="types" />
+            <top_module name="vcomponents" />
+            <top_module name="vital_primitives" />
+            <top_module name="vital_timing" />
+            <top_module name="vpkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="4" />
+   <wave_markers>
+      <marker time="83740000000" label="" />
+   </wave_markers>
+   <wvobject fp_name="group44" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/measurement_mux_enet_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+         <obj_property name="label">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/measurements" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">measurements[1:0]</obj_property>
+         <obj_property name="ObjectShortName">measurements[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/dumps" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dumps[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dumps[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/commits" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commits[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commits[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/peak_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/time_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">time_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">time_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/cfd_errors" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_errors[1:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_errors[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/eventstreams_valid" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstreams_valid[1:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstreams_valid[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/eventstreams_ready" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstreams_ready[1:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstreams_ready[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/adc_samples" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_samples[1:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_samples[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/adc_sample_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_sample_reg[1:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_sample_reg[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/adc_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/registers" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">registers</obj_property>
+         <obj_property name="ObjectShortName">registers</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/height_type" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">height_type[1:0]</obj_property>
+         <obj_property name="ObjectShortName">height_type[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/trigger_type" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">trigger_type[1:0]</obj_property>
+         <obj_property name="ObjectShortName">trigger_type[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/eventstreams_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstreams_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstreams_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/baseline_range_errors" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_range_errors[1:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_range_errors[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/framer_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux_full" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_full</obj_property>
+         <obj_property name="ObjectShortName">mux_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/tick_period" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_period[31:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_period[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/starts" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">starts[1:0]</obj_property>
+         <obj_property name="ObjectShortName">starts[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">mux_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux_overflows_u" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_overflows_u[1:0]</obj_property>
+         <obj_property name="ObjectShortName">mux_overflows_u[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/muxstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream</obj_property>
+         <obj_property name="ObjectShortName">muxstream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/muxstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_valid</obj_property>
+         <obj_property name="ObjectShortName">muxstream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/muxstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_ready</obj_property>
+         <obj_property name="ObjectShortName">muxstream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mcastream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream</obj_property>
+         <obj_property name="ObjectShortName">mcastream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/ethernetstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream_valid</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/ethernetstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream_ready</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mtu" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mtu[15:0]</obj_property>
+         <obj_property name="ObjectShortName">mtu[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/tick_latency" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_latency[31:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_latency[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/window" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">window[15:0]</obj_property>
+         <obj_property name="ObjectShortName">window[15:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group173" type="group">
+      <obj_property name="label">enet framer</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/mtu" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mtu[15:0]</obj_property>
+         <obj_property name="ObjectShortName">mtu[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/tick_latency" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_latency[31:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_latency[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream</obj_property>
+         <obj_property name="ObjectShortName">eventstream</obj_property>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventstream.keep_n" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.keep_n</obj_property>
+            <obj_property name="ObjectShortName">eventstream.keep_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventstream.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">eventstream.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventstream.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">eventstream.data</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream_valid</obj_property>
+         <obj_property name="ObjectShortName">eventstream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream_ready</obj_property>
+         <obj_property name="ObjectShortName">eventstream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/event_s" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">event_s</obj_property>
+         <obj_property name="ObjectShortName">event_s</obj_property>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/event_s.keep_n" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.keep_n</obj_property>
+            <obj_property name="ObjectShortName">event_s.keep_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/event_s.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">event_s.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/event_s.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">event_s.data</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/event_s_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_s_ready</obj_property>
+         <obj_property name="ObjectShortName">event_s_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/event_s_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_s_valid</obj_property>
+         <obj_property name="ObjectShortName">event_s_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/mcastream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream</obj_property>
+         <obj_property name="ObjectShortName">mcastream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/mcastream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream_valid</obj_property>
+         <obj_property name="ObjectShortName">mcastream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/mcastream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream_ready</obj_property>
+         <obj_property name="ObjectShortName">mcastream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernetstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernetstream.keep_n" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.keep_n</obj_property>
+            <obj_property name="ObjectShortName">ethernetstream.keep_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernetstream.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">ethernetstream.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernetstream.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">ethernetstream.data</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernetstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream_valid</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream_valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernetstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream_ready</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream_ready</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/buffer_full" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">buffer_full</obj_property>
+         <obj_property name="ObjectShortName">buffer_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/buffer_empty" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">buffer_empty</obj_property>
+         <obj_property name="ObjectShortName">buffer_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/event_size" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">event_size[15:0]</obj_property>
+         <obj_property name="ObjectShortName">event_size[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/lookahead_tick" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead_tick</obj_property>
+         <obj_property name="ObjectShortName">lookahead_tick</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/tick" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tick</obj_property>
+         <obj_property name="ObjectShortName">tick</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/event_head" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_head</obj_property>
+         <obj_property name="ObjectShortName">event_head</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/arbiter_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">arbiter_state</obj_property>
+         <obj_property name="ObjectShortName">arbiter_state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/frame_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_state</obj_property>
+         <obj_property name="ObjectShortName">frame_state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ffffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/frame_address" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_address[4:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_address[4:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ff00</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/framer_address" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_address[4:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_address[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/write" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">write</obj_property>
+         <obj_property name="ObjectShortName">write</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/frame_chunk_we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_chunk_we[3:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_chunk_we[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/framer_word" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_word</obj_property>
+         <obj_property name="ObjectShortName">framer_word</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/framer_word.keep_n" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.keep_n</obj_property>
+            <obj_property name="ObjectShortName">framer_word.keep_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/framer_word.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">framer_word.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/framer_word.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">framer_word.data</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/frame_free" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_free[5:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_free[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/commit_frame" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_frame</obj_property>
+         <obj_property name="ObjectShortName">commit_frame</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/framer_free" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_free[5:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_free[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernet_header" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernet_header</obj_property>
+         <obj_property name="ObjectShortName">ethernet_header</obj_property>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernet_header.destination_address" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.destination_address</obj_property>
+            <obj_property name="ObjectShortName">ethernet_header.destination_address</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernet_header.source_address" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.source_address</obj_property>
+            <obj_property name="ObjectShortName">ethernet_header.source_address</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernet_header.ethernet_type" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.ethernet_type</obj_property>
+            <obj_property name="ObjectShortName">ethernet_header.ethernet_type</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernet_header.frame_sequence" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.frame_sequence</obj_property>
+            <obj_property name="ObjectShortName">ethernet_header.frame_sequence</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernet_header.length" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.length</obj_property>
+            <obj_property name="ObjectShortName">ethernet_header.length</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/ethernet_header.protocol_sequence" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.protocol_sequence</obj_property>
+            <obj_property name="ObjectShortName">ethernet_header.protocol_sequence</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/frame_sequence" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_sequence[15:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_sequence[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/mca_sequence" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_sequence[15:0]</obj_property>
+         <obj_property name="ObjectShortName">mca_sequence[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/event_sequence" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">event_sequence[15:0]</obj_property>
+         <obj_property name="ObjectShortName">event_sequence[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/mtu_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mtu_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">mtu_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/tick_latency_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_latency_count[31:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_latency_count[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/tick_latency_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_latency_int[31:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_latency_int[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/wait_for_tick" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">wait_for_tick</obj_property>
+         <obj_property name="ObjectShortName">wait_for_tick</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/tick" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tick</obj_property>
+         <obj_property name="ObjectShortName">tick</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/end_frame" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">end_frame</obj_property>
+         <obj_property name="ObjectShortName">end_frame</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/frame_full" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_full</obj_property>
+         <obj_property name="ObjectShortName">frame_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/lookahead" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead</obj_property>
+         <obj_property name="ObjectShortName">lookahead</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/lookahead_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead_valid</obj_property>
+         <obj_property name="ObjectShortName">lookahead_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/arbiter_nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">arbiter_nextstate</obj_property>
+         <obj_property name="ObjectShortName">arbiter_nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/frame_nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_nextstate</obj_property>
+         <obj_property name="ObjectShortName">frame_nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/framer_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_ready</obj_property>
+         <obj_property name="ObjectShortName">framer_ready</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group163" type="group">
+      <obj_property name="label">time buffer</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/start" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">start[1:0]</obj_property>
+         <obj_property name="ObjectShortName">start[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/commit" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commit[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/dump" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dump[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dump[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/tick" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tick</obj_property>
+         <obj_property name="ObjectShortName">tick</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/timestamp" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">timestamp[63:0]</obj_property>
+         <obj_property name="ObjectShortName">timestamp[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/window" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">window[15:0]</obj_property>
+         <obj_property name="ObjectShortName">window[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/eventtime" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventtime[63:0]</obj_property>
+         <obj_property name="ObjectShortName">eventtime[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/reltime" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reltime[15:0]</obj_property>
+         <obj_property name="ObjectShortName">reltime[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/new_window" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_window</obj_property>
+         <obj_property name="ObjectShortName">new_window</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/started" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">started[1:0]</obj_property>
+         <obj_property name="ObjectShortName">started[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/ticked" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ticked</obj_property>
+         <obj_property name="ObjectShortName">ticked</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/commited" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commited[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commited[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/dumped" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dumped[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dumped[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/read_next" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">read_next</obj_property>
+         <obj_property name="ObjectShortName">read_next</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/full" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">full</obj_property>
+         <obj_property name="ObjectShortName">full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/buffer_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">buffer_state</obj_property>
+         <obj_property name="ObjectShortName">buffer_state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/buffer_nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">buffer_nextstate</obj_property>
+         <obj_property name="ObjectShortName">buffer_nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/reltime_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">reltime_state</obj_property>
+         <obj_property name="ObjectShortName">reltime_state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/reltime_nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">reltime_nextstate</obj_property>
+         <obj_property name="ObjectShortName">reltime_nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/timedif" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">timedif[63:0]</obj_property>
+         <obj_property name="ObjectShortName">timedif[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/last_eventtime" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">last_eventtime[63:0]</obj_property>
+         <obj_property name="ObjectShortName">last_eventtime[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/eventtime_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventtime_reg[63:0]</obj_property>
+         <obj_property name="ObjectShortName">eventtime_reg[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/window_starttime" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">window_starttime[63:0]</obj_property>
+         <obj_property name="ObjectShortName">window_starttime[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/window_time" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">window_time[63:0]</obj_property>
+         <obj_property name="ObjectShortName">window_time[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/commit_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_out[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_out[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/commited_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commited_reg[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commited_reg[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/started_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">started_reg[1:0]</obj_property>
+         <obj_property name="ObjectShortName">started_reg[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/commit_wr_en" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_wr_en[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_wr_en[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/commit_rd_en" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_rd_en[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_rd_en[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/commit_empty" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_empty[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_empty[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/commit_full" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_full[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_full[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/commited_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commited_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commited_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/dumped_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dumped_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dumped_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/dumped_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dumped_reg[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dumped_reg[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/time_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">time_in[71:0]</obj_property>
+         <obj_property name="ObjectShortName">time_in[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/time_out" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">time_out[71:0]</obj_property>
+         <obj_property name="ObjectShortName">time_out[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/time_out_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">time_out_reg[71:0]</obj_property>
+         <obj_property name="ObjectShortName">time_out_reg[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/buffers_full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">buffers_full</obj_property>
+         <obj_property name="ObjectShortName">buffers_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/time_empty" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">time_empty</obj_property>
+         <obj_property name="ObjectShortName">time_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/time_rd_en" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">time_rd_en</obj_property>
+         <obj_property name="ObjectShortName">time_rd_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/time_wr_en" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">time_wr_en</obj_property>
+         <obj_property name="ObjectShortName">time_wr_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/time_full" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">time_full</obj_property>
+         <obj_property name="ObjectShortName">time_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/ticked_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ticked_reg</obj_property>
+         <obj_property name="ObjectShortName">ticked_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/valid_event" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid_event</obj_property>
+         <obj_property name="ObjectShortName">valid_event</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/all_dumped" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">all_dumped</obj_property>
+         <obj_property name="ObjectShortName">all_dumped</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/timedif_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">timedif_valid</obj_property>
+         <obj_property name="ObjectShortName">timedif_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/timefifo_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">timefifo_valid</obj_property>
+         <obj_property name="ObjectShortName">timefifo_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/no_starts" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">no_starts</obj_property>
+         <obj_property name="ObjectShortName">no_starts</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/all_dumped_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">all_dumped_reg</obj_property>
+         <obj_property name="ObjectShortName">all_dumped_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/ticked_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ticked_int</obj_property>
+         <obj_property name="ObjectShortName">ticked_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/no_starts_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">no_starts_reg</obj_property>
+         <obj_property name="ObjectShortName">no_starts_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/started_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">started_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">started_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/mux/buffers/commited_starts" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commited_starts</obj_property>
+         <obj_property name="ObjectShortName">commited_starts</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group179" type="group">
+      <obj_property name="label">event buffer</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/instream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">instream</obj_property>
+         <obj_property name="ObjectShortName">instream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/instream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">instream_valid</obj_property>
+         <obj_property name="ObjectShortName">instream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/instream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">instream_ready</obj_property>
+         <obj_property name="ObjectShortName">instream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookahead" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead</obj_property>
+         <obj_property name="ObjectShortName">lookahead</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookahead_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead_valid</obj_property>
+         <obj_property name="ObjectShortName">lookahead_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream</obj_property>
+         <obj_property name="ObjectShortName">stream</obj_property>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/stream.keep_n" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.keep_n</obj_property>
+            <obj_property name="ObjectShortName">stream.keep_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/stream.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">stream.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/stream.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">stream.data</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/bufferstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bufferstream_valid</obj_property>
+         <obj_property name="ObjectShortName">bufferstream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/bufferstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bufferstream_ready</obj_property>
+         <obj_property name="ObjectShortName">bufferstream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookahead_vector" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead_vector[71:0]</obj_property>
+         <obj_property name="ObjectShortName">lookahead_vector[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/stream_vector" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream_vector[71:0]</obj_property>
+         <obj_property name="ObjectShortName">stream_vector[71:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/bufferstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">bufferstream</obj_property>
+         <obj_property name="ObjectShortName">bufferstream</obj_property>
+      </wvobject>
+      <wvobject fp_name="divider219" type="divider">
+         <obj_property name="label">component entities</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="BkColor">128 128 255</obj_property>
+         <obj_property name="TextColor">230 230 230</obj_property>
+      </wvobject>
+      <wvobject fp_name="group191" type="group">
+         <obj_property name="label">stream buffer</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/clk" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">clk</obj_property>
+            <obj_property name="ObjectShortName">clk</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/reset" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">reset</obj_property>
+            <obj_property name="ObjectShortName">reset</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/instream" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">instream</obj_property>
+            <obj_property name="ObjectShortName">instream</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/instream_valid" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">instream_valid</obj_property>
+            <obj_property name="ObjectShortName">instream_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/instream_ready" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">instream_ready</obj_property>
+            <obj_property name="ObjectShortName">instream_ready</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/stream" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">stream</obj_property>
+            <obj_property name="ObjectShortName">stream</obj_property>
+            <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/stream.keep_n" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">.keep_n</obj_property>
+               <obj_property name="ObjectShortName">stream.keep_n</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/stream.last" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">.last</obj_property>
+               <obj_property name="ObjectShortName">stream.last</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/stream.data" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">.data</obj_property>
+               <obj_property name="ObjectShortName">stream.data</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/valid" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">valid</obj_property>
+            <obj_property name="ObjectShortName">valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/ready" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">ready</obj_property>
+            <obj_property name="ObjectShortName">ready</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/instream_ready_int" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">instream_ready_int</obj_property>
+            <obj_property name="ObjectShortName">instream_ready_int</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/full" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">full</obj_property>
+            <obj_property name="ObjectShortName">full</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/almost_full" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">almost_full</obj_property>
+            <obj_property name="ObjectShortName">almost_full</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/empty" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">empty</obj_property>
+            <obj_property name="ObjectShortName">empty</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/almost_empty" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">almost_empty</obj_property>
+            <obj_property name="ObjectShortName">almost_empty</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/outstream_vector" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">outstream_vector[71:0]</obj_property>
+            <obj_property name="ObjectShortName">outstream_vector[71:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/instream_handshake" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">instream_handshake</obj_property>
+            <obj_property name="ObjectShortName">instream_handshake</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/outstream_handshake" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">outstream_handshake</obj_property>
+            <obj_property name="ObjectShortName">outstream_handshake</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/streambuffer/outstream_valid_int" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">outstream_valid_int</obj_property>
+            <obj_property name="ObjectShortName">outstream_valid_int</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group212" type="group">
+         <obj_property name="label">lookahead</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/clk" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">clk</obj_property>
+            <obj_property name="ObjectShortName">clk</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/reset" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">reset</obj_property>
+            <obj_property name="ObjectShortName">reset</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/stream_in" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">stream_in[71:0]</obj_property>
+            <obj_property name="ObjectShortName">stream_in[71:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/ready_out" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">ready_out</obj_property>
+            <obj_property name="ObjectShortName">ready_out</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/valid_in" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">valid_in</obj_property>
+            <obj_property name="ObjectShortName">valid_in</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/stream_reg" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">stream_reg[71:0]</obj_property>
+            <obj_property name="ObjectShortName">stream_reg[71:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/reg_valid" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">reg_valid</obj_property>
+            <obj_property name="ObjectShortName">reg_valid</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/reg_ready" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">reg_ready</obj_property>
+            <obj_property name="ObjectShortName">reg_ready</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/lookahead" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">lookahead[71:0]</obj_property>
+            <obj_property name="ObjectShortName">lookahead[71:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/lookahead_valid" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">lookahead_valid</obj_property>
+            <obj_property name="ObjectShortName">lookahead_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/stream" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">stream[71:0]</obj_property>
+            <obj_property name="ObjectShortName">stream[71:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/valid" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">valid</obj_property>
+            <obj_property name="ObjectShortName">valid</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/ready" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">ready</obj_property>
+            <obj_property name="ObjectShortName">ready</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/lookahead_int" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">lookahead_int[71:0]</obj_property>
+            <obj_property name="ObjectShortName">lookahead_int[71:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/lookahead_valid_int" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">lookahead_valid_int</obj_property>
+            <obj_property name="ObjectShortName">lookahead_valid_int</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/valid_int" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">valid_int</obj_property>
+            <obj_property name="ObjectShortName">valid_int</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/input_handshake" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">input_handshake</obj_property>
+            <obj_property name="ObjectShortName">input_handshake</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/output_handshake" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">output_handshake</obj_property>
+            <obj_property name="ObjectShortName">output_handshake</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookaheadSlice/shift" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">shift</obj_property>
+            <obj_property name="ObjectShortName">shift</obj_property>
+         </wvobject>
+      </wvobject>
+   </wvobject>
+</wave_config>

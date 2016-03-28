@@ -58,9 +58,9 @@ function busLast(sb:streambus_t) return boolean;
 function SwapEndianness(data:std_logic_vector) return std_logic_vector;
 function SwapEndianness(data:unsigned) return std_logic_vector;
 function SwapEndianness(data:signed) return std_logic_vector;
-function SetEndianness(d:std_logic_vector;e:string) return std_logic_vector;
-function SetEndianness(u:unsigned;e:string) return std_logic_vector;
-function SetEndianness(s:signed;e:string) return std_logic_vector;
+function set_endianness(d:std_logic_vector;e:string) return std_logic_vector;
+function set_endianness(u:unsigned;e:string) return std_logic_vector;
+function set_endianness(s:signed;e:string) return std_logic_vector;
 function SetEndianness(sb:streambus_t;e:string) return streambus_t;
 function to_streambus(slv:std_logic_vector) return streambus_t;
 function to_streambus(sva:streamvector_array) return streambus_array_t;
@@ -199,7 +199,7 @@ begin
   return(SwapEndianness(std_logic_vector(data)));
 end function;
 
-function SetEndianness(d:std_logic_vector;e:string) return std_logic_vector is
+function set_endianness(d:std_logic_vector;e:string) return std_logic_vector is
 begin
 	if e="LITTLE" then
 		return SwapEndianness(d);
@@ -208,7 +208,7 @@ begin
 	end if;
 end function;
 
-function SetEndianness(u:unsigned;e:string) return std_logic_vector is
+function set_endianness(u:unsigned;e:string) return std_logic_vector is
 begin
 	if e="LITTLE" then
 		return SwapEndianness(to_std_logic(u));
@@ -217,7 +217,7 @@ begin
 	end if;
 end function;
 
-function SetEndianness(s:signed;e:string) return std_logic_vector is
+function set_endianness(s:signed;e:string) return std_logic_vector is
 begin
 	if e="LITTLE" then
 		return SwapEndianness(to_std_logic(s));

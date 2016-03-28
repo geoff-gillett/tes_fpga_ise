@@ -89,7 +89,7 @@ def get_registers(project, testbench, file='settings', repo=DEFAULT_REPO_PATH):
 
 class EventStream:
     def __init__(self, project, testbench, file='eventstream', repo=DEFAULT_REPO_PATH):
-        self._stream64 = Data.fromfile(file, np.int64, project, testbench, repo)
+        self._stream64 = Data.fromfile(file, np.uint64, project, testbench, repo)
 
     def _index_stream(self, event_type):
         pass
@@ -174,3 +174,4 @@ class Data:
         def bounds(self, value):
             self._bounds = value
             self.apply_bounds()
+

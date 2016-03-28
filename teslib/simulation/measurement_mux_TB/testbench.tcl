@@ -104,6 +104,8 @@ restart
 wave add /measurement_mux_TB
 wave add /measurement_mux_TB/\\chanGen(0)\\/measurementUnit
 wave add /measurement_mux_TB/mux
+wave add /measurement_mux_TB/mux/tickstreamer
+wave add /measurement_mux_TB/mux/buffers
 
 runclks
 set clk 0

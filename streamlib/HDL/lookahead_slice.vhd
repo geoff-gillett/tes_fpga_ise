@@ -46,7 +46,6 @@ lookahead <= lookahead_int;
 output_handshake <= ready and valid_int;
 input_handshake <= reg_ready and reg_valid;
 shift <= output_handshake or not valid_int;
-
 reg_ready <= output_handshake or shift;
 
 -- inefficient but need to break ready combinatorial path
@@ -73,19 +72,17 @@ if rising_edge(clk) then
     lookahead_int <= (others => '-');
     stream <= (others => '-');
   else
-		
+  	
   	if input_handshake then
   		lookahead_int <= stream_reg;
 			lookahead_valid_int <= TRUE;
-  	else
-  		lookahead_valid_int <= lookahead_valid_int and not output_handshake;
   	end if;
 		
   	if shift then
  			stream <= lookahead_int;
  			valid_int <= lookahead_valid_int;
+ 			lookahead_valid_int <= input_handshake;
   	end if;
-  	
   	
   end if;
 end if;

@@ -64,3 +64,4 @@ teslib/simulation/measurement_unit_TB/.ipynb_checkpoints/testbench-checkpoint.ip
 teslib/simulation/measurement_mux_TB/.ipynb_checkpoints/
 *.pickle
 teslib/simulation/measurement_unit_TB/.ipynb_checkpoints/
+teslib/simulation/measurement_mux_enet_TB/.ipynb_checkpoints/measurement_mux_enet_TB-checkpoint.ipynb

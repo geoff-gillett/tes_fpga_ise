@@ -638,15 +638,15 @@ triggerMux:process(registers.capture.trigger_type,cfd_low,pulse_start_cfd,
 									 slope_pos_thresh_xing_cfd,cfd_pulse_state) 
 begin
 	case registers.capture.trigger_type is
-	when PULSE_THRESH_TRIGGER_D => 
+	when PULSE_THRESH_TIMING_D => 
 		if cfd_pulse_state=FIRST_RISE then
 			trigger <= pulse_start_cfd;
 		else
 			trigger <= cfd_low;
 		end if;
-  when SLOPE_THRESH_TRIGGER_D =>
+  when SLOPE_THRESH_TIMING_D =>
     trigger <= slope_pos_thresh_xing_cfd;
-  when CFD_LOW_TRIGGER_D =>
+  when CFD_LOW_TIMING_D =>
     trigger <= cfd_low;
 	end case;
 end process triggerMux;

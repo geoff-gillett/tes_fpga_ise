@@ -17,17 +17,13 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
---use work.types.all;
---use work.functions.all;
---
 library streamlib;
 use streamlib.types.all;
 
 use work.events.all;
 
-
 --TODO optimise to remove wait states
--- merges instreams keeping temporal order incorporates tickstream
+-- merges instreams keeping temporal order and incorporates tickstream
 entity eventstream_mux is
 generic(
   CHANNEL_BITS:integer:=3;
@@ -35,7 +31,8 @@ generic(
   TIMESTAMP_BITS:integer:=64;
   TICKPERIOD_BITS:integer:=32;
   MIN_TICKPERIOD:integer:=2**16;
-  TICKPIPE_DEPTH:integer:=2
+  TICKPIPE_DEPTH:integer:=2;
+  ENDIANNESS:string:="LITTLE"
 );
 port(
   clk:in std_logic;
@@ -53,6 +50,7 @@ port(
   -- tick event
   tick_period:in unsigned(TICKPERIOD_BITS-1 downto 0);
   overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  window:in unsigned(RELTIME_BITS-1 downto 0);
   --dirty:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
   --
   muxstream:out streambus_t;
@@ -67,7 +65,7 @@ constant CHANNELS:integer:=2**CHANNEL_BITS;
 
 signal timestamp,eventtime:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal reltime:unsigned(CHUNK_DATABITS-1 downto 0);
-signal reltime_stamp,reltime_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
+signal reltime_stamp:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal started,commited,dumped:std_logic_vector(CHANNELS-1 downto 0);
 signal req,gnt:std_logic_vector(CHANNELS-1 downto 0);
 signal handled:std_logic_vector(CHANNELS downto 0);
@@ -90,22 +88,18 @@ signal time_done:boolean;
 signal muxstream_handshake:boolean;
 signal pulses_done:boolean;
 signal muxstream_last_handshake:boolean;
-signal sel_valid:boolean;
-signal sel_done:boolean;
 type outFSMstate is (HEAD,TAIL);
 signal out_state,out_nextstate:outFSMstate;
 signal first_event:boolean;
---signal sel_int:boolean_vector(CHANNELS downto 0);
-signal sel_pipe:boolean_vector(3 downto 0);
-signal window:unsigned(RELTIME_BITS-1 downto 0);
 signal new_window:boolean;
---
+signal window_start:boolean;
+
 begin
 
 tickstreamer:entity work.tickstream
 generic map(
   CHANNEL_BITS => CHANNEL_BITS,
-  PERIOD_BITS => TICKPERIOD_BITS,
+  TICKPERIOD_BITS => TICKPERIOD_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
   MINIMUM_PERIOD => MIN_TICKPERIOD,
   TICKPIPE_DEPTH => TICKPIPE_DEPTH
@@ -188,7 +182,7 @@ port map(
   stream => muxstream_int,
  	valid => muxstream_int_valid
 );
---readys <= to_boolean(sel) when muxstream_ready else (others => FALSE);  
+
 muxstream_last <= muxstream_int.last(0);
 muxstream_handshake <= muxstream_int_valid and muxstream_int_ready;
 muxstream_last_handshake <= muxstream_handshake and muxstream_last;
@@ -332,22 +326,28 @@ begin
 			reltime_stamp <= (others => '1');
 		else
 			if first_event then
-				reltime_stamp <= to_std_logic(reltime);
+				-- FIXME change TIME_BITS 
+				reltime_stamp <= set_endianness(reltime,ENDIANNESS);
+				window_start <= new_window;
 			else
+				window_start <= FALSE;
 				reltime_stamp <= (others => '0');
 			end if;
 		end if;
 	end if;
 end process relativetimestamp;
 
---insert the timestamp
-reltime_chunk <= reltime_stamp when (out_state=HEAD)
-															 else muxstream_int.data(47 downto 32); 
+--insert the timestamp 
+--FIXME register this?
 
-stream_int.data <= muxstream_int.data(63 downto 48) &
-									 reltime_chunk &
-									 muxstream_int.data(31 downto 0);
+stream_int.data <= muxstream_int.data(63 downto 17) &
+									 to_std_logic(window_start) &
+									 reltime_stamp
+								when out_state=HEAD
+								else muxstream_int.data;
 
+-- FIXME new_window when not first_event:
+									 
 stream_int.last <= muxstream_int.last;
 stream_int.keep_n <= muxstream_int.keep_n;
 

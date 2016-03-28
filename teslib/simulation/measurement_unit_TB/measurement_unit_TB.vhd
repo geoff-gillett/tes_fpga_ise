@@ -53,7 +53,7 @@ signal ready:boolean;
 signal adc_sample:adc_sample_t;
 signal registers:measurement_registers_t;
 signal height_type:unsigned(HEIGHT_TYPE_BITS-1 downto 0);
-signal event_type:unsigned(EVENT_TYPE_BITS-1 downto 0);
+signal event_type:unsigned(DETECTION_TYPE_BITS-1 downto 0);
 signal trigger_type:unsigned(TIMING_TRIGGER_TYPE_BITS-1 downto 0);
 signal eventstream_int:streambus_t;
 --
@@ -65,7 +65,7 @@ signal framer_overflow:boolean;
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-event_type <= to_unsigned(registers.capture.event_type,EVENT_TYPE_BITS);
+event_type <= to_unsigned(registers.capture.detection_type,DETECTION_TYPE_BITS);
 height_type <= to_unsigned(registers.capture.height_type,HEIGHT_TYPE_BITS);
 trigger_type 
 	<= to_unsigned(registers.capture.trigger_type,TIMING_TRIGGER_TYPE_BITS);
@@ -130,8 +130,8 @@ registers.capture.constant_fraction --<= (CFD_BITS-2 => '1',others => '0');
 	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
 registers.capture.cfd_relative <= TRUE;
 registers.capture.height_type <= PEAK_HEIGHT_D;
-registers.capture.event_type <= PEAK_EVENT_D;
-registers.capture.trigger_type <= CFD_LOW_TRIGGER_D;
+registers.capture.event_type <= PEAK_DETECTION_D;
+registers.capture.trigger_type <= CFD_LOW_TIMING_D;
 registers.capture.threshold_rel2min <= FALSE;
 registers.capture.pulse_area_threshold <= to_signed(500,AREA_BITS);
 registers.capture.max_peaks <= (others => '1');

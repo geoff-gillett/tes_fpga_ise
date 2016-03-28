@@ -42,13 +42,13 @@ signal measurements:measurement_t;
 signal cfd_error:boolean;
 signal time_overflow:boolean;
 signal height_type:std_logic_vector(HEIGHT_TYPE_BITS-1 downto 0);
-signal event_type:std_logic_vector(EVENT_TYPE_BITS-1 downto 0);
+signal event_type:std_logic_vector(DETECTION_TYPE_BITS-1 downto 0);
 signal trigger_type:std_logic_vector(TIMING_TRIGGER_TYPE_BITS-1 downto 0);
 signal peak_overflow:boolean;
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-event_type <= to_std_logic(registers.capture.event_type,EVENT_TYPE_BITS);
+event_type <= to_std_logic(registers.capture.event_type,DETECTION_TYPE_BITS);
 height_type <= to_std_logic(registers.capture.height_type,HEIGHT_TYPE_BITS);
 trigger_type 
 	<= to_std_logic(registers.capture.trigger_type,TIMING_TRIGGER_TYPE_BITS);
