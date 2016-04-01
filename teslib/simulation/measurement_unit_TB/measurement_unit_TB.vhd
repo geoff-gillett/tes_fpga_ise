@@ -128,7 +128,7 @@ registers.baseline.offset <= to_std_logic(260,ADC_BITS);
 registers.baseline.subtraction <= TRUE;
 registers.capture.constant_fraction --<= (CFD_BITS-2 => '1',others => '0');
 	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
-registers.capture.cfd_relative <= TRUE;
+registers.capture.cfd_rel2min <= TRUE;
 registers.capture.height_type <= PEAK_HEIGHT_D;
 registers.capture.event_type <= PEAK_DETECTION_D;
 registers.capture.trigger_type <= CFD_LOW_TIMING_D;

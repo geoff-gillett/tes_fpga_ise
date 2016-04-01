@@ -18,7 +18,7 @@ use extensions.boolean_vector.all;
 
 use work.types.all;
 use work.functions.all;
-use work.protocol.all;
+--use work.protocol.all;
 use work.registers.all;
 use work.measurements.all;
 
@@ -26,8 +26,8 @@ use work.measurements.all;
 entity mca_value_selector is
 generic (
 	VALUE_BITS:integer:=MCA_VALUE_BITS;
-	NUM_VALUES:integer:=MCA_VALUE_SELECT_BITS;
-	NUM_VALIDS:integer:=MCA_TRIGGER_SELECT_BITS
+	NUM_VALUES:integer:=NUM_MCA_VALUES;
+	NUM_VALIDS:integer:=NUM_MCA_TRIGGERS-1
 );
 	
 port (
@@ -55,7 +55,7 @@ signal valid_int:std_logic;
 
 begin
 
-values <= get_values(measurements);
+values <= get_mca_values(measurements);
 
 measurementMuxGen:for b in 0 to VALUE_BITS-1 generate
 begin
@@ -72,7 +72,7 @@ begin
   );
 end generate;
 
-valids <= get_triggers(measurements);
+valids <= get_mca_triggers(measurements);
 
 validSel:entity work.select_1of12
 port map(

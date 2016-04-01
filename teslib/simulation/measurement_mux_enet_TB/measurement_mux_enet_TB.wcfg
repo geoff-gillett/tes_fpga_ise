@@ -767,10 +767,12 @@
       <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/lookahead_vector" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">lookahead_vector[71:0]</obj_property>
          <obj_property name="ObjectShortName">lookahead_vector[71:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/stream_vector" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">stream_vector[71:0]</obj_property>
          <obj_property name="ObjectShortName">stream_vector[71:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_mux_enet_tb/enet/eventBuffer/bufferstream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">bufferstream</obj_property>

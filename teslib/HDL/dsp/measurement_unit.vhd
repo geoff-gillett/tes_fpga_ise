@@ -71,9 +71,11 @@ port(
   differentiator_reload_last:in boolean;
 
   measurements:out measurement_t;
-  -- TODO implement
-  mca_value_select:in boolean_vector(MCA_VALUE_SELECT_BITS-1 downto 0);
+  
+  mca_value_select:in std_logic_vector(NUM_MCA_VALUES-1 downto 0);
+	mca_trigger_select:std_logic_vector(NUM_MCA_TRIGGERS-2 downto 0);
   mca_value:out signed(MCA_VALUE_BITS-1 downto 0);
+  mca_value_valid:out boolean;
 
   dump:out boolean;
   commit:out boolean;
@@ -280,7 +282,23 @@ signal pulse_peak_mux_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal rise_time:unsigned(TIME_BITS-1 downto 0);
 
 begin
-measurements <= m;
+measurements <= m; --are the measurements needed externally?
+
+valueMux:entity work.mca_value_selector
+generic map(
+  VALUE_BITS => MCA_VALUE_BITS,
+  NUM_VALUES => NUM_MCA_VALUES,
+  NUM_VALIDS => NUM_MCA_TRIGGERS-1
+)
+port map(
+  clk => clk,
+  reset => reset,
+  measurements => m,
+  value_select => mca_value_select,
+  trigger_select => mca_trigger_select,
+  value => mca_value,
+  valid => mca_value_valid
+);
 
 --------------------------------------------------------------------------------
 -- Peak detection stage
@@ -489,7 +507,7 @@ if rising_edge(clk) then
     if peak_pd then
       minima_for_cfd <= minima_value_pd;
       maxima_for_cfd <= filtered_pd;
-      if pd_pulse_state=FIRST_RISE and not capture_pd.cfd_relative then
+      if pd_pulse_state=FIRST_RISE and not capture_pd.cfd_rel2min then
         signal_for_cfd <= filtered_pd;
       else
         signal_for_cfd <= filtered_pd-minima_value_pd;
@@ -511,7 +529,7 @@ if rising_edge(clk) then
         queue_wr_en <= '1';
         --FIXME this will fail if pulse ends within 4 clocks of peak
         if first_rise_pipe(MULT_PIPE_DEPTH) and 
-           not capture_pd.cfd_relative then
+           not capture_pd.cfd_rel2min then
           cfd_low_thresh_pd 
             <= resize(shift_right(cf_of_peak,CFD_FRAC),WIDTH);
         else
@@ -927,9 +945,9 @@ if rising_edge(clk) then
     when PEAK_HEIGHT_D =>
     	if peak_cfd then
     		m.height_valid <= TRUE; 
-        if capture_cfd.threshold_rel2min then --FIXME not making sense
-          m.height 
-            <= reshape(filtered_cfd-minima_value_cfd,FRAC,SIGNAL_BITS,SIGNAL_FRAC);
+        if capture_cfd.height_rel2min then --FIXME not making sense
+          m.height <= reshape(filtered_cfd-minima_value_cfd,
+            									FRAC,SIGNAL_BITS,SIGNAL_FRAC);
         else
           m.height <= reshape(filtered_cfd,FRAC,SIGNAL_BITS,SIGNAL_FRAC);
         end if;
@@ -941,7 +959,7 @@ if rising_edge(clk) then
       --height_valid <= cfd_high;
     	if cfd_high then
     		m.height_valid <= TRUE;
-        if capture_cfd.threshold_rel2min then
+        if capture_cfd.height_rel2min then
           m.height 
             <= reshape(filtered_cfd-minima_value_cfd,FRAC,SIGNAL_BITS,SIGNAL_FRAC);
         else
@@ -1022,7 +1040,7 @@ peak_overflow <= peak_overflow_int;
 time_overflow <= time_overflow_int;
 m.peak <= max_at_cfd_reg;
 m.peak_count <= peak_count;
-m.pulse_time <= event_time;
+--m.pulse_time <= event_time;
 m.pulse.time <= event_time;
 m.pulse.area <= reshape(pulse_area,FRAC,AREA_BITS,AREA_FRAC);
 m.pulse.extrema <= reshape(pulse_extrema,FRAC,SIGNAL_BITS,SIGNAL_FRAC);
@@ -1069,7 +1087,7 @@ pulse_peak(2) <= to_std_logic(m.filtered.sample);
 pulse_peak_we(2) <= m.peak_start;
 pulse_peak(1) <= to_std_logic(rise_time);
 pulse_peak_we(1) <= m.height_valid;
-pulse_peak(0) <= to_std_logic(m.pulse_time);
+pulse_peak(0) <= to_std_logic(m.pulse.time);
 pulse_peak_we(0) <= m.trigger;
 
 --TODO go over traces code traces
@@ -1089,9 +1107,9 @@ begin
 	end if;
 end process FSMnextstate;
 
-dual_trace <= capture_cfd.trace0_type/=NO_TRACE_D and 
-							capture_cfd.trace1_type/=NO_TRACE_D;
-single_trace <= not dual_trace and capture_cfd.trace0_type/=NO_TRACE_D;
+dual_trace <= capture_cfd.trace0_type/=NONE_D and 
+							capture_cfd.trace1_type/=NONE_D;
+single_trace <= not dual_trace and capture_cfd.trace0_type/=NONE_D;
 
 traceCapture:process(clk)
 begin
@@ -1119,30 +1137,30 @@ if rising_edge(clk) then
 end if;
 end process traceCapture;
 
-traceMux:process(capture_cfd.trace0_type,filtered_cfd,raw_cfd,slope_cfd,
-								 capture_cfd.trace1_type)
+traceMux:process(capture_cfd.trace0_type,capture_cfd.trace1_type,
+								 m.filtered.sample,m.raw.sample,m.slope.sample)
 begin
 	
   case capture_cfd.trace0_type is
-  when NO_TRACE_D =>
+  when NONE_D =>
   	trace0 <= (others => '-');
-  when FILTERED_TRACE_D =>
-    trace0 <= to_std_logic(filtered_cfd);
-  when SLOPE_TRACE_D =>
-    trace0 <= to_std_logic(slope_cfd);
-  when RAW_TRACE_D =>
-    trace0 <= to_std_logic(raw_cfd);
+  when FILTERED_D =>
+    trace0 <= to_std_logic(m.filtered.sample);
+  when SLOPE_D =>
+    trace0 <= to_std_logic(m.slope.sample);
+  when RAW_D =>
+    trace0 <= to_std_logic(m.raw.sample);
   end case;	
   
   case capture_cfd.trace1_type is
-  when NO_TRACE_D =>
+  when NONE_D =>
   	trace1 <= (others => '-');
-  when FILTERED_TRACE_D =>
-    trace1 <= to_std_logic(filtered_cfd);
-  when SLOPE_TRACE_D =>
-    trace1 <= to_std_logic(slope_cfd);
-  when RAW_TRACE_D =>
-    trace1 <= to_std_logic(raw_cfd);
+  when FILTERED_D =>
+    trace1 <= to_std_logic(m.filtered.sample);
+  when SLOPE_D =>
+    trace1 <= to_std_logic(m.slope.sample);
+  when RAW_D =>
+    trace1 <= to_std_logic(m.raw.sample);
   end case;	
 end process traceMux;
 
@@ -1228,7 +1246,7 @@ if rising_edge(clk) then
         else
           pulse_peak_reg(3) <= to_std_logic(m.filtered.sample);
           pulse_peak_we_reg(3) <= TRUE;
-          pulse_peak_reg(1) <= to_std_logic(m.pulse_time);
+          pulse_peak_reg(1) <= to_std_logic(m.pulse.time);
           pulse_peak_we_reg(1) <= TRUE;
         end if;
       end if;
@@ -1244,7 +1262,7 @@ if rising_edge(clk) then
       
       if m.trigger then
         if not pulse_peak_we_reg(0) then	
-          pulse_peak_reg(0) <= to_std_logic(m.pulse_time);
+          pulse_peak_reg(0) <= to_std_logic(m.pulse.time);
           pulse_peak_we_reg(0) <= TRUE;
         else
           peak_lost <= TRUE;

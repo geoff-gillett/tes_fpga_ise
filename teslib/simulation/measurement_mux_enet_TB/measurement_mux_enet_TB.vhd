@@ -111,7 +111,8 @@ begin
     differentiator_reload_ready => open,
     differentiator_reload_last => FALSE,
     measurements => measurements(c),
-    mca_value_select => (others => FALSE),
+    mca_value_select => (others => '0'),
+    mca_trigger_select => (others => '0'),
     mca_value => open,
     dump => dumps(c),
     commit => commits(c),
@@ -210,7 +211,7 @@ port map(
 stimulus:process is
 begin
 mtu <= to_unsigned(80,MTU_BITS);
-tick_period <= to_unsigned(2**15, TICKPERIOD_BITS);
+tick_period <= to_unsigned(2**16, TICKPERIOD_BITS);
 window <= to_unsigned(1,TIME_BITS);
 tick_latency <= to_unsigned(2**16, TICKPERIOD_BITS);
 
@@ -229,11 +230,12 @@ registers.baseline.offset <= to_std_logic(260,ADC_BITS);
 registers.baseline.subtraction <= TRUE;
 registers.capture.constant_fraction --<= (CFD_BITS-2 => '1',others => '0');
 	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
-registers.capture.cfd_relative <= TRUE;
+registers.capture.cfd_rel2min <= TRUE;
 registers.capture.height_type <= PEAK_HEIGHT_D;
 registers.capture.detection_type <= PEAK_DETECTION_D;
 registers.capture.trigger_type <= CFD_LOW_TIMING_D;
 registers.capture.threshold_rel2min <= FALSE;
+registers.capture.height_rel2min <= TRUE;
 registers.capture.pulse_area_threshold <= to_signed(500,AREA_BITS);
 registers.capture.max_peaks <= (others => '1');
 wait for CLK_PERIOD;

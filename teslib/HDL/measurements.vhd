@@ -69,8 +69,6 @@ type measurement_t is record
 	--time from trigger to height_valid
 	rise_time:time_t;
 
-	--FIXME include event_start?	
-	--event_start:boolean;
 	peak_start:boolean; -- event_start
 	trigger:boolean;
 	peak:boolean;
@@ -79,21 +77,21 @@ type measurement_t is record
 	cfd_high:boolean;
 	
 	peak_count:unsigned(PEAK_COUNT_WIDTH-1 downto 0);
-	pulse_time:unsigned(RELATIVETIME_BITS-1 downto 0);
+	--pulse_time:unsigned(RELATIVETIME_BITS-1 downto 0);
 end record;
 
 type measurement_array_t is array (natural range <>)
 		 of measurement_t;
 		 
-function get_values(m:measurement_t) return mca_value_array;
-function get_triggers(m:measurement_t) return std_logic_vector;
+function get_mca_values(m:measurement_t) return mca_value_array;
+function get_mca_triggers(m:measurement_t) return std_logic_vector;
 	
 end package measurements;
 
 package body measurements is
 
-function get_values(m:measurement_t) return mca_value_array is
-variable va:mca_value_array(MCA_VALUE_SELECT_BITS-1 downto 0);
+function get_mca_values(m:measurement_t) return mca_value_array is
+variable va:mca_value_array(NUM_MCA_VALUES-1 downto 0);
 begin
   va(0) := resize(m.filtered.sample,MCA_VALUE_BITS);
   va(1) := resize(m.filtered.area,MCA_VALUE_BITS);
@@ -106,24 +104,24 @@ begin
   va(8) := resize(m.raw.sample,MCA_VALUE_BITS);
   va(9) := resize(m.raw.area,MCA_VALUE_BITS);
   va(10) := resize(m.raw.extrema,MCA_VALUE_BITS);
-  va(11) := resize(signed('0' & m.pulse_time),MCA_VALUE_BITS);
+  va(11) := resize(signed('0' & m.pulse.time),MCA_VALUE_BITS);
   return va;
 end function;
 
-function get_triggers(m:measurement_t) return std_logic_vector is
-variable o:std_logic_vector(MCA_TRIGGER_SELECT_BITS-1 downto 0);
+function get_mca_triggers(m:measurement_t) return std_logic_vector is
+variable o:std_logic_vector(NUM_MCA_TRIGGERS-2 downto 0);
 begin
   o(0):='1';
   o(1):=to_std_logic(m.pulse.pos_threshxing);
-  o(3):=to_std_logic(m.filtered.zero_xing);
-  o(4):=to_std_logic(m.slope.zero_xing);
-  o(5):=to_std_logic(m.slope.pos_threshxing);
-  o(6):=to_std_logic(m.cfd_high);
-  o(7):=to_std_logic(m.cfd_low);
-  o(8):=to_std_logic(m.peak);
-  o(9):=to_std_logic(m.peak_start);
-  o(10):=to_std_logic(m.raw.zero_xing);
-  o(11):=to_std_logic(m.height_valid);
+  o(2):=to_std_logic(m.filtered.zero_xing);
+  o(3):=to_std_logic(m.slope.zero_xing);
+  o(4):=to_std_logic(m.slope.pos_threshxing);
+  o(5):=to_std_logic(m.cfd_high);
+  o(6):=to_std_logic(m.cfd_low);
+  o(7):=to_std_logic(m.peak);
+  o(8):=to_std_logic(m.peak_start);
+  o(9):=to_std_logic(m.raw.zero_xing);
+  --o(11):=to_std_logic(m.height_valid);
   return o;
 end function;
 end package body measurements;

@@ -102,20 +102,29 @@ fconfigure $muxoverflows -translation binary
 set ethernet [open "../ethernet" w]
 fconfigure $ethernet -translation binary
 
+set mcastream [open "../mcastream" w]
+fconfigure $mcastream -translation binary
+
+set mcasettings [open "../mcasettings" w]
+fconfigure $mcasettings -translation binary
+
 restart
 
-wave add /measurement_mux_enet_TB
-wave add /measurement_mux_enet_TB/\\chanGen(0)\\/measurementUnit
-wave add /measurement_mux_enet_TB/mux
-wave add /measurement_mux_enet_TB/mux/buffers
-wave add /measurement_mux_enet_TB/enet
-wave add /measurement_mux_enet_TB/enet/eventbuffer
-wave add /measurement_mux_enet_TB/enet/eventbuffer/streambuffer
-wave add /measurement_mux_enet_TB/enet/eventbuffer/lookaheadslice
+wave add /measurement_subsystem_TB
+wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
+wave add /measurement_subsystem_TB/mux
+wave add /measurement_subsystem_TB/mux/buffers
+wave add /measurement_subsystem_TB/enet
+wave add /measurement_subsystem_TB/enet/eventbuffer
+wave add /measurement_subsystem_TB/enet/eventbuffer/streambuffer
+wave add /measurement_subsystem_TB/enet/eventbuffer/lookaheadslice
+wave add /measurement_subsystem_TB/mca
+wave add /measurement_subsystem_TB/mca/MCA
+wave add /measurement_subsystem_TB/mca/mcaAdapter
 
 
 runclks
-set clk 0
+
 #baseline registers
 writeInt32 $settings registers.baseline.offset
 writeInt32 $settings registers.baseline.subtraction
@@ -135,9 +144,19 @@ writeInt32 $settings trigger_type unsigned
 writeInt32 $settings detection_type unsigned
 writeInt32 $settings tick_period unsigned
 writeInt32 $settings registers.capture.height_rel2min
-
 close $settings
 
+#mca registers
+writeInt32 $mcasettings mca_registers.channel
+writeInt32 $mcasettings mca_registers.bin_n
+writeInt32 $mcasettings mca_registers.last_bin
+writeInt32 $mcasettings mca_registers.lowest_value
+writeInt32 $mcasettings mca_value_type
+writeInt32 $mcasettings mca_trigger_type
+writeInt32 $mcasettings mca_registers.ticks
+close $mcasettings
+
+set clk 0
 while {[gets $fp hexsample] >= 0} {
 #while {$clk < 500000} {}
   #gets $fp hexsample
@@ -164,6 +183,7 @@ while {[gets $fp hexsample] >= 0} {
 		flush $muxfull
 		flush $muxoverflows
 		flush $ethernet
+		flush $mcastream
 	}
 	setsig adc_sample $hexsample hex
 	
@@ -235,6 +255,13 @@ while {[gets $fp hexsample] >= 0} {
 	if { [getsig muxstream_valid] && [getsig muxstream_ready] } {
 		writeInt32 $eventstream muxstream.data(63:32) unsigned big
 		writeInt32 $eventstream muxstream.data(31:0) unsigned big
+		writeInt32 $mcastream muxstream.last(0) unsigned big
+	}
+	
+	if { [getsig mcastream_valid] && [getsig mcastream_ready] } {
+		writeInt32 $mcastream mcastream.data(63:32) unsigned big
+		writeInt32 $mcastream mcastream.data(31:0) unsigned big
+		writeInt32 $mcastream mcastream.last(0) unsigned big
 	}
 	
 	if { [getsig cfd_errors(0)] } {
@@ -261,7 +288,7 @@ while {[gets $fp hexsample] >= 0} {
 	if { [getsig ethernetstream_valid] && [getsig ethernetstream_ready] } {
 		writeInt32 $ethernet ethernetstream_int.data(63:32) unsigned big
 		writeInt32 $ethernet ethernetstream_int.data(31:0) unsigned big
-		writeInt32 $ethernet ethernetstream_int.last(0) unsigned
+		writeInt32 $ethernet ethernetstream_int.last(0) unsigned big
 	}
 
 	runclks
@@ -290,3 +317,4 @@ close $eventstream
 close $muxfull
 close $muxoverflows
 close $ethernet
+close $mcastream

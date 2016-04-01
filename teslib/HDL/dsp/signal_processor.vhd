@@ -415,7 +415,7 @@ begin
       if maxima_pd then
         minima_for_cfd <= minima_value_pd;
         maxima_for_cfd <= filtered_pd;
-        if pd_pulse_state=FIRST_RISE and not registers.capture.cfd_relative then
+        if pd_pulse_state=FIRST_RISE and not registers.capture.cfd_rel2min then
           signal_for_cfd <= filtered_pd;
         else
           signal_for_cfd <= filtered_pd-minima_value_pd;
@@ -440,7 +440,7 @@ begin
       		queue_wr_en <= '1';
       		--FIXME this will fail if pulse ends within 4 clocks of peak
           if first_rise_pipe(MULT_PIPE_DEPTH) and 
-          	 not registers.capture.cfd_relative then
+          	 not registers.capture.cfd_rel2min then
             cfd_low_thresh_pd 
             	<= resize(shift_right(cf_of_peak,CFD_FRAC),WIDTH);
           else

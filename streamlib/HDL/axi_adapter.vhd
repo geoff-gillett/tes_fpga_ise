@@ -95,8 +95,8 @@ axi_last_int <= to_boolean(axi_stream_reg(INPUT_WIDTH-1));
 axi_handshake <= axi_valid_int and axi_ready_int;
 streamvector_handshake <= ready and streamvector_valid;
 last_block <= block_count=0;
---streambus_handshake <= ready and streambus_valid;	
---full <= state=REGISTERS_FULL;
+
+full <= streamvector_valid and not ready;
 axi_ready_int <= not full;	
 
 outputReg:process (clk) is
@@ -109,7 +109,6 @@ begin
         if last_block then
           block_count <= NUM_BLOCKS-1;
           blocks_valid <= TRUE;
-          full <= streamvector_valid and not ready;
         else
           blocks_valid <= FALSE;
           block_count <= block_count-1;

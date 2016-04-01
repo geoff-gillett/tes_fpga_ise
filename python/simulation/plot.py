@@ -66,11 +66,11 @@ def plot_pulse(pulse_num, data, pre=100, length=1000, time_scale=4, voltage_scal
     ins_stop = pulse_data.peak_start[0]+5
     f_ins_ax = zoomed_inset_axes(f_ax, 50, loc=1)  # zoom = 6
     f_ins_ax._label = 'f_ins'
-    f_ins_ax.step(t[ins_start:ins_stop], f_sig[ins_start:ins_stop], 'r')
+    f_ins_ax.step(x[ins_start:ins_stop]*time_scale, f_sig[ins_start:ins_stop], 'r')
     f_ins_ax.set_yticks([])
     f_ins_ax.set_xticks([])
 
-    f_ins_ax.plot([t[ins_start], t[ins_stop]], [0,0], 'k')  # zero line
+    f_ins_ax.plot([x[ins_start]*time_scale, x[ins_stop]*time_scale], [0,0], 'k')  # zero line
 
     mark_inset(f_ax, f_ins_ax, loc1=2, loc2=4, fc="none", ec="0.5")
 
@@ -79,11 +79,11 @@ def plot_pulse(pulse_num, data, pre=100, length=1000, time_scale=4, voltage_scal
     s_ins_ax.set_yticks([])
     s_ins_ax.set_xticks([])
 
-    s_ins_ax.step(t[ins_start:ins_stop], s_sig[ins_start:ins_stop], 'b')
+    s_ins_ax.step(x[ins_start:ins_stop]*time_scale, s_sig[ins_start:ins_stop], 'b')
 
     s_ins_ax.set_ylim(-1,1)
     f_ins_ax.set_ylim(-0.5, 2)
-    f_ins_ax.set_xlim(t[ins_start], t[ins_stop])
+    f_ins_ax.set_xlim(x[ins_start]*time_scale, x[ins_stop]*time_scale)
     align_yaxis(f_ins_ax, 0, s_ins_ax, 0)
 
     s_ins_ax.plot(pulse_data.pulse_start, s_sig[pulse_data.pulse_start], 'ob')

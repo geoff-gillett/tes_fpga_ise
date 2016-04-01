@@ -109,7 +109,7 @@ registers.baseline.offset <= to_std_logic(200,ADC_BITS);
 
 registers.capture.constant_fraction <= to_unsigned((2**17)/8,CFD_BITS-1); --20%
 registers.baseline.subtraction <= FALSE;
-registers.capture.cfd_relative <= TRUE;
+registers.capture.cfd_rel2min <= TRUE;
 
 registers.capture.height_type <= CFD_HIGH_D;
 registers.capture.threshold_rel2min <= TRUE;

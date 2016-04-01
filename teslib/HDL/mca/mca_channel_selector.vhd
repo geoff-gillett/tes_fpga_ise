@@ -16,7 +16,7 @@ use ieee.numeric_std.all;
 library extensions;
 use extensions.boolean_vector.all;
 
-use work.protocol.all;
+--use work.protocol.all;
 use work.registers.all;
 use work.measurements.all;
 use work.types.all;

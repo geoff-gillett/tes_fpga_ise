@@ -24,7 +24,7 @@ library mcalib;
 use work.adc.all;
 use work.events.all;
 use work.registers.all;
-use work.protocol.all;
+--use work.protocol.all;
 use work.types.all;
 use work.functions.all;
 
@@ -37,7 +37,8 @@ generic(
   TOTAL_BITS:integer:=64;
   TICKCOUNT_BITS:integer:=MCA_TICKCOUNT_BITS;
   TICKPERIOD_BITS:integer:=32;
-  MIN_TICK_PERIOD:integer:=2**CHUNK_DATABITS-1
+  MIN_TICK_PERIOD:integer:=2**CHUNK_DATABITS-1;
+  ENDIANNESS:string:="LITTLE"
 );
 port(
   clk:in std_logic;
@@ -48,7 +49,7 @@ port(
   -- update registers to current input values when ticks are complete
   update_on_completion:in boolean; 
   --FIXME add 4 clk hold
-  updated:out boolean; --high for 4 clks after the update is done (CPU interrupt)
+  updated:out boolean; --high for 4 clk after the update is done (CPU interrupt)
   ------------------------------------------------------------------------------
   -- control signals
   ------------------------------------------------------------------------------
@@ -58,8 +59,8 @@ port(
   --! selects out to muxs
   ------------------------------------------------------------------------------
   channel_select:out std_logic_vector(2**CHANNEL_BITS-1 downto 0);
-  value_select:out std_logic_vector(MCA_VALUE_SELECT_BITS-1 downto 0);
-  trigger_select:out std_logic_vector(MCA_TRIGGER_SELECT_BITS-1 downto 0);
+  value_select:out std_logic_vector(NUM_MCA_VALUES-1 downto 0);
+  trigger_select:out std_logic_vector(NUM_MCA_TRIGGERS-2 downto 0);
   ------------------------------------------------------------------------------
   --! inputs from channels
   ------------------------------------------------------------------------------
@@ -102,36 +103,106 @@ signal saved_registers:mca_registers_t;
 -- registers that will be used for the next MCA frame
 signal next_registers:mca_registers_t;
 -- register values for the current MCA frame
-signal registerstream,countstream:streambus_t;
-signal registerstream_valid,registerstream_ready:boolean;
+signal outstream,countstream:streambus_t;
+signal outstream_valid,outstream_ready:boolean;
 signal countstream_valid,countstream_ready:boolean;
-signal header_registers:mca_header_registers;
-signal header_measurements:mca_header_measurements;
-signal size:unsigned(CHUNK_DATABITS-1 downto 0);
 signal tick_pipe:boolean_vector(0 to TICKPIPE_DEPTH);
 signal active:boolean;
 signal updating:boolean;
 signal ticks:unsigned(TICKCOUNT_BITS-1 downto 0);
 signal update_reg:boolean;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- MCA protocol
+--------------------------------------------------------------------------------
+-- header
+--   |  16   |      16       |      32      |  
+-- 0 | size  |   last_bin    | lowest_value |  
+-- 1 | flags | most_frequent |    reserved  |
+-- 2 |                 total                |
+-- 3 |             start_time               |
+-- 4 |              stop_time               |
+constant MCA_PROTOCOL_HEADER_WORDS:integer:=5; --FIXME why are these needed
+--constant MCA_PROTOCOL_HEADER_CHUNKS:integer
+--				 :=MCA_PROTOCOL_HEADER_WORDS*BUS_CHUNKS;
+				 
+type mca_flags_t is record  -- 32 bits
+	value:mca_value_d; --4
+	trigger:mca_trigger_d; --4
+	bin_n:unsigned(MCA_BIN_N_WIDTH-1 downto 0); --4
+	channel:unsigned(MCA_CHANNEL_WIDTH-1 downto 0); --4
+end record;
+
+function to_std_logic(f:mca_flags_t) return std_logic_vector is
+begin
+	return to_std_logic(f.value,4) &
+	       to_std_logic(f.trigger,4) &
+	       to_std_logic(f.bin_n) &
+				 to_std_logic(f.channel);
+end function;
+
+type mca_header_t is record
+	size:unsigned(CHUNK_DATABITS-1 downto 0);
+	last_bin:unsigned(CHUNK_DATABITS-1 downto 0);
+	flags:mca_flags_t;
+	lowest_value:signed(2*CHUNK_DATABITS-1 downto 0);
+	most_frequent:unsigned(CHUNK_DATABITS-1 downto 0);
+	total:unsigned(MCA_TOTAL_BITS-1 downto 0);
+	start_time:unsigned(4*CHUNK_DATABITS-1 downto 0);
+	stop_time:unsigned(4*CHUNK_DATABITS-1 downto 0);
+end record;
+signal header:mca_header_t;
+
+function to_std_logic(
+	h:mca_header_t;
+	w:natural range 0 to MCA_PROTOCOL_HEADER_WORDS-1; -- word number
+	e:string
+) return std_logic_vector is
+begin
+	case w is 
+	when 0 => 
+		return set_endianness(h.size,e) &
+					 set_endianness(h.last_bin,e) &
+					 set_endianness(h.lowest_value,e);
+	when 1 =>
+		return to_std_logic(h.flags) &
+					 set_endianness(h.most_frequent,e) &
+					 to_std_logic(0,32); -- reserved
+	when 2 =>
+		return set_endianness(h.total,e);
+	when 3 =>
+		return set_endianness(h.start_time,e);
+	when 4 =>
+		return set_endianness(h.stop_time,e);
+	end case;
+end function;
+
+function to_streambus(
+	h:mca_header_t;
+	w:natural range 0 to MCA_PROTOCOL_HEADER_WORDS-1; -- word number
+	e:string
+) return streambus_t is
+	variable sb:streambus_t;
+begin
+	sb.data:=to_std_logic(h,w,e);
+	sb.keep_n:=(others => FALSE);	
+	sb.last:=(others => FALSE);	
+	return sb;
+end function;
+
+
 begin
 --
 --------------------------------------------------------------------------------
 -- Control processes and FSM
 --------------------------------------------------------------------------------
 save_registers <= update_asap or update_on_completion;
---updated <= update_int;
 initialising <= control_state=INIT;
 controlReg:process(clk)
 begin 
 if rising_edge(clk) then
 	if reset='1' then
 		next_registers.trigger <= DISABLED_MCA_TRIGGER;
-		--current_registers.trigger <= DISABLED;
-		--current_registers.tick_period 
-			--<= to_unsigned(DEFAULT_TICK_PERIOD,TICK_PERIOD_WIDTH);
-		--next_registers.ticks 
-			--<= to_unsigned(DEFAULT_MCA_TICKS,MCA_TICK_COUNT_WIDTH);
-		--enabled <= FALSE;
 		channel_select <= (others => '0');
 		value_select <= (others => '0');
 		trigger_select <= (others => '0');
@@ -147,9 +218,20 @@ if rising_edge(clk) then
     
     if update_int then -- 3 clocks before tick
     	next_registers <= saved_registers;
-    	header_registers <= to_mca_header_registers(next_registers,size);
-    	size <= resize(shift_left(saved_registers.last_bin,1),SIZE_BITS)+
-    					2+MCA_PROTOCOL_HEADER_CHUNKS;
+    	header.size 
+    		<= resize(shift_right(saved_registers.last_bin,1),SIZE_BITS) +
+    	  2 + -- number of counter words = (last_bin+1)*2
+    	  (MCA_PROTOCOL_HEADER_WORDS);
+    	header.flags.bin_n <= saved_registers.bin_n;
+    	header.flags.channel <= saved_registers.channel;
+    	header.flags.trigger <= saved_registers.trigger;
+    	header.flags.value <= saved_registers.value;
+    	header.last_bin <= resize(saved_registers.last_bin,CHUNK_DATABITS);
+    	header.lowest_value 
+    		<= resize(saved_registers.lowest_value,2*CHUNK_DATABITS);
+    	--header. <= resize(saved_registers.most_frequent,CHUNK_DATABITS);
+    					
+    	--header_registers <= to_mca_header_registers(next_registers,size);
     	updating <= TRUE;
 	    -- change the selectors ahead of tick to adjust for the selector latency.
     	trigger_select <= to_onehot(saved_registers.trigger);	
@@ -297,10 +379,10 @@ protocolHeader:process (clk) is
 begin
 	if rising_edge(clk) then
 		if readable then
-			header_measurements.total <= total;
-			header_measurements.most_frequent <= resize(most_frequent,CHUNK_DATABITS);
-			header_measurements.start_time <= start_time;
-			header_measurements.stop_time <= stop_time;
+			header.total <= total;
+			header.most_frequent <= resize(most_frequent,CHUNK_DATABITS);
+			header.start_time <= start_time;
+			header.stop_time <= stop_time;
 		end if;
 	end if;
 end process protocolHeader;
@@ -319,53 +401,53 @@ begin
 end process startup;
 
 streamFSMtransition:process(stream_state,readable,countstream,
-														countstream_valid,registerstream_ready,
-														header_registers,active,header_measurements)
+														countstream_valid,outstream_ready,
+														header,active)
 begin
 stream_nextstate <= stream_state;
-registerstream.keep_n <= (others => FALSE);
-registerstream.last <= (others => FALSE);
+outstream.keep_n <= (others => FALSE);
+outstream.last <= (others => FALSE);
 case stream_state is 
 when IDLE =>
-	registerstream_valid <= FALSE;
-	registerstream.data <= (others => '-');	
+	outstream_valid <= FALSE;
+	outstream.data <= (others => '-');	
 	countstream_ready <= FALSE;
   if readable and active then
     stream_nextstate <= HEADER0;
   end if;
 when HEADER0 =>
-		registerstream_valid <= TRUE;
-		registerstream <= to_streambus(header_registers,header_measurements,0);
-    if registerstream_ready then
+		outstream_valid <= TRUE;
+		outstream <= to_streambus(header,0,ENDIANNESS);
+    if outstream_ready then
       stream_nextstate <= HEADER1;
     end if;
 when HEADER1 =>
-		registerstream_valid <= TRUE;
-		registerstream <= to_streambus(header_registers,header_measurements,1);
-    if registerstream_ready then
+		outstream_valid <= TRUE;
+		outstream <= to_streambus(header,1,ENDIANNESS);
+    if outstream_ready then
       stream_nextstate <= HEADER2;
     end if;
 when HEADER2 =>
-		registerstream_valid <= TRUE;
-		registerstream <= to_streambus(header_registers,header_measurements,2);
-    if registerstream_ready then
+		outstream_valid <= TRUE;
+		outstream <= to_streambus(header,2,ENDIANNESS);
+    if outstream_ready then
       stream_nextstate <= HEADER3;
     end if;
 when HEADER3 =>
-		registerstream <= to_streambus(header_registers,header_measurements,3);
-    if registerstream_ready then
+		outstream <= to_streambus(header,3,ENDIANNESS);
+    if outstream_ready then
       stream_nextstate <= HEADER4;
     end if;
 when HEADER4 =>
-		registerstream <= to_streambus(header_registers,header_measurements,4);
-    if registerstream_ready then
+		outstream <= to_streambus(header,4,ENDIANNESS);
+    if outstream_ready then
       stream_nextstate <= DISTRIBUTION;
     end if;
 when DISTRIBUTION =>
-  	registerstream_valid <= countstream_valid;
-    registerstream <= countstream;
-    countstream_ready <= registerstream_ready;
-    if countstream.last(0) and countstream_valid and registerstream_ready then
+  	outstream_valid <= countstream_valid;
+    outstream <= countstream;
+    countstream_ready <= outstream_ready;
+    if countstream.last(0) and countstream_valid and outstream_ready then
       stream_nextstate <= IDLE;
     end if;
 end case;
@@ -409,7 +491,10 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  axi_stream => to_std_logic(resize(unsigned(mca_axi_stream),2*CHUNK_DATABITS)),
+  axi_stream => set_endianness(
+  	resize(unsigned(mca_axi_stream),2*CHUNK_DATABITS),
+  	ENDIANNESS
+  ),
   axi_valid => mca_axi_valid,
   axi_ready => mca_axi_ready,
   axi_last => mca_axi_last,
@@ -422,9 +507,9 @@ outstreamReg:entity streamlib.streambus_register_slice
 port map(
   clk => clk,
   reset => reset,
-  stream_in => registerstream,
-  ready_out => registerstream_ready,
-  valid_in => registerstream_valid,
+  stream_in => outstream,
+  ready_out => outstream_ready,
+  valid_in => outstream_valid,
   stream => stream,
   ready => ready,
   valid => valid
