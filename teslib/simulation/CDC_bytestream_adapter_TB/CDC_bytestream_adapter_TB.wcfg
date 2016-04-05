@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="CDC_bytestream_adapter_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="boolean_vector" />
+            <top_module name="cdc_bytestream_adapter_tb" />
+            <top_module name="logic" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="textio" />
+            <top_module name="types" />
+            <top_module name="vcomponents" />
+            <top_module name="vital_primitives" />
+            <top_module name="vital_timing" />
+            <top_module name="vpkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group17" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/s_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">s_clk</obj_property>
+         <obj_property name="ObjectShortName">s_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/s_reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">s_reset</obj_property>
+         <obj_property name="ObjectShortName">s_reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">streambus</obj_property>
+         <obj_property name="ObjectShortName">streambus</obj_property>
+         <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus.keep_n" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.keep_n</obj_property>
+            <obj_property name="ObjectShortName">streambus.keep_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">streambus.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">streambus.data</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">streambus_valid</obj_property>
+         <obj_property name="ObjectShortName">streambus_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">streambus_ready</obj_property>
+         <obj_property name="ObjectShortName">streambus_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/b_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">b_clk</obj_property>
+         <obj_property name="ObjectShortName">b_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/b_reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">b_reset</obj_property>
+         <obj_property name="ObjectShortName">b_reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/bytestream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">bytestream[7:0]</obj_property>
+         <obj_property name="ObjectShortName">bytestream[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/bytestream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bytestream_valid</obj_property>
+         <obj_property name="ObjectShortName">bytestream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/bytestream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bytestream_ready</obj_property>
+         <obj_property name="ObjectShortName">bytestream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/bytestream_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bytestream_last</obj_property>
+         <obj_property name="ObjectShortName">bytestream_last</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group38" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/s_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">s_clk</obj_property>
+         <obj_property name="ObjectShortName">s_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/s_reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">s_reset</obj_property>
+         <obj_property name="ObjectShortName">s_reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/streambus" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">streambus</obj_property>
+         <obj_property name="ObjectShortName">streambus</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/streambus_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">streambus_valid</obj_property>
+         <obj_property name="ObjectShortName">streambus_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/streambus_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">streambus_ready</obj_property>
+         <obj_property name="ObjectShortName">streambus_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/b_clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">b_clk</obj_property>
+         <obj_property name="ObjectShortName">b_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/b_reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">b_reset</obj_property>
+         <obj_property name="ObjectShortName">b_reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/bytestream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">bytestream[7:0]</obj_property>
+         <obj_property name="ObjectShortName">bytestream[7:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/bytestream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bytestream_valid</obj_property>
+         <obj_property name="ObjectShortName">bytestream_valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/bytestream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bytestream_ready</obj_property>
+         <obj_property name="ObjectShortName">bytestream_ready</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/bytestream_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">bytestream_last</obj_property>
+         <obj_property name="ObjectShortName">bytestream_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/bytes" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">bytes[7:0]</obj_property>
+         <obj_property name="ObjectShortName">bytes[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/bytestream_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">bytestream_int[8:0]</obj_property>
+         <obj_property name="ObjectShortName">bytestream_int[8:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

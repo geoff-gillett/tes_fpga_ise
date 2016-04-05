@@ -23,8 +23,8 @@ use work.types.all;
 use work.registers.all;
 use work.events.all;
 use work.measurements.all;
-use work.adc.all;
-use work.dsptypes.all;
+use work.adc.all; --TODO move to types
+use work.dsptypes.all; --TODO move to types
 
 entity measurement_subsystem_TB is
 generic(
@@ -40,35 +40,55 @@ architecture testbench of measurement_subsystem_TB is
 
 constant CHANNELS:integer:=2**CHANNEL_BITS;
 
-signal clk:std_logic:='1';	
-signal reset:std_logic:='1';	
-constant CLK_PERIOD:time:=4 ns;
+signal sample_clk:std_logic:='1';	
+signal IO_clk:std_logic:='1';	
+signal sample_reset:std_logic:='1';	
+signal IO_reset:std_logic:='1';	
+constant SAMPLE_CLK_PERIOD:time:=4 ns;
+constant IO_CLK_PERIOD:time:=8 ns;
 
 signal measurements:measurement_array_t(CHANNELS-1 downto 0);
-signal dumps,commits,peak_overflows:boolean_vector(CHANNELS-1 downto 0);
-signal time_overflows,cfd_errors:boolean_vector(CHANNELS-1 downto 0);
+signal dumps,commits:boolean_vector(CHANNELS-1 downto 0);
 signal eventstreams_valid:boolean_vector(CHANNELS-1 downto 0);
 signal eventstreams_ready:boolean_vector(CHANNELS-1 downto 0);
 signal adc_samples:adc_sample_array_t(CHANNELS-1 downto 0);
 signal adc_sample_reg:adc_sample_array_t(CHANNELS-1 downto 0);
 signal adc_sample:adc_sample_t;
-signal registers:measurement_registers_t;
-signal height_type:unsigned(HEIGHT_TYPE_BITS-1 downto 0);
-signal detection_type:unsigned(DETECTION_TYPE_BITS-1 downto 0);
-signal trigger_type:unsigned(TIMING_TRIGGER_TYPE_BITS-1 downto 0);
-signal eventstreams_int:streambus_array_t(CHANNELS-1 downto 0);
-signal baseline_range_errors:boolean_vector(CHANNELS-1 downto 0);
-signal framer_overflows:boolean_vector(CHANNELS-1 downto 0);
-signal mux_full:boolean;
-signal tick_period:unsigned(TICKPERIOD_BITS-1 downto 0);
-signal starts:boolean_vector(CHANNELS-1 downto 0);
+signal registers:measurement_register_array(CHANNELS-1 downto 0);
+
+-- discrete types as unsigned for reading into settings file
+type height_type_array is array (natural range <>) of
+		 unsigned(HEIGHT_TYPE_BITS-1 downto 0);
+signal height_types:height_type_array(CHANNELS-1 downto 0);
+type detection_type_array is array (natural range <>) of
+		 unsigned(DETECTION_TYPE_BITS-1 downto 0);
+signal detection_types:detection_type_array(CHANNELS-1 downto 0);
+type trigger_type_array is array (natural range <>) of
+		 unsigned(TIMING_TRIGGER_TYPE_BITS-1 downto 0);
+signal trigger_types:trigger_type_array(CHANNELS-1 downto 0);
+signal mca_value_type:unsigned(ceilLog2(NUM_MCA_VALUES)-1 downto 0);
+signal mca_trigger_type:unsigned(ceilLog2(NUM_MCA_TRIGGERS)-1 downto 0);
+-- error signals
 signal mux_overflows:boolean_vector(CHANNELS-1 downto 0);
 signal mux_overflows_u:unsigned(CHANNELS-1 downto 0);
+signal framer_overflows:boolean_vector(CHANNELS-1 downto 0);
+signal framer_overflows_u:unsigned(CHANNELS-1 downto 0);
+signal mux_full:boolean;
+signal time_overflows,cfd_errors:boolean_vector(CHANNELS-1 downto 0);
+signal time_overflows_u,cfd_errors_u:unsigned(CHANNELS-1 downto 0);
+signal baseline_errors:boolean_vector(CHANNELS-1 downto 0);
+signal baseline_errors_u:unsigned(CHANNELS-1 downto 0);
+signal peak_overflows:boolean_vector(CHANNELS-1 downto 0);
+signal peak_overflows_u:unsigned(CHANNELS-1 downto 0);
+--
+signal eventstreams_int:streambus_array_t(CHANNELS-1 downto 0);
+signal tick_period:unsigned(TICKPERIOD_BITS-1 downto 0);
+signal starts:boolean_vector(CHANNELS-1 downto 0);
 signal muxstream:streambus_t;
 signal muxstream_valid:boolean;
 signal muxstream_ready:boolean;
 signal mcastream:streambus_t;
-signal ethernetstream_int:streambus_t;
+signal ethernetstream:streambus_t;
 signal ethernetstream_valid:boolean;
 signal ethernetstream_ready:boolean;
 signal mtu:unsigned(MTU_BITS-1 downto 0);
@@ -90,19 +110,16 @@ signal mcastream_valid:boolean;
 signal mcastream_ready:boolean;
 signal mca_value_valids:boolean_vector(CHANNELS-1 downto 0);
 signal mca_value:signed(MCA_VALUE_BITS-1 downto 0);
-signal mca_value_type:unsigned(ceilLog2(NUM_MCA_VALUES)-1 downto 0);
-signal mca_trigger_type:unsigned(ceilLog2(NUM_MCA_TRIGGERS)-1 downto 0);
+signal bytestream:std_logic_vector(7 downto 0);
+signal bytestream_valid:boolean;
+signal bytestream_ready:boolean;
+signal bytestream_last:boolean;
+
 begin
 	
-clk <= not clk after CLK_PERIOD/2;
+sample_clk <= not sample_clk after SAMPLE_CLK_PERIOD/2;
+IO_clk <= not IO_clk after IO_CLK_PERIOD/2;
 
-detection_type <= to_unsigned(
-	registers.capture.detection_type,DETECTION_TYPE_BITS
-);
-height_type <= to_unsigned(registers.capture.height_type,HEIGHT_TYPE_BITS);
-trigger_type <= to_unsigned(
-	registers.capture.trigger_type,TIMING_TRIGGER_TYPE_BITS
-);
 mca_value_type <= to_unsigned(mca_registers.value,ceilLog2(NUM_MCA_VALUES));
 mca_trigger_type <= to_unsigned(mca_registers.value,ceilLog2(NUM_MCA_TRIGGERS));
 
@@ -115,10 +132,10 @@ begin
     ENDIANNESS => ENDIANNESS
   )
   port map(
-    clk => clk,
-    reset => reset,
+    clk => sample_clk,
+    reset => sample_reset,
     adc_sample => adc_samples(c),
-    registers => registers, -- use same registers for all channels
+    registers => registers(c), -- use same registers for all channels
     filter_config_data => (others => '0'),
     filter_config_valid => FALSE,
     filter_config_ready => open,
@@ -140,7 +157,7 @@ begin
     mca_value_valid => mca_value_valids(c),
     dump => dumps(c),
     commit => commits(c),
-    baseline_range_error => baseline_range_errors(c),
+    baseline_range_error => baseline_errors(c),
     cfd_error => cfd_errors(c),
     time_overflow => time_overflows(c),
     peak_overflow => peak_overflows(c),
@@ -150,21 +167,34 @@ begin
     ready => eventstreams_ready(c)
   );
 	starts(c) <= measurements(c).trigger;  -- pull out  the mux start signal 
+  detection_types(0) 
+  	<= to_unsigned(registers(0).capture.detection_type,DETECTION_TYPE_BITS);
+  height_types(0) 
+  	<= to_unsigned(registers(0).capture.height_type,HEIGHT_TYPE_BITS);
+  trigger_types(0) 
+  	<= to_unsigned(registers(0).capture.trigger_type,TIMING_TRIGGER_TYPE_BITS);
 end generate chanGen;
 
+-- unsigned value for writing to file
+baseline_errors_u <= to_unsigned(baseline_errors);
+cfd_errors_u <= to_unsigned(cfd_errors);
+time_overflows_u <= to_unsigned(time_overflows);
+peak_overflows_u <= to_unsigned(peak_overflows);
+framer_overflows_u <= to_unsigned(framer_overflows);
+
 -- each channel sees same adc_sample delayed by its channel number
-sample:process(clk)
+sample:process(sample_clk)
 begin
-	if rising_edge(clk) then
+	if rising_edge(sample_clk) then
 		adc_samples(0) <= adc_sample;
 		adc_sample_reg(0) <= adc_sample;
 	end if;
 end process sample;
 
 delayGen:for i in 1 to CHANNELS-1 generate
-  sampleDelay:process (clk) is
+  sampleDelay:process (sample_clk) is
   begin
-    if rising_edge(clk) then
+    if rising_edge(sample_clk) then
       adc_samples(i) <= adc_sample_reg(i-1);
       adc_sample_reg(i) <= adc_sample_reg(i-1);
     end if;
@@ -182,8 +212,8 @@ generic map(
   ENDIANNESS => ENDIANNESS
 )
 port map(
-  clk => clk,
-  reset => reset,
+  clk => sample_clk,
+  reset => sample_reset,
   start => starts,
   commit => commits,
   dump => dumps,
@@ -206,8 +236,8 @@ generic map(
   VALUE_BITS   => MCA_VALUE_BITS
 )
 port map(
-  clk => clk,
-  reset => reset,
+  clk => sample_clk,
+  reset => sample_reset,
   channel_select => channel_select,
   values => mca_values,
   valids => mca_value_valids,
@@ -225,11 +255,12 @@ generic map(
   TICKCOUNT_BITS => MCA_TICKCOUNT_BITS,
   TICKPERIOD_BITS => TICKPERIOD_BITS,
   MIN_TICK_PERIOD => MIN_TICK_PERIOD,
+  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
   ENDIANNESS => ENDIANNESS
 )
 port map(
-  clk => clk,
-  reset => reset,
+  clk => sample_clk,
+  reset => sample_reset,
   initialising => mca_initialising,
   update_asap => update_asap,
   update_on_completion => update_on_completion,
@@ -256,8 +287,8 @@ generic map(
   ENDIANNESS => ENDIANNESS
 )
 port map(
-  clk => clk,
-  reset => reset,
+  clk => sample_clk,
+  reset => sample_reset,
   mtu => mtu,
   tick_latency => tick_latency,
   eventstream => muxstream,
@@ -266,9 +297,24 @@ port map(
   mcastream => mcastream,
   mcastream_valid => mcastream_valid,
   mcastream_ready => mcastream_ready,
-  ethernetstream => ethernetstream_int,
+  ethernetstream => ethernetstream,
   ethernetstream_valid => ethernetstream_valid,
   ethernetstream_ready => ethernetstream_ready
+);
+
+cdc:entity work.CDC_bytestream_adapter
+port map(
+  s_clk => sample_clk,
+  s_reset => sample_reset,
+  streambus => ethernetstream,
+  streambus_valid => ethernetstream_valid,
+  streambus_ready => ethernetstream_ready,
+  b_clk => IO_clk,
+  b_reset => IO_reset,
+  bytestream => bytestream,
+  bytestream_valid => bytestream_valid,
+  bytestream_ready => bytestream_ready,
+  bytestream_last => bytestream_last
 );
 
 -- all channels see same register settings
@@ -279,30 +325,32 @@ tick_period <= to_unsigned(2**16, TICKPERIOD_BITS);
 window <= to_unsigned(1,TIME_BITS);
 tick_latency <= to_unsigned(2**16, TICKPERIOD_BITS);
 
-registers.capture.pulse_threshold <= to_unsigned(300,DSP_BITS-DSP_FRAC-1) & 
-																 		 to_unsigned(0,DSP_FRAC);
-registers.capture.slope_threshold <= to_unsigned(10,DSP_BITS-SLOPE_FRAC-1) & 
-																     to_unsigned(0,SLOPE_FRAC);
-																     
-registers.baseline.timeconstant 
-	<= to_unsigned(2**15,BASELINE_TIMECONSTANT_BITS);
-registers.baseline.threshold 
-	<= to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
-registers.baseline.count_threshold 
-	<= to_unsigned(150,BASELINE_COUNTER_BITS);
-registers.baseline.average_order <= 4;
-registers.baseline.offset <= to_std_logic(260,ADC_BITS);
-registers.baseline.subtraction <= TRUE;
-registers.capture.constant_fraction 
-	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
-registers.capture.cfd_rel2min <= TRUE;
-registers.capture.height_type <= PEAK_HEIGHT_D;
-registers.capture.detection_type <= PEAK_DETECTION_D;
-registers.capture.trigger_type <= CFD_LOW_TIMING_D;
-registers.capture.threshold_rel2min <= FALSE;
-registers.capture.height_rel2min <= FALSE;
-registers.capture.pulse_area_threshold <= to_signed(500,AREA_BITS);
-registers.capture.max_peaks <= (others => '1');
+-- register settings common to both channels
+for c in CHANNELS-1 downto 0 loop 
+  registers(c).capture.pulse_threshold 
+  	<= to_unsigned(300,DSP_BITS-DSP_FRAC-1) & to_unsigned(0,DSP_FRAC);
+  registers(c).capture.slope_threshold 
+  	<= to_unsigned(10,DSP_BITS-SLOPE_FRAC-1) & to_unsigned(0,SLOPE_FRAC);
+  registers(c).baseline.timeconstant 
+    <= to_unsigned(2**15,BASELINE_TIMECONSTANT_BITS);
+  registers(c).baseline.threshold 
+    <= to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
+  registers(c).baseline.count_threshold 
+    <= to_unsigned(150,BASELINE_COUNTER_BITS);
+  registers(c).baseline.average_order <= 4;
+  registers(c).baseline.offset <= to_std_logic(260,ADC_BITS);
+  registers(c).baseline.subtraction <= TRUE;
+  registers(c).capture.constant_fraction 
+    <= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
+  registers(c).capture.cfd_rel2min <= TRUE;
+  registers(c).capture.height_type <= PEAK_HEIGHT_D;
+  registers(c).capture.detection_type <= PEAK_DETECTION_D;
+  registers(c).capture.trigger_type <= CFD_LOW_TIMING_D;
+  registers(c).capture.threshold_rel2min <= FALSE;
+  registers(c).capture.height_rel2min <= FALSE;
+  registers(c).capture.pulse_area_threshold <= to_signed(500,AREA_BITS);
+  registers(c).capture.max_peaks <= (others => '1');
+end loop;
 
 mca_registers.channel <= (others => '0');
 mca_registers.bin_n <= (others => '0');
@@ -314,14 +362,20 @@ mca_registers.ticks <= (0 => '1', others => '0');
 
 update_on_completion <= FALSE;
 
-wait for CLK_PERIOD;
-reset <= '0';
-ethernetstream_ready <= TRUE;
+wait for IO_CLK_PERIOD;
+sample_reset <= '0';
+IO_reset <= '0';
+bytestream_ready <= FALSE;
 wait until not mca_initialising;
-wait for CLK_PERIOD;
+wait for SAMPLE_CLK_PERIOD;
 update_asap <= TRUE;
-wait for CLK_PERIOD;
+wait for SAMPLE_CLK_PERIOD;
 update_asap <= FALSE;
+wait for IO_CLK_PERIOD*10;
+wait until bytestream_last and bytestream_ready and bytestream_valid;
+bytestream_ready <= FALSE;
+wait for IO_CLK_PERIOD*1000;
+bytestream_ready <= TRUE;
 wait;
 end process stimulus;
 

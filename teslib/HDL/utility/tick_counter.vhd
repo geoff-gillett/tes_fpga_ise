@@ -18,7 +18,8 @@ entity tick_counter is
 generic (
   MINIMUM_PERIOD:integer:=2**14;
   TICK_BITS:integer:=32;
-  TIMESTAMP_BITS:integer:=64
+  TIMESTAMP_BITS:integer:=64;
+  INIT:integer:=0
 );
 port (
   clk:in std_logic;
@@ -74,11 +75,14 @@ begin
 end process tickTimer;
 
 globalTime:entity work.clock
-generic map(TIME_BITS => TIMESTAMP_BITS)
+generic map(
+	TIME_BITS => TIMESTAMP_BITS,
+	INIT => INIT
+)
 port map(
   clk => clk,
   reset => reset,
-  initialise_to_1 => FALSE,
+  --initialise_to_1 => FALSE,
   te => TRUE,
   rolling_over => open,
   time_stamp => time_stamp

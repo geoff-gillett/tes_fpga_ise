@@ -38,6 +38,7 @@ generic(
   TICKCOUNT_BITS:integer:=MCA_TICKCOUNT_BITS;
   TICKPERIOD_BITS:integer:=32;
   MIN_TICK_PERIOD:integer:=2**CHUNK_DATABITS-1;
+  TICKPIPE_DEPTH:integer:=2;
   ENDIANNESS:string:="LITTLE"
 );
 port(
@@ -318,7 +319,8 @@ ticker:entity work.tick_counter
 generic map(
   MINIMUM_PERIOD => MIN_TICK_PERIOD,
   TICK_BITS => TICKPERIOD_BITS,
-  TIMESTAMP_BITS => TIMESTAMP_BITS
+  TIMESTAMP_BITS => TIMESTAMP_BITS,
+  INIT => -TICKPIPE_DEPTH
 )
 port map(
   clk => clk,

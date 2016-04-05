@@ -1,13 +1,13 @@
 import numpy as np
 from enum import Enum
-import os
+from os import path as ospath
+from pickle import Pickler, Unpickler
+from collections import namedtuple
+from datetime import datetime
 
 DEFAULT_REPO_PATH = 'c:\\TES_project\\fpga_ise\\'
 
-
-# dataset = dict() Describes what files should be read using np.fromfile
-# dict contains tuples (file, np.dtype, indexed (boolean) ) the key is the name of the attribute to use.
-# indexed indicates that region should search for values in bounds rather than slicing
+File = namedtuple('File', ['filename', 'dtype', 'is_list', 'is_sliceable'])
 
 
 class HeightType(Enum):
@@ -45,7 +45,6 @@ class TriggerType(Enum):
 
 
 class PayloadType(Enum):
-
     @staticmethod
     def from_int(value):
         if value == 0:
@@ -100,7 +99,30 @@ class McaValueType(Enum):
         elif value == 11:
             return McaValueType.raw_extrema
         else:
-            raise AttributeError()
+            raise AttributeError('{:d} cannot be converted to McaValueType'.format(value))
+
+    # @property
+    # def trace(self):
+    #     if self is McaValueType.filtered_signal:
+    #         return 'filtered'
+    #     elif self is McaValueType.filtered_area:
+    #         return 'filtered'
+    #     elif self is McaValueType.filtered_extrema:
+    #         return 'filtered'
+    #     elif self is McaValueType.slope_signal:
+    #         return 'slope'
+    #     elif self is McaValueType.slope_area:
+    #         return 'slope'
+    #     elif self is McaValueType.slope_extrema:
+    #         return 'slope'
+    #     elif self is McaValueType.raw_signal:
+    #         return 'raw'
+    #     elif self is McaValueType.raw_area:
+    #         return 'raw'
+    #     elif self is McaValueType.raw_extrema:
+    #         return 'raw'
+    #     else:
+    #         return None
 
     filtered_signal = 0
     filtered_area = 1
@@ -117,7 +139,6 @@ class McaValueType(Enum):
 
 
 class McaTriggerType(Enum):
-
     @staticmethod
     def from_int(value):
         if value == 0:
@@ -158,32 +179,6 @@ class McaTriggerType(Enum):
     raw_0xing = 10
 
 
-def get_registers(project, testbench, file='settings', repo=DEFAULT_REPO_PATH):
-    registers = dict()
-    settings = Data.fromfile(file, np.int32, project, testbench, repo)
-    registers['baseline'] = dict()
-    registers['baseline']['offset'] = settings[0]
-    registers['baseline']['subtraction'] = settings[1] != 0
-    registers['baseline']['time_constant'] = settings[2]
-    registers['baseline']['threshold'] = settings[3]
-    registers['baseline']['count_threshold'] = settings[4]
-    registers['generic'] = dict()
-    registers['baseline']['average_order'] = settings[5]
-    registers['capture'] = dict()
-    registers['capture']['cfd_relative'] = settings[6] != 0
-    registers['capture']['constant_fraction'] = settings[7]
-    registers['capture']['pulse_threshold'] = settings[8]
-    registers['capture']['slope_threshold'] = settings[9]
-    registers['capture']['pulse_area_threshold'] = settings[10]
-    registers['capture']['height_type'] = HeightType.from_int(settings[11])
-    registers['capture']['threshold_rel2min'] = settings[12] != 0
-    registers['capture']['trigger_type'] = TriggerType.from_int(settings[13])
-    registers['capture']['event_type'] = PayloadType.from_int(settings[14])
-    registers['capture']['height_rel2min'] = settings[15] != 0
-
-    return registers
-
-
 class EventStream:
     def __init__(self, project, testbench, file='eventstream', repo=DEFAULT_REPO_PATH):
         self._stream64 = Data.fromfile(file, np.uint64, project, testbench, repo)
@@ -193,110 +188,153 @@ class EventStream:
 
 
 class Data:
+
+    def __init__(self, fileset, channels, project, testbench, repo=DEFAULT_REPO_PATH):
+        self._fileset = fileset
+        self.channels = channels
+        self.project = project
+        self.testbench = testbench
+        self.creation_date = datetime.now()
+
+        for file in fileset:
+            fileinfo = fileset[file]
+            if fileinfo.is_list:
+                data = []
+                for c in range(0, channels):
+                    # print('{:s}{:d}'.format(simfile.filename, c))
+                    data.append(
+                        self.fromfile(
+                            '{:s}{:d}'.format(fileinfo.filename, c),
+                            fileinfo.dtype, project, testbench, repo
+                        )
+                    )
+            else:
+                data = self.fromfile(fileinfo.filename, fileinfo.dtype, project, testbench, repo)
+
+            setattr(self, file, data)
+
     @staticmethod
     def fromfile(file, dt, project, testbench, repo=DEFAULT_REPO_PATH):
         path = repo + project + '\\PlanAhead\\' + project + '.sim\\' + testbench + '\\'
-        if os.path.isfile(path + file):
+        # print(path + file)
+        if ospath.isfile(path + file):
             return np.fromfile(path + file, dt)
         else:
+            print('{:s} does not exist'.format(path + file))
             return None
 
+    # def _parse_settings(self):
+    #     registers = dict()
+    #     if not hasattr(self, 'settings') and not hasattr(self, 'mca_settings'):
+    #         return None
+    #
+    #     if hasattr(self, 'settings'):
+    #         registers['baseline'] = dict()
+    #         registers['baseline']['offset'] = self.settings[0]
+    #         registers['baseline']['subtraction'] = self.settings[1] != 0
+    #         registers['baseline']['time_constant'] = self.settings[2]
+    #         registers['baseline']['threshold'] = self.settings[3]
+    #         registers['baseline']['count_threshold'] = self.settings[4]
+    #         registers['generic'] = dict()
+    #         registers['baseline']['average_order'] = self.settings[5]
+    #         registers['capture'] = dict()
+    #         registers['capture']['cfd_relative'] = self.settings[6] != 0
+    #         registers['capture']['constant_fraction'] = self.settings[7]
+    #         registers['capture']['pulse_threshold'] = self.settings[8]
+    #         registers['capture']['slope_threshold'] = self.settings[9]
+    #         registers['capture']['pulse_area_threshold'] = self.settings[10]
+    #         registers['capture']['height_type'] = HeightType.from_int(self.settings[11])
+    #         registers['capture']['threshold_rel2min'] = self.settings[12] != 0
+    #         registers['capture']['trigger_type'] = TriggerType.from_int(self.settings[13])
+    #         registers['capture']['event_type'] = PayloadType.from_int(self.settings[14])
+    #         registers['capture']['height_rel2min'] = self.settings[15] != 0
+    #
+    #     if hasattr(self, 'mca_settings'):
+    #         registers['mca'] = self._parse_mcasettings()
+    #
+    #     return registers
+
+    # def _parse_mcasettings(self):
+    #     if hasattr(self, 'mca_settings'):
+    #         mca_registers = dict()
+    #         mca_registers['channel'] = self.mca_settings[0]
+    #         mca_registers['bin_n'] = self.mca_settings[1]
+    #         mca_registers['last_bin'] = self.mca_settings[2]
+    #         mca_registers['lowest_value'] = self.mca_settings[3]
+    #         mca_registers['value'] = McaValueType.from_int(self.mca_settings[4])
+    #         mca_registers['trigger'] = McaTriggerType.from_int(self.mca_settings[5])
+    #         mca_registers['ticks'] = self.mca_settings[6]
+    #         return mca_registers
+    #     else:
+    #         return None
+
+    def save(self, filename=None):
+        if filename is None:
+            filename = '{:s}-{:}.pickle'.format(self.testbench, datetime.now().date())
+        fp = open(filename, 'wb')
+        pickler = Pickler(fp, protocol=-1)
+        pickler.dump(self)
+
     @staticmethod
-    def read_dataset(dataset, project, testbench, repo=DEFAULT_REPO_PATH):
-        data_dict = dict()
-        for attribute in dataset.keys():
-            data_dict[attribute] = (
-                Data.fromfile(dataset[attribute][0], dataset[attribute][1], project, testbench, repo),
-                dataset[attribute][2]
-            )
+    def load(filename):
+        fp = open(filename, 'rb')
+        unpickler = Unpickler(fp)
+        return unpickler.load()
 
-        return data_dict
-
-    @staticmethod
-    def parse_settings(settings):
-        registers = dict()
-        registers['baseline'] = dict()
-        registers['baseline']['offset'] = settings[0]
-        registers['baseline']['subtraction'] = settings[1] != 0
-        registers['baseline']['time_constant'] = settings[2]
-        registers['baseline']['threshold'] = settings[3]
-        registers['baseline']['count_threshold'] = settings[4]
-        registers['generic'] = dict()
-        registers['baseline']['average_order'] = settings[5]
-        registers['capture'] = dict()
-        registers['capture']['cfd_relative'] = settings[6] != 0
-        registers['capture']['constant_fraction'] = settings[7]
-        registers['capture']['pulse_threshold'] = settings[8]
-        registers['capture']['slope_threshold'] = settings[9]
-        registers['capture']['pulse_area_threshold'] = settings[10]
-        registers['capture']['height_type'] = HeightType.from_int(settings[11])
-        registers['capture']['threshold_rel2min'] = settings[12] != 0
-        registers['capture']['trigger_type'] = TriggerType.from_int(settings[13])
-        registers['capture']['event_type'] = PayloadType.from_int(settings[14])
-        registers['capture']['height_rel2min'] = settings[15] != 0
-        return registers
-
-    @staticmethod
-    def parse_mcasettings(settings):
-        mca_registers = dict()
-        mca_registers['channel'] = settings[0]
-        mca_registers['bin_n'] = settings[1]
-        mca_registers['last_bin'] = settings[2]
-        mca_registers['value'] = McaValueType.from_int(settings[3])
-        mca_registers['trigger'] = McaTriggerType.from_int(settings[4])
-        mca_registers['ticks'] = settings[5]
-        return mca_registers
-
-    def __init__(self, dataset, project, testbench, repo=DEFAULT_REPO_PATH):
-        self._data = self.read_dataset(dataset, project, testbench, repo)
-        for attribute in self._data.keys():
-            setattr(
-                self,
-                attribute,
-                self._data[attribute][0]
-            )
-        #self.registers = get_registers(project, testbench, repo=repo)
-
+    # time slice returns nested class Slice
     def slice(self, bounds):
-        return self.Slice(self._data, bounds)
+        return self.Slice(self, bounds)
 
     def region(self, point, pre, length):
         return self.slice((point - pre, point - pre + length))
 
+    # quick and dirty proxy to handle slices
     class Slice:
-        @staticmethod
-        def index_slice(array, bounds):
-            if bounds == 'all':
-                return array
-            # assumes array (indexs) are sorted
-            return array[np.searchsorted(array, bounds[0]):np.searchsorted(array, bounds[1])]
 
-        def apply_bounds(self):
-            for attribute in self._data.keys():
-                if self._bounds == 'all':
-                    setattr(
-                        self,
-                        attribute,
-                        self._data[attribute][0]
-                    )
+        def _slice(self, attr, array):
+            if array is None:
+                return None
+
+            if 'index' in self._data._fileset[attr].dtype.fields:
+                sliced = array[
+                         np.searchsorted(array['index'], self.bounds[0]):
+                         np.searchsorted(array['index'], self.bounds[1])
+                         ]
+            else:
+                sliced = array[self.bounds[0]:self.bounds[1]]
+            return sliced
+
+        def _apply_bounds(self, attr):
+
+            data = getattr(self._data, attr)  # get array from Data instance
+
+            if self._bounds == 'all' or not self._data._fileset[attr].is_sliceable:
+                return data
+            else:
+                if self._data._fileset[attr].is_list:
+                    sliced = []
+                    for array in data:
+                        sliced.append(self._slice(attr, array))
                 else:
-                    if self._data[attribute][1]:
-                        setattr(
-                            self,
-                            attribute,
-                            self.index_slice(self._data[attribute][0], self.bounds) - self.bounds[0]
-                        )
-                    else:
-                        setattr(
-                            self,
-                            attribute,
-                            self._data[attribute][0][self.bounds[0]:self.bounds[1]]
-                        )
+                    sliced = self._slice(attr, data)
+
+                self._sliced[attr] = sliced
+                return sliced
 
         def __init__(self, data, bounds='all'):
-            self._bounds = bounds
-            self._data = data
-            self.apply_bounds()
+            self._bounds = bounds  # slice bounds -- (a,b) yields a numpy [a:b] type slice
+            self._data = data  # points to the Data instance
+            self._sliced = dict()  # arrays that are already sliced
+
+        def __getattr__(self, attr):
+
+            if attr not in self._data._fileset:
+                return getattr(self._data, attr)
+
+            if attr in self._sliced:  # already sliced
+                return self._sliced[attr]
+
+            return self._apply_bounds(attr)
 
         @property
         def bounds(self):
@@ -305,7 +343,8 @@ class Data:
         @bounds.setter
         def bounds(self, value):
             self._bounds = value
-            self.apply_bounds()
+            # rest stored slices
+            self._sliced = dict()
 
 
 class Packet:
@@ -331,22 +370,112 @@ class Packet:
             self.ethertype, self.length, self.payload_type, self.frame_sequence, self.protocol_sequence)
 
 
-class EthernetStream:
-    def __init__(self, project, testbench, repo=DEFAULT_REPO_PATH):
-        dt = np.dtype([('data', np.uint64), ('last', np.int32)])
-        enet = Data.fromfile('ethernet', dt, project, testbench, repo)
-        lasts = enet['last'].nonzero()[0] + 1
-        prev = 0
-        end = 0
-        self.packets = []
-        self.byte_stream = None
+class PacketStream:
+    # NOTE copies stream['data'] to bytestream
+    def __init__(self, stream):
 
-        for last in lasts:
-            if prev == 0:
-                self.byte_stream = np.copy(enet['data'][prev:last]).view(np.uint8)
-            else:
-                self.byte_stream = np.append(self.byte_stream, np.copy(enet['data'][prev:last]).view(np.uint8))
+        lasts = stream['last'].nonzero()[0] + 1
+
+        if not lasts.size:
+            self.byte_stream = None
+            self.packets = None
+            return
+
+        # TODO pre allocate byte_stream
+        self.byte_stream = np.copy(stream['data'][0:lasts[0]]).view(np.uint8)
+        prev = lasts[0]
+        end = len(self.byte_stream)
+        self.packets = [Packet(self.byte_stream[0:end])]
+
+        for last in lasts[1:]:
+            self.byte_stream = np.append(self.byte_stream, np.copy(stream['data'][prev:last]).view(np.uint8))
             prev = last
             start = end
             end = len(self.byte_stream)
             self.packets.append(Packet(self.byte_stream[start:end]))
+
+    @property
+    def distributions(self):
+        distributions = []
+        last_seq = None
+        d = None
+        for packet in self.packets:
+            if packet.payload_type == PayloadType.mca:
+                if last_seq is None:
+                    if packet.protocol_sequence != 0:
+                        print('Error first MCA frame does not have a 0 protocol sequence number')
+                else:
+                    if packet.protocol_sequence != 0 and packet.protocol_sequence != last_seq + 1:
+                        print('MCA sequence number:{:d} missing'.format(last_seq + 1))
+
+                last_seq = packet.protocol_sequence
+                if last_seq == 0:
+                    if d is not None:
+                        if d.last_bin + 1 == d._total_bins:
+                            distributions.append(d)
+                        else:
+                            print("incomplete distribution dropped starting frame:{:d}".format(d._frame_sequence))
+                    d = Distribution(packet)
+
+                else:
+                    d.add(packet)
+        return distributions
+
+
+class Distribution:
+    def __init__(self, header_packet):
+        flags = header_packet.payload[8:10]
+        self._frame_sequence = header_packet.frame_sequence
+        self.value = McaValueType.from_int(np.right_shift(np.bitwise_and(flags[0], 0xF0), 4))
+        self.trigger = McaTriggerType.from_int(np.bitwise_and(flags[0], 0x0F))
+        self.bin_n = np.right_shift(np.bitwise_and(flags[1], 0xF0), 4)
+        self.bin_width = np.power(2, self.bin_n)
+        self.channel = np.bitwise_and(flags[1], 0x0F)
+        # self.num_bins = header_packet.payload[0:2].view(np.uint16)[0]*2
+        self.last_bin = header_packet.payload[2:4].view(np.uint16)[0]
+        self.lowest_value = header_packet.payload[4:8].view(np.int32)[0]
+        self.total = header_packet.payload[16:24].view(np.uint64)[0]
+        self.start_time = header_packet.payload[24:32].view(np.uint64)[0]
+        self.stop_time = header_packet.payload[32:40].view(np.uint64)[0]
+        self.counts = np.zeros([self.last_bin + 1], dtype=np.dtype(np.uint32))
+
+        packet_bins = np.uint32((header_packet.length - 40 - 24) / 4)
+        # print(packet_bins)
+        self.counts[0:packet_bins] = np.copy(header_packet.payload[40:].view(np.uint32))
+        self._total_bins = packet_bins
+
+    def add(self, packet):
+        packet_bins = np.uint32((packet.length - 24) / 4)
+        # print(packet_bins)
+        self.counts[self._total_bins:self._total_bins + packet_bins] = np.copy(packet.payload.view(np.uint32))
+        self._total_bins += packet_bins
+
+    def data_counts(self, data):
+
+        s = data.slice((self.start_time, self.start_time + np.uint64(1)))
+        value = self.value.name.split('_')
+
+        if value[1] == 'signal':
+            values = s.trace[self.channel][value[0]]
+
+        else:
+            return NotImplementedError('.checking distribution with {:} to be implemented'.format(self.value))
+
+        if self.trigger is McaTriggerType.clock:
+            pass
+        else:
+            return NotImplementedError('checking distributions with {:} to be implemented'.format(self.trigger))
+
+        binned = np.right_shift(values - self.lowest_value, self.bin_n)
+        binned[binned < 0] = 0
+        binned[binned > self.last_bin] = self.last_bin
+        counts = np.bincount(binned, minlength=self.last_bin + 1)
+
+        return counts
+
+    def __repr__(self):
+        return 'Distribution: {:s} {:s} start:{:d} stop:{:d}'.format(
+            self.value, self.trigger, self.start_time, self.stop_time)
+
+
+

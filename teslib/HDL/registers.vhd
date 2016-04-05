@@ -183,7 +183,7 @@ function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector;
 type mca_registers_t is record
 	bin_n:unsigned(MCA_BIN_N_WIDTH-1 downto 0);
 	lowest_value:signed(MCA_VALUE_BITS-1 downto 0);
-	-- NOTE must be multiple of 2 LSB ignored
+	-- NOTE must be odd LSB set to 1 so there are an even number of bins
 	last_bin:unsigned(MCA_ADDRESS_BITS-1 downto 0);
 	ticks:unsigned(MCA_TICKCOUNT_BITS-1 downto 0);
 	--tick_period:unsigned(TICK_PERIOD_WIDTH-1 downto 0);

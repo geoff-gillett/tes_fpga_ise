@@ -2,114 +2,111 @@
 package require isim
 namespace import isim::*
 
-#TODO move this to isim package
-# e=0 little endian 1=big endian
-proc writeInt32 { fp signal {type dec} {e little} } {
-	set val [getsig $signal $type]
-	if { [string equal $val TRUE] } {
-		set val 1
-  } 
-	if { [string equal $val FALSE] } {
-		set val 0
-  } 
-	if { [string equal $val x] } {
-		set val 0
-	}
-	if { [string equal $val X] } {
-		set val 0
-	}
-	if { [string equal $e little] } { 
-		set i [binary format i $val]
-	} {
-		set i [binary format I $val]
-	}
-	puts -nonewline $fp $i  
-	return $i
+variable channels
+set channels [getsig CHANNELS unsigned]
+
+# input signal text file has 2 byte ascii hex value per line 
+# TODO make inputs binary files
+set input [open "../input_signals/long" r]
+fconfigure $input -buffering line
+
+proc fnames base {
+	variable channels
+	for {set c 0} {$c < $channels} {incr c} {
+		lappend names $base$c
+	}		
+	return $names
 }
 
-proc writeInt64 { fp signal } { 
-	set i [getsig $signal bin]
-	puts $i
-	binary scan [binary format B64 [format %064s $i]] II d1 d2
-	set dec [expr {wide($d1)<<32 | wide($d2)}]
-	puts -nonewline $fp [binary format w $dec]
-	return $dec
+proc open_files base {
+	set names [fnames $base]
+	foreach name $names {
+		set $name [open "../$name" w]
+		fconfigure [subst $$name] -translation binary
+		lappend fp_list [subst $$name]
+	}
+	return $fp_list
 }
 
-set fp [open "../input_signals/short" r]
-fconfigure $fp -buffering line
+proc close_files fp_list {
+	foreach fp $fp_list {
+		close $fp
+	}
+}
 
-set settings [open "../settings" w]
-fconfigure $settings -translation binary
+proc flush_files fp_list {
+	foreach fp $fp_list {
+		flush $fp
+	}
+}
 
-set eventstream [open "../eventstream" w]
-fconfigure $eventstream -translation binary
+proc write_stream stream {
+	upvar 1 $stream s
+	if { [getsig $stream\_valid] && [getsig $stream\_ready] } {
+		#write as two 32 bit values as isim has trouble with 64 bit ints 
+		write_signal $s $stream.data(63:32) unsigned I
+		write_signal $s $stream.data(31:0) unsigned I
+		write_signal $s $stream.last(0) bin c
+	}
+}
 
-set traces [open "../traces" w]
-fconfigure $traces -translation binary
+# open data files for binary writing
+# per channel data files
+set settings [open_files setting]
+set traces [open_files traces]
+set peaks [open_files peak]
+set peakstarts [open_files peakstart]
+set cfdlows [open_files cfdlow]
+set cfdhighs [open_files cfdhigh]
+set pulsestarts [open_files pulsestart]
+set raws [open_files raw]
+set filtereds [open_files filtered]
+set slopes [open_files slope]
+set pulses [open_files pulse]
+set slopethreshxings [open_files slopethreshxing]
+set triggers [open_files trigger]
+set heights [open_files height]
 
-set peaks [open "../peaks" w]
-fconfigure $peaks -translation binary
-
-set peak_starts [open "../peak_starts" w]
-fconfigure $peak_starts -translation binary
-
-set cfdlow [open "../cfdlow" w]
-fconfigure $cfdlow -translation binary
-
-set cfdhigh [open "../cfdhigh" w]
-fconfigure $cfdhigh -translation binary
-
-set pulsestarts [open "../pulsestarts" w]
-fconfigure $pulsestarts -translation binary
-
-set raw [open "../raw" w]
-fconfigure $raw -translation binary
-
-set filtered [open "../filtered" w]
-fconfigure $filtered -translation binary
-
-set slope [open "../slope" w]
-fconfigure $slope -translation binary
-
-set pulse [open "../pulse" w]
-fconfigure $pulse -translation binary
-
-set slopethreshxings [open "../slopethreshxings" w]
-fconfigure $slopethreshxings -translation binary
-
-set timeoverflows [open "../timeoverflows" w]
-fconfigure $timeoverflows -translation binary
-
-set peakoverflows [open "../peakoverflows" w]
-fconfigure $peakoverflows -translation binary
-
-set triggers [open "../triggers" w]
-fconfigure $triggers -translation binary
-
-set cfderrors [open "../cfderrors" w]
-fconfigure $cfderrors -translation binary
-
-set heights [open "../heights" w]
-fconfigure $heights -translation binary
-
+#single data files
 set muxfull [open "../muxfull" w]
 fconfigure $muxfull -translation binary
 
-set muxoverflows [open "../muxoverflows" w]
-fconfigure $muxoverflows -translation binary
+set muxoverflow [open "../muxoverflow" w]
+fconfigure $muxoverflow -translation binary
 
-set ethernet [open "../ethernet" w]
-fconfigure $ethernet -translation binary
+set timeoverflow [open "../timeoverflow" w]
+fconfigure $timeoverflow -translation binary
+
+set peakoverflow [open "../peakoverflow" w]
+fconfigure $peakoverflow -translation binary
+
+set frameroverflow [open "../frameroverflow" w]
+fconfigure $frameroverflow -translation binary
+
+set cfderror [open "../cfderror" w]
+fconfigure $cfderror -translation binary
+
+set baselineerror [open "../baselineerror" w]
+fconfigure $baselineerror -translation binary
+
+set muxstream [open "../muxstream" w]
+fconfigure $muxstream -translation binary
+
+set ethernetstream [open "../ethernetstream" w]
+fconfigure $ethernetstream -translation binary
 
 set mcastream [open "../mcastream" w]
 fconfigure $mcastream -translation binary
 
-set mcasettings [open "../mcasettings" w]
-fconfigure $mcasettings -translation binary
+set mcasetting [open "../mcasetting" w]
+fconfigure $mcasetting -translation binary
+
+set bytestream [open "../bytestream" w]
+fconfigure $bytestream -translation binary
 
 restart
 
+# set up wave database
 wave add /measurement_subsystem_TB
 wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
 wave add /measurement_subsystem_TB/mux
@@ -121,200 +118,290 @@ wave add /measurement_subsystem_TB/enet/eventbuffer/lookaheadslice
 wave add /measurement_subsystem_TB/mca
 wave add /measurement_subsystem_TB/mca/MCA
 wave add /measurement_subsystem_TB/mca/mcaAdapter
+wave add /measurement_subsystem_TB/cdc
 
+# advance past reset so settings are valid
+run 8 ns 
 
-runclks
+set generic [open "../generic" w]
+fconfigure $generic -translation binary
+write_signal $generic CHANNELS unsigned i
+close $generic
 
-#baseline registers
-writeInt32 $settings registers.baseline.offset
-writeInt32 $settings registers.baseline.subtraction
-writeInt32 $settings registers.baseline.timeconstant
-writeInt32 $settings registers.baseline.threshold
-writeInt32 $settings registers.baseline.count_threshold
-writeInt32 $settings registers.baseline.average_order 
-#capture registers
-writeInt32 $settings registers.capture.cfd_rel2min
-writeInt32 $settings registers.capture.constant_fraction
-writeInt32 $settings registers.capture.pulse_threshold
-writeInt32 $settings registers.capture.slope_threshold 
-writeInt32 $settings registers.capture.pulse_area_threshold 
-writeInt32 $settings height_type unsigned
-writeInt32 $settings registers.capture.threshold_rel2min
-writeInt32 $settings trigger_type unsigned
-writeInt32 $settings detection_type unsigned
-writeInt32 $settings tick_period unsigned
-writeInt32 $settings registers.capture.height_rel2min
-close $settings
+set globals [open "../globals" w]
+fconfigure $globals -translation binary
+write_signal $globals tick_period unsigned i
+close $globals
+
+set c 0
+foreach fp $settings {
+	#baseline registers
+	write_signal $fp registers($c).baseline.offset unsigned i 
+	write_signal $fp registers($c).baseline.subtraction bin i
+  write_signal $fp registers($c).baseline.timeconstant unsigned i
+  write_signal $fp registers($c).baseline.threshold unsigned i
+  write_signal $fp registers($c).baseline.count_threshold unsigned i
+  write_signal $fp registers($c).baseline.average_order unsigned i
+  #capture registers
+  write_signal $fp registers($c).capture.cfd_rel2min bin i
+  write_signal $fp registers($c).capture.constant_fraction unsigned i
+  write_signal $fp registers($c).capture.pulse_threshold unsigned i
+  write_signal $fp registers($c).capture.slope_threshold  unsigned i
+  write_signal $fp registers($c).capture.pulse_area_threshold dec i
+  write_signal $fp height_types($c) unsigned i
+  write_signal $fp registers($c).capture.threshold_rel2min bin i
+  write_signal $fp trigger_types($c) unsigned i
+  write_signal $fp detection_types($c) unsigned i
+  write_signal $fp registers($c).capture.height_rel2min bin i
+  close $fp
+	incr c
+}
 
 #mca registers
-writeInt32 $mcasettings mca_registers.channel
-writeInt32 $mcasettings mca_registers.bin_n
-writeInt32 $mcasettings mca_registers.last_bin
-writeInt32 $mcasettings mca_registers.lowest_value
-writeInt32 $mcasettings mca_value_type
-writeInt32 $mcasettings mca_trigger_type
-writeInt32 $mcasettings mca_registers.ticks
-close $mcasettings
+write_signal $mcasetting mca_registers.channel unsigned i
+write_signal $mcasetting mca_registers.bin_n unsigned i
+write_signal $mcasetting mca_registers.last_bin unsigned i
+write_signal $mcasetting mca_registers.lowest_value dec i
+write_signal $mcasetting mca_value_type unsigned i
+write_signal $mcasetting mca_trigger_type unsigned i
+write_signal $mcasetting mca_registers.ticks unsigned i
+close $mcasetting
 
 set clk 0
-while {[gets $fp hexsample] >= 0} {
+set ifg 0
+set packet_last 0
+
+while {[gets $input hexsample] >= 0} {
 #while {$clk < 500000} {}
   #gets $fp hexsample
+	
 	if {![expr $clk % 10000]} {
 		# print progress and flush files every 10000 clks
 		puts sample:$clk
-		flush $traces
-		flush $raw
-		flush $filtered
-		flush $slope
-		flush $pulse
-		flush $pulsestarts
-		flush $slopethreshxings
-		flush $peaks
-		flush $peak_starts
-		flush $heights
-		flush $cfdlow
-		flush $cfdhigh
-		flush $triggers
-		flush $eventstream
-		flush $cfderrors
-		flush $timeoverflows
-		flush $peakoverflows
+		flush_files $traces
+		flush_files $raws
+		flush_files $filtereds
+		flush_files $slopes
+		flush_files $pulses
+		flush_files $pulsestarts
+		flush_files $slopethreshxings
+		flush_files $peaks
+		flush_files $peakstarts
+		flush_files $heights
+		flush_files $cfdlows
+		flush_files $cfdhighs
+		flush_files $triggers
+		flush $muxstream
+		flush $cfderror
+		flush $timeoverflow
+		flush $peakoverflow
 		flush $muxfull
-		flush $muxoverflows
-		flush $ethernet
+		flush $muxoverflow
+		flush $ethernetstream
 		flush $mcastream
+		flush $frameroverflow
+		flush $baselineerror
+		flush $bytestream
 	}
+	
 	setsig adc_sample $hexsample hex
 	
-	writeInt32 $traces adc_sample
-	writeInt32 $traces measurements(0).raw.sample
-	writeInt32 $traces measurements(0).filtered.sample
-	writeInt32 $traces measurements(0).slope.sample
+	set c 0
+	foreach fp $traces {
+		write_signal $fp adc_sample unsigned s
+		write_signal $fp measurements($c).raw.sample dec s
+		write_signal $fp measurements($c).filtered.sample dec s
+		write_signal $fp measurements($c).slope.sample dec s
+		incr c
+	}
 	
-	if [getsig measurements(0).raw.zero_xing] {
-		puts -nonewline $raw [binary format i $clk]
-		writeInt32 $raw measurements(0).raw.area
-		writeInt32 $raw measurements(0).raw.extrema
+	set c 0
+	foreach fp $raws {
+    if [getsig measurements($c).raw.zero_xing] {
+      puts -nonewline $fp [binary format i $clk]
+      write_signal $fp measurements($c).raw.area dec i
+      write_signal $fp measurements(0).raw.extrema dec s
+    }
+		incr c
 	}
 
-	if [getsig measurements(0).filtered.zero_xing] {
-		puts -nonewline $filtered [binary format i $clk]
-		writeInt32 $filtered measurements(0).filtered.area
-		writeInt32 $filtered measurements(0).filtered.extrema
+	set c 0
+	foreach fp $filtereds {
+    if [getsig measurements($c).filtered.zero_xing] {
+      puts -nonewline $fp [binary format i $clk]
+      write_signal $fp measurements($c).filtered.area dec i
+      write_signal $fp measurements($c).filtered.extrema dec s
+    }
+		incr c
 	}
 
-	if [getsig measurements(0).slope.zero_xing] {
-		puts -nonewline $slope [binary format i $clk]
-		writeInt32 $slope measurements(0).slope.area
-		writeInt32 $slope measurements(0).slope.extrema
+	set c 0
+	foreach fp $slopes {
+    if [getsig measurements($c).slope.zero_xing] {
+      puts -nonewline $fp [binary format i $clk]
+      write_signal $fp measurements($c).slope.area dec i
+      write_signal $fp measurements($c).slope.extrema dec s
+    }
 	}
 
-	if [getsig measurements(0).pulse.neg_threshxing] {
-		puts -nonewline $pulse [binary format i $clk]
-		writeInt32 $pulse measurements(0).pulse.area
-		writeInt32 $pulse measurements(0).pulse.extrema
+	set c 0
+	foreach fp $pulses {
+    if [getsig measurements($c).pulse.neg_threshxing] {
+      puts -nonewline $fp [binary format i $clk]
+      write_signal $fp measurements($c).pulse.area dec i
+      write_signal $fp measurements($c).pulse.extrema dec s
+    }
+		incr c
 	}
 	
-	if [getsig measurements(0).pulse.pos_threshxing] {
-		puts -nonewline $pulsestarts [binary format i $clk]
+	set c 0
+	foreach fp $pulsestarts {
+    if [getsig measurements($c).pulse.pos_threshxing] {
+      puts -nonewline $fp [binary format i $clk]
+    }
 	}
 
-	if [getsig measurements(0).slope.pos_threshxing] {
-		puts -nonewline $slopethreshxings [binary format i $clk]
+	set c 0
+	foreach fp $slopethreshxings {
+    if [getsig measurements($c).slope.pos_threshxing] {
+      puts -nonewline $fp [binary format i $clk]
+    }
+		incr c
 	}
 	
-	if { [getsig measurements(0).peak] } {
-		puts -nonewline $peaks [binary format i $clk]
-		#writeInt32 $peaks measurements.slope.area
+	set c 0
+	foreach fp $peaks {
+    if { [getsig measurements($c).peak] } {
+      puts -nonewline $fp [binary format i $clk]
+    }
+		incr c
 	}
 	
-	if { [getsig measurements(0).peak_start] } {
-		puts -nonewline $peak_starts [binary format i $clk]	
-		#writeInt32 $peak_starts measurements.filtered.sample
+	set c 0
+	foreach fp $peakstarts {
+    if { [getsig measurements($c).peak_start] } {
+      puts -nonewline $fp [binary format i $clk]	
+    }
+		incr c
 	}
 	
-	if { [getsig measurements(0).height_valid] } {
-		puts -nonewline $heights [binary format i $clk]
-		writeInt32 $heights measurements(0).height
+	set c 0
+	foreach fp $heights {
+    if { [getsig measurements($c).height_valid] } {
+      puts -nonewline $fp [binary format i $clk]
+      write_signal $fp measurements($c).height dec s
+    }
+		incr c
 	}
 	
-	if { [getsig measurements(0).cfd_low] } {
-		puts -nonewline $cfdlow [binary format i $clk]
+	set c 0
+	foreach fp $cfdlows {
+    if { [getsig measurements($c).cfd_low] } {
+      puts -nonewline $fp [binary format i $clk]
+    }
+		incr c
 	}
 	
-	if { [getsig measurements(0).cfd_high] } {
-		puts -nonewline $cfdhigh [binary format i $clk]
+	set c 0
+	foreach fp $cfdhighs {
+    if { [getsig measurements($c).cfd_high] } {
+      puts -nonewline $fp [binary format i $clk]
+    }
+		incr c
 	}
 
-	if { [getsig measurements(0).trigger] } {
-		puts -nonewline $triggers [binary format i $clk]
+	set c 0
+	foreach fp $triggers {
+    if { [getsig measurements($c).trigger] } {
+      puts -nonewline $fp [binary format i $clk]
+    }
+		incr c
 	}
 
-	#FIXME change endianness
-	if { [getsig muxstream_valid] && [getsig muxstream_ready] } {
-		writeInt32 $eventstream muxstream.data(63:32) unsigned big
-		writeInt32 $eventstream muxstream.data(31:0) unsigned big
-		writeInt32 $mcastream muxstream.last(0) unsigned big
+	write_stream muxstream
+	write_stream mcastream
+	write_stream ethernetstream
+	
+	if { [getsig cfd_errors_u unsigned] != 0 } {
+		puts -nonewline $cfderror [binary format i $clk]
+		write_signal $cfderror cfd_error_u unsigned c 
 	}
 	
-	if { [getsig mcastream_valid] && [getsig mcastream_ready] } {
-		writeInt32 $mcastream mcastream.data(63:32) unsigned big
-		writeInt32 $mcastream mcastream.data(31:0) unsigned big
-		writeInt32 $mcastream mcastream.last(0) unsigned big
+	if { [getsig time_overflows_u unsigned] != 0 } {
+		puts -nonewline $timeoverflow [binary format i $clk]
+		write_signal $timeoverflow time_overflows_u unsigned c 
 	}
 	
-	if { [getsig cfd_errors(0)] } {
-		puts -nonewline $cfderrors [binary format i $clk]
+	if { [getsig peak_overflows_u unsigned] != 0 } {
+		puts -nonewline $peakoverflow [binary format i $clk]
+		write_signal $peakoverflow peak_overflows_u unsigned c 
 	}
-	
-	if { [getsig time_overflows(0)] } {
-		puts -nonewline $timeoverflows [binary format i $clk]
-	}
-	
-	if { [getsig peak_overflows(0)] } {
-		puts -nonewline $peakoverflows [binary format i $clk]
-	}
-	
+
 	if { [getsig mux_full] } {
 		puts -nonewline $muxfull [binary format i $clk]
 	}
 	
 	if { [getsig mux_overflows_u unsigned] != 0 } {
-		puts -nonewline $muxoverflows [binary format i $clk]
-		writeInt32 $muxstream mux_overflows_u unsigned
+		puts -nonewline $muxoverflow [binary format i $clk]
+		write_signal $muxoverflow mux_overflows_u unsigned c
 	}
 	
-	if { [getsig ethernetstream_valid] && [getsig ethernetstream_ready] } {
-		writeInt32 $ethernet ethernetstream_int.data(63:32) unsigned big
-		writeInt32 $ethernet ethernetstream_int.data(31:0) unsigned big
-		writeInt32 $ethernet ethernetstream_int.last(0) unsigned big
+	if { [getsig framer_overflows_u unsigned] != 0 } {
+		puts -nonewline $frameroverflow [binary format i $clk]
+		write_signal $frameroverflow framer_overflows_u unsigned c
 	}
 
-	runclks
-	#move incr to top for matlab indexing
+	if { [getsig baseline_errors_u unsigned] != 0 } {
+		puts -nonewline $baselineerror [binary format i $clk]
+		write_signal $baselineerror baseline_errors_u unsigned c
+	}
+	
+	if {![expr $clk % 2]} {   # rising edge of IO_clk
+		if {![getsig bytestream_ready]} {
+			# ifg = interframe gap
+			incr ifg
+			if {$ifg == 19} {setsig bytestream_ready 1}
+		}
+		if {$packet_last} {
+			setsig bytestream_ready 0
+			set packet_last 0
+			set ifg 0
+		} else {
+      if { [getsig bytestream_valid] && [getsig bytestream_ready] } {
+        puts -nonewline $bytestream [binary format i $clk]
+        write_signal $bytestream bytestream unsigned c
+        write_signal $bytestream bytestream_last unsigned c
+        set packet_last [getsig bytestream_last]
+      }
+		}
+	}
+	
+  # run SAMPLE_CLK_PERIOD 
+	run 4 ns 
 	incr clk 
 }
 
-close $fp
-close $traces 
-close $peaks 
-close $peak_starts 
-close $heights 
-close $cfdlow 
-close $cfdhigh 
-close $pulsestarts 
-close $triggers
-close $raw
-close $filtered
-close $pulse
-close $slope
-close $slopethreshxings
-close $timeoverflows
-close $peakoverflows
-close $cfderrors
-close $eventstream
-close $muxfull
-close $muxoverflows
-close $ethernet
-close $mcastream
+close $input
+close_files $traces
+close_files $raws
+close_files $filtereds
+close_files $slopes
+close_files $pulses
+close_files $pulsestarts
+close_files $slopethreshxings
+close_files $peaks
+close_files $peakstarts
+close_files $heights
+close_files $cfdlows
+close_files $cfdhighs
+close_files $triggers
+flush $muxstream
+flush $cfderror
+flush $timeoverflow
+flush $peakoverflow
+flush $muxfull
+flush $muxoverflow
+flush $ethernetstream
+flush $mcastream
+flush $frameroverflow
+flush $baselineerror

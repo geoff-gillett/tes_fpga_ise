@@ -13,16 +13,17 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 
-library teslib;
-
 entity clock is
-generic(TIME_BITS:integer:=32);
+generic(
+	TIME_BITS:integer:=32;
+	INIT:integer:=0
+);
 port (
   clk:in std_logic;
   reset:in std_logic;
   te:in boolean; -- time enable
   
-  initialise_to_1:in boolean;
+  --initialise_to_1:in boolean;
   rolling_over:out boolean;
   time_stamp:out unsigned(TIME_BITS-1 downto 0)
 );
@@ -39,12 +40,8 @@ rolling_over <= to_integer(not time_counter)=0;
 count:process (clk) is
 begin
 if rising_edge(clk) then
-  if reset = '1' then
-    if initialise_to_1 then
-      time_counter <= to_unsigned(1, TIME_BITS);
-    else
-      time_counter <= to_unsigned(0, TIME_BITS);
-    end if;
+	if reset = '1' then
+		time_counter <= unsigned(to_signed(INIT, TIME_BITS));
   elsif te then
     time_counter <= time_counter+1;
   end if;

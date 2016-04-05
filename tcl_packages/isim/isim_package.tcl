@@ -5,15 +5,32 @@
 package provide isim 14.7
 
 namespace eval isim {
-	namespace export -clean irand runclks getsig setsig lin simsig waitsig \
+	namespace export -clean irand getsig setsig lin simsig waitsig \
 	vrand dec2bin bin2dec bits randbit setrandbit validsig getbool setsigp nrand \
-	writesig
+	write_signal
 	
-	
-	variable period
-	variable timeunit
-	set period [lindex [show value CLK_PERIOD] 0]
-	set timeunit [lindex [show value CLK_PERIOD] 1]
+#	variable period
+#	variable timeunit
+#	set period [lindex [show value CLK_PERIOD] 0]
+#	set timeunit [lindex [show value CLK_PERIOD] 1]
+}
+
+# write signal to file fp with binary format 
+proc ::isim::write_signal { fp signal {getsig_type dec} {format i} } {
+	set val [getsig $signal $getsig_type]
+	if { [string equal $val TRUE] } {
+		set val 1
+  } 
+	if { [string equal $val FALSE] } {
+		set val 0
+  } 
+	if { [string equal $val x] } {
+		set val 0
+	}
+	if { [string equal $val X] } {
+		set val 0
+	}
+	puts -nonewline $fp [binary format $format $val]
 }
 
 # random integer x in range min <= x < max
@@ -29,11 +46,11 @@ proc ::isim::getsig {name {radix ""}} {
   }
 }
 
-proc ::isim::runclks {{clks 1}} {
-  variable period 
-  variable timeunit
-  return [run [expr $clks*$period] $timeunit]
-}
+#proc ::isim::runclks {{clks 1}} {
+#  variable period 
+#  variable timeunit
+#  return [run [expr $clks*$period] $timeunit]
+#}
 
 proc ::isim::setsig {name value {radix bin} } {
   put $name $value -radix $radix
@@ -104,17 +121,6 @@ proc ::isim::nrand {mean stddev} {
 
 proc ::isim::pulse {t {tc 0.006}} {
 	return [expr (1-exp(-$t*$tc))*exp(-$t*10*$tc)]
-}
-
-proc ::isim::writesig {name radix fileid {start 0}} {
-	if {!$start} {puts -nonewline $fileid ,}
-	set v [getsig $name $radix]
-	if {[string equal $v x] || [string equal $v X]} {
-		puts -nonewline $fileid NaN
-	} {
-		puts -nonewline $fileid $v
-	}
-	
 }
 
 #NOTE max 32 bits 
