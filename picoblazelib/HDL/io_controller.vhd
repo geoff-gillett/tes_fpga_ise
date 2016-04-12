@@ -13,9 +13,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library teslib;
-use teslib.types.all;
-use teslib.functions.all;
+library tes;
+use tes.types.all;
+use tes.functions.all;
 
 use work.KCPSM6_AXI.all;
 

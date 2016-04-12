@@ -50,10 +50,10 @@ signal eventstreams_ready:boolean_vector(CHANNELS-1 downto 0);
 signal adc_samples:adc_sample_array_t(CHANNELS-1 downto 0);
 signal adc_sample_reg:adc_sample_array_t(CHANNELS-1 downto 0);
 signal adc_sample:adc_sample_t;
-signal registers:measurement_registers_t;
-signal height_type:unsigned(HEIGHT_TYPE_BITS-1 downto 0);
-signal detection_type:unsigned(DETECTION_TYPE_BITS-1 downto 0);
-signal trigger_type:unsigned(TIMING_TRIGGER_TYPE_BITS-1 downto 0);
+signal registers:channel_registers_t;
+signal height_type:unsigned(NUM_HEIGHT_D-1 downto 0);
+signal detection_type:unsigned(DETECTION_D_BITS-1 downto 0);
+signal trigger_type:unsigned(TIMING_D_BITS-1 downto 0);
 signal eventstreams_int:streambus_array_t(CHANNELS-1 downto 0);
 --
 signal baseline_range_errors:boolean_vector(CHANNELS-1 downto 0);
@@ -78,10 +78,10 @@ begin
 clk <= not clk after CLK_PERIOD/2;
 
 detection_type 
-	<= to_unsigned(registers.capture.detection_type,DETECTION_TYPE_BITS);
-height_type <= to_unsigned(registers.capture.height_type,HEIGHT_TYPE_BITS);
+	<= to_unsigned(registers.capture.detection,DETECTION_D_BITS);
+height_type <= to_unsigned(registers.capture.height,NUM_HEIGHT_D);
 trigger_type 
-	<= to_unsigned(registers.capture.trigger_type,TIMING_TRIGGER_TYPE_BITS);
+	<= to_unsigned(registers.capture.timing,TIMING_D_BITS);
 
 chanGen:for c in 0 to CHANNELS-1 generate
 begin	
@@ -179,7 +179,7 @@ port map(
 
 mux_overflows_u <= to_unsigned(mux_overflows);
 mcastream.data <= (others => '0');
-mcastream.keep_n <= (others => FALSE);
+mcastream.discard <= (others => FALSE);
 mcastream.last <= (others => FALSE);
 enet:entity work.ethernet_framer
 generic map(
@@ -231,12 +231,12 @@ registers.baseline.subtraction <= TRUE;
 registers.capture.constant_fraction --<= (CFD_BITS-2 => '1',others => '0');
 	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
 registers.capture.cfd_rel2min <= TRUE;
-registers.capture.height_type <= PEAK_HEIGHT_D;
-registers.capture.detection_type <= PEAK_DETECTION_D;
-registers.capture.trigger_type <= CFD_LOW_TIMING_D;
+registers.capture.height <= PEAK_HEIGHT_D;
+registers.capture.detection <= PEAK_DETECTION_D;
+registers.capture.timing <= CFD_LOW_TIMING_D;
 registers.capture.threshold_rel2min <= FALSE;
 registers.capture.height_rel2min <= TRUE;
-registers.capture.pulse_area_threshold <= to_signed(500,AREA_BITS);
+registers.capture.area_threshold <= to_signed(500,AREA_BITS);
 registers.capture.max_peaks <= (others => '1');
 wait for CLK_PERIOD;
 reset <= '0';

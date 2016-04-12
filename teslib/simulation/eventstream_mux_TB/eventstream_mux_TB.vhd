@@ -58,7 +58,7 @@ clk <= not clk after CLK_PERIOD/2;
 busGen:for c in 0 to CHANNELS-1 generate
 begin
 	instreams(c).data <= to_std_logic(c,BUS_DATABITS);
-	instreams(c).keep_n <= (others => FALSE);
+	instreams(c).discard <= (others => FALSE);
 	instreams(c).last <= (0 => TRUE,others => FALSE);
 end generate;
 

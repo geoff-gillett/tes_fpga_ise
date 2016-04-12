@@ -74,10 +74,10 @@ subtype AXI_data is std_logic_vector(AXI_DATA_BITS-1 downto 0);
 type AXI_data_array is array (natural range <>) of AXI_data;
 subtype AXI_address is std_logic_vector(AXI_ADDRESS_BITS-1 downto 0);
 type AXI_address_array is array (natural range <>) of AXI_address;
-subtype registerdata is std_logic_vector(REGISTER_DATA_BITS-1 downto 0);
-type registerdata_array is array (natural range <>) of registerdata;
-subtype registeraddress is std_logic_vector(REGISTER_ADDRESS_BITS-1 downto 0);
-type registeraddress_array is array (natural range <>) of registeraddress;
+subtype registerdata_t is std_logic_vector(REGISTER_DATA_BITS-1 downto 0);
+type registerdata_array is array (natural range <>) of registerdata_t;
+subtype registeraddress_t is std_logic_vector(REGISTER_ADDRESS_BITS-1 downto 0);
+type registeraddress_array is array (natural range <>) of registeraddress_t;
 type slv_32_array is array (natural range <>) of 
 		 unsigned(32 downto 0);
 end package types;

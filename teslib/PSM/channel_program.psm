@@ -1,0 +1,55 @@
+                    ;-----------------------------------------------------------
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: channel.psm
+                    ; Project Name: channel
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    ; channel_program receives handles, and responds to ASCII
+                    ; commands over a UART connection to the host PC. Commands
+                    ; are routed to the individual channels via 
+                    ; IO_controller_program.
+                    ;
+                    ;-----------------------------------------------------------
+                    ; See command_IO.psm IO_controller_program.psm 
+                    ;-----------------------------------------------------------
+                    INCLUDE "definitions.psm"
+                    ;-----------------------------------------------------------
+                    ;
+        cold_start: OUTPUTK RESET_UART, CONTROL_CO_PORT
+                    ;
+              main: CALL read_command          ;see command_IO.psm
+                    CALL Z, channel_command    ;see channel_command_handler.psm
+                    JUMP main
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE version 
+                    ; Loads value3-value0 with version number
+                    ; Format:YMDDHHMM relating to the time of assembly
+                    ; where Y the year is mod 16
+                    ;-----------------------------------------------------------
+           version: CALL clear_value_regs
+                    LOAD value3, datestamp_year
+                    SL0 value3
+                    SL0 value3
+                    SL0 value3
+                    SL0 value3
+                    OR value3, datestamp_month
+                    LOAD value2, datestamp_day
+                    LOAD value1, timestamp_hours
+                    LOAD value0, timestamp_minutes
+                    AND command, COMMAND_BITS
+                    JUMP send_response             ; returns to caller
+                    ;
+                    ;-----------------------------------------------------------
+                    ; End of Program
+                    ; Include PSM files
+                    ;-----------------------------------------------------------
+                    INCLUDE "uart_interface_routines.psm"
+                    INCLUDE "command_IO.psm"
+                    INCLUDE "utility.psm"
+                    INCLUDE "channel_command_handler.psm"
+                    ;

@@ -37,21 +37,21 @@ signal clk:std_logic:='1';
 signal reset:std_logic:='1';	
 constant CLK_PERIOD:time:=4 ns;
 signal adc_sample:adc_sample_t;
-signal registers:measurement_registers_t;
+signal registers:channel_registers_t;
 signal measurements:measurement_t;
 signal cfd_error:boolean;
 signal time_overflow:boolean;
-signal height_type:std_logic_vector(HEIGHT_TYPE_BITS-1 downto 0);
-signal event_type:std_logic_vector(DETECTION_TYPE_BITS-1 downto 0);
-signal trigger_type:std_logic_vector(TIMING_TRIGGER_TYPE_BITS-1 downto 0);
+signal height_type:std_logic_vector(NUM_HEIGHT_D-1 downto 0);
+signal event_type:std_logic_vector(DETECTION_D_BITS-1 downto 0);
+signal trigger_type:std_logic_vector(TIMING_D_BITS-1 downto 0);
 signal peak_overflow:boolean;
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-event_type <= to_std_logic(registers.capture.event_type,DETECTION_TYPE_BITS);
-height_type <= to_std_logic(registers.capture.height_type,HEIGHT_TYPE_BITS);
+event_type <= to_std_logic(registers.capture.event_type,DETECTION_D_BITS);
+height_type <= to_std_logic(registers.capture.height,NUM_HEIGHT_D);
 trigger_type 
-	<= to_std_logic(registers.capture.trigger_type,TIMING_TRIGGER_TYPE_BITS);
+	<= to_std_logic(registers.capture.timing,TIMING_D_BITS);
 
 UUT:entity work.signal_processor
 generic map(
@@ -111,9 +111,9 @@ registers.capture.constant_fraction <= to_unsigned((2**17)/8,CFD_BITS-1); --20%
 registers.baseline.subtraction <= FALSE;
 registers.capture.cfd_rel2min <= TRUE;
 
-registers.capture.height_type <= CFD_HIGH_D;
+registers.capture.height <= CFD_HIGH_D;
 registers.capture.threshold_rel2min <= TRUE;
-registers.capture.pulse_area_threshold <= to_signed(500,AREA_BITS);
+registers.capture.area_threshold <= to_signed(500,AREA_BITS);
 wait for CLK_PERIOD;
 reset <= '0';
 wait for CLK_PERIOD;

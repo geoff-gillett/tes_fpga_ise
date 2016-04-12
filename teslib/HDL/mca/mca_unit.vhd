@@ -186,7 +186,7 @@ function to_streambus(
 	variable sb:streambus_t;
 begin
 	sb.data:=to_std_logic(h,w,e);
-	sb.keep_n:=(others => FALSE);	
+	sb.discard:=(others => FALSE);	
 	sb.last:=(others => FALSE);	
 	return sb;
 end function;
@@ -407,7 +407,7 @@ streamFSMtransition:process(stream_state,readable,countstream,
 														header,active)
 begin
 stream_nextstate <= stream_state;
-outstream.keep_n <= (others => FALSE);
+outstream.discard <= (others => FALSE);
 outstream.last <= (others => FALSE);
 case stream_state is 
 when IDLE =>

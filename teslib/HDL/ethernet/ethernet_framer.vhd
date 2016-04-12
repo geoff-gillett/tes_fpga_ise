@@ -66,8 +66,8 @@ architecture RTL of ethernet_framer is
 signal event_s:streambus_t;	 -- internal eventstream
 signal event_s_ready,event_s_valid:boolean;
 signal eventstream_ready_int:boolean; -- outgoing ready
-signal eventstream_hs,buffer_full:boolean;
-signal buffer_empty,empty_the_buffer:boolean;
+signal buffer_full:boolean;
+signal buffer_empty,flush_events:boolean;
 signal mca_s:streambus_t; -- internal mcastream
 signal mca_s_ready,mca_s_valid:boolean;
 
@@ -94,26 +94,32 @@ signal mtu_int:unsigned(MTU_BITS-1 downto 0);
 signal tick_latency_count:unsigned(TICK_LATENCY_BITS-1 downto 0);
 signal tick_latency_int:unsigned(TICK_LATENCY_BITS-1 downto 0);
 signal wait_for_tick:boolean;
-signal tick:boolean;
-signal end_frame,frame_full:boolean;
+signal event_frame_full:boolean;
 signal lookahead:streambus_t;
 signal lookahead_valid:boolean;
 --
 signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
-signal write:boolean;
+signal inc_address:boolean;
 signal framer_ready:boolean;
-signal lookahead_tick:boolean;
-signal lookahead_type:event_type_t;
-signal lookahead_size:unsigned(SIZE_BITS-1 downto 0);
-signal event_size:unsigned(SIZE_BITS-1 downto 0);
-signal event_head:boolean;
+-- frame_size is the size of events in the current frame
+signal event_s_size:unsigned(SIZE_BITS-1 downto 0);
+signal lookahead_head:boolean;
 signal event_s_last_hs:boolean;
 signal event_s_hs:boolean;
 signal mca_s_hs:boolean;
 signal last_frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal last_frame_word:streambus_t;
 signal mca_last:boolean;
+-- frame type switching
+signal lookahead_size,frame_size:unsigned(SIZE_BITS-1 downto 0);
+signal lookahead_type,event_s_type,frame_type:event_type_t;
+--signal lookahead_sig,current_sig:std_logic_vector(2 downto 0);
+signal new_frame:boolean;
+signal lookahead_type_change:boolean;
+signal trace_frame:boolean;
+signal trace_last:boolean;
+signal event_head:boolean;
 
 --------------------------------------------------------------------------------
 -- Ethernet Header
@@ -163,7 +169,7 @@ function to_streambus(e:ethernet_header_t;
  											return streambus_t is 
 variable sb:streambus_t;
 begin
-	sb.keep_n := (others => FALSE); 
+	sb.discard := (others => FALSE); 
 	sb.last := (others => FALSE);
   sb.data := to_std_logic(e,w,endianness);
 	return sb;
@@ -214,49 +220,78 @@ port map(
   ready => event_s_ready
 );
 
-buffer_full <= not eventstream_ready_int;
-buffer_empty <= not event_s_valid and not lookahead_valid; -- questionable
-lookahead_type <= to_event_type(lookahead);
-lookahead_size <= unsigned(lookahead.data(63 downto 48));
-lookahead_tick <= lookahead_type.tick and lookahead_valid;
+event_s_ready <= arbiter_state=EVENT and frame_state=PAYLOAD and inc_address;
+mca_s_ready <= arbiter_state=MCA and frame_state=PAYLOAD and framer_ready;
+event_s_hs <= event_s_valid and event_s_ready;
+mca_s_hs <= mca_s_valid and mca_s_ready;
 
-eventSize:process(clk)
+buffer_full <= not eventstream_ready_int;
+buffer_empty <= not event_s_valid; -- questionable
+
+lookahead_type <= to_event_type_t(lookahead);
+
+lookahead_size <= unsigned(lookahead.data(63 downto 48));
+
+lookahead_type_change <= not new_frame and lookahead_valid and 
+												 (lookahead_type/=frame_type and event_s.last(0));
+
+trace_last <= trace_frame and event_s.last(0);
+event_s_last_hs <= event_s_hs and event_s.last(0);
+
+eventLookahead:process(clk)
+variable size:unsigned(SIZE_BITS-1 downto 0);
 begin
 	if rising_edge(clk) then
     if reset ='1' then
-    	event_size <= (others => '-');
+    	event_s_size <= (others => '-');
+    	lookahead_head <= TRUE;
     	event_head <= TRUE;
+    	new_frame <= TRUE;
     else
-    	if eventstream_hs then 
+    	
+    	if event_s_hs then
     		event_head <= event_s.last(0);
-    	end if;
-    	-- TODO test this
-    	if lookahead_valid and 
-    			(event_s_last_hs or
-          (event_head and not event_s_valid)) then
-        tick <= lookahead_type.tick;
-        if lookahead_type.tick then
-          event_size <= to_unsigned(2, SIZE_BITS);
-        else
-          case lookahead_type.detection_type is
-          when PEAK_DETECTION_D =>
-            event_size <= (0 =>'1', others => '0');
-          when AREA_DETECTION_D =>
-            event_size <= (0 =>'1', others => '0');
-          when PULSE_DETECTION_D =>
-            event_size <= lookahead_size;
-          when TRACE_DETECTION_D =>
-            event_size <= lookahead_size;
-          end case;
+        if new_frame then
+          new_frame <= FALSE;
+          frame_type <= event_s_type;
+          frame_size <= event_s_size;
         end if;
-     	else
-     		if eventstream_hs then
-     			tick <= FALSE;
-     		end if;
+    	end if;
+    	
+     	if commit_frame then
+      	new_frame <= TRUE;
      	end if;
+					
+    	if lookahead_valid and (event_s_hs or not event_s_valid) then
+    		
+				lookahead_head <= lookahead.last(0);
+    	
+    		if lookahead_head then	
+    			event_s_type <= lookahead_type;
+        
+          if lookahead_type.tick then
+            size := to_unsigned(2, SIZE_BITS);
+          else
+            case lookahead_type.detection_type is
+            when PEAK_DETECTION_D =>
+              size := (0 =>'1', others => '0');
+            when AREA_DETECTION_D =>
+              size := (0 =>'1', others => '0');
+            when PULSE_DETECTION_D =>
+              size := lookahead_size;
+            when TRACE_DETECTION_D =>
+              -- traces can extend over multiple frames set event_size to 1
+              size := (0 => '1', others => '0');
+            end case;
+          end if;
+          
+          event_s_size <= size;
+          
+    		end if;
+    	end if;
     end if;
   end if;
-end process eventSize;
+end process eventLookahead;
 
 tickLatency:process(clk)
 begin
@@ -269,15 +304,15 @@ begin
 			end if;
 			
 			--FIXME huh?
-			if buffer_full then -- this must be the outgoing ready
-				empty_the_buffer <= TRUE;
+			if buffer_full then 
+				flush_events <= TRUE;
 			end if;
 			
 			if buffer_empty then 
-				empty_the_buffer <= FALSE;
+				flush_events <= FALSE;
 			end if;
 			
-      if tick and event_s_last_hs then
+      if frame_type.tick and event_s_last_hs then
         tick_latency_count <= (others => '0');
         wait_for_tick <= FALSE;
       else
@@ -288,18 +323,19 @@ begin
 	end if;
 end process tickLatency;
 
-ethernetHeader:process(clk)
+seqNumbers:process(clk)
 begin
 	if rising_edge(clk) then
 		if reset = '1' then
 			header.source_address <= x"5A0102030405";
 			header.destination_address <= x"DA0102030405";
 			header.frame_sequence <= (others => '0');
+			header.length <= (others => '-');
 			event_sequence <= (others => '0');
 			mca_sequence <= (others => '0');
 			mca_last <= FALSE;
 		else
-			if mca_s.last(0) and mca_s_hs then
+			if mca_s_hs and mca_s.last(0) then
 				mca_last <= TRUE;
 			end if;
 			if frame_state=IDLE then
@@ -319,15 +355,16 @@ begin
 					else
 						mca_sequence <= mca_sequence+1;
 					end if;
-				elsif arbiter_state=EVENT then
+				end if;
+				if arbiter_state=EVENT then
 					event_sequence <= event_sequence+1;
 				end if;
       end if;
 		end if;
 	end if;
-end process ethernetHeader;
+end process seqNumbers;
 
-muxFSMnextstate:process(clk)
+FSMnextstate:process(clk)
 begin
 	if rising_edge(clk) then
 		if reset = '1' then
@@ -338,146 +375,133 @@ begin
 			frame_state <= frame_nextstate;
 		end if;
 	end if;
-end process muxFSMnextstate;
+end process FSMnextstate;
 
-muxFSMtransition:process(arbiter_state,empty_the_buffer,mca_s_valid,
+muxFSMtransition:process(arbiter_state,flush_events,mca_s_valid,
 												 event_s_valid,frame_state,wait_for_tick)
 begin
 	arbiter_nextstate <= arbiter_state;
 	case arbiter_state is 
 	when IDLE =>
-		if empty_the_buffer or wait_for_tick then
+		if flush_events or wait_for_tick then
 			arbiter_nextstate <= EVENT;
 		elsif mca_s_valid then
 			arbiter_nextstate <= MCA;
 		elsif event_s_valid then
 			arbiter_nextstate <= EVENT;
 		end if;
-	when MCA =>
-  	if frame_state=LENGTH then
-    	arbiter_nextstate <= IDLE;
-    end if;
-  when EVENT =>
+	when MCA | EVENT =>
   	if frame_state=LENGTH then
   		arbiter_nextstate <= IDLE;
   	end if;
 	end case;
 end process muxFSMtransition;
 
-event_s_hs <= event_s_valid and framer_ready;
-mca_s_hs <= mca_s_valid and framer_ready;
-event_s_last_hs <= event_s_hs and event_s.last(0);
-
---FIXME this is to complicated will be hard to meet timing
-frameFSMtransition:process(frame_state,arbiter_nextstate,end_frame,
-													 arbiter_state,header,
-													 framer_ready,event_s.data,
-													 mca_s_valid,event_s.keep_n, 
-													 frame_address,empty_the_buffer,
-													 event_s_valid, lookahead_tick,
-													 frame_free,frame_full, event_s.last(0), tick, 
-													 mca_s.last(0), mca_s.data, mca_s.keep_n, 
-													 last_frame_address,last_frame_word.data,
-													 last_frame_word.keep_n)
+event_frame_full <= frame_free < frame_size;
+frameFSMtransition:process(frame_state,arbiter_nextstate,arbiter_state,
+													 framer_ready,mca_s_valid,flush_events,
+												   event_s_valid,frame_free,event_frame_full,
+												   mca_s.last(0),event_s.last(0),event_head,
+												   event_s_type,event_s_size,frame_size,frame_type,
+												   frame_address,header,mca_s.data,mca_s.discard,
+												   mca_s.last,event_s.discard,last_frame_address,
+												   last_frame_word,event_s.data,new_frame, 
+												   lookahead_valid)
 begin
 	frame_nextstate <= frame_state;
-	commit_frame <= FALSE;
-	event_s_ready <= FALSE;
-	mca_s_ready <= FALSE;
-	framer_address <= frame_address; 
-	framer_word.data <= (others => '-');
-	framer_word.last <= (others => FALSE);
-	framer_word.keep_n <= (others => FALSE);
-	frame_chunk_we <= (others => FALSE); 
-	write <= FALSE;
+  framer_address <= frame_address; 
+  framer_word.data <= (others => '-');
+  framer_word.last <= (others => FALSE);
+  framer_word.discard <= (others => FALSE);
+  frame_chunk_we <= (others => FALSE); 
+  inc_address <= FALSE;
 	case frame_state is 
 	when IDLE =>
-		frame_chunk_we <= (others => FALSE);
 		if arbiter_nextstate /= IDLE then
 			frame_nextstate <= HEADER0;
 		end if;	
 	when HEADER0 =>
-		-- FIXME don't change the endianness of the ethernet header
-		-- add separate record for protocol header
 		framer_word <= to_streambus(header,0,ENDIANNESS);
-		if end_frame then --FIXME end_frame not driven
-			frame_nextstate <= IDLE;
-		elsif framer_ready then
-			write <= TRUE;
-			frame_chunk_we <= (others => TRUE);
+		inc_address <= framer_ready;
+		if framer_ready then
 			frame_nextstate <= HEADER1;
 		end if;
 	when HEADER1 =>
 		framer_word <= to_streambus(header,1,ENDIANNESS);
-		if end_frame then
-			frame_nextstate <= IDLE;
-		elsif framer_ready then
-			write <= TRUE;
-			frame_chunk_we <= (others => TRUE);
+		frame_chunk_we <= (others => framer_ready);
+		inc_address <= framer_ready;
+		if framer_ready then
 			frame_nextstate <= HEADER2;
 		end if;
 	when HEADER2 =>
-		framer_word<= to_streambus(header,2,ENDIANNESS);
-		if end_frame then
-			frame_nextstate <= IDLE;
-		elsif framer_ready then
-			write <= TRUE;
-			frame_chunk_we <= (others => TRUE);
+		framer_word <= to_streambus(header,2,ENDIANNESS);
+		frame_chunk_we <= (others => framer_ready);
+		inc_address <= framer_ready;
+		if framer_ready then
 			frame_nextstate <= PAYLOAD;
 		end if;
 	when PAYLOAD =>
     if arbiter_state=MCA then
-    	framer_word.data <= mca_s.data;
-    	framer_word.keep_n <= mca_s.keep_n;
-    	
-    	mca_s_ready <= framer_ready;
+      framer_word.data <= mca_s.data;
+      framer_word.discard <= mca_s.discard;
+      frame_chunk_we <= (others => mca_s_valid and framer_ready);
+      inc_address <= mca_s_valid and framer_ready;
     	if mca_s_valid and framer_ready then 
-				frame_chunk_we <= (others => TRUE);
-				write <= TRUE;
-        if frame_free=0 or empty_the_buffer or mca_s.last(0) then
+        if frame_free=0 or flush_events or mca_s.last(0) then
+        	frame_nextstate <= LENGTH;
         	framer_word.last <= (0 => TRUE, others => FALSE);
-        	-- TODO add a terminal flag indicating last packet in mca sequence? 
-          frame_nextstate <= LENGTH;
-        else
-        	framer_word.last <= (others => FALSE);
         end if;
       end if;
-    else -- must be event    	
-    	-- want to end frame if tick or if type changes
-      framer_word.data <= event_s.data;
-      framer_word.keep_n <= event_s.keep_n;
-    	if framer_ready and event_s_valid then 
-				frame_chunk_we <= (others => TRUE);
-				write <= TRUE;
-   			event_s_ready <= TRUE;
-        if frame_full or (event_s.last(0) and tick) or lookahead_tick then 
-          framer_word.last <= (0 => TRUE,others => FALSE);
-          frame_nextstate <= LENGTH;
+    else -- must be event
+	    framer_word.data <= event_s.data;
+      framer_word.discard <= event_s.discard;
+      framer_word.last <= (others => FALSE);
+      if event_head and not new_frame and 
+         (event_s_type/=frame_type or event_s_size/=frame_size) then
+        frame_chunk_we <= (others => FALSE);
+        inc_address <= FALSE;
+        frame_nextstate <= TERMINATE;
+      elsif event_s_valid then 
+        if event_frame_full then 
+        	if framer_ready then
+           	if event_s.last(0) then
+              inc_address <= TRUE;
+              frame_chunk_we <= (others => TRUE);
+          		frame_nextstate <= LENGTH;
+          	elsif event_head then
+              inc_address <= FALSE;
+              frame_chunk_we <= (others => FALSE);
+          		frame_nextstate <= TERMINATE;
+          	end if;
+          else
+            inc_address <= FALSE;
+            frame_chunk_we <= (others => FALSE);
+          end if;
         else
-        	framer_word.last <= (others => FALSE);
+          frame_chunk_we <= (others => framer_ready);
+          inc_address <= framer_ready;
+        	if not lookahead_valid and event_s.last(0) and mca_s_valid then
+        		frame_nextstate <= LENGTH;
+        		framer_word.last(0) <= TRUE;
+        	end if;
         end if;
-      else
-      	if lookahead_tick then
-      		frame_nextstate <= TERMINATE;
-      	end if;
       end if;
-		end if;
+    end if;
 	when TERMINATE =>  -- write last
-		framer_word.data <= last_frame_word.data;
-		framer_word.keep_n <= last_frame_word.keep_n;
-		framer_word.last <= (0 => TRUE, others => FALSE);
+		framer_word <= last_frame_word;
 		framer_address <= last_frame_address;
-    frame_chunk_we <= (others => TRUE);
+		frame_chunk_we <= (others => TRUE);
     frame_nextstate <= LENGTH;
 	when LENGTH => -- commit frame
-		commit_frame <= TRUE;
-    framer_address <= to_unsigned(1,FRAMER_ADDRESS_BITS);
-    frame_chunk_we <= (0 => TRUE, others => FALSE);
-    -- frame length in bytes
-    framer_word.data(15 downto 0) <= set_endianness(
-    	resize(shift_left(frame_address,3),CHUNK_DATABITS),ENDIANNESS
-    );
-    framer_word.last <= (others => FALSE);
+		framer_address <= (0 => '1', others => '0');
+		framer_word.data(CHUNK_DATABITS-1 downto 0) 
+			<= set_endianness(
+				resize(shift_left(frame_address,3), CHUNK_DATABITS),
+				ENDIANNESS
+			);
+		framer_word.discard <= (others => FALSE);
+		framer_word.last <= (others => FALSE);
+		frame_chunk_we <= (0 => TRUE, others => FALSE);
     frame_nextstate <= IDLE;
 	end case;
 end process frameFSMtransition;
@@ -493,8 +517,10 @@ begin
 			if commit_frame then
 				frame_address <= (others => '0');
 				frame_free <= resize(mtu_int,FRAMER_ADDRESS_BITS+1);
-			elsif write then
+			elsif inc_address then
 				last_frame_word <= framer_word;
+				last_frame_word.discard <= framer_word.discard;
+				last_frame_word.last <= (0 => TRUE, others => FALSE);
 				last_frame_address <= frame_address;
 				frame_address <= frame_address+1;
         frame_free <= frame_free-1;
@@ -503,9 +529,8 @@ begin
 	end if;
 end process payloadAddress;
 
-frame_full <= frame_free < event_size;
 framer_ready <= framer_free > frame_address;
-
+commit_frame <= frame_state=LENGTH;
 framer:entity streamlib.framer
 generic map(
   BUS_CHUNKS => BUS_CHUNKS,

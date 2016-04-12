@@ -349,7 +349,7 @@ stream_int.data <= muxstream_int.data(63 downto 17) &
 -- FIXME new_window when not first_event:
 									 
 stream_int.last <= muxstream_int.last;
-stream_int.keep_n <= muxstream_int.keep_n;
+stream_int.discard <= muxstream_int.discard;
 
 --FIXME is this right?							
 --stream_valid_int <= muxstream_valid and arb_state/=IDLE;

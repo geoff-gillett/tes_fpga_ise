@@ -1,0 +1,148 @@
+                    ;-----------------------------------------------------------
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: definitions.psm
+                    ; Project Name: control_unit
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    ;-----------------------------------------------------------
+                    ; Register Naming
+                    ;-----------------------------------------------------------
+                    ; The command is converted to numbers in registers
+                    ;       value3:value2:value1:value0  
+                    ;       address3:address2:address2:address0
+                    ;       command 
+                    ; See command_IO.psm 
+                    ;-----------------------------------------------------------
+                    NAMEREG sF, value3
+                    NAMEREG sE, value2
+                    NAMEREG sD, value1
+                    NAMEREG sC, value0
+                    NAMEREG sB, address3
+                    NAMEREG sA, address2
+                    NAMEREG s9, address1
+                    NAMEREG s8, address0
+                    NAMEREG s7, command
+                    ;
+                    ;-----------------------------------------------------------
+                    ; Command Bytes
+                    ;-----------------------------------------------------------
+                    CONSTANT WRITE, 01
+                    CONSTANT READ,  02
+                    CONSTANT RESET, 03
+                    ;
+                    ;-----------------------------------------------------------
+                    ; Error codes and response bits
+                    ;-----------------------------------------------------------
+                    CONSTANT BAD_LENGTH,       	01000000'b
+                    CONSTANT BAD_DIGITS,       	10000000'b
+                    CONSTANT AXI_OKAY,         	00000000'b
+                    CONSTANT AXI_SLVERR,       	00100000'b
+                    CONSTANT AXI_DECERR,       	00110000'b
+                    ; command byte masks
+                    CONSTANT AXI_BITS,         	00110000'b
+                    CONSTANT ERROR_BITS,       	11000000'b
+                    CONSTANT COMMAND_BITS,     	00001111'b
+                    ; end of transmission
+                    CONSTANT TERMINATOR,        0D    	
+                    ; scratch locations	
+                    constant temp,							00
+                    CONSTANT TES_channels,			01
+                    CONSTANT TES_channel_mask,	02	; (2*ADC_chips)-1
+                    CONSTANT ADC_chips,					03
+                    CONSTANT AD9510_spi_ce_bit,	04
+                    ;
+                    ;-----------------------------------------------------------
+                    ; Address decoding
+                    ;-----------------------------------------------------------
+                    ; MSB of address:
+                    ;
+                    ;   00-TES_CHANNEL_MASK   TES Channels
+                    ;            
+                    ;   TES_channel_mask+1    General registers 
+                    ;
+                    ;   TES_channel_mask+2    SPI
+                    ;                       		LSB:SPI Address
+                    ;                       		2nd LSB:SPI enables 
+                    ;                           only lowest is used on a read
+                    ;
+                    ;  >TES_channel_mask+2    AXI bus (NOT IMPLEMENTED) 
+                    ;-----------------------------------------------------------
+                    ;
+                    ;-----------------------------------------------------------
+                    ; IO Port definitions
+                    ;-----------------------------------------------------------
+                    ;-----------------------------------------------------------
+                    ; General IO Port IDs
+                    ;-----------------------------------------------------------
+                    CONSTANT UART_IO_PORT,          00000001'b
+                    CONSTANT SPI_IO_PORT,           00000010'b
+                    CONSTANT BYTE0_IO_PORT,         00000100'b
+                    CONSTANT BYTE1_IO_PORT,         00001000'b
+                    CONSTANT BYTE2_IO_PORT,         00010000'b
+                    CONSTANT BYTE3_IO_PORT,         00100000'b
+                    ;
+                    ;-----------------------------------------------------------
+                    ; General input ports
+                    ;-----------------------------------------------------------
+                    CONSTANT RESP_IN_PORT,          01000000'b
+                    CONSTANT STATUS_IN_PORT,        10000000'b
+                    ;
+                    ;-----------------------------------------------------------
+                    ; General output ports
+                    ;-----------------------------------------------------------
+                    CONSTANT UART_CHAN_SEL_O_PORT,  01000000'b
+                    CONSTANT SPI_SEL_O_PORT,        10000000'b
+                    ;
+                    ;-----------------------------------------------------------
+                    ; Constant-optimised output ports
+                    ;-----------------------------------------------------------
+                    ; IO channel selects
+                    CONSTANT IO_SEL_CO_PORT,        00000001'b
+                    ; control strobes
+                    CONSTANT CONTROL_CO_PORT,       00000010'b
+                    ; reset sequences
+                    CONSTANT RESET_CO_PORT,         00000100'b
+                    ;-----------------------------------------------------------
+                    ; SPI port bits
+                    ;-----------------------------------------------------------
+                    CONSTANT SPI_CLK,               00000001'b
+                    CONSTANT SPI_MOSI,              10000000'b
+                    ;
+                    ;-----------------------------------------------------------
+                    ; STATUS port bits
+                    ;-----------------------------------------------------------
+                    CONSTANT TX_NOTEMPTY,           00000001'b ;UART
+                    CONSTANT TX_FULL,               00000010'b ;UART
+                    CONSTANT RX_NOTEMPTY,           00000100'b ;UART
+                    CONSTANT FMC_present,           00001000'b ; 
+                    CONSTANT FMC_power,             00010000'b ;
+                    CONSTANT FMC_AD9510_status,			00100000'b
+                    CONSTANT pipeline_MMCM_locked,  01000000'b
+                    ;
+                    ;-----------------------------------------------------------
+                    ; IO_SEL port bits (Constant optimised output port)
+                    ;-----------------------------------------------------------
+                    CONSTANT SEL_ADDRESS,           00000001'b
+                    CONSTANT SEL_DATA,              00000010'b
+                    CONSTANT SEL_MAIN_UART,         00100000'b
+                    CONSTANT SEL_CHAN_UART,         01000000'b
+                    ;
+                    ;-----------------------------------------------------------
+                    ; CONTROL port bits (Constant optimised output port)
+                    ;-----------------------------------------------------------
+                    CONSTANT RESET_UART_TX,         00000001'b
+                    CONSTANT RESET_UART_RX,         00000010'b
+                    CONSTANT RESET_UART,            00000011'b                    
+                    CONSTANT REG_WRITE,             00001000'b
+                    ;
+                    ;-----------------------------------------------------------
+                    ; RESET port bits (Constant optimised output port)
+                    ;-----------------------------------------------------------
+                    CONSTANT RESET_SYSTEM,      00001111'b 
+                    CONSTANT RESET_TIER1,       00001100'b
+                    CONSTANT RESET_TIER2,       00001000'b
+                    ;-----------------------------------------------------------

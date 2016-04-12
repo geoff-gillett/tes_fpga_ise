@@ -1,0 +1,55 @@
+                    ;-----------------------------------------------------------
+                    ; Company: Quantum Technology Laboratory
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: SPI_IO.psm
+                    ; Project Name: control_unit
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;
+                    ; Code for SPI communication 
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE SPI_byte_transact 
+                    ;-----------------------------------------------------------
+                    ; SPI transaction
+                    ; s2 contains the data 
+                    ; s4 contains the mask for the miso in SPI_IO_PORT
+                    ;  
+                    ; USES: s0,s1,s2,s3,s4
+                    ;-----------------------------------------------------------
+ SPI_byte_transact: LOAD s1, 08            ;8-bits to transmit and receive
+      next_SPI_bit: LOAD s0, s2            ;prepare next bit to transmit
+                    AND s0, SPI_MOSI
+                    OUTPUT s0, SPI_IO_PORT
+                    INPUT s3, SPI_IO_PORT  ;read input bits
+                    TEST s3, s4  			     ;bit -> carry flag assumes 1 enable
+                    SLA s2                 ;shift data in and present next bit
+                    CALL SPI_clk_pulse     ;pulse spi_clk High
+                    SUB s1, 01             ;count bits
+                    JUMP NZ, next_SPI_bit  ;repeat until last bit
+                    RETURN 
+                    ;     
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE SPI_clk_pulse 
+                    ; USES s0
+                    ;-----------------------------------------------------------
+     SPI_clk_pulse: OR s0, SPI_CLK
+                    OUTPUT s0, SPI_IO_PORT
+                    AND s0, ~SPI_CLK
+                    LOAD s0, s0
+                    LOAD s0, s0
+                    LOAD s0, s0
+                    OUTPUT s0, SPI_IO_PORT
+                    RETURN
+                    ;
+       SPI_disable: LOAD s0, 00
+                    OUTPUT s0, SPI_SEL_O_PORT
+                    RETURN
+                    
+                    
+                    
+                    
+                    

@@ -1,0 +1,24 @@
+
+                    ;-----------------------------------------------------------
+                    ; Company: Quantum Technology Laboratory
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: channel_definitions.psm
+                    ; Project Name: channel
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    ; Changes to definitions.psm
+                    ;-----------------------------------------------------------
+                    ; STATUS_IN_PORT
+                    CONSTANT STATUS_RESPONSE_VALID,    01000000'b
+                    ; IO_SEL_CO_PORT
+                    CONSTANT SEL_VALUE,                00000001'b
+                    CONSTANT SEL_ADDRESS,              00000010'b
+                    ; CONTROL_CO_PORT
+                    CONSTANT CONTROL_DO_READ,          00100000'b
+                    CONSTANT CONTROL_DO_WRITE,         10000000'b
+                    
+                    

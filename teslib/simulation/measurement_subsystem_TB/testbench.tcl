@@ -108,16 +108,16 @@ restart
 
 # set up wave database
 wave add /measurement_subsystem_TB
-wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
-wave add /measurement_subsystem_TB/mux
-wave add /measurement_subsystem_TB/mux/buffers
+wave add /measurement_subsystem_TB/\\chanGen(1)\\/measurementUnit
+#wave add /measurement_subsystem_TB/mux
+#wave add /measurement_subsystem_TB/mux/buffers
 wave add /measurement_subsystem_TB/enet
-wave add /measurement_subsystem_TB/enet/eventbuffer
-wave add /measurement_subsystem_TB/enet/eventbuffer/streambuffer
-wave add /measurement_subsystem_TB/enet/eventbuffer/lookaheadslice
-wave add /measurement_subsystem_TB/mca
-wave add /measurement_subsystem_TB/mca/MCA
-wave add /measurement_subsystem_TB/mca/mcaAdapter
+#wave add /measurement_subsystem_TB/enet/eventbuffer
+#wave add /measurement_subsystem_TB/enet/eventbuffer/streambuffer
+#wave add /measurement_subsystem_TB/enet/eventbuffer/lookaheadslice
+#wave add /measurement_subsystem_TB/mca
+#wave add /measurement_subsystem_TB/mca/MCA
+#wave add /measurement_subsystem_TB/mca/mcaAdapter
 wave add /measurement_subsystem_TB/cdc
 
 # advance past reset so settings are valid
@@ -147,7 +147,7 @@ foreach fp $settings {
   write_signal $fp registers($c).capture.constant_fraction unsigned i
   write_signal $fp registers($c).capture.pulse_threshold unsigned i
   write_signal $fp registers($c).capture.slope_threshold  unsigned i
-  write_signal $fp registers($c).capture.pulse_area_threshold dec i
+  write_signal $fp registers($c).capture.area_threshold dec i
   write_signal $fp height_types($c) unsigned i
   write_signal $fp registers($c).capture.threshold_rel2min bin i
   write_signal $fp trigger_types($c) unsigned i
@@ -172,8 +172,8 @@ set ifg 0
 set packet_last 0
 
 while {[gets $input hexsample] >= 0} {
-#while {$clk < 500000} {}
-  #gets $fp hexsample
+#while {$clk < 50000} {}
+  #gets $input hexsample
 	
 	if {![expr $clk % 10000]} {
 		# print progress and flush files every 10000 clks

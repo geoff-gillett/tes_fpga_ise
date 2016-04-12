@@ -55,7 +55,7 @@ begin
 	end if;
 end process sim;
 instream.data <= to_std_logic(resize(sim_count,64));
-instream.keep_n <= (others => FALSE);
+instream.discard <= (others => FALSE);
 instream.last <= (others => FALSE);
 
 UUT:entity work.streambus_buffer

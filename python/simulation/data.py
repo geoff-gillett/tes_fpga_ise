@@ -6,7 +6,6 @@ from collections import namedtuple
 from datetime import datetime
 
 DEFAULT_REPO_PATH = 'c:\\TES_project\\fpga_ise\\'
-
 File = namedtuple('File', ['filename', 'dtype', 'is_list', 'is_sliceable'])
 
 
@@ -60,7 +59,9 @@ class PayloadType(Enum):
         elif value == 5:
             return PayloadType.mca
         else:
-            raise AttributeError()
+            print('{:d} cannot be converted to PayloadType'.format(value))
+            # raise AttributeError()
+            return None
 
     peak = 0
     area = 1
@@ -358,16 +359,23 @@ class Packet:
             if np.bitwise_and(self.payload[5], 0x02):
                 self.payload_type = PayloadType.tick
             else:
-                self.payload_type = PayloadType.from_int(np.bitwise_and(self.payload[5], 0x0C))
+                self.payload_type = PayloadType.from_int(np.right_shift(np.bitwise_and(self.payload[5], 0x0C), 2))
         elif self.ethertype == 0x88B6:
             self.payload_type = PayloadType.mca
+        else:
+            print('Unknown ethertype:{:X}'.format(self.ethertype))
+            self.payload_type = None
 
         self.frame_sequence = byte_stream[16:18].view(np.int16)[0]
         self.protocol_sequence = byte_stream[18:20].view(np.int16)[0]
 
     def __repr__(self):
-        return 'ethertype:{:X} length:{:d} {:s} frame:{:d} protocol:{:d}'.format(
-            self.ethertype, self.length, self.payload_type, self.frame_sequence, self.protocol_sequence)
+        if self.payload_type is None:
+            pname = 'UNKNOWN'
+        else:
+            pname = self.payload_type.name
+        return 'ethertype:{:04X} length:{:d} Payload:{:s} frame:{:d} protocol:{:d}'.format(
+            self.ethertype, self.length, pname, self.frame_sequence, self.protocol_sequence)
 
 
 class PacketStream:
@@ -399,6 +407,8 @@ class PacketStream:
         distributions = []
         last_seq = None
         d = None
+        if self.packets is None:
+            return None
         for packet in self.packets:
             if packet.payload_type == PayloadType.mca:
                 if last_seq is None:
@@ -420,6 +430,17 @@ class PacketStream:
                 else:
                     d.add(packet)
         return distributions
+
+    @property
+    def event_packets(self):
+        last_seq = None
+        for packet in self.packets:
+            if packet.ethertype == 0x88b5:
+                if last_seq is None:
+                    last_seq = packet.protocol_sequence
+                else:
+                    if packet.protocol_sequence != 0 and packet.protocol_sequence != last_seq + 1:
+                        print('Event sequence number:{:d} missing'.format(last_seq + 1))
 
 
 class Distribution:
@@ -457,12 +478,13 @@ class Distribution:
 
         if value[1] == 'signal':
             values = s.trace[self.channel][value[0]]
-
         else:
             return NotImplementedError('.checking distribution with {:} to be implemented'.format(self.value))
 
         if self.trigger is McaTriggerType.clock:
             pass
+        elif self.trigger is McaTriggerType.maxima:
+            values = values[s.peak[self.channel]['index']]
         else:
             return NotImplementedError('checking distributions with {:} to be implemented'.format(self.trigger))
 
@@ -476,6 +498,5 @@ class Distribution:
     def __repr__(self):
         return 'Distribution: {:s} {:s} start:{:d} stop:{:d}'.format(
             self.value, self.trigger, self.start_time, self.stop_time)
-
 
 

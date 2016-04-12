@@ -44,7 +44,7 @@ subtype streambus_keeps_n_t is boolean_vector(BUS_CHUNKS-1 downto 0);
 subtype streambus_lasts_t is boolean_vector(BUS_CHUNKS-1 downto 0);
 subtype streamvector_t is std_logic_vector(BUS_BITS-1 downto 0);
 type streambus_t is record
-	keep_n:boolean_vector(BUS_CHUNKS-1 downto 0); -- keep chunk if set to 0
+	discard:boolean_vector(BUS_CHUNKS-1 downto 0); -- keep chunk if set to 0
 	last:boolean_vector(BUS_CHUNKS-1 downto 0); -- end of frame
 	data:std_logic_vector(BUS_DATABITS-1 downto 0);
 end record;
@@ -82,7 +82,7 @@ variable sb:streambus_t;
 begin
 	for chunk in 0 to BUS_CHUNKS-1 loop
 		sb.last(chunk):=to_boolean(slv(chunk*CHUNK_BITS+CHUNK_LASTBIT));
-		sb.keep_n(chunk):=to_boolean(slv(chunk*CHUNK_BITS+CHUNK_KEEPBIT));
+		sb.discard(chunk):=to_boolean(slv(chunk*CHUNK_BITS+CHUNK_KEEPBIT));
 		sb.data(CHUNK_DATABITS*(chunk+1)-1 downto CHUNK_DATABITS*chunk):=
 			slv(CHUNK_DATABITS+(CHUNK_BITS*(chunk))-1 downto CHUNK_BITS*chunk);
 	end loop;
@@ -103,7 +103,7 @@ function to_streambus(chunks:datachunk_array_t;k:streambus_keeps_n_t;
 variable sb:streambus_t;
 begin
 	sb.data:=chunks(3) & chunks(2) & chunks(1) & chunks(0);
-	sb.keep_n:=k;
+	sb.discard:=k;
 	sb.last:=l;
 	return sb;
 end function;
@@ -113,7 +113,7 @@ function to_streambus(data:std_logic_vector;k:streambus_keeps_n_t;
 variable sb:streambus_t;
 begin
 	sb.data:=data;
-	sb.keep_n:=k;
+	sb.discard:=k;
 	sb.last:=l;
 	return sb;
 end function;
@@ -131,7 +131,7 @@ function to_std_logic(sb:streambus_t) return std_logic_vector is
 variable slv:streamvector_t;
 begin
 	for chunk in 0 to BUS_CHUNKS-1 loop
-		slv(CHUNK_KEEPBIT+(CHUNK_BITS*chunk)):=to_std_logic(sb.keep_n(chunk));
+		slv(CHUNK_KEEPBIT+(CHUNK_BITS*chunk)):=to_std_logic(sb.discard(chunk));
 		slv(CHUNK_LASTBIT+(CHUNK_BITS*chunk)):=to_std_logic(sb.last(chunk));
 		slv((CHUNK_BITS*chunk)+CHUNK_DATABITS-1 downto CHUNK_BITS*chunk):=
 			sb.data(CHUNK_DATABITS+(CHUNK_DATABITS*chunk)-1 
@@ -230,7 +230,7 @@ function SetEndianness(sb:streambus_t;e:string) return streambus_t is
 variable o:streambus_t;
 begin
 	if e="LITTLE" then
-		o.keep_n := sb.keep_n; 
+		o.discard := sb.discard; 
 		o.last := sb.last;
 		o.data := SwapEndianness(sb.data);
 		return o;

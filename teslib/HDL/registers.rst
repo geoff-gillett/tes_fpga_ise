@@ -4,6 +4,7 @@ Channel Registers
 
 capture
 -------
+13 registers
 
 max_peaks 
   unsigned 4 bits
@@ -30,7 +31,7 @@ pulse_threshold
    Threshold on the filtered signal, must be exceeded for a event to be 
    transmitted. Pulse area is the sum of samples above pulse_threshold
    
- slope_threshold
+slope_threshold
    unsigned?? 18.3?? bits
  
    Threshold on slope signal, arms the peak detector when exceeded
@@ -81,7 +82,7 @@ height_type
    10:pulse - peak and area information, fixed but selectable length
    11:trace - peak and area information and 1 or two signal traces.
    
- trace0_type, trace1_type
+ trace0_type, trace1_type (1 register)
    discrete type 2 bits
    
    Signal to trace
@@ -91,6 +92,47 @@ height_type
    10:filtered
    11:slope
    
+ captue.baseline
+ ---------------
+ 6 registers
+ 
+ offset
+   unsigned 14 bit
+   
+   zero for adc
+   
+subtraction
+   boolean
+   
+   enable baseline subtraction
+
+timeconstant
+   unsigned 32 bits
+   
+   time to accumlate distributions for baseline calculation
+   
+threshold
+   unsigned 10 bits
+   
+   Values *above* threshold do not contribute to the baseline
+   
+count_threshold 
+   unsigned 18 bits
+   
+   The value must be seen at least this many time before appearing in the 
+   baseline average
+   
+ average_order
+   integer 0 to 6 (3 bits)
+   
+   Order of the baseline averaging filter
+   
+32 bit registers
+count_threshold
+time_constant
+ 
+
+ 
    
       
    

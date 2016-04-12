@@ -103,7 +103,6 @@ port map(
   clk => clk,
   reset => start_timer,
   te => TRUE,
-  initialise_to_1 => TRUE,
   rolling_over => rolling_over,
   time_stamp => relative_time
 );

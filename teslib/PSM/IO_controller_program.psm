@@ -1,0 +1,162 @@
+                    ;-----------------------------------------------------------
+                    ; Company: Quantum Technology Laboratory
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: IO_controller
+                    ; Project Name: control_unit
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    ; IO_controller receives handles, and responds to ASCII
+                    ; commands over a UART connection to the host PC
+                    ;
+                    ; Note: The majority of this file is taken directly from 
+                    ;       the KCPSM6 demo files.
+                    ;-----------------------------------------------------------
+                    ; Input ASCII command format (Big endian)
+                    ; VVVVVVVV:AAAAAAAA:CC:TERMINATOR
+                    ; Value   :Address :Command byte
+                    ;
+                    ; Command Byte 
+                    ; 01 - AXI Write (value to address)
+                    ; 02 - AXI Read  (value from address)
+                    ; 03 - System reset (Address and Value must be zero)
+                    ;
+                    ; The command is converted to numbers in registers
+                    ;
+                    ;       value3:value2:value1:value0  
+                    ;       address3:address2:address2:address0
+                    ;       command 
+                    ;
+                    ; The address and value are also stored in scratch
+                    ;   Address byte 3-0 @ ADDRESS_BYTE3 to ADDRESS_BYTE0
+                    ;   Value   byte 3-0 @ VALUE_BYTE3 to VALUE_BYTE0  
+                    ;
+                    ; Response to commands is in ASCII hex
+                    ;
+                    ; See command_IO.psm 
+                    ;-----------------------------------------------------------
+                    ; Include PSM files
+                    ;-----------------------------------------------------------
+                    INCLUDE "definitions.psm"
+                    ;-----------------------------------------------------------
+                    ; Main program
+                    ;-----------------------------------------------------------
+        cold_start: CALL reset_sequence
+                    ; send reset response
+                    LOAD command, RESET
+                    CALL respond_features						;reset response
+                    ; Main loop
+              main: CALL read_command              	;see command_IO.psm
+                    CALL Z, route_command
+                    JUMP main
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROTINE features (feature_bits to just get flags in s0)
+                    ; Get hardware features
+                    ; Stores values in scratch
+                    ; scratch 00-number of TES channels
+                    ; scratch 01-number of ADC chips
+                    ;
+                    ; s0-bit flags 
+                    ;    bit0-FMC card present
+                    ;    bit1-FMC power good
+                    ;		 bit2-AD9510 status
+                    ;
+                    ; USED s0,s1
+                    ;-----------------------------------------------------------
+    store_features: HWBUILD s1
+                    AND s1, F0
+                    SR0 s1
+                    SR0 s1
+                    SR0 s1
+                    SR0 s1
+                    STORE s1, ADC_chips
+                    SL0 s1                       ; chips*2
+                    SUB s1, 01
+                    STORE s1, TES_channel_mask
+                    FETCH s1, ADC_chips
+                    LOAD s0, 01
+  AD9510_bit_shift: COMPARE s1, 00
+                    JUMP Z, AD9510_bit_done
+                    SL0 s0
+                    SUB s1, 01
+                    JUMP AD9510_bit_shift
+   AD9510_bit_done: STORE s0, AD9510_spi_ce_bit
+                    HWBUILD s1
+                    AND s1, 0F
+                    LOAD s0, 01
+                    COMPARE s1, 00
+ TES_channel_shift: JUMP Z, TES_channels_done
+                    SL0 s0
+                    SUB s1, 01
+                    JUMP TES_channel_shift
+ TES_channels_done: STORE s0, TES_channels 
+ 			feature_bits: input s0, STATUS_IN_PORT
+                    SR0 s0
+                    SR0 s0
+                    SR0 s0
+                    AND s0, 00000111'b
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUROUTINE respond_reset
+                    ; sends a reset response containing hardware features
+                    ;-----------------------------------------------------------
+  respond_features: CALL clear_value_regs
+                    FETCH value0, TES_channels
+                    FETCH value1, ADC_chips
+                    CALL feature_bits
+                    LOAD value2, s0
+                    JUMP send_response
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE version
+                    ; Loads value3-value0 with version number
+                    ; Format:YMDDHHMM relating to the time of assembly
+                    ; where Y the year is mod 16
+                    ;-----------------------------------------------------------
+           version: CALL clear_value_regs
+                    LOAD value3, datestamp_year
+                    SL0 value3
+                    SL0 value3
+                    SL0 value3
+                    SL0 value3
+                    OR value3, datestamp_month
+                    LOAD value2, datestamp_day
+                    LOAD value1, timestamp_hours
+                    LOAD value0, timestamp_minutes
+                    AND command, COMMAND_BITS
+                    JUMP send_response                ; (RTC)
+                    ;
+                    ;-----------------------------------------------------------
+                    ; Reset sequencer
+                    ;-----------------------------------------------------------
+    reset_sequence: CALL delay_40us
+                    OUTPUTK RESET_TIER1, RESET_CO_PORT ;reset0 low
+                    CALL store_features            
+                    CALL initialise_AD9510
+                    CALL initialise_ADCs
+                    CALL store_features     
+     pipeline_wait: INPUT s0, STATUS_IN_PORT
+                    TEST s0, pipeline_MMCM_locked
+                    JUMP Z, pipeline_wait       
+                    OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset1 low
+                    CALL delay_40us
+                    OUTPUTK 00, RESET_CO_PORT ;reset2 low
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; End of Program
+                    ;-----------------------------------------------------------
+                    INCLUDE "uart_interface_routines.psm"
+                    INCLUDE "command_IO.psm"
+                    INCLUDE "route_command.psm"
+                    INCLUDE "SPI_IO.psm"
+                    INCLUDE "ADC_SPI.psm"
+                    INCLUDE "AD9510_SPI.psm"
+                    INCLUDE "utility.psm"
+                    INCLUDE "global_registers.psm"
+                    ;

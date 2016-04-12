@@ -6,7 +6,7 @@ use unisim.vcomponents.FD;
 
 entity sync_pulse is
 generic (
-  INITIALISE:bit_vector(3 downto 0) := "0000"
+  INITIALISE:bit_vector(2 downto 0) := "000"
 );
 port (
   in_clk:in std_logic;                 -- clock to be sync'ed from 

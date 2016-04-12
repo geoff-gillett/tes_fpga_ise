@@ -60,6 +60,11 @@
 			<locationURI>SIGASI_TOOLCHAIN_XILINX_ISE/vhdl/src/unisims</locationURI>
 		</link>
 		<link>
+			<name>cpus/PSM</name>
+			<type>2</type>
+			<location>C:/TES_project/fpga_ise/teslib/PSM</location>
+		</link>
+		<link>
 			<name>Common Libraries/IEEE/Synopsys</name>
 			<type>2</type>
 			<locationURI>sigasiresource:/vhdl/93/IEEE%20Synopsys</locationURI>

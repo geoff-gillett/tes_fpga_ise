@@ -13,6 +13,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 
+library extensions;
+use extensions.boolean_vector.all;
+use extensions.logic.all;
+
 library streamlib;
 use streamlib.types.all;
 
@@ -43,6 +47,7 @@ constant MTU_BITS:integer:=16;
 --constant MAX_TICKS_BITS:integer:=16;
 constant TICK_LATENCY_BITS:integer:=32;
 constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=14;
+constant DELAY_BITS:integer:=13;
 
 --------------------------------------------------------------------------------
 -- Default register values on reset
@@ -72,6 +77,7 @@ constant BASELINE_MAX_AV_ORDER:integer:=6;
 constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=10;
 
 
+-- types
 type baseline_registers_t is record
 	offset:adc_sample_t;
 	subtraction:boolean;
@@ -82,36 +88,111 @@ type baseline_registers_t is record
 end record;
 
 type capture_registers_t is record
-	-- max peaks in pulse event 
-	-- a value of zero means only record the initial peak
-	-- maximum value is 2**PEAK_COUNT_WIDTH-1
-	-- if max_peaks(PEAK_COUNT_WIDTH)='1' generate variable length events
-	max_peaks:unsigned(PEAK_COUNT_WIDTH downto 0);
-	-- cfd calculation is relative to the minima befere the peak
-	-- if false calculation is relative to baseline
-	cfd_rel2min:boolean; 
+	-- max peaks in pulse event sets length of pulse event
+	max_peaks:unsigned(PEAK_COUNT_WIDTH-1 downto 0);
 	constant_fraction:unsigned(CFD_BITS-2 downto 0);
 	pulse_threshold:unsigned(DSP_BITS-2 downto 0);
 	slope_threshold:unsigned(DSP_BITS-2 downto 0);
-	pulse_area_threshold:area_t;
-	height_type:height_d;
-	-- the pulse threshold is relative to the minima, baseline if FALSE
+	area_threshold:area_t;
+	height:height_d;
 	threshold_rel2min:boolean;
+	cfd_rel2min:boolean; 
 	height_rel2min:boolean;
-	-- timing point
-	trigger_type:timing_d;
-	detection_type:detection_type_d;
-	trace0_type:trace_type_d;
-	trace1_type:trace_type_d;
+	timing:timing_d;
+	detection:detection_d;
+	trace0:trace_d;
+	trace1:trace_d;
+	delay:unsigned(DELAY_BITS-1 downto 0);
 end record;
 
-type measurement_registers_t is record
+type channel_registers_t is record
 	baseline:baseline_registers_t;
 	capture:capture_registers_t;
 end record;
 
-type measurement_register_array is array (natural range <>) 
-		 of measurement_registers_t;
+type channel_register_array is array (natural range <>) 
+		 of channel_registers_t;
+		 
+-- ADDRESS MAP (one hot)
+-- capture register 					address bit 0
+--
+-- 1  downto 0  detection
+-- 3  downto 2  timing
+-- 7  downto 4  max_peaks
+-- 9  downto 8  height
+-- 11 downto 10 trace0
+-- 13 downto 12 trace1
+-- 14           cfd_rel2min
+-- 15           height_rel2min
+-- 16           threshold_rel2min
+--
+-- pulse_threshold 						address bit 1
+-- slope_threshold 						address bit 2
+-- constant_fraction 					address bit 3
+-- pulse_area_threshold				address bit 4
+-- delay											address bit 5
+-- baseline.offset   					address bit 6				
+-- baseline.timeconstant  		address bit 7				
+-- baseline.threshold		  		address bit 8
+-- baseline.count_threshold		address bit 9
+-- baseline flags							address bit 10
+-- reserved										address bit 11
+--
+-- 2  downto 0  baseline.average_order
+-- 4 						baseline.subtraction 
+
+-- One-hot addresses
+constant CAPTURE_ADDR_BIT:integer:=0;
+constant PULSE_THRESHOLD_ADDR_BIT:integer:=1;
+constant SLOPE_THRESHOLD_ADDR_BIT:integer:=2;
+constant CONSTANT_FRACTION_ADDR_BIT:integer:=3;
+constant AREA_THRESHOLD_ADDR_BIT:integer:=4;
+constant DELAY_ADDR_BIT:integer:=5;
+constant BL_OFFSET_ADDR_BIT:integer:=6;
+constant BL_TIMECONSTANT_ADDR_BIT:integer:=7;
+constant BL_THRESHOLD_ADDR_BIT:integer:=8;
+constant BL_COUNT_THRESHOLD_ADDR_BIT:integer:=9;
+constant BL_FLAGS_ADDR_BIT:integer:=10;
+constant RESERVED_ADDR_BIT:integer:=11;
+-- FIR AXI streams
+constant FILTER_CONFIG_ADDR_BIT:integer:=20;
+constant FILTER_RELOAD_ADDR_BIT:integer:=21;
+constant DIFFERENTIATOR_CONFIG_ADDR_BIT:integer:=22;
+constant DIFFERENTIATOR_RELOAD_ADDR_BIT:integer:=23;
+
+-- reset values
+constant DEFAULT_DETECTION:detection_d:=PULSE_DETECTION_D;
+constant DEFAULT_TIMING:timing_d:=CFD_LOW_TIMING_D;
+constant DEFAULT_MAX_PEAKS:unsigned(PEAK_COUNT_WIDTH-1 downto 0)
+				 :=(others => '0');
+constant DEFAULT_HEIGHT:height_d:=PEAK_HEIGHT_D;
+constant DEFAULT_TRACE0:trace_d:=NO_TRACE_D;
+constant DEFAULT_TRACE1:trace_d:=NO_TRACE_D;
+constant DEFAULT_CFD_REL2MIN:boolean:=TRUE;
+constant DEFAULT_HEIGHT_REL2MIN:boolean:=TRUE;
+constant DEFAULT_THRESHOLD_REL2MIN:boolean:=FALSE;
+constant DEFAULT_PULSE_THRESHOLD:unsigned(DSP_BITS-2 downto 0)
+				 :=to_unsigned(1000,DSP_BITS-DSP_FRAC-1) & to_unsigned(0,DSP_FRAC);
+constant DEFAULT_SLOPE_THRESHOLD:unsigned(DSP_BITS-2 downto 0)
+				 :=to_unsigned(1000,DSP_BITS-SLOPE_FRAC-1) & to_unsigned(0,SLOPE_FRAC);
+constant DEFAULT_CONSTANT_FRACTION:unsigned(CFD_BITS-2 downto 0)
+				 :=to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
+constant DEFAULT_AREA_THRESHOLD:area_t:=to_signed(10000,AREA_BITS);
+constant DEFAULT_DELAY:unsigned(DELAY_BITS-1 downto 0)
+         :=to_unsigned(2**(DELAY_BITS-1),DELAY_BITS);
+constant DEFAULT_BL_OFFSET:adc_sample_t
+         :=std_logic_vector(to_unsigned(260,ADC_BITS));
+constant DEFAULT_BL_SUBTRACTION:boolean:=TRUE;
+constant DEFAULT_BL_TIMECONSTANT:unsigned(BASELINE_TIMECONSTANT_BITS-1 downto 0)
+				 :=to_unsigned(2**16,BASELINE_TIMECONSTANT_BITS);
+constant DEFAULT_BL_THRESHOLD:unsigned(BASELINE_BITS-2 downto 0)
+				 :=to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
+constant DEFAULT_BL_COUNT_THRESHOLD:unsigned(BASELINE_COUNTER_BITS-1 downto 0)
+				 :=to_unsigned(150,BASELINE_COUNTER_BITS);
+constant DEFAULT_BL_AVERAGE_ORDER:integer:=4;
+
+function capture_register(r:channel_registers_t) return std_logic_vector;
+function baseline_flags(r:channel_registers_t) return std_logic_vector;
 
 --------------------------------------------------------------------------------
 -- MCA Registers
@@ -146,7 +227,6 @@ type mca_value_d is (
 );
 
 constant NUM_MCA_VALUES:integer:=mca_value_d'pos(mca_value_d'high)+1;										
---constant MCA_VALUE_SELECT_BITS:integer:=mca_value_d'pos(mca_value_d'high)+1;
 
 function to_onehot(v:mca_value_d) return std_logic_vector;
 function to_mca_value_d(i:natural range 0 to NUM_MCA_VALUES-1) 
@@ -159,7 +239,7 @@ function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector;
 type mca_trigger_d is (
 	DISABLED_MCA_TRIGGER, -- no bits set
 	CLOCK_MCA_TRIGGER,
-  FILTERED_XING_MCA_TRIGGER, --FIXME this usefull?
+  FILTERED_XING_MCA_TRIGGER, --FIXME this usefull? change to height?
   FILTERED_0XING_MCA_TRIGGER,
   SLOPE_0XING_MCA_TRIGGER,
   SLOPE_XING_MCA_TRIGGER,
@@ -167,11 +247,10 @@ type mca_trigger_d is (
   CFD_LOW_MCA_TRIGGER,
   MAXIMA_MCA_TRIGGER, -- peak
   MINIMA_MCA_TRIGGER, --peak start minima
-  RAW_0XING_MCA_TRIGGER
+  RAW_0XING_MCA_TRIGGER --TODO add minima or maxima
 );
 
 constant NUM_MCA_TRIGGERS:integer:=mca_trigger_d'pos(mca_trigger_d'high)+1;
---constant MCA_TRIGGER_SELECT_BITS:integer:=NUM_MCA_TRIGGERS-1; --exclude disabled
 
 function to_onehot(t:mca_trigger_d) return std_logic_vector;
 function to_mca_trigger_d(i:natural range 0 to NUM_MCA_TRIGGERS-1) 
@@ -195,7 +274,30 @@ end record;
 end package registers;
 
 package body registers is
+-- AXI data made up of multiple registers
 
+function capture_register(r:channel_registers_t) return std_logic_vector is
+	variable s:std_logic_vector(AXI_DATA_BITS-1 downto 0):=(others => '0');
+begin
+	s(1 downto 0):=to_std_logic(r.capture.detection,2);
+	s(3 downto 2):=to_std_logic(r.capture.timing,2);
+	s(7 downto 4):=to_std_logic(r.capture.max_peaks);
+	s(9 downto 8):=to_std_logic(r.capture.height,2);
+	s(11 downto 10):=to_std_logic(r.capture.trace0,2);
+	s(13 downto 12):=to_std_logic(r.capture.trace1,2);
+	s(14):=to_std_logic(r.capture.cfd_rel2min);
+	s(15):=to_std_logic(r.capture.height_rel2min);
+	s(16):=to_std_logic(r.capture.threshold_rel2min);
+	return s;
+end function; 
+
+function baseline_flags(r:channel_registers_t) return std_logic_vector is
+	variable s:std_logic_vector(AXI_DATA_BITS-1 downto 0):=(others => '0');
+begin
+	s(2 downto 0) := to_std_logic(r.baseline.average_order,3);
+	s(4) := to_std_logic(r.baseline.subtraction);
+	return s;
+end function;
 -- mca_values_t functions ------------------------------------------------------
 	
 function to_onehot(v:mca_value_d) return std_logic_vector is

@@ -41,7 +41,7 @@ generic(
   CFD_FRAC:integer:=17;
   -- max value is PEAK_COUNT_WIDTH
   --FIXME remove this
-  PEAK_COUNT_BITS:integer:=3;
+  PEAK_COUNT_BITS:integer:=4;
   FRAMER_ADDRESS_BITS:integer:=10;
   CHANNEL:integer:=7;
   ENDIANNESS:string:="LITTLE"
@@ -52,7 +52,7 @@ port(
   
   adc_sample:in adc_sample_t;
   
-  registers:in measurement_registers_t;
+  registers:in channel_registers_t;
   
   -- FIR filters AXI interfaces
   filter_config_data:in std_logic_vector(7 downto 0);
@@ -62,6 +62,8 @@ port(
   filter_reload_valid:in boolean;
   filter_reload_ready:out boolean;
   filter_reload_last:in boolean;
+  filter_reload_last_missing:out boolean;
+  filter_reload_last_unexpected:out boolean;
   differentiator_config_data:in std_logic_vector(7 downto 0);
   differentiator_config_valid:in boolean;
   differentiator_config_ready:out boolean;
@@ -69,6 +71,8 @@ port(
   differentiator_reload_valid:in boolean;
   differentiator_reload_ready:out boolean;
   differentiator_reload_last:in boolean;
+  differentiator_reload_last_missing:out boolean;
+  differentiator_reload_last_unexpected:out boolean;
 
   measurements:out measurement_t;
   
@@ -359,6 +363,8 @@ port map(
   stage1_reload_valid => filter_reload_valid,
   stage1_reload_ready => filter_reload_ready,
   stage1_reload_last => filter_reload_last,
+  stage1_reload_last_missing => filter_reload_last_missing,
+  stage1_reload_last_unexpected => filter_reload_last_unexpected,
   stage2_config_data => differentiator_config_data,
   stage2_config_valid => differentiator_config_valid,
   stage2_config_ready => differentiator_config_ready,
@@ -366,6 +372,8 @@ port map(
   stage2_reload_valid => differentiator_reload_valid,
   stage2_reload_ready => differentiator_reload_ready,
   stage2_reload_last => differentiator_reload_last,
+  stage2_reload_last_missing => differentiator_reload_last_missing,
+  stage2_reload_last_unexpected => differentiator_reload_last_unexpected,
   --w=18 f=3
   stage1 => filtered_FIR,
   --w=18 f=8
@@ -722,10 +730,10 @@ port map(
   zero_xing => slope_zero_xing
 );
 
-triggerMux:process(capture_cfd.trigger_type,cfd_low,pulse_start_cfd,
+triggerMux:process(capture_cfd.timing,cfd_low,pulse_start_cfd,
 									 slope_pos_thresh_xing_cfd,cfd_pulse_state) 
 begin
-	case capture_cfd.trigger_type is
+	case capture_cfd.timing is
 	when PULSE_THRESH_TIMING_D => 
 		if cfd_pulse_state=FIRST_RISE then
 			trigger <= pulse_start_cfd;
@@ -879,7 +887,9 @@ begin
   end if;
 end process constantFraction;
 
-fixed_length <= capture_pd.max_peaks(PEAK_COUNT_WIDTH)='0';
+--FIXME always fixed length now
+fixed_length <= TRUE;
+--fixed_length <= capture_pd.max_peaks(PEAK_COUNT_WIDTH)='0';
 
 pulseMeasurement:process(clk)
 begin
@@ -911,7 +921,7 @@ if rising_edge(clk) then
   	end if;
   	
   	--  FIXME the path for trigger is going to be a problem
-  	case capture_cfd.detection_type is 
+  	case capture_cfd.detection is 
   	when PEAK_DETECTION_D | AREA_DETECTION_D =>
   		if event_start then
         event_time <= (others => '0');
@@ -941,7 +951,7 @@ if rising_edge(clk) then
   	max_at_cfd_reg <= peak_cfd;
   	peak_start_reg <= peak_start;
   	
-    case capture_cfd.height_type is
+    case capture_cfd.height is
     when PEAK_HEIGHT_D =>
     	if peak_cfd then
     		m.height_valid <= TRUE; 
@@ -1001,7 +1011,7 @@ if rising_edge(clk) then
   		pulse_area <= pulse_area+filtered_cfd;
   		area_below_threshold 
   			<= to_0ifX(pulse_area) < 
-  				 resize(capture_cfd.pulse_area_threshold,AREA_SUM_BITS);
+  				 resize(capture_cfd.area_threshold,AREA_SUM_BITS);
   	end if;
   --FIXME these no longer need to registered	
     m.peak_start <= peak_start;
@@ -1056,12 +1066,12 @@ m.pulse.extrema <= reshape(pulse_extrema,FRAC,SIGNAL_BITS,SIGNAL_FRAC);
 dump <= dump_reg;
 
 detection_flags.channel <= to_unsigned(CHANNEL,CHANNEL_WIDTH);
-detection_flags.event_type.detection_type <= capture_cfd.detection_type;
+detection_flags.event_type.detection_type <= capture_cfd.detection;
 detection_flags.event_type.tick <= FALSE;
 detection_flags.peak_count <= m.peak_count;
 
-single_word_event <= capture_cfd.detection_type=PEAK_DETECTION_D or
-										 capture_cfd.detection_type=AREA_DETECTION_D;
+single_word_event <= capture_cfd.detection=PEAK_DETECTION_D or
+										 capture_cfd.detection=AREA_DETECTION_D;
 
 peak_event.height <= m.height; 
 peak_chunk_we(3) <= m.height_valid; 
@@ -1107,9 +1117,9 @@ begin
 	end if;
 end process FSMnextstate;
 
-dual_trace <= capture_cfd.trace0_type/=NONE_D and 
-							capture_cfd.trace1_type/=NONE_D;
-single_trace <= not dual_trace and capture_cfd.trace0_type/=NONE_D;
+dual_trace <= capture_cfd.trace0/=NO_TRACE_D and 
+							capture_cfd.trace1/=NO_TRACE_D;
+single_trace <= not dual_trace and capture_cfd.trace0/=NO_TRACE_D;
 
 traceCapture:process(clk)
 begin
@@ -1137,29 +1147,29 @@ if rising_edge(clk) then
 end if;
 end process traceCapture;
 
-traceMux:process(capture_cfd.trace0_type,capture_cfd.trace1_type,
+traceMux:process(capture_cfd.trace0,capture_cfd.trace1,
 								 m.filtered.sample,m.raw.sample,m.slope.sample)
 begin
 	
-  case capture_cfd.trace0_type is
-  when NONE_D =>
+  case capture_cfd.trace0 is
+  when NO_TRACE_D =>
   	trace0 <= (others => '-');
-  when FILTERED_D =>
+  when FILTERED_TRACE_D =>
     trace0 <= to_std_logic(m.filtered.sample);
-  when SLOPE_D =>
+  when SLOPE_TRACE_D =>
     trace0 <= to_std_logic(m.slope.sample);
-  when RAW_D =>
+  when RAW_TRACE_D =>
     trace0 <= to_std_logic(m.raw.sample);
   end case;	
   
-  case capture_cfd.trace1_type is
-  when NONE_D =>
+  case capture_cfd.trace1 is
+  when NO_TRACE_D =>
   	trace1 <= (others => '-');
-  when FILTERED_D =>
+  when FILTERED_TRACE_D =>
     trace1 <= to_std_logic(m.filtered.sample);
-  when SLOPE_D =>
+  when SLOPE_TRACE_D =>
     trace1 <= to_std_logic(m.slope.sample);
-  when RAW_D =>
+  when RAW_TRACE_D =>
     trace1 <= to_std_logic(m.raw.sample);
   end case;	
 end process traceMux;
@@ -1231,7 +1241,7 @@ if rising_edge(clk) then
   else
   	
   	-- FIXME this may break on event_type change
-  	if (capture_cfd.detection_type=PULSE_DETECTION_D and pulse_state=PEAKS) then 
+  	if (capture_cfd.detection=PULSE_DETECTION_D and pulse_state=PEAKS) then 
 	    pulse_peak_we_reg <= (others => FALSE);
   	else
   		
@@ -1339,7 +1349,7 @@ if rising_edge(clk) then
       end if;
     end if;
       
-    case capture_cfd.detection_type is
+    case capture_cfd.detection is
     when PEAK_DETECTION_D =>
       frame_word <= to_streambus(peak_event,ENDIANNESS);
       frame_address <= (others => '0');

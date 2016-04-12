@@ -1,0 +1,123 @@
+                    ;-----------------------------------------------------------
+                    ; Company: Quantum Technology Laboratory
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: route_command
+                    ; Project Name: control_unit
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    ; The ASCII command received from the UART is in registers
+                    ;       value3:value2:value1:value0  
+                    ;       address3:address2:address2:address0
+                    ;       command 
+                    ; See command_IO.psm 
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE route_command
+                    ;-----------------------------------------------------------
+                    ; Routing is based on the MSB of address: (address3)
+                    ;
+                    ;   00-CHANNEL_MASK   TES Channels
+                    ;
+                    ;   CHANNEL_MASK+1    General registers
+                    ;
+                    ;   CHANNEL_MASK+2    ADC SPI
+                    ;                       LSB:SPI address
+                    ;                       2nd LSB: SPI channel select
+                    ;
+                    ;  >CHANNEL_MASK+2    AXI bus (NOT IMPLEMENTED)
+                    ;
+                    ;-----------------------------------------------------------
+     route_command: FETCH s3, TES_channel_mask
+                    ADD s3, 01
+                    COMPARE address3, s3
+                    JUMP C, channel_register     ; returns to caller
+                    JUMP Z, global_register      ; returns to caller
+                    ADD s3, 01
+                    COMPARE address3, s3
+                    JUMP NZ, respond_decerr      ; returns to caller
+       SPI_handler: COMPARE address1, 00
+                    JUMP Z, respond_decerr
+                   	FETCH s0, AD9510_spi_ce_bit
+                    COMPARE address1, s0
+                    JUMP C, ADC_SPI_handler       ; returns to caller
+                    JUMP Z, AD9510_SPI_handler    ; returns to caller
+                    JUMP respond_decerr           ; returns to caller
+                    ;
+   global_register: COMPARE command, READ
+                    JUMP Z, read_global_reg       ; returns to caller
+                    JUMP write_global_reg         ; returns to caller
+                    ;
+  channel_register: FETCH s1, TES_channels
+                    COMPARE address3, s1
+                    JUMP NC, respond_decerr       ; bad channel (RTC)
+                    LOAD s3, address3
+                    LOAD s4, chan_decode'upper
+                    ADD s3, chan_decode'lower
+                    ADDCY s4, 00
+                    CALL@ (s4, s3)
+                    OUTPUT s3, UART_CHAN_SEL_O_PORT  ;select channel to forward 
+                    OUTPUTK SEL_CHAN_UART, IO_SEL_CO_PORT  ;select channel UART
+                    LOAD s4, value3                        ;transmit command
+                    CALL send_hex_byte
+                    LOAD s4, value2
+                    CALL send_hex_byte
+                    LOAD s4, value1
+                    CALL send_hex_byte
+                    LOAD s4, value0
+                    CALL send_hex_byte
+                    LOAD s4, address3
+                    CALL send_hex_byte
+                    LOAD s4, address2
+                    CALL send_hex_byte
+                    LOAD s4, address1
+                    CALL send_hex_byte
+                    LOAD s4, address0
+                    CALL send_hex_byte
+                    LOAD s4, command
+                    CALL send_hex_byte
+                    LOAD s5, TERMINATOR
+                    CALL UART_Tx
+      get_response: CALL clear_value_regs ;process response
+                    LOAD s6, 00           ;count the digits in s6
+                    LOAD s4, 00           ;count bad digits in s4
+    read_resp_char: CALL UART_Rx          ;wait for a character and return in s5
+                    JUMP Z, read_resp_char
+          got_char: COMPARE s5, TERMINATOR
+                    JUMP Z, resp_end;
+                    CALL ASCII_to_hex     ;convert value in s5 to hex nibble
+                    JUMP NC, is_hex_char
+                    ADD s4, 01            ;its not a hex char count it 
+                    JUMP next_resp_char
+       is_hex_char: LOAD s0, 4'd          ;shift registers set left by 4 bits
+  build_resp_value: SL0 command           ;to make space for new digit value
+                    SLA value0
+                    SLA value1
+                    SLA value2
+                    SLA value3
+                    SUB s0, 1'd
+                    JUMP NZ, build_resp_value
+                    OR command, s5 ;merge value of new digit into existing value
+    next_resp_char: ADD s6, 01
+                    JUMP read_resp_char
+          resp_end: OUTPUTK SEL_MAIN_UART, IO_SEL_CO_PORT   ;return to main UART
+                    COMPARE s6, 02
+                    JUMP Z, send_response
+                    COMPARE s6, 10'd
+                    JUMP Z, send_response
+                    AND command, ~AXI_BITS
+                    OR command, AXI_SLVERR        ;bad number of response digits
+                    JUMP send_response_byte
+                    ;                    
+                    ;-----------------------------------------------------------
+                    ; TABLE lookup for decoding the channel select
+                    ; Limited to 8 channels
+                    ;-----------------------------------------------------------
+TABLE chanDecode1#, [00000001,00000010,00000100,00001000,00010000,00100000]'b
+TABLE chanDecode2#, [01000000,10000000]'b
+       chan_decode: LOAD&RETURN s3, chanDecode1#
+                    LOAD&RETURN s3, chanDecode2#
+                    ;
+                    

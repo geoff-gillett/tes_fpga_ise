@@ -51,20 +51,20 @@ signal measurements:measurement_array_t(CHANNELS-1 downto 0);
 signal dumps,commits:boolean_vector(CHANNELS-1 downto 0);
 signal eventstreams_valid:boolean_vector(CHANNELS-1 downto 0);
 signal eventstreams_ready:boolean_vector(CHANNELS-1 downto 0);
-signal adc_samples:adc_sample_array_t(CHANNELS-1 downto 0);
+signal adc_samples,adc_delayed:adc_sample_array_t(CHANNELS-1 downto 0);
 signal adc_sample_reg:adc_sample_array_t(CHANNELS-1 downto 0);
 signal adc_sample:adc_sample_t;
-signal registers:measurement_register_array(CHANNELS-1 downto 0);
+signal registers:channel_register_array(CHANNELS-1 downto 0);
 
 -- discrete types as unsigned for reading into settings file
 type height_type_array is array (natural range <>) of
-		 unsigned(HEIGHT_TYPE_BITS-1 downto 0);
+		 unsigned(NUM_HEIGHT_D-1 downto 0);
 signal height_types:height_type_array(CHANNELS-1 downto 0);
 type detection_type_array is array (natural range <>) of
-		 unsigned(DETECTION_TYPE_BITS-1 downto 0);
+		 unsigned(DETECTION_D_BITS-1 downto 0);
 signal detection_types:detection_type_array(CHANNELS-1 downto 0);
 type trigger_type_array is array (natural range <>) of
-		 unsigned(TIMING_TRIGGER_TYPE_BITS-1 downto 0);
+		 unsigned(TIMING_D_BITS-1 downto 0);
 signal trigger_types:trigger_type_array(CHANNELS-1 downto 0);
 signal mca_value_type:unsigned(ceilLog2(NUM_MCA_VALUES)-1 downto 0);
 signal mca_trigger_type:unsigned(ceilLog2(NUM_MCA_TRIGGERS)-1 downto 0);
@@ -125,6 +125,19 @@ mca_trigger_type <= to_unsigned(mca_registers.value,ceilLog2(NUM_MCA_TRIGGERS));
 
 chanGen:for c in 0 to CHANNELS-1 generate
 begin	
+	
+	delay:entity work.RAM_delay
+  generic map(
+    DEPTH     => 2**DELAY_BITS,
+    DATA_BITS => ADC_BITS
+  )
+  port map(
+    clk => sample_clk,
+    data_in => adc_samples(c),
+    delay => to_integer(registers(c).capture.delay),
+    delayed => adc_delayed(c)
+  );
+	
   measurementUnit:entity work.measurement_unit
   generic map(
     CHANNEL => c,
@@ -134,7 +147,7 @@ begin
   port map(
     clk => sample_clk,
     reset => sample_reset,
-    adc_sample => adc_samples(c),
+    adc_sample => adc_delayed(c),
     registers => registers(c), -- use same registers for all channels
     filter_config_data => (others => '0'),
     filter_config_valid => FALSE,
@@ -168,11 +181,11 @@ begin
   );
 	starts(c) <= measurements(c).trigger;  -- pull out  the mux start signal 
   detection_types(0) 
-  	<= to_unsigned(registers(0).capture.detection_type,DETECTION_TYPE_BITS);
+  	<= unsigned(to_std_logic(registers(0).capture.detection,DETECTION_D_BITS));
   height_types(0) 
-  	<= to_unsigned(registers(0).capture.height_type,HEIGHT_TYPE_BITS);
+  	<= unsigned(to_std_logic(registers(0).capture.height,HEIGHT_D_BITS));
   trigger_types(0) 
-  	<= to_unsigned(registers(0).capture.trigger_type,TIMING_TRIGGER_TYPE_BITS);
+  	<= unsigned(to_std_logic(registers(0).capture.timing,TIMING_D_BITS));
 end generate chanGen;
 
 -- unsigned value for writing to file
@@ -343,21 +356,24 @@ for c in CHANNELS-1 downto 0 loop
   registers(c).capture.constant_fraction 
     <= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
   registers(c).capture.cfd_rel2min <= TRUE;
-  registers(c).capture.height_type <= PEAK_HEIGHT_D;
-  registers(c).capture.detection_type <= PEAK_DETECTION_D;
-  registers(c).capture.trigger_type <= CFD_LOW_TIMING_D;
+  registers(c).capture.height <= PEAK_HEIGHT_D;
+  registers(c).capture.detection <= PEAK_DETECTION_D;
+  registers(c).capture.timing <= CFD_LOW_TIMING_D;
   registers(c).capture.threshold_rel2min <= FALSE;
   registers(c).capture.height_rel2min <= FALSE;
-  registers(c).capture.pulse_area_threshold <= to_signed(500,AREA_BITS);
-  registers(c).capture.max_peaks <= (others => '1');
+  registers(c).capture.area_threshold <= to_signed(500,AREA_BITS);
+  registers(c).capture.max_peaks <= (0 => '1', others => '0');
+  registers(c).capture.delay <= to_unsigned(2**(DELAY_BITS-1),DELAY_BITS);
 end loop;
+
+--registers(1).capture.detection_type <= PULSE_DETECTION_D;
 
 mca_registers.channel <= (others => '0');
 mca_registers.bin_n <= (others => '0');
 mca_registers.last_bin <= (others => '1');
 mca_registers.lowest_value <= to_signed(-1000, MCA_VALUE_BITS);
 mca_registers.value <= MCA_FILTERED_SIGNAL;
-mca_registers.trigger <= CLOCK_MCA_TRIGGER;
+mca_registers.trigger <= MAXIMA_MCA_TRIGGER;
 mca_registers.ticks <= (0 => '1', others => '0');
 
 update_on_completion <= FALSE;
