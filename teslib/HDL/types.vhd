@@ -27,10 +27,15 @@ constant AXI_EXOKAY:std_logic_vector(1 downto 0):="01";
 --------------------------------------------------------------------------------
 -- TES design constants and types
 --------------------------------------------------------------------------------
+constant ENDIANNESS:string:="LITTLE";
 -- bits in a native ADC sample
+constant ADC_CHIPS:integer:=4;
+constant ADC_CHIP_CHANNELS:integer:=2;
 constant ADC_BITS:integer:=14;
+constant ADC_CHANNELS:integer:=ADC_CHIPS*ADC_CHIP_CHANNELS;
 -- There are 2**CHANNEL_BITS channels
 constant CHANNEL_BITS:integer:=3; 
+constant CHANNELS:integer:=2**CHANNEL_BITS;
 -- Bits in a full full time-stamp (Tick event)
 constant TIMESTAMP_BITS:integer:=64; 
 -- Bits in a relative ADC sample (sample_t)
@@ -74,10 +79,10 @@ subtype AXI_data is std_logic_vector(AXI_DATA_BITS-1 downto 0);
 type AXI_data_array is array (natural range <>) of AXI_data;
 subtype AXI_address is std_logic_vector(AXI_ADDRESS_BITS-1 downto 0);
 type AXI_address_array is array (natural range <>) of AXI_address;
-subtype registerdata_t is std_logic_vector(REGISTER_DATA_BITS-1 downto 0);
-type registerdata_array is array (natural range <>) of registerdata_t;
-subtype registeraddress_t is std_logic_vector(REGISTER_ADDRESS_BITS-1 downto 0);
-type registeraddress_array is array (natural range <>) of registeraddress_t;
+subtype register_data_t is std_logic_vector(REGISTER_DATA_BITS-1 downto 0);
+type registerdata_array is array (natural range <>) of register_data_t;
+subtype register_address_t is std_logic_vector(REGISTER_ADDRESS_BITS-1 downto 0);
+type registeraddress_array is array (natural range <>) of register_address_t;
 type slv_32_array is array (natural range <>) of 
 		 unsigned(32 downto 0);
 end package types;

@@ -481,6 +481,7 @@ clkInputBuffers:for i in ADC_CHIPS-1 downto 0 generate
   );
 end generate;
 
+--FIXME make this a double loop
 adcDataBuffers:for i in ADC_BITS/2-1 downto 0 generate
   data0Ibufds:ibufds
   generic map(

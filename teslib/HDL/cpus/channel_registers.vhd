@@ -50,7 +50,7 @@ use work.functions.all;
 use work.adc.all;
 use work.dsptypes.all;
 use work.registers.all;
-use work.events.all;
+--use work.events.all;
 
 -- expects s_clk = 2*reg_clk
 entity channel_registers is
@@ -65,10 +65,10 @@ port (
   reg_clk:in std_logic;
   reg_reset:in std_logic;
   --!* register signals from/to channel CPU
-  data:in registerdata_t;
-  address:in registeraddress_t;
+  data:in register_data_t;
+  address:in register_address_t;
   write:in boolean; --Strobe
-  value:out registerdata_t;
+  value:out register_data_t;
   
   axis_ready:out boolean;
   axis_done:out boolean;
@@ -105,7 +105,6 @@ end entity channel_registers;
 architecture RTL of channel_registers is
 
 signal reg:channel_registers_t;
-signal value_int:std_logic_vector(AXI_DATA_BITS-1 downto 0);
 
 signal reg_data:AXI_data_array(11 downto 0);
 type bit_array is array (natural range <>) of std_logic_vector(11 downto 0);
@@ -128,9 +127,8 @@ signal differentiator_reload_data_int:std_logic_vector(COEF_BITS-1 downto 0);
 signal differentiator_config_data_int:std_logic_vector(CONFIG_BITS-1 downto 0);
 
 --NOTE bits 16 to 19 are used as the bit address when the iodelay is read
---
+-- FIXME huh???
 begin 
-value <= value_int;
 registers <= reg;
 filter_reload_data(COEF_BITS-1 downto 0) <= filter_reload_data_int;
 filter_reload_data(COEF_STREAM_WIDTH-1 downto COEF_BITS) <= (others => '0');
@@ -146,6 +144,7 @@ differentiator_config_data(CONFIG_BITS-1 downto 0)
 differentiator_config_data(CONFIG_STREAM_WIDTH-1 downto CONFIG_BITS) 
 	<= (others => '0');
 
+--FIXME clk this with stream_clk
 regWrite:process(reg_clk) 
 begin
 if rising_edge(reg_clk) then
@@ -357,6 +356,7 @@ port map(
   last => open
 );
 
+-- register read
 -- create register array for selector
 reg_data(CAPTURE_ADDR_BIT) <= capture_register(reg);
 reg_data(PULSE_THRESHOLD_ADDR_BIT)
@@ -380,7 +380,7 @@ reg_data(BL_THRESHOLD_ADDR_BIT)
 reg_data(BL_COUNT_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.baseline.count_threshold,AXI_DATA_BITS));
 reg_data(BL_FLAGS_ADDR_BIT) <= baseline_flags(reg);
-reg_data(RESERVED_ADDR_BIT) <= (others => '0');
+reg_data(11) <= (others => '0');
 
 selectorGen:for b in 0 to AXI_DATA_BITS-1 generate
 	--variable reg_bits:std_logic_vector(11 downto 0);
@@ -395,7 +395,7 @@ begin
   port map(
     input => reg_bits(b),
     sel => address(11 downto 0),
-    output => value_int(b)
+    output => value(b)
   );
   
 end generate;

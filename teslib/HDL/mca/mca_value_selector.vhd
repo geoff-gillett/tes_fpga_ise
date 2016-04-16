@@ -26,8 +26,8 @@ use work.measurements.all;
 entity mca_value_selector is
 generic (
 	VALUE_BITS:integer:=MCA_VALUE_BITS;
-	NUM_VALUES:integer:=NUM_MCA_VALUES;
-	NUM_VALIDS:integer:=NUM_MCA_TRIGGERS-1
+	NUM_VALUES:integer:=NUM_MCA_VALUE_D;
+	NUM_VALIDS:integer:=NUM_MCA_TRIGGER_D-1
 );
 	
 port (

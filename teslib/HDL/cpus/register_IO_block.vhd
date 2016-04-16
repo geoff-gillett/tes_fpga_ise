@@ -29,17 +29,17 @@ port(
   address_wr:in boolean;
   data_wr:in boolean;
   --  
-  address:out registeraddress_t;
-  data:out registerdata_t;
+  address:out register_address_t;
+  data:out register_data_t;
   -- current register data for address
-  read_data:in registerdata_t
+  read_data:in register_data_t
 );
 end entity register_IO_block;
 --
 architecture RTL of register_IO_block is
   
-signal address_int:registeraddress_t;
-signal data_int:registerdata_t;
+signal address_int:register_address_t;
+signal data_int:register_data_t;
 begin 
 address <= address_int;
 data <= data_int;  

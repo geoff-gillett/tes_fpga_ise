@@ -76,8 +76,8 @@ port(
 
   measurements:out measurement_t;
   
-  mca_value_select:in std_logic_vector(NUM_MCA_VALUES-1 downto 0);
-	mca_trigger_select:std_logic_vector(NUM_MCA_TRIGGERS-2 downto 0);
+  mca_value_select:in std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
+	mca_trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
   mca_value:out signed(MCA_VALUE_BITS-1 downto 0);
   mca_value_valid:out boolean;
 
@@ -185,7 +185,7 @@ signal height_valid:boolean;
 signal peak_overflow_int:boolean;
 signal pulse_length:unsigned(TIME_BITS-TIME_FRAC-1 downto 0);
 signal pulse_overflow:boolean;
-signal peak_count:unsigned(PEAK_COUNT_WIDTH-1 downto 0);
+signal peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 signal raw_area:signed(AREA_SUM_BITS-1 downto 0);
 signal raw_zero_xing:boolean;
 
@@ -271,7 +271,7 @@ signal pulse_peak_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal commit_peak,commit_area:boolean;
 signal peak_start_reg:boolean;
 signal last_peak:boolean;
-signal last_peak_count:unsigned(PEAK_COUNT_WIDTH-1 downto 0);
+signal last_peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 signal peaks_done:boolean;
 signal frame_full:boolean;
 signal commit_frame:boolean;
@@ -280,7 +280,7 @@ signal last_clear_peak:boolean;
 signal peak_lost:boolean;
 signal event_lost:boolean;
 signal clear_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
-signal clear_count:unsigned(PEAK_COUNT_WIDTH-1 downto 0);
+signal clear_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 signal last_clear:boolean;
 signal pulse_peak_mux_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal rise_time:unsigned(TIME_BITS-1 downto 0);
@@ -291,8 +291,8 @@ measurements <= m; --are the measurements needed externally?
 valueMux:entity work.mca_value_selector
 generic map(
   VALUE_BITS => MCA_VALUE_BITS,
-  NUM_VALUES => NUM_MCA_VALUES,
-  NUM_VALIDS => NUM_MCA_TRIGGERS-1
+  NUM_VALUES => NUM_MCA_VALUE_D,
+  NUM_VALIDS => NUM_MCA_TRIGGER_D-1
 )
 port map(
   clk => clk,
@@ -907,7 +907,7 @@ if rising_edge(clk) then
 			capture_cfd <= capture_pd; -- FIXME this is not going to work correctly
 																 -- use extra flags and delay
 			if fixed_length then
-				last_peak_count <= capture_pd.max_peaks(PEAK_COUNT_WIDTH-1 downto 0);
+				last_peak_count <= capture_pd.max_peaks(PEAK_COUNT_BITS-1 downto 0);
 			else
 				last_peak_count <= (others => '1');
 			end if;
@@ -1050,7 +1050,6 @@ peak_overflow <= peak_overflow_int;
 time_overflow <= time_overflow_int;
 m.peak <= max_at_cfd_reg;
 m.peak_count <= peak_count;
---m.pulse_time <= event_time;
 m.pulse.time <= event_time;
 m.pulse.area <= reshape(pulse_area,FRAC,AREA_BITS,AREA_FRAC);
 m.pulse.extrema <= reshape(pulse_extrema,FRAC,SIGNAL_BITS,SIGNAL_FRAC);
@@ -1065,7 +1064,7 @@ m.pulse.extrema <= reshape(pulse_extrema,FRAC,SIGNAL_BITS,SIGNAL_FRAC);
 
 dump <= dump_reg;
 
-detection_flags.channel <= to_unsigned(CHANNEL,CHANNEL_WIDTH);
+detection_flags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
 detection_flags.event_type.detection_type <= capture_cfd.detection;
 detection_flags.event_type.tick <= FALSE;
 detection_flags.peak_count <= m.peak_count;

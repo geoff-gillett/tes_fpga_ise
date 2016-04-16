@@ -47,12 +47,12 @@ signal IO_reset:std_logic:='1';
 constant SAMPLE_CLK_PERIOD:time:=4 ns;
 constant IO_CLK_PERIOD:time:=8 ns;
 
-signal measurements:measurement_array_t(CHANNELS-1 downto 0);
+signal measurements:measurement_array(CHANNELS-1 downto 0);
 signal dumps,commits:boolean_vector(CHANNELS-1 downto 0);
 signal eventstreams_valid:boolean_vector(CHANNELS-1 downto 0);
 signal eventstreams_ready:boolean_vector(CHANNELS-1 downto 0);
-signal adc_samples,adc_delayed:adc_sample_array_t(CHANNELS-1 downto 0);
-signal adc_sample_reg:adc_sample_array_t(CHANNELS-1 downto 0);
+signal adc_samples,adc_delayed:adc_sample_array(CHANNELS-1 downto 0);
+signal adc_sample_reg:adc_sample_array(CHANNELS-1 downto 0);
 signal adc_sample:adc_sample_t;
 signal registers:channel_register_array(CHANNELS-1 downto 0);
 
@@ -66,8 +66,8 @@ signal detection_types:detection_type_array(CHANNELS-1 downto 0);
 type trigger_type_array is array (natural range <>) of
 		 unsigned(TIMING_D_BITS-1 downto 0);
 signal trigger_types:trigger_type_array(CHANNELS-1 downto 0);
-signal mca_value_type:unsigned(ceilLog2(NUM_MCA_VALUES)-1 downto 0);
-signal mca_trigger_type:unsigned(ceilLog2(NUM_MCA_TRIGGERS)-1 downto 0);
+signal mca_value_type:unsigned(ceilLog2(NUM_MCA_VALUE_D)-1 downto 0);
+signal mca_trigger_type:unsigned(ceilLog2(NUM_MCA_TRIGGER_D)-1 downto 0);
 -- error signals
 signal mux_overflows:boolean_vector(CHANNELS-1 downto 0);
 signal mux_overflows_u:unsigned(CHANNELS-1 downto 0);
@@ -81,8 +81,8 @@ signal baseline_errors_u:unsigned(CHANNELS-1 downto 0);
 signal peak_overflows:boolean_vector(CHANNELS-1 downto 0);
 signal peak_overflows_u:unsigned(CHANNELS-1 downto 0);
 --
-signal eventstreams_int:streambus_array_t(CHANNELS-1 downto 0);
-signal tick_period:unsigned(TICKPERIOD_BITS-1 downto 0);
+signal eventstreams_int:streambus_array(CHANNELS-1 downto 0);
+signal tick_period:unsigned(TICK_PERIOD_BITS-1 downto 0);
 signal starts:boolean_vector(CHANNELS-1 downto 0);
 signal muxstream:streambus_t;
 signal muxstream_valid:boolean;
@@ -101,9 +101,9 @@ signal update_on_completion:boolean;
 signal updated:boolean;
 signal mca_registers:mca_registers_t;
 signal channel_select:std_logic_vector(CHANNELS-1 downto 0);
-signal value_select:std_logic_vector(NUM_MCA_VALUES-1 downto 0);
+signal value_select:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
 -- don't need bit for mca_trigger_d 0=DISABLED
-signal trigger_select:std_logic_vector(NUM_MCA_TRIGGERS-2 downto 0);
+signal trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
 signal mca_values:mca_value_array(CHANNELS-1 downto 0);
 signal mca_value_valid:boolean;
 signal mcastream_valid:boolean;
@@ -120,8 +120,10 @@ begin
 sample_clk <= not sample_clk after SAMPLE_CLK_PERIOD/2;
 IO_clk <= not IO_clk after IO_CLK_PERIOD/2;
 
-mca_value_type <= to_unsigned(mca_registers.value,ceilLog2(NUM_MCA_VALUES));
-mca_trigger_type <= to_unsigned(mca_registers.value,ceilLog2(NUM_MCA_TRIGGERS));
+mca_value_type 
+	<= unsigned(to_std_logic(mca_registers.value,ceilLog2(NUM_MCA_VALUE_D)));
+mca_trigger_type 
+	<= unsigned(to_std_logic(mca_registers.value,ceilLog2(NUM_MCA_TRIGGER_D)));
 
 chanGen:for c in 0 to CHANNELS-1 generate
 begin	
@@ -219,7 +221,7 @@ generic map(
   CHANNEL_BITS => CHANNEL_BITS,
   RELTIME_BITS => TIME_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
-  TICKPERIOD_BITS => TICKPERIOD_BITS,
+  TICKPERIOD_BITS => TICK_PERIOD_BITS,
   MIN_TICKPERIOD => 2**14,
   TICKPIPE_DEPTH => TICKPIPE_DEPTH,
   ENDIANNESS => ENDIANNESS
@@ -266,7 +268,7 @@ generic map(
   VALUE_BITS => MCA_VALUE_BITS,
   TOTAL_BITS => MCA_TOTAL_BITS,
   TICKCOUNT_BITS => MCA_TICKCOUNT_BITS,
-  TICKPERIOD_BITS => TICKPERIOD_BITS,
+  TICKPERIOD_BITS => TICK_PERIOD_BITS,
   MIN_TICK_PERIOD => MIN_TICK_PERIOD,
   TICKPIPE_DEPTH => TICKPIPE_DEPTH,
   ENDIANNESS => ENDIANNESS
@@ -293,7 +295,6 @@ port map(
 enet:entity work.ethernet_framer
 generic map(
   MTU_BITS => MTU_BITS,
-  TICK_LATENCY_BITS => TICK_LATENCY_BITS,
   FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS,
   DEFAULT_MTU => DEFAULT_MTU,
   DEFAULT_TICK_LATENCY => DEFAULT_TICK_LATENCY,
@@ -334,9 +335,9 @@ port map(
 stimulus:process is
 begin
 mtu <= to_unsigned(1500,MTU_BITS);
-tick_period <= to_unsigned(2**16, TICKPERIOD_BITS);
+tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
 window <= to_unsigned(1,TIME_BITS);
-tick_latency <= to_unsigned(2**16, TICKPERIOD_BITS);
+tick_latency <= to_unsigned(2**16,TICK_PERIOD_BITS);
 
 -- register settings common to both channels
 for c in CHANNELS-1 downto 0 loop 
@@ -372,8 +373,8 @@ mca_registers.channel <= (others => '0');
 mca_registers.bin_n <= (others => '0');
 mca_registers.last_bin <= (others => '1');
 mca_registers.lowest_value <= to_signed(-1000, MCA_VALUE_BITS);
-mca_registers.value <= MCA_FILTERED_SIGNAL;
-mca_registers.trigger <= MAXIMA_MCA_TRIGGER;
+mca_registers.value <= MCA_FILTERED_SIGNAL_D;
+mca_registers.trigger <= MAXIMA_MCA_TRIGGER_D;
 mca_registers.ticks <= (0 => '1', others => '0');
 
 update_on_completion <= FALSE;

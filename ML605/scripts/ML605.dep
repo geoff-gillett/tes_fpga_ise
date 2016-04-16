@@ -1,0 +1,15 @@
+../../teslib tes
+../../teslib/PSM/IO_controller_program.vhd tes
+../../teslib/PSM/channel_program.vhd tes
+../../extensions extensions
+../../streamlib streamlib
+../../mcalib mcalib
+
+../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/v6_emac_v2_3_0_block.vhd 
+../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/v6_emac_v2_3_0_fifo_block.vhd 
+../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/axi_ipif 
+../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/axi_lite 
+../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/common 
+../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/fifo 
+../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/physical 
+../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/statistics 

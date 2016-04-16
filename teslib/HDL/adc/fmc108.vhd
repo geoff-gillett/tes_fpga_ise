@@ -46,7 +46,7 @@ port (
   channel:in unsigned(ceilLog2(ADC_CHIPS*CHIP_CHANNELS)-1 downto 0);
   update:in boolean;
   --
-  samples:out adc_sample_array_t(ADC_CHIPS*CHIP_CHANNELS-1 downto 0);
+  samples:out adc_sample_array(ADC_CHIPS*CHIP_CHANNELS-1 downto 0);
   fifo_full:out boolean_vector(ADC_CHIPS*CHIP_CHANNELS-1 downto 0);
   samples_valid:out boolean
 );
@@ -73,7 +73,7 @@ port (
 end component adc_fifo;
 --
 signal adc_ddr_delay:ddr_sample_array(ADC_CHANNELS-1 downto 0);
-signal adc_sdr,fifo_dout:adc_sample_array_t(ADC_CHANNELS-1 downto 0);
+signal adc_sdr,fifo_dout:adc_sample_array(ADC_CHANNELS-1 downto 0);
 signal fifo_reset_chipclk:std_logic_vector(ADC_CHANNELS-1 downto 0)
        :=(others => '1');
 signal fifo_valid:boolean_vector(ADC_CHANNELS-1 downto 0);
@@ -83,7 +83,7 @@ signal fifo_wr_en_chipclk,fifo_wr_en:std_logic_vector(ADC_CHANNELS-1 downto 0)
 signal fifo_rd_en:boolean_vector(ADC_CHANNELS-1 downto 0);
 signal enables_reg:boolean_vector(ADC_CHANNELS-1 downto 0);
 
-signal samples_int:adc_sample_array_t(ADC_CHANNElS-1 downto 0);
+signal samples_int:adc_sample_array(ADC_CHANNElS-1 downto 0);
 signal fifo_full_chipclk,fifo_empty:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal fifo_full_int:std_logic_vector(ADC_CHANNELS-1 downto 0);
 attribute keep:string;

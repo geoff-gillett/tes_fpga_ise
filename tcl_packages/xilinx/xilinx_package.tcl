@@ -57,15 +57,28 @@ proc ::xilinx::Process_IP_cores {IP_coresDir} {
     generate_target {synthesis} [get_ips]
 	}
 }
+
+#return a list of all vhdl sources under dir searches sub-dirs
+proc ::xilinx::get_sources {dir} {
 	
+  set sources [glob -nocomplain $dir/*.{vhd,vhdl}]
+  set subdirs [glob -nocomplain -type d $dir/*]
+	
+  foreach subdir $subdirs {
+    set sources [concat $sources [get_sources $subdir]]
+  }
+	puts "get_sorces:$sources"
+	return $sources
+}
+
 # process a file named projname.deps in scriptsDir
 # The file contains one dependency per line (path relative to scriptsDir)
 # with optional library to add depenency to, eg
 # 	dependency(file or directory) [library]
 #
 # If the dependency is a directory:
-#		cores in IP_cores the sub-directory are added if it exists
-#		vhdl files in the HDL sub-directory are added (add_files -norecurse)
+#		cores in IP_cores sub-directory are added if it exists
+#		vhdl files under the HDL sub-directory are recursively added 
 # Otherwise the dependency file is directly added (add_files -norecurse)
 # NOTE: paths cannot contain spaces
 proc ::xilinx::Process_deps {projname buildDir scriptsDir} {
@@ -79,10 +92,10 @@ proc ::xilinx::Process_deps {projname buildDir scriptsDir} {
 				puts $dependency
 				set depfile $scriptsDir/[lindex $dependency 0]
         set depfile [file normalize $depfile]
-
+				
         if { [file isdirectory $depfile]} {
         	if {[file exists $depfile/HDL]} {
-        		set sources [glob -nocomplain $depfile/HDL/*.{vhd,vhdl}]
+        		set sources [get_sources $depfile/HDL]
         	} {
         		set sources [glob -nocomplain $depfile/*.{vhd,vhdl}]
         	}
@@ -92,8 +105,8 @@ proc ::xilinx::Process_deps {projname buildDir scriptsDir} {
         } {
           set sources $depfile
         }
-				add_files $sources -norecurse
 				
+			  add_files $sources -norecurse
 				if {[llength $dependency] == 2} {  
 					# have library name
 					set_property library [lindex $dependency 1] [get_files $sources]
@@ -201,11 +214,6 @@ proc ::xilinx::process_simdir {simDir projname buildDir} {
 			puts $sfile
     }
 	}
-	#update_compile_order -fileset $name
-	#update_compile_order -fileset $name
-	#update_compile_order -fileset $name
-	# Disabling source management mode.  
-	#This is to allow the top design properties to be set without GUI intervention.
 	set_property top $name $simset
 	set_property top_lib {} $simset
 	set_property top_arch {} $simset
@@ -252,32 +260,6 @@ proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} {
 	set simDirs [glob -nocomplain -type d $sourceDir/simulation/*_TB]
 	foreach simdir $simDirs { process_simdir $simdir $name $buildDir  }
 	
-	
-	#puts "simfiles:$simFiles"
-#	set TBfiles [ lsearch -all -inline -regexp $simFiles {_TB\.(vhd|vhdl)$} ]
-#	set othersimFiles [ lsearch -all -inline -regexp $simFiles {[^_TB\.(vhd|vhdl|wcfg)]$}]
-#	set tclTB [ lsearch -all -inline -regexp $simFiles {_TB\.tcl$}]
-#	puts "Testbenches:$TBfiles"
-#	puts "Other simulation files:$othersimFiles"
-#	puts "TCL testbench scripts:$tclTB"
-#	foreach TBfile $TBfiles { Create_simset $TBfile}
-##	if { [llength $tclTB] != 0 } {
-##    foreach tclfile $tclTB {
-##      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $tclfile ]]/
-##      file mkdir $simdir
-##      file link -hard $simdir/[file tail $tclfile] $tclfile
-##    }
-##	}
-#	# link auxilary files into planahead simulation directory
-#	set linkFiles [concat $tclTB $othersimFiles]
-#	if { [llength $linkFiles] != 0 } {
-#    foreach lfile $linkFiles {
-#      set simdir $buildDir/PlanAhead/$name.sim/[file rootname [file tail $lfile ]]/
-#      file mkdir $simdir
-#      file link -hard $simdir/[file tail $lfile] $lfile
-#    }
-#	}
-	
 	puts "Creating constraint sets"
 	set constraintDirs [glob -nocomplain -type d $sourceDir/constraints/*]
 	if {[llength $constraintDirs]} {
@@ -285,7 +267,7 @@ proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} {
 			set constraintName [file tail $constraintDir]
     	puts "Creating constraint set $constraintName"
     	create_fileset -constrset $constraintName
-    	add_files -fileset $constraintName $constraintDir
+    	import_files -fileset $constraintName $constraintDir
 		}
 	}
 	set constraints [glob -nocomplain $sourceDir/constraints/*.ucf]

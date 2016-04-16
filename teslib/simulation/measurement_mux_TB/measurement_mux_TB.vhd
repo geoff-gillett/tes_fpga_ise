@@ -43,20 +43,20 @@ signal clk:std_logic:='1';
 signal reset:std_logic:='1';	
 constant CLK_PERIOD:time:=4 ns;
 
-signal measurements:measurement_array_t(CHANNELS-1 downto 0);
+signal measurements:measurement_array(CHANNELS-1 downto 0);
 signal dumps,commits,peak_overflows:boolean_vector(CHANNELS-1 downto 0);
 signal time_overflows,cfd_errors:boolean_vector(CHANNELS-1 downto 0);
-signal eventstreams:streambus_array_t(CHANNELS-1 downto 0);
+signal eventstreams:streambus_array(CHANNELS-1 downto 0);
 signal eventstreams_valid:boolean_vector(CHANNELS-1 downto 0);
 signal eventstreams_ready:boolean_vector(CHANNELS-1 downto 0);
-signal adc_samples:adc_sample_array_t(CHANNELS-1 downto 0);
-signal adc_sample_reg:adc_sample_array_t(CHANNELS-1 downto 0);
+signal adc_samples:adc_sample_array(CHANNELS-1 downto 0);
+signal adc_sample_reg:adc_sample_array(CHANNELS-1 downto 0);
 signal adc_sample:adc_sample_t;
 signal registers:channel_registers_t;
 signal height_type:unsigned(NUM_HEIGHT_D-1 downto 0);
 signal event_type:unsigned(DETECTION_D_BITS-1 downto 0);
 signal trigger_type:unsigned(TIMING_D_BITS-1 downto 0);
-signal eventstreams_int:streambus_array_t(CHANNELS-1 downto 0);
+signal eventstreams_int:streambus_array(CHANNELS-1 downto 0);
 --
 signal baseline_range_errors:boolean_vector(CHANNELS-1 downto 0);
 signal framer_overflows:boolean_vector(CHANNELS-1 downto 0);

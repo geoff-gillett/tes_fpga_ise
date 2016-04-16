@@ -42,7 +42,7 @@ port(
   commit:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
   dump:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
   --
-  instreams:in streambus_array_t(2**CHANNEL_BITS-1 downto 0);
+  instreams:in streambus_array(2**CHANNEL_BITS-1 downto 0);
   --pulsestream_lasts:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
   instream_valids:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
   instream_readys:out boolean_vector(2**CHANNEL_BITS-1 downto 0);
@@ -81,7 +81,7 @@ signal muxstream_int_valid,muxstream_int_ready,muxstream_last:boolean;
 signal tickstream_valid:boolean;
 signal tickstream_ready:boolean;
 --
-signal streams:streambus_array_t(CHANNELS downto 0);
+signal streams:streambus_array(CHANNELS downto 0);
 signal muxstream_int,stream_int:streambus_t;
 signal valids,readys:boolean_vector(CHANNELS downto 0);
 signal time_done:boolean;

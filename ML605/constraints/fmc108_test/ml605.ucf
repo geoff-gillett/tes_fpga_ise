@@ -1,0 +1,23 @@
+
+#-------------------------------------------------------------------------------
+# USB-UART LEDs and reset switch
+#-------------------------------------------------------------------------------
+NET "main_Rx" LOC = J24;
+NET "main_Rx" IOSTANDARD = LVCMOS25;
+NET "main_Tx" LOC = J25;
+NET "main_Tx" IOSTANDARD = LVCMOS25;
+NET "main_Tx" DRIVE = 4;
+NET "main_Tx" SLEW = SLOW;
+
+NET "global_reset" LOC = H10;
+# LEDs for debuging
+NET "LEDs[0]" LOC = AC22;
+NET "LEDs[1]" LOC = AC24;
+NET "LEDs[2]" LOC = AE22;
+NET "LEDs[3]" LOC = AE23;
+NET "LEDs[4]" LOC = AB23;
+NET "LEDs[5]" LOC = AG23;
+NET "LEDs[6]" LOC = AE24;
+NET "LEDs[7]" LOC = AD24;
+NET "LEDs[?]" TNM_NET = "LEDS";
+NET "LEDs*" TIG;

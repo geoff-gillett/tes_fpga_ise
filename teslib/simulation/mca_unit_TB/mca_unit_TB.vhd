@@ -35,8 +35,8 @@ generic(
   TICK_COUNT_BITS:integer:=32;
   TICK_PERIOD_BITS:integer:=32;
   MIN_TICK_PERIOD:integer:=8;
-	NUM_VALUES:integer:=NUM_MCA_VALUES;
-	NUM_VALIDS:integer:=NUM_MCA_TRIGGERS-1
+	NUM_VALUES:integer:=NUM_MCA_VALUE_D;
+	NUM_VALIDS:integer:=NUM_MCA_TRIGGER_D-1
 );
 end entity mca_unit_TB;
 
@@ -50,14 +50,14 @@ signal update_on_completion:boolean;
 signal updated:boolean;
 signal registers:mca_registers_t;
 signal channel_select:std_logic_vector(2**CHANNEL_BITS-1 downto 0);
-signal value_select:std_logic_vector(NUM_MCA_VALUES-1 downto 0);
-signal trigger_select:std_logic_vector(NUM_MCA_TRIGGERS-2 downto 0);
+signal value_select:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
+signal trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
 signal values:mca_value_array(CHANNELS-1 downto 0);
 signal value_valid:boolean;
 signal stream:streambus_t;
 signal valids:boolean_vector(CHANNELS-1 downto 0);
 signal ready:boolean;
-signal measurements:measurement_array_t(CHANNELS-1 downto 0);
+signal measurements:measurement_array(CHANNELS-1 downto 0);
 signal value:signed(VALUE_BITS-1 downto 0);
 signal valid: boolean;
 signal initialising:boolean;
@@ -138,10 +138,10 @@ port map(
 
 stimulus:process is
 begin
-registers.bin_n <= to_unsigned(0,MCA_BIN_N_WIDTH);
+registers.bin_n <= to_unsigned(0,MCA_BIN_N_BITS);
 registers.channel <= to_unsigned(0,CHANNEL_WIDTH);
-registers.value <= MCA_FILTERED_SIGNAL;
-registers.trigger <= CLOCK_MCA_TRIGGER;
+registers.value <= MCA_FILTERED_SIGNAL_D;
+registers.trigger <= CLOCK_MCA_TRIGGER_D;
 registers.last_bin <= to_unsigned(2**ADDRESS_BITS-1,MCA_ADDRESS_BITS);
 registers.lowest_value <= to_signed(-1,MCA_VALUE_BITS);
 registers.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
@@ -166,7 +166,7 @@ wait for CLK_PERIOD;
 update_on_completion <= FALSE;
 wait until updated;
 wait for CLK_PERIOD;
-registers.value <= MCA_SLOPE_SIGNAL;
+registers.value <= MCA_SLOPE_SIGNAL_D;
 update_on_completion <= TRUE;
 wait for CLK_PERIOD;
 update_on_completion <= FALSE;

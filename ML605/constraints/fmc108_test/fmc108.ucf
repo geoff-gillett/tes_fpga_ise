@@ -1,0 +1,250 @@
+################################################################################
+# ML605 development board TES_digitiser design
+# fmc108_test constraints
+# Geoff Gillett
+################################################################################
+CONFIG PART = xc6vlx240tff1156-1;
+NET "sys_clk_?" IOSTANDARD = LVDS_25;
+NET "sys_clk_?" DIFF_TERM = "TRUE";
+
+NET "sys_clk_p" LOC = J9;
+NET "sys_clk_n" LOC = H9;
+NET "sys_clk_p" TNM_NET = "sys_clk";
+
+################################################################################
+# FMC108 ADC mezzanine card
+################################################################################
+# Texas instruments ADS62P49 dual ADC chips 
+#-------------------------------------------------------------------------------
+# LVDS clocks for each chip
+#-------------------------------------------------------------------------------
+NET "adc_clk_?[?]" IOSTANDARD = LVDS_25;
+NET "adc_clk_?[?]" DIFF_TERM = "TRUE";
+NET "adc_clk_n[0]" LOC = AF21;
+NET "adc_clk_p[0]" LOC = AF20;
+NET "adc_clk_n[1]" LOC = AL19;
+NET "adc_clk_p[1]" LOC = AK19;
+NET "adc_clk_n[2]" LOC = AM27;
+NET "adc_clk_p[2]" LOC = AN27;
+NET "adc_clk_n[3]" LOC = AJ25;
+NET "adc_clk_p[3]" LOC = AH25;
+#-------------------------------------------------------------------------------
+# LOCs for ADC clock BUFRs
+#-------------------------------------------------------------------------------
+INST "adcClks[0].adcClkBufr" LOC = BUFR_X1Y0;
+INST "adcClks[1].adcClkBufr" LOC = BUFR_X1Y1;
+INST "adcClks[2].adcClkBufr" LOC = BUFR_X1Y2;
+INST "adcClks[3].adcClkBufr" LOC = BUFR_X1Y3;
+
+#-------------------------------------------------------------------------------
+# LVDS data from ADC 
+#-------------------------------------------------------------------------------
+NET "adc_data_?<?>[?]" IOSTANDARD = LVDS_25;
+NET "adc_data_?<?>[?]" DIFF_TERM = "TRUE";
+
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel A (0)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<0>[0]" LOC = AE19;
+NET "adc_data_p<0>[0]" LOC = AF19;
+NET "adc_data_n<0>[1]" LOC = AD19;
+NET "adc_data_p<0>[1]" LOC = AC19;
+NET "adc_data_n<0>[2]" LOC = AD20;
+NET "adc_data_p<0>[2]" LOC = AC20;
+NET "adc_data_n<0>[3]" LOC = AG21;
+NET "adc_data_p<0>[3]" LOC = AG20;
+NET "adc_data_n<0>[4]" LOC = AH22;
+NET "adc_data_p<0>[4]" LOC = AG22;
+NET "adc_data_n<0>[5]" LOC = AJ21;
+NET "adc_data_p<0>[5]" LOC = AK21;
+NET "adc_data_n<0>[6]" LOC = AJ22;
+NET "adc_data_p<0>[6]" LOC = AK22;
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel B (1)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<1>[0]" LOC = AC27;
+NET "adc_data_p<1>[0]" LOC = AB27;
+NET "adc_data_n<1>[1]" LOC = AC25;
+NET "adc_data_p<1>[1]" LOC = AB25;
+NET "adc_data_n<1>[2]" LOC = AA29;
+NET "adc_data_p<1>[2]" LOC = AA28;
+NET "adc_data_n<1>[3]" LOC = AB26;
+NET "adc_data_p<1>[3]" LOC = AA26;
+NET "adc_data_n<1>[4]" LOC = AB31;
+NET "adc_data_p<1>[4]" LOC = AB30;
+NET "adc_data_n<1>[5]" LOC = AC28;
+NET "adc_data_p<1>[5]" LOC = AB28;
+NET "adc_data_n<1>[6]" LOC = Y26;
+NET "adc_data_p<1>[6]" LOC = AA25;
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel C (2)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<2>[0]" LOC = AN22;
+NET "adc_data_p<2>[0]" LOC = AM22;
+NET "adc_data_n<2>[1]" LOC = AL21;
+NET "adc_data_p<2>[1]" LOC = AM21;
+NET "adc_data_n<2>[2]" LOC = AL20;
+NET "adc_data_p<2>[2]" LOC = AM20;
+NET "adc_data_n<2>[3]" LOC = AL18;
+NET "adc_data_p<2>[3]" LOC = AM18;
+NET "adc_data_n<2>[4]" LOC = AN18;
+NET "adc_data_p<2>[4]" LOC = AP19;
+NET "adc_data_n<2>[5]" LOC = AL23;
+NET "adc_data_p<2>[5]" LOC = AM23;
+NET "adc_data_n<2>[6]" LOC = AN20;
+NET "adc_data_p<2>[6]" LOC = AN19;
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel D (3)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<3>[1]" LOC = AA31;
+NET "adc_data_p<3>[1]" LOC = AA30;
+NET "adc_data_n<3>[2]" LOC = AC32;
+NET "adc_data_p<3>[2]" LOC = AB32;
+NET "adc_data_n<3>[0]" LOC = AD31;
+NET "adc_data_p<3>[0]" LOC = AE31;
+NET "adc_data_n<3>[3]" LOC = AE32;
+NET "adc_data_p<3>[3]" LOC = AD32;
+NET "adc_data_n<3>[4]" LOC = AC34;
+NET "adc_data_p<3>[4]" LOC = AD34;
+NET "adc_data_n<3>[5]" LOC = AG32;
+NET "adc_data_p<3>[5]" LOC = AG33;
+NET "adc_data_n<3>[6]" LOC = AF31;
+NET "adc_data_p<3>[6]" LOC = AG31;
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel E (4)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<4>[0]" LOC = AM26;
+NET "adc_data_p<4>[0]" LOC = AL26;
+NET "adc_data_n<4>[1]" LOC = AN24;
+NET "adc_data_p<4>[1]" LOC = AN25;
+NET "adc_data_n<4>[2]" LOC = AL24;
+NET "adc_data_p<4>[2]" LOC = AK23;
+NET "adc_data_n<4>[3]" LOC = AN23;
+NET "adc_data_p<4>[3]" LOC = AP22;
+NET "adc_data_n<4>[4]" LOC = AP26;
+NET "adc_data_p<4>[4]" LOC = AP27;
+NET "adc_data_n<4>[5]" LOC = AL25;
+NET "adc_data_p<4>[5]" LOC = AM25;
+NET "adc_data_n<4>[6]" LOC = AP29;
+NET "adc_data_p<4>[6]" LOC = AN29;
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel F (5)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<5>[0]" LOC = AN34;
+NET "adc_data_p<5>[0]" LOC = AN33;
+NET "adc_data_n<5>[1]" LOC = AG30;
+NET "adc_data_p<5>[1]" LOC = AF30;
+NET "adc_data_n<5>[2]" LOC = AK34;
+NET "adc_data_p<5>[2]" LOC = AL34;
+NET "adc_data_n<5>[3]" LOC = AL33;
+NET "adc_data_p<5>[3]" LOC = AM33;
+NET "adc_data_n<5>[4]" LOC = AM32;
+NET "adc_data_p<5>[4]" LOC = AN32;
+NET "adc_data_n<5>[5]" LOC = AP33;
+NET "adc_data_p<5>[5]" LOC = AP32;
+NET "adc_data_n<5>[6]" LOC = AM31;
+NET "adc_data_p<5>[6]" LOC = AL30;
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel G (6) 
+#-------------------------------------------------------------------------------
+NET "adc_data_n<6>[0]" LOC = AK28;
+NET "adc_data_p<6>[0]" LOC = AL28;
+NET "adc_data_n<6>[1]" LOC = AP31;
+NET "adc_data_p<6>[1]" LOC = AP30;
+NET "adc_data_n<6>[2]" LOC = AM30;
+NET "adc_data_p<6>[2]" LOC = AN30;
+NET "adc_data_n<6>[3]" LOC = AM28;
+NET "adc_data_p<6>[3]" LOC = AN28;
+NET "adc_data_n<6>[4]" LOC = AJ27;
+NET "adc_data_p<6>[4]" LOC = AK27;
+NET "adc_data_n<6>[5]" LOC = AK24;
+NET "adc_data_p<6>[5]" LOC = AJ24;
+NET "adc_data_n<6>[6]" LOC = AK29;
+NET "adc_data_p<6>[6]" LOC = AL29;
+#-------------------------------------------------------------------------------
+# LVDS from ADC channel H (7) 
+#-------------------------------------------------------------------------------
+NET "adc_data_n<7>[0]" LOC = AH32;
+NET "adc_data_p<7>[0]" LOC = AH33;
+NET "adc_data_n<7>[1]" LOC = AF29;
+NET "adc_data_p<7>[1]" LOC = AF28;
+NET "adc_data_n<7>[2]" LOC = AD27;
+NET "adc_data_p<7>[2]" LOC = AE27;
+NET "adc_data_n<7>[3]" LOC = AE29;
+NET "adc_data_p<7>[3]" LOC = AE28;
+NET "adc_data_n<7>[4]" LOC = AJ32;
+NET "adc_data_p<7>[4]" LOC = AJ31;
+NET "adc_data_n<7>[5]" LOC = AJ30;
+NET "adc_data_p<7>[5]" LOC = AJ29;
+NET "adc_data_n<7>[6]" LOC = AK32;
+NET "adc_data_p<7>[6]" LOC = AK33;
+
+#-------------------------------------------------------------------------------
+#  ADS62P49 SPI pins
+#  TI labels the SPI pins as follows
+#     spi_clk  -> SCLK     serial clock
+#     spi_ce_n -> SEN      low active chip enable
+#     spi_mosi -> SDATA    data to chip 
+#     spi_miso -> SDOUT    data from chip
+#-------------------------------------------------------------------------------
+NET "ADC_spi_ce_n[0]" LOC = V33;
+NET "ADC_spi_ce_n[1]" LOC = U31;
+NET "ADC_spi_ce_n[2]" LOC = U30;
+NET "ADC_spi_ce_n[3]" LOC = U28;
+NET "ADC_spi_miso[0]" LOC = AE33;
+NET "ADC_spi_miso[1]" LOC = AF33;
+NET "ADC_spi_miso[2]" LOC = AD29;
+NET "ADC_spi_miso[3]" LOC = AC29;
+NET "ADC_spi_mosi" LOC = U27;
+NET "ADC_spi_clk" LOC = U26;
+NET "AD9510_spi_ce_n" LOC = AH23;
+NET "AD9510_spi_miso" LOC = T33;
+NET "AD9510_spi_mosi" LOC = AG26;
+NET "AD9510_spi_clk" LOC = AG25;
+
+#-------------------------------------------------------------------------------
+# AD9510 PLL
+#-------------------------------------------------------------------------------
+NET "FMC_internal_clk_en" LOC = AH29;
+NET "FMC_VCO_power_en" LOC = AP21;
+NET "FMC_AD9510_status" LOC = T34;
+NET "FMC_AD9510_function" LOC = U33;
+
+#-------------------------------------------------------------------------------
+# other FMC108 pins
+#-------------------------------------------------------------------------------
+NET "FMC_reset" LOC = V29;
+NET "FMC_power_good" LOC = J27;
+NET "FMC_present_n" LOC = AP25;
+
+#-------------------------------------------------------------------------------
+# 250Mhz source clk from the first (0) ADC chip drives the MMCM
+# Other clock constraints will be inferred from MMCM component
+#-------------------------------------------------------------------------------
+NET "adc_clk_p[0]" TNM_NET = "adc_chip0_clk";
+TIMESPEC TS_adc_chip0_clk = PERIOD "adc_chip0_clk" 4 ns HIGH 50 %;
+NET "adc_clk_p[1]" TNM_NET = "adc_chip1_clk";
+TIMESPEC TS_adc_chip1_clk = PERIOD "adc_chip1_clk" 4 ns HIGH 50 %;
+NET "adc_clk_p[2]" TNM_NET = "adc_chip2_clk";
+TIMESPEC TS_adc_chip2_clk = PERIOD "adc_chip2_clk" 4 ns HIGH 50 %;
+NET "adc_clk_p[3]" TNM_NET = "adc_chip3_clk";
+TIMESPEC TS_adc_chip3_clk = PERIOD "adc_chip3_clk" 4 ns HIGH 50 %;
+
+NET "signal_clk" TNM_NET = "signal_clk";
+
+TIMESPEC TS_chip0tosignal = FROM "adc_chip0_clk" TO "signal_clk" TIG ;
+TIMESPEC TS_signaltochip0 = FROM "signal_clk" TO "adc_chip0_clk" TIG ;
+TIMESPEC TS_chip1tosignal = FROM "adc_chip1_clk" TO "signal_clk" TIG ;
+TIMESPEC TS_signaltochip1 = FROM "signal_clk" TO "adc_chip1_clk" TIG ;
+TIMESPEC TS_chip2tosignal = FROM "adc_chip2_clk" TO "signal_clk" TIG ;
+TIMESPEC TS_signaltochip2 = FROM "signal_clk" TO "adc_chip2_clk" TIG ;
+TIMESPEC TS_chip3tosignal = FROM "adc_chip3_clk" TO "signal_clk" TIG ;
+TIMESPEC TS_signaltochip3 = FROM "signal_clk" TO "adc_chip3_clk" TIG ;
+
+NET "*spi_clk" TIG;
+NET "*spi_ce_n*" TIG;
+NET "*spi_miso*" TIG;
+NET "*spi_mosi" TIG;
+NET "FMC_AD9510_status" TIG;
+NET "FMC_power_good" TIG;
+NET "FMC_present_n" TIG;

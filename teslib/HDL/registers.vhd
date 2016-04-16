@@ -24,60 +24,151 @@ use work.adc.all;
 use work.dsptypes.all;
 use work.types.all;
 use work.functions.all;
-use work.events.all;
+--use work.events.all;
 
 --TODO move all registers here
 
 package registers is
---------------------------------------------------------------------------------
--- NOTES
---------------------------------------------------------------------------------
--- _WIDTH is the width of the register in the IO protocol
--- _BITS is the internal implementation width
 
---------------------------------------------------------------------------------
--- Globals
---------------------------------------------------------------------------------
+-- hardware parameters
+--constant CHANNEL_BITS:integer:=3;
 
---constant CHANNEL_WIDTH:integer:=4;
---constant TICKPERIOD_BITS:integer:=32;
-constant TICKPIPE_DEPTH:integer:=2;
-constant RELATIVETIME_BITS:integer:=16;
-constant MTU_BITS:integer:=16;
---constant MAX_TICKS_BITS:integer:=16;
-constant TICK_LATENCY_BITS:integer:=32;
-constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=14;
-constant DELAY_BITS:integer:=13;
-
---------------------------------------------------------------------------------
--- Default register values on reset
---------------------------------------------------------------------------------
-
-constant DEFAULT_TICK_PERIOD:integer:=64;
-constant DEFAULT_MCA_TICKS:integer:=1;
-constant DEFAULT_MTU:integer:=1500;
-constant DEFAULT_TICK_LATENCY:integer:=2*DEFAULT_TICK_PERIOD;
-
---------------------------------------------------------------------------------
--- Global registers
---------------------------------------------------------------------------------
-
-type ethernet_registers_t is record
-	-- MTU must be a multiple of 8
-	mtu:unsigned(MTU_BITS-4 downto 0);
-end record;
-
---------------------------------------------------------------------------------
--- Channel Registers
---------------------------------------------------------------------------------
+-- field sizes
 constant BASELINE_BITS:integer:=10;
 constant BASELINE_TIMECONSTANT_BITS:integer:=32;
 constant BASELINE_COUNTER_BITS:integer:=18;
 constant BASELINE_MAX_AV_ORDER:integer:=6;
 constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=10;
+constant DELAY_BITS:integer:=13;
+constant PEAK_COUNT_BITS:integer:=4;
 
+constant MCA_BIN_N_BITS:integer:=5;
+constant MCA_CHANNEL_WIDTH:integer:=3;
+constant MCA_TICKCOUNT_BITS:integer:=32;
+constant MCA_ADDRESS_BITS:integer:=14;
+constant MCA_COUNTER_BITS:integer:=32;
+constant MCA_VALUE_BITS:integer:=32;
+constant MCA_TOTAL_BITS:integer:=64;
 
--- types
+constant TICKPIPE_DEPTH:integer:=2;
+constant RELATIVETIME_BITS:integer:=16;
+constant MTU_BITS:integer:=16;
+constant TICK_PERIOD_BITS:integer:=32;
+constant MIN_TICK_PERIOD:integer:=2**16;
+constant TICK_LATENCY_BITS:integer:=32;
+constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=14;
+constant IODELAY_CONTROL_BITS:integer:=ADC_BITS+ADC_CHANNELS+2*ADC_CHIPS;
+
+-- Discrete Types --------------------------------------------------------------
+
+-- type of detection
+type detection_d is (
+	PEAK_DETECTION_D,
+	AREA_DETECTION_D,
+	PULSE_DETECTION_D, --use fixed flag to indicate fixed/variable length
+	TRACE_DETECTION_D
+);
+
+constant NUM_DETECTION_D:integer:=detection_d'pos(detection_d'high)+1;
+constant DETECTION_D_BITS:integer:=ceilLog2(NUM_DETECTION_D);
+function to_std_logic(d:detection_d;w:integer) return std_logic_vector;
+function to_detection_d(s:std_logic_vector) return detection_d;
+function to_detection_d(i:natural range 0 to NUM_DETECTION_D-1) 
+return detection_d;
+
+-- the point the relative time-stamp is taken
+type timing_d is (
+	PULSE_THRESH_TIMING_D,
+	SLOPE_THRESH_TIMING_D,
+	CFD_LOW_TIMING_D,
+	RISE_START_TIMING_D
+);
+
+constant NUM_TIMING_D:integer:=timing_d'pos(timing_d'high)+1;
+constant TIMING_D_BITS:integer:=ceilLog2(NUM_TIMING_D);
+function to_std_logic(t:timing_d;w:integer) return std_logic_vector;
+function to_timing_d(i:natural range 0 to NUM_TIMING_D-1) return timing_d;
+function to_timing_d(s:std_logic_vector) return timing_d;
+	
+type height_d is (
+	PEAK_HEIGHT_D,
+	CFD_HIGH_D,
+	SLOPE_INTEGRAL_D
+);
+
+constant NUM_HEIGHT_D:integer:=height_d'pos(height_d'high)+1;
+constant HEIGHT_D_BITS:integer:=ceilLog2(NUM_HEIGHT_D);
+function to_std_logic(h:height_d;w:integer) return std_logic_vector;
+function to_height_d(s:std_logic_vector) return height_d;
+function to_height_d(i:natural range 0 to NUM_HEIGHT_D-1) return height_d;
+
+type trace_d is(
+	NO_TRACE_D,
+	RAW_TRACE_D,
+	FILTERED_TRACE_D,
+	SLOPE_TRACE_D
+);
+
+constant NUM_TRACE_D:integer:=trace_d'pos(trace_d'high)+1;
+constant TRACE_D_BITS:integer:=ceilLog2(NUM_TRACE_D);
+function to_std_logic(t:trace_d;w:integer) return std_logic_vector;
+function to_trace_d(s:std_logic_vector) return trace_d;
+function to_trace_d(i:natural range 0 to NUM_TRACE_D-1) return trace_d;
+
+-- the value sampled into the MCA
+type mca_value_d is (
+	MCA_FILTERED_SIGNAL_D, -- the output of the dsp filter
+  MCA_FILTERED_AREA_D, -- the area between zero crossings
+  MCA_FILTERED_EXTREMA_D, -- max or min between zero crossings
+  MCA_SLOPE_SIGNAL_D, -- the output of the dsp differentiator
+  MCA_SLOPE_AREA_D,
+  MCA_SLOPE_EXTREMA_D,
+  MCA_PULSE_AREA_D, -- the area between threshold crossings
+  MCA_PULSE_EXTREMA_D, -- the maximum between threshold xings
+  MCA_PULSE_TIME_D, -- make this start at minima
+  MCA_RAW_SIGNAL_D,
+  MCA_RAW_AREA_D,
+  MCA_RAW_EXTREMA_D
+);
+
+constant NUM_MCA_VALUE_D:integer:=mca_value_d'pos(mca_value_d'high)+1;										
+constant MCA_VALUE_D_BITS:integer:=ceilLog2(NUM_MCA_VALUE_D);
+function to_onehot(v:mca_value_d) return std_logic_vector;
+function to_mca_value_d(i:natural range 0 to NUM_MCA_VALUE_D-1) 
+				 return mca_value_d;
+function to_mca_value_d(s:std_logic_vector) return mca_value_d;
+function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector;
+
+-- the trigger that samples a value into the MCA
+type mca_trigger_d is (
+	DISABLED_MCA_TRIGGER_D, -- no select bits set
+	CLOCK_MCA_TRIGGER_D,
+  FILTERED_XING_MCA_TRIGGER_D, --FIXME this usefull? change to height?
+  FILTERED_0XING_MCA_TRIGGER_D,
+  SLOPE_0XING_MCA_TRIGGER_D,
+  SLOPE_XING_MCA_TRIGGER_D,
+  CFD_HIGH_MCA_TRIGGER_D,
+  CFD_LOW_MCA_TRIGGER_D,
+  MAXIMA_MCA_TRIGGER_D, -- peak
+  MINIMA_MCA_TRIGGER_D, --peak start minima
+  RAW_0XING_MCA_TRIGGER_D 
+  --TODO add minima or maxima
+  -- there are two slots left
+);
+-- FIXME need trigger for pulse area FILTERED_NEG_XING
+-- 
+
+constant NUM_MCA_TRIGGER_D:integer:=mca_trigger_d'pos(mca_trigger_d'high)+1;
+constant MCA_TRIGGER_D_BITS:integer:=ceilLog2(NUM_MCA_TRIGGER_D);
+function to_onehot(t:mca_trigger_d) return std_logic_vector;
+function to_mca_trigger_d(i:natural range 0 to NUM_MCA_TRIGGER_D-1) 
+return mca_trigger_d;
+function to_mca_trigger_d(s:std_logic_vector) return mca_trigger_d;
+function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector;
+	
+--------------------------------------------------------------------------------
+-- Channel Registers
+--------------------------------------------------------------------------------
 type baseline_registers_t is record
 	offset:adc_sample_t;
 	subtraction:boolean;
@@ -89,7 +180,7 @@ end record;
 
 type capture_registers_t is record
 	-- max peaks in pulse event sets length of pulse event
-	max_peaks:unsigned(PEAK_COUNT_WIDTH-1 downto 0);
+	max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
 	constant_fraction:unsigned(CFD_BITS-2 downto 0);
 	pulse_threshold:unsigned(DSP_BITS-2 downto 0);
 	slope_threshold:unsigned(DSP_BITS-2 downto 0);
@@ -114,7 +205,7 @@ type channel_register_array is array (natural range <>)
 		 of channel_registers_t;
 		 
 -- ADDRESS MAP (one hot)
--- capture register 					address bit 0
+-- capture control register 	address bit 0
 --
 -- 1  downto 0  detection
 -- 3  downto 2  timing
@@ -136,7 +227,8 @@ type channel_register_array is array (natural range <>)
 -- baseline.threshold		  		address bit 8
 -- baseline.count_threshold		address bit 9
 -- baseline flags							address bit 10
--- reserved										address bit 11
+-- reserved										address bit 11  -- TODO make this select adc input
+--                                               and its sign
 --
 -- 2  downto 0  baseline.average_order
 -- 4 						baseline.subtraction 
@@ -154,6 +246,7 @@ constant BL_THRESHOLD_ADDR_BIT:integer:=8;
 constant BL_COUNT_THRESHOLD_ADDR_BIT:integer:=9;
 constant BL_FLAGS_ADDR_BIT:integer:=10;
 constant RESERVED_ADDR_BIT:integer:=11;
+
 -- FIR AXI streams
 constant FILTER_CONFIG_ADDR_BIT:integer:=20;
 constant FILTER_RELOAD_ADDR_BIT:integer:=21;
@@ -163,7 +256,7 @@ constant DIFFERENTIATOR_RELOAD_ADDR_BIT:integer:=23;
 -- reset values
 constant DEFAULT_DETECTION:detection_d:=PULSE_DETECTION_D;
 constant DEFAULT_TIMING:timing_d:=CFD_LOW_TIMING_D;
-constant DEFAULT_MAX_PEAKS:unsigned(PEAK_COUNT_WIDTH-1 downto 0)
+constant DEFAULT_MAX_PEAKS:unsigned(PEAK_COUNT_BITS-1 downto 0)
 				 :=(others => '0');
 constant DEFAULT_HEIGHT:height_d:=PEAK_HEIGHT_D;
 constant DEFAULT_TRACE0:trace_d:=NO_TRACE_D;
@@ -195,86 +288,270 @@ function capture_register(r:channel_registers_t) return std_logic_vector;
 function baseline_flags(r:channel_registers_t) return std_logic_vector;
 
 --------------------------------------------------------------------------------
--- MCA Registers
+-- Global registers
 --------------------------------------------------------------------------------
 
-constant MCA_BIN_N_WIDTH:integer:=4;
-constant MCA_CHANNEL_WIDTH:integer:=4;
-constant MCA_TICKCOUNT_BITS:integer:=32;
-constant MCA_ADDRESS_BITS:integer:=14;
-constant MCA_COUNTER_BITS:integer:=32;
-constant MCA_VALUE_BITS:integer:=32;
-constant MCA_TOTAL_BITS:integer:=64;
+-- MCA registers ---------------------------------------------------------------
+
 
 type mca_value_array is array (natural range <>) 
 												of signed(MCA_VALUE_BITS-1 downto 0);
 
 -- NOTE selectors take a max of 12 inputs 
 -- SEE teslib.select_1of12
-type mca_value_d is (
-	MCA_FILTERED_SIGNAL, -- the output of the dsp filter
-  MCA_FILTERED_AREA, -- the area between zero crossings
-  MCA_FILTERED_EXTREMA, -- max or min between zero crossings
-  MCA_SLOPE_SIGNAL, -- the output of the dsp differentiator
-  MCA_SLOPE_AREA,
-  MCA_SLOPE_EXTREMA,
-  MCA_PULSE_AREA, -- the area between threshold crossings
-  MCA_PULSE_EXTREMA, -- the maximum between threshold xings
-  MCA_PULSE_TIME,
-  MCA_RAW_SIGNAL,
-  MCA_RAW_AREA,
-  MCA_RAW_EXTREMA
-);
-
-constant NUM_MCA_VALUES:integer:=mca_value_d'pos(mca_value_d'high)+1;										
-
-function to_onehot(v:mca_value_d) return std_logic_vector;
-function to_mca_value_d(i:natural range 0 to NUM_MCA_VALUES-1) 
-				 return mca_value_d;
-function to_mca_value_d(u:unsigned) return mca_value_d;
-function to_unsigned(v:mca_value_d;w:natural) return unsigned;
-function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector;
 
 --TODO check that 0xings are same as valids
-type mca_trigger_d is (
-	DISABLED_MCA_TRIGGER, -- no bits set
-	CLOCK_MCA_TRIGGER,
-  FILTERED_XING_MCA_TRIGGER, --FIXME this usefull? change to height?
-  FILTERED_0XING_MCA_TRIGGER,
-  SLOPE_0XING_MCA_TRIGGER,
-  SLOPE_XING_MCA_TRIGGER,
-  CFD_HIGH_MCA_TRIGGER,
-  CFD_LOW_MCA_TRIGGER,
-  MAXIMA_MCA_TRIGGER, -- peak
-  MINIMA_MCA_TRIGGER, --peak start minima
-  RAW_0XING_MCA_TRIGGER --TODO add minima or maxima
-);
-
-constant NUM_MCA_TRIGGERS:integer:=mca_trigger_d'pos(mca_trigger_d'high)+1;
-
-function to_onehot(t:mca_trigger_d) return std_logic_vector;
-function to_mca_trigger_d(i:natural range 0 to NUM_MCA_TRIGGERS-1) 
-				 return mca_trigger_d;
-function to_mca_trigger_d(u:unsigned) return mca_trigger_d;
-function to_unsigned(t:mca_trigger_d;w:natural) return unsigned;
-function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector;
 	
 type mca_registers_t is record
-	bin_n:unsigned(MCA_BIN_N_WIDTH-1 downto 0);
+	bin_n:unsigned(MCA_BIN_N_BITS-1 downto 0); -- FIXME this should be 5 bits
 	lowest_value:signed(MCA_VALUE_BITS-1 downto 0);
 	-- NOTE must be odd LSB set to 1 so there are an even number of bins
 	last_bin:unsigned(MCA_ADDRESS_BITS-1 downto 0);
 	ticks:unsigned(MCA_TICKCOUNT_BITS-1 downto 0);
-	--tick_period:unsigned(TICK_PERIOD_WIDTH-1 downto 0);
 	channel:unsigned(MCA_CHANNEL_WIDTH-1 downto 0);
 	value:mca_value_d;
 	trigger:mca_trigger_d;
+	update_asap:boolean;
+	update_on_completion:boolean;
+	iodelay_control:std_logic_vector(IODELAY_CONTROL_BITS-1 downto 0);
 end record;
+
+-- Other global registers ------------------------------------------------------
+
+
+
+-- Types -----------------------------------------------------------------------
+
+type global_registers_t is record
+	-- MTU must be a multiple of 8
+	mtu:unsigned(MTU_BITS-1 downto 0);
+	tick_period:unsigned(TICK_PERIOD_BITS-1 downto 0);
+	tick_latency:unsigned(TICK_LATENCY_BITS-1 downto 0);
+	adc_enable:std_logic_vector(ADC_CHANNELS-1 downto 0);
+	channel_enable:std_logic_vector(CHANNELS-1 downto 0);
+	mca:mca_registers_t;
+	iodelay_control:std_logic_vector(IODELAY_CONTROL_BITS-1 downto 0);
+end record;
+
+-- ADDRESS MAP (one hot)
+-- Features 											 	address 0x0000 implemented in CPU READ ONLY
+-- HDL version										 	address bit 0  READ ONLY
+--
+-- MCA control register            	address bit 1
+-- 		3  downto 0  	value
+-- 		7  downto 4  	trigger
+-- 		10 downto 8  	channel	       
+-- 		15 downto 11 	bin_n
+-- 		31 downto 16 	last_bin
+-- 
+-- mca.lowest_value               	address bit 2
+-- mca.ticks                        address bit 3
+-- MTU															address bit 4
+-- tick_period											address bit 5
+-- tick_latency											address bit 6
+-- adc_enable												address bit 7
+-- channel_enable										address bit 8
+--
+-- status     											address bit 9 READ ONLY??
+--		0	fmc108 internal clk enable
+--    1  VCO power enable
+-- RESERVED													address bit 10
+-- RESERVED													address bit 11
+--
+-- iodelay_control                  address bit 12 WRITE ONLY
+--		16 downto 14		channel				TODO describe how iodelay works
+--		13 downto 8			inc delay
+--		7  downto 0			dec delay
+--
+-- MCA update flags register        address bit 13 WRITE ONLY
+--    0	update_on_completion
+-- 		1 update_asap
+
+constant HDL_VERSION_ADDR_BIT:integer:=0;
+constant MCA_CONTROL_REGISTER_ADDR_BIT:integer:=1;
+constant MCA_LOWEST_VALUE_ADDR_BIT:integer:=2;
+constant MCA_TICKS_ADDR_BIT:integer:=3;
+constant MTU_ADDR_BIT:integer:=4;
+constant TICK_PERIOD_ADDR_BIT:integer:=5;
+constant TICK_LATENCY_ADDR_BIT:integer:=6;
+constant ADC_ENABLE_ADDR_BIT:integer:=7;
+constant CHANNEL_ENABLE_ADDR_BIT:integer:=8;
+constant STATUS_ADDR_BIT:integer:=9;
+
+constant IODELAY_CONTROL_ADDR_BIT:integer:=12;
+constant MCA_UPDATE_ADDR_BIT:integer:=13;
+
+constant NUM_STATUS_BITS:integer:=2; 
+constant STATUS_FMC108_INTERNAL_CLK_BIT:integer:=0;
+constant STATUS_VCO_POWER_BIT:integer:=1;
+constant MCA_UPDATE_ON_COMPLETION_BIT:integer:=0;
+constant MCA_UPDATE_ASAP:integer:=1;
+
+function mca_control_register(m:mca_registers_t) return register_data_t;
+
+-- Default register values on reset --------------------------------------------
+constant DEFAULT_TICK_PERIOD_INT:integer:=2**16;
+constant DEFAULT_TICK_PERIOD:unsigned(TICK_PERIOD_BITS-1 downto 0)
+				 :=to_unsigned(DEFAULT_TICK_PERIOD_INT,TICK_PERIOD_BITS);
+constant DEFAULT_MTU:unsigned(MTU_BITS-1 downto 0):=to_unsigned(1496,MTU_BITS);
+constant DEFAULT_TICK_LATENCY:unsigned(TICK_LATENCY_BITS-1 downto 0)
+				 :=to_unsigned(2*DEFAULT_TICK_PERIOD_INT,TICK_LATENCY_BITS);
+constant DEFAULT_MCA_TICKS:unsigned(MCA_TICKCOUNT_BITS-1 downto 0)
+				 :=to_unsigned(1,MCA_TICKCOUNT_BITS);
+constant DEFAULT_MCA_BIN_N:unsigned(MCA_BIN_N_BITS-1 downto 0)
+				 :=to_unsigned(1,MCA_BIN_N_BITS);
+constant DEFAULT_MCA_LAST_BIN:unsigned(MCA_ADDRESS_BITS-1 downto 0)
+				 :=to_unsigned(2**MCA_ADDRESS_BITS-1,MCA_ADDRESS_BITS);
+constant DEFAULT_MCA_TRIGGER:mca_trigger_d:=DISABLED_MCA_TRIGGER_D;
+constant DEFAULT_MCA_VALUE:mca_value_d:=MCA_FILTERED_SIGNAL_D;
+constant DEFAULT_MCA_LOWEST_VALUE:signed(MCA_VALUE_BITS-1 downto 0)
+				 :=to_signed(-1000,MCA_VALUE_BITS);
 
 end package registers;
 
+--------------------------------------------------------------------------------
+
 package body registers is
--- AXI data made up of multiple registers
+
+-- discrete type conversion functions ------------------------------------------
+
+-- height_d
+function to_std_logic(h:height_d;w:integer) return std_logic_vector is
+begin
+	if w < HEIGHT_D_BITS then
+		assert FALSE report "w to small to represent height_d" severity ERROR;
+	end if;
+	return to_std_logic(height_d'pos(h),w);
+end function;
+
+function to_height_d(i:natural range 0 to NUM_HEIGHT_D-1) return height_d is
+begin
+	return height_d'val(i);
+end function;
+
+function to_height_d(s:std_logic_vector) return height_d is
+begin
+	return to_height_d(to_integer(unsigned(s)));
+end function;
+
+-- timing_d
+function to_std_logic(t:timing_d;w:integer) return std_logic_vector is
+begin
+	if w < TIMING_D_BITS then
+		assert FALSE report "w to small to represent timing_d" severity ERROR;
+	end if;
+	return to_std_logic(timing_d'pos(t),w);
+end function;
+
+function to_timing_d(i:natural range 0 to NUM_TIMING_D-1) 
+return timing_d is
+begin
+	return timing_d'val(i);
+end function;
+
+function to_timing_d(s:std_logic_vector) return timing_d is
+begin
+	return to_timing_d(to_integer(unsigned(s)));
+end function;
+
+-- detection_d
+function to_std_logic(d:detection_d;w:integer) return std_logic_vector is
+begin
+	if w < DETECTION_D_BITS then
+		assert FALSE report "w to small to represent detection_d" severity ERROR;
+	end if;
+	return to_std_logic(detection_d'pos(d),w);
+end function;
+
+function to_detection_d(i:natural range 0 to NUM_DETECTION_D-1) 
+return detection_d is
+begin
+	return detection_d'val(i);
+end function;
+
+function to_detection_d(s:std_logic_vector) return detection_d is
+begin
+	return to_detection_d(to_integer(unsigned(s)));
+end function;
+
+-- trace_d
+function to_std_logic(t:trace_d;w:integer) return std_logic_vector is
+begin
+	if w < TRACE_D_BITS then
+		assert FALSE report "w to small to represent trace_d" severity ERROR;
+	end if;
+	return to_std_logic(trace_d'pos(t),w);
+end function;
+
+function to_trace_d(i:natural range 0 to NUM_TRACE_D-1) return trace_d is
+begin
+	return trace_d'val(i);
+end function;
+
+function to_trace_d(s:std_logic_vector) return trace_d is
+begin
+	return to_trace_d(to_integer(unsigned(s)));
+end function;
+
+-- mca_triggers_d 
+function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector is
+begin
+	if w < MCA_TRIGGER_D_BITS then
+		assert FALSE report "w to small to represent height_d" severity ERROR;
+	end if;
+	return to_std_logic(mca_trigger_d'pos(t),w);
+end function;
+
+function to_mca_trigger_d(i:natural range 0 to NUM_MCA_TRIGGER_D-1) 
+return mca_trigger_d is
+begin
+	return mca_trigger_d'val(i);
+end function;
+
+function to_mca_trigger_d(s:std_logic_vector) return mca_trigger_d is
+begin
+	return to_mca_trigger_d(to_integer(unsigned(s)));
+end function;
+--FIXME check the one hot synthesises well
+function to_onehot(t:mca_trigger_d) return std_logic_vector is
+variable o:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0):=(others => '0');
+begin
+	if t/=DISABLED_MCA_TRIGGER_D then
+		o:=to_onehot(mca_trigger_d'pos(t)-1,NUM_MCA_TRIGGER_D-1);
+	end if;
+	return o;
+end function;
+
+-- mca_values_d
+function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector is
+begin
+	if w < MCA_VALUE_D_BITS then
+		assert FALSE report "w to small to represent mca_value_d" severity ERROR;
+	end if;
+	return to_std_logic(mca_value_d'pos(v),w);
+end function;
+
+function to_mca_value_d(i:natural range 0 to NUM_MCA_VALUE_D-1) 
+				 return mca_value_d is
+begin
+	return mca_value_d'val(i);
+end function;
+	
+function to_mca_value_d(s:std_logic_vector) return mca_value_d is
+begin
+	return to_mca_value_d(to_integer(unsigned(s)));
+end function;
+
+function to_onehot(v:mca_value_d) return std_logic_vector is
+variable o:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0):=(others => '0');
+begin
+		o:=to_onehot(mca_value_d'pos(v),NUM_MCA_VALUE_D);
+	return o;
+end function;
+
+--------------------------------------------------------------------------------
+-- MCA register functions 
+--------------------------------------------------------------------------------
 
 function capture_register(r:channel_registers_t) return std_logic_vector is
 	variable s:std_logic_vector(AXI_DATA_BITS-1 downto 0):=(others => '0');
@@ -298,66 +575,31 @@ begin
 	s(4) := to_std_logic(r.baseline.subtraction);
 	return s;
 end function;
+
+function mca_control_register(m:mca_registers_t) return register_data_t is
+	variable d:register_data_t;
+begin
+	d(3 downto 0) := to_std_logic(m.value,4);
+	d(7 downto 4) := to_std_logic(m.trigger,4);
+	d(10 downto 8) := to_std_logic(m.channel);
+	d(15 downto 11) := to_std_logic(m.bin_n);
+	d(29 downto 16) := to_std_logic(m.last_bin);
+	return d;
+end function;
+
 -- mca_values_t functions ------------------------------------------------------
+-- FIXME does this one hot function synthesise well
+
 	
-function to_onehot(v:mca_value_d) return std_logic_vector is
-variable o:std_logic_vector(NUM_MCA_VALUES-1 downto 0):=(others => '0');
-begin
-		o:=to_onehot(mca_value_d'pos(v),NUM_MCA_VALUES);
-	return o;
-end function;
-
-function to_mca_value_d(i:natural range 0 to NUM_MCA_VALUES-1) 
-				 return mca_value_d is
-begin
-	return mca_value_d'val(i);
-end function;
+--function to_unsigned(v:mca_value_d;w:natural) return unsigned is
+--begin
+--	return to_unsigned(mca_value_d'pos(v),w);
+--end function;
+--
+--function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector is
+--begin
+--	return std_logic_vector(to_unsigned(mca_value_d'pos(v),w));
+--end function;
 	
-function to_mca_value_d(u:unsigned) return mca_value_d is
-begin
-	return to_mca_value_d(to_integer(u));
-end function;
-	
-function to_unsigned(v:mca_value_d;w:natural) return unsigned is
-begin
-	return to_unsigned(mca_value_d'pos(v),w);
-end function;
-
-function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector is
-begin
-	return std_logic_vector(to_unsigned(mca_value_d'pos(v),w));
-end function;
-	
--- mca_triggers_t functions ----------------------------------------------------
-
-function to_onehot(t:mca_trigger_d) return std_logic_vector is
-variable o:std_logic_vector(NUM_MCA_TRIGGERS-2 downto 0):=(others => '0');
-begin
-	if t/=DISABLED_MCA_TRIGGER then
-		o:=to_onehot(mca_trigger_d'pos(t)-1,NUM_MCA_TRIGGERS-1);
-	end if;
-	return o;
-end function;
-
-function to_mca_trigger_d(i:natural range 0 to NUM_MCA_TRIGGERS-1) 
-return mca_trigger_d is
-begin
-	return mca_trigger_d'val(i);
-end function;
-
-function to_mca_trigger_d(u:unsigned) return mca_trigger_d is 
-begin
-	return to_mca_trigger_d(to_integer(u));
-end function;
-	
-function to_unsigned(t:mca_trigger_d;w:natural) return unsigned is
-begin
-	return to_unsigned(mca_trigger_d'pos(t),w);
-end function;
-
-function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector is
-begin
-	return std_logic_vector(to_unsigned(mca_trigger_d'pos(t),w));
-end function;
 
 end package body registers;

@@ -60,8 +60,8 @@ port(
   --! selects out to muxs
   ------------------------------------------------------------------------------
   channel_select:out std_logic_vector(2**CHANNEL_BITS-1 downto 0);
-  value_select:out std_logic_vector(NUM_MCA_VALUES-1 downto 0);
-  trigger_select:out std_logic_vector(NUM_MCA_TRIGGERS-2 downto 0);
+  value_select:out std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
+  trigger_select:out std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
   ------------------------------------------------------------------------------
   --! inputs from channels
   ------------------------------------------------------------------------------
@@ -130,7 +130,7 @@ constant MCA_PROTOCOL_HEADER_WORDS:integer:=5; --FIXME why are these needed
 type mca_flags_t is record  -- 32 bits
 	value:mca_value_d; --4
 	trigger:mca_trigger_d; --4
-	bin_n:unsigned(MCA_BIN_N_WIDTH-1 downto 0); --4
+	bin_n:unsigned(MCA_BIN_N_BITS-1 downto 0); --4
 	channel:unsigned(MCA_CHANNEL_WIDTH-1 downto 0); --4
 end record;
 
@@ -203,7 +203,7 @@ controlReg:process(clk)
 begin 
 if rising_edge(clk) then
 	if reset='1' then
-		next_registers.trigger <= DISABLED_MCA_TRIGGER;
+		next_registers.trigger <= DISABLED_MCA_TRIGGER_D;
 		channel_select <= (others => '0');
 		value_select <= (others => '0');
 		trigger_select <= (others => '0');
@@ -244,7 +244,7 @@ if rising_edge(clk) then
     end if;
     
     if tick then
-    	enabled <= next_registers.trigger/=DISABLED_MCA_TRIGGER;
+    	enabled <= next_registers.trigger/=DISABLED_MCA_TRIGGER_D;
     	ticks <= next_registers.ticks;
     	updating <= FALSE;
     end if;

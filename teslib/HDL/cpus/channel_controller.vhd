@@ -33,10 +33,15 @@ port(
   -- Register IO
   -- all signals in the IO_clk domain
   ------------------------------------------------------------------------------
-  address:out registeraddress_t;
-  data_out:out registerdata_t;
-  data_in:in registerdata_t;
-  write:out boolean --flag
+  address:out register_address_t;
+  data_out:out register_data_t;
+  data_in:in register_data_t;
+  write:out boolean; -- strobe
+  
+  --TODO implement
+  axis_ready:in boolean;
+  axis_done:in boolean;
+  axis_error:in boolean
 );
 end entity channel_controller;
 --

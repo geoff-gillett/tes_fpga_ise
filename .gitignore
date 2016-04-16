@@ -68,3 +68,6 @@ teslib/simulation/measurement_mux_enet_TB/.ipynb_checkpoints/measurement_mux_ene
 teslib/simulation/measurement_subsystem_TB/.ipynb_checkpoints/measurement_mux_enet_TB-checkpoint.ipynb
 teslib/simulation/measurement_subsystem_TB/.ipynb_checkpoints/measurement_subsystem_TB-checkpoint.ipynb
 python/simulation/__pycache__/
+*.xml
+*.project
+*.prefs

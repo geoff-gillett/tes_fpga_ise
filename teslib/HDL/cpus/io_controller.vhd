@@ -1,5 +1,4 @@
 --------------------------------------------------------------------------------
--- Company: Quantum Technology Laboratory
 -- Engineer: Geoff Gillett
 -- Date:Oct 17, 2013 
 --
@@ -24,7 +23,7 @@ use work.KCPSM6_AXI.all;
 
 --! Control unit -- CPU receives and responds to commands over the USB UART
 --! interface.
-entity control_unit is
+entity io_controller is
 generic(
   TES_CHANNEL_BITS:integer:=3;
   ADC_CHIPS:integer:=4
@@ -72,9 +71,9 @@ port(
   ------------------------------------------------------------------------------
   -- Global Register IO
   ------------------------------------------------------------------------------
-  address:out registeraddress_t;
-  data_out:out registerdata_t;
-  data_in:in registerdata_t;
+  address:out register_address_t;
+  data_out:out register_data_t;
+  data_in:in register_data_t;
   write:out boolean --flag
   ------------------------------------------------------------------------------
   --!* AXI lite master interface to the system
@@ -82,9 +81,9 @@ port(
   --But should be used to control the TEMAC to add jumbo frames/statistics
   ------------------------------------------------------------------------------
 );
-end entity control_unit;
+end entity io_controller;
 --
-architecture picoblaze_AXI of control_unit is
+architecture picoblaze of io_controller is
   
 constant TES_CHANNELS:integer:=2**TES_CHANNEL_BITS;
 constant SPI_CHANNELS:integer:=ADC_CHIPS+1;
@@ -417,6 +416,7 @@ if rising_edge(clk) then
   end if;
 end if;
 end process UARTselect;
+
 -- when main_uart_sel=FALSE selects which channel the UART communicates with 
 channelSelect:process(clk)
 begin
@@ -438,4 +438,4 @@ write <= to_boolean(
            out_port(CONTROL_REG_WRITE_BIT)
          );
 --
-end architecture picoblaze_AXI;
+end architecture picoblaze;

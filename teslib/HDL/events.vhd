@@ -11,6 +11,7 @@ use streamlib.types.all;
 
 use work.types.all;
 use work.functions.all;
+use work.registers.all;
 
 package events is
 
@@ -21,9 +22,6 @@ package events is
 --------------------------------------------------------------------------------
 --                            Constants
 --------------------------------------------------------------------------------
-constant CHANNEL_WIDTH:integer:=3;
-constant PEAK_COUNT_WIDTH:integer:=4;
-constant TICKPERIOD_BITS:integer:=32;
 constant RELATIVETIME_POS:integer:=16;
 constant SIZE_POS:integer:=48; --LSB of size field
 constant FLAGS_POS:integer:=11;
@@ -31,60 +29,6 @@ constant FLAGS_POS:integer:=11;
 --------------------------------------------------------------------------------
 --                            Discrete Types 
 --------------------------------------------------------------------------------
--- type of detection
-type detection_d is (
-	PEAK_DETECTION_D,
-	AREA_DETECTION_D,
-	PULSE_DETECTION_D, --use fixed flag to indicate fixed/variable length
-	TRACE_DETECTION_D
-);
-
-constant NUM_DETECTION_D:integer:=detection_d'pos(detection_d'high)+1;
-constant DETECTION_D_BITS:integer:=ceilLog2(NUM_DETECTION_D);
-function to_std_logic(d:detection_d;w:integer) return std_logic_vector;
-function to_detection_d(s:std_logic_vector) return detection_d;
-function to_detection_d(i:natural range 0 to NUM_DETECTION_D-1) 
-return detection_d;
-
--- the point the relative time-stamp is taken
-type timing_d is (
-	PULSE_THRESH_TIMING_D,
-	SLOPE_THRESH_TIMING_D,
-	CFD_LOW_TIMING_D,
-	RISE_START_TIMING_D
-);
-
-constant NUM_TIMING_D:integer:=timing_d'pos(timing_d'high)+1;
-constant TIMING_D_BITS:integer:=ceilLog2(NUM_TIMING_D);
-function to_std_logic(t:timing_d;w:integer) return std_logic_vector;
-function to_timing_d(i:natural range 0 to NUM_TIMING_D-1) return timing_d;
-function to_timing_d(s:std_logic_vector) return timing_d;
-	
-type height_d is (
-	PEAK_HEIGHT_D,
-	CFD_HIGH_D,
-	SLOPE_INTEGRAL_D
-);
-
-constant NUM_HEIGHT_D:integer:=height_d'pos(height_d'high)+1;
-constant HEIGHT_D_BITS:integer:=ceilLog2(NUM_HEIGHT_D);
-function to_std_logic(h:height_d;w:integer) return std_logic_vector;
-function to_height_d(s:std_logic_vector) return height_d;
-function to_height_d(i:natural range 0 to NUM_HEIGHT_D-1) return height_d;
-
-type trace_d is(
-	NO_TRACE_D,
-	RAW_TRACE_D,
-	FILTERED_TRACE_D,
-	SLOPE_TRACE_D
-);
-
-constant NUM_TRACE_D:integer:=trace_d'pos(trace_d'high)+1;
-constant TRACE_D_BITS:integer:=ceilLog2(NUM_TRACE_D);
-function to_std_logic(t:trace_d;w:integer) return std_logic_vector;
-function to_trace_d(s:std_logic_vector) return trace_d;
-function to_trace_d(i:natural range 0 to NUM_TRACE_D-1) return trace_d;
-
 --------------------------------------------------------------------------------
 --                            Event Types 
 --------------------------------------------------------------------------------
@@ -115,12 +59,12 @@ function to_event_type_t(sb:streambus_t) return event_type_t;
 -- |  2   |     1       |      1      |    3     |     1    |
 -- |timing|peak_overflow|time_overflow|event_type|new_window|
 type detection_flags_t is record 
-	peak_count:unsigned(PEAK_COUNT_WIDTH-1 downto 0); 
+	peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0); 
 	relative:boolean; -- not sure this is useful
 	peak_overflow:boolean; 
 	time_overflow:boolean; 
 	timing_point:timing_d;
-	channel:unsigned(CHANNEL_WIDTH-1 downto 0); 
+	channel:unsigned(CHANNEL_BITS-1 downto 0); 
 	event_type:event_type_t; 
 	new_window:boolean;
 end record;
@@ -170,7 +114,7 @@ function to_streambus(a:area_detection_t;endianness:string) return streambus_t;
 -- w=0 |period|flags|time|
 -- w=1 | full time-stamp |
 type tick_event_t is record
-  period:unsigned(TICKPERIOD_BITS-1 downto 0);
+  period:unsigned(TICK_PERIOD_BITS-1 downto 0);
   flags:tickflags_t; 
 	rel_timestamp:time_t; 
   full_timestamp:unsigned(TIMESTAMP_BITS-1 downto 0); --64
@@ -226,7 +170,7 @@ record
 	size:unsigned(SIZE_BITS-1 downto 0);
 	length:time_t;
 	flags:detection_flags_t;
-	max_peaks:unsigned(PEAK_COUNT_WIDTH-1 downto 0);
+	max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
 	rel_timestamp:time_t;
 	area:area_t;
 	pulse_threshold:unsigned(SIGNAL_BITS-1 downto 0);
@@ -416,83 +360,6 @@ end function;
 --------------------------------------------------------------------------------
 --               Discrete type conversion functions
 --------------------------------------------------------------------------------
-
--- height_d
-function to_std_logic(h:height_d;w:integer) return std_logic_vector is
-begin
-	if w < HEIGHT_D_BITS then
-		assert FALSE report "w to small to represent height_d" severity ERROR;
-	end if;
-	return to_std_logic(to_unsigned(height_d'pos(h),w));
-end function;
-
-function to_height_d(s:std_logic_vector) return height_d is
-begin
-	return to_height_d(to_integer(unsigned(s)));
-end function;
-
-function to_height_d(i:natural range 0 to NUM_HEIGHT_D-1) return height_d is
-begin
-	return height_d'val(i);
-end function;
-
--- timing_d
-function to_std_logic(t:timing_d;w:integer) return std_logic_vector is
-begin
-	if w < TIMING_D_BITS then
-		assert FALSE report "w to small to represent timing_d" severity ERROR;
-	end if;
-	return to_std_logic(to_unsigned(timing_d'pos(t),w));
-end function;
-
-function to_timing_d(i:natural range 0 to NUM_TIMING_D-1) 
-return timing_d is
-begin
-	return timing_d'val(i);
-end function;
-
-function to_timing_d(s:std_logic_vector) return timing_d is
-begin
-	return to_timing_d(to_integer(unsigned(s)));
-end function;
-
--- detection_d
-function to_detection_d(i:natural range 0 to NUM_DETECTION_D-1) 
-return detection_d is
-begin
-	return detection_d'val(i);
-end function;
-
-function to_detection_d(s:std_logic_vector) return detection_d is
-begin
-	return to_detection_d(to_integer(unsigned(s)));
-end function;
-
-function to_std_logic(d:detection_d;w:integer) return std_logic_vector is
-begin
-	if w < DETECTION_D_BITS then
-		assert FALSE report "w to small to represent detection_d" severity ERROR;
-	end if;
-	return to_std_logic(to_unsigned(detection_d'pos(d),w));
-end function;
-
--- trace_d
-function to_std_logic(t:trace_d;w:integer) return std_logic_vector is
-begin
-	if w < TRACE_D_BITS then
-		assert FALSE report "w to small to represent trace_d" severity ERROR;
-	end if;
-	return to_std_logic(to_unsigned(trace_d'pos(t),w));
-end function;
-
-function to_trace_d(i:natural range 0 to NUM_TRACE_D-1) return trace_d is
-begin
-	return trace_d'val(i);
-end function;
-
-function to_trace_d(s:std_logic_vector) return trace_d is
-begin
-	return to_trace_d(to_integer(unsigned(s)));
-end function;
+-- TODO move the function and type defs to registers
 	
 end package body events;

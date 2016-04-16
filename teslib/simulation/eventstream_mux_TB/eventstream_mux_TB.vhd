@@ -43,7 +43,7 @@ constant CLK_PERIOD:time:=4 ns;
 signal start:boolean_vector(2**CHANNEL_BITS-1 downto 0);
 signal commit:boolean_vector(2**CHANNEL_BITS-1 downto 0);
 signal dump:boolean_vector(2**CHANNEL_BITS-1 downto 0);
-signal instreams:streambus_array_t(2**CHANNEL_BITS-1 downto 0);
+signal instreams:streambus_array(2**CHANNEL_BITS-1 downto 0);
 signal instream_valids:boolean_vector(2**CHANNEL_BITS-1 downto 0);
 signal instream_readys:boolean_vector(2**CHANNEL_BITS-1 downto 0);
 signal full:boolean;

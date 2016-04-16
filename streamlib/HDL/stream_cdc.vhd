@@ -51,11 +51,14 @@ attribute ASYNC_REG:string;
 attribute ASYNC_REG of w_ptr_sclk:signal is "TRUE";
 attribute ASYNC_REG of r_ptr_rclk:signal is "TRUE";
 
+--FIXME need two RLOC sets? wsyncs need to be in the same slice and rsyncs need 
+-- to be in the same slice but the relative placement of the two slices need not
+-- be constrained.
 attribute RLOC:string;
 attribute RLOC of wsync1:label is "X0Y0";
 attribute RLOC of wsync2:label is "X0Y0";
-attribute RLOC of rsync1:label is "X0Y0";
-attribute RLOC of rsync2:label is "X0Y0";
+attribute RLOC of rsync1:label is "X0Y1";
+attribute RLOC of rsync2:label is "X0Y1";
 
 begin
 s_ready <= to_boolean(s_ready_int);

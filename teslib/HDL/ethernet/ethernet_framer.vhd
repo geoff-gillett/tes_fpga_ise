@@ -22,7 +22,6 @@ use streamlib.types.all;
 
 use work.events.all;
 use work.registers.all;
---use work.protocol.all;
 use work.types.all;
 use work.functions.all;
 
@@ -30,10 +29,9 @@ use work.functions.all;
 entity ethernet_framer is
 generic(
 	MTU_BITS:integer:=MTU_BITS;
-	TICK_LATENCY_BITS:integer:=TICK_LATENCY_BITS;
 	FRAMER_ADDRESS_BITS:integer:=ETHERNET_FRAMER_ADDRESS_BITS;
-	DEFAULT_MTU:integer:=DEFAULT_MTU;
-	DEFAULT_TICK_LATENCY:integer:=DEFAULT_TICK_LATENCY;
+	DEFAULT_MTU:unsigned:=DEFAULT_MTU;
+	DEFAULT_TICK_LATENCY:unsigned:=DEFAULT_TICK_LATENCY;
 	ENDIANNESS:string:="LITTLE"
 );
 port (
@@ -181,11 +179,11 @@ mtuCapture:process(clk)
 begin
 	if rising_edge(clk) then
 		if reset = '1' then
-			mtu_int <= to_unsigned(DEFAULT_MTU/8-1,MTU_BITS);
-			tick_latency_int <= to_unsigned(DEFAULT_TICK_LATENCY,TICK_LATENCY_BITS);
+			mtu_int <= to_unsigned(to_integer(DEFAULT_MTU/8-1),MTU_BITS);
+			tick_latency_int <= DEFAULT_TICK_LATENCY;
 		else
 			if arbiter_state=IDLE then
-				mtu_int <= resize(shift_right(mtu,3),MTU_BITS)-1;
+				mtu_int <= shift_right(mtu,3)-1; --MTU in 8byte blocks
 				tick_latency_int <= tick_latency;
 			end if;
 		end if;
@@ -512,7 +510,8 @@ begin
 		if reset = '1' then
 			frame_address <= (others => '0');
 			last_frame_address <= (others => '0');
-			frame_free <= to_unsigned(DEFAULT_MTU/8-1,FRAMER_ADDRESS_BITS+1);
+			frame_free 
+				<= to_unsigned(to_integer(DEFAULT_MTU/8-1),FRAMER_ADDRESS_BITS+1);
 		else
 			if commit_frame then
 				frame_address <= (others => '0');

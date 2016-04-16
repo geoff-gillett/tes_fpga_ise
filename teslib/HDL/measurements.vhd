@@ -76,11 +76,11 @@ type measurement_t is record
 	cfd_low:boolean; 
 	cfd_high:boolean;
 	
-	peak_count:unsigned(PEAK_COUNT_WIDTH-1 downto 0);
+	peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 	--pulse_time:unsigned(RELATIVETIME_BITS-1 downto 0);
 end record;
 
-type measurement_array_t is array (natural range <>)
+type measurement_array is array (natural range <>)
 		 of measurement_t;
 		 
 function get_mca_values(m:measurement_t) return mca_value_array;
@@ -91,7 +91,7 @@ end package measurements;
 package body measurements is
 
 function get_mca_values(m:measurement_t) return mca_value_array is
-variable va:mca_value_array(NUM_MCA_VALUES-1 downto 0);
+variable va:mca_value_array(NUM_MCA_VALUE_D-1 downto 0);
 begin
   va(0) := resize(m.filtered.sample,MCA_VALUE_BITS);
   va(1) := resize(m.filtered.area,MCA_VALUE_BITS);
@@ -109,7 +109,7 @@ begin
 end function;
 
 function get_mca_triggers(m:measurement_t) return std_logic_vector is
-variable o:std_logic_vector(NUM_MCA_TRIGGERS-2 downto 0);
+variable o:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
 begin
   o(0):='1';
   o(1):=to_std_logic(m.pulse.pos_threshxing);

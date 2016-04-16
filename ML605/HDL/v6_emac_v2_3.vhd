@@ -138,14 +138,13 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 --------------------------------------------------------------------------------
---! Geoff Gillett
 --! Modification of the example design wrapper
---! Removed the addr swap module and exposed the tx fifo interface
---! Moved MMCM and reset generators outside this module
---!
---! TODO: Tap into the FIFO block level of the wrapper the bytestream generated
---! by the exterior code does not require the FIFO.
---! The project is transmit only over Ethernet remove all the RX logic.
+--! Rempve the addr swap module and expose the tx fifo interface
+--! Move MMCM and reset generators to outside
+--! TODO this is a simple hack if time do the following: (in order of priority)
+--! deepen the TX side FIFO to enable jumbo frames
+--! remove all RX side logic as it is not used
+--! replace AXI FSM with the central picoblaze
 --------------------------------------------------------------------------------
 
 entity v6_emac_v2_3 is

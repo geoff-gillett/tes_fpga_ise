@@ -40,7 +40,7 @@ signal reg_reset:std_logic:='1';
 constant STREAM_CLK_PERIOD:time:=4 ns;
 constant REG_CLK_PERIOD:time:=8 ns;
 
-signal address:registeraddress_t;
+signal address:register_address_t;
 signal write:boolean;
 signal registers:channel_registers_t;
 signal filter_config_data:std_logic_vector(CONFIG_STREAM_WIDTH-1 downto 0);
@@ -63,7 +63,7 @@ signal differentiator_reload_last_error:boolean;
 signal filter_reload_ready:boolean;
 signal sim_count:unsigned(AXI_DATA_BITS-1 downto 0);
 signal last:boolean;
-signal value:registerdata_t;
+signal value:register_data_t;
 signal axis_ready:boolean;
 signal axis_done:boolean;
 signal axis_error:boolean;
