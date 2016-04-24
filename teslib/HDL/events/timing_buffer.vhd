@@ -227,11 +227,17 @@ when WAITEVENT =>
 	if all_dumped_reg and not ticked_reg then
 		time_rd_en <= '1';
 		commit_rd_en <= started_reg;
+	else
+    time_rd_en <= '0';
+    commit_rd_en <= (others => '0');
 	end if;
 when VALIDEVENT =>
 	if read_next then
 		time_rd_en <= '1';
 		commit_rd_en <= started_reg;
+	else
+    time_rd_en <= '0';
+    commit_rd_en <= (others => '0');
 	end if;	
 end case;
 end process ReadFifos;

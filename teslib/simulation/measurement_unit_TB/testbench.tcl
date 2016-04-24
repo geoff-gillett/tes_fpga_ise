@@ -4,42 +4,11 @@ namespace import isim::*
 
 #TODO move this to isim package
 # e=0 little endian 1=big endian
-proc writeInt32 { fp signal {type dec} {e little} } {
-	set val [getsig $signal $type]
-	if { [string equal $val TRUE] } {
-		set val 1
-  } 
-	if { [string equal $val FALSE] } {
-		set val 0
-  } 
-	if { [string equal $val x] } {
-		set val 0
-	}
-	if { [string equal $val X] } {
-		set val 0
-	}
-	if { [string equal $e little] } { 
-		set i [binary format i $val]
-	} {
-		set i [binary format I $val]
-	}
-	puts -nonewline $fp $i  
-	return $i
-}
 
-proc writeInt64 { fp signal } { 
-	set i [getsig $signal bin]
-	puts $i
-	binary scan [binary format B64 [format %064s $i]] II d1 d2
-	set dec [expr {wide($d1)<<32 | wide($d2)}]
-	puts -nonewline $fp [binary format w $dec]
-	return $dec
-}
-
-set fp [open "../input_signals/short" r]
+set fp [open "../input_signals/double_peak" r]
 fconfigure $fp -buffering line
 
-set settings [open "../settings" w]
+set settings [open "../setting" w]
 fconfigure $settings -translation binary
 
 set eventstream [open "../eventstream" w]
@@ -48,11 +17,11 @@ fconfigure $eventstream -translation binary
 set traces [open "../traces" w]
 fconfigure $traces -translation binary
 
-set peaks [open "../peaks" w]
+set peaks [open "../peak" w]
 fconfigure $peaks -translation binary
 
-set peak_starts [open "../peak_starts" w]
-fconfigure $peak_starts -translation binary
+set peakstart [open "../peakstart" w]
+fconfigure $peakstart -translation binary
 
 set cfdlow [open "../cfdlow" w]
 fconfigure $cfdlow -translation binary
@@ -60,7 +29,7 @@ fconfigure $cfdlow -translation binary
 set cfdhigh [open "../cfdhigh" w]
 fconfigure $cfdhigh -translation binary
 
-set pulsestarts [open "../pulsestarts" w]
+set pulsestarts [open "../pulsestart" w]
 fconfigure $pulsestarts -translation binary
 
 set raw [open "../raw" w]
@@ -75,48 +44,53 @@ fconfigure $slope -translation binary
 set pulse [open "../pulse" w]
 fconfigure $pulse -translation binary
 
-set slopethreshxings [open "../slopethreshxings" w]
+set slopethreshxings [open "../slopethreshxing" w]
 fconfigure $slopethreshxings -translation binary
 
-set timeoverflows [open "../timeoverflows" w]
+set timeoverflows [open "../timeoverflow" w]
 fconfigure $timeoverflows -translation binary
 
-set peakoverflows [open "../peakoverflows" w]
+set peakoverflows [open "../peakoverflow" w]
 fconfigure $peakoverflows -translation binary
 
-set triggers [open "../triggers" w]
+set triggers [open "../trigger" w]
 fconfigure $triggers -translation binary
 
-set cfderrors [open "../cfderrors" w]
+set cfderrors [open "../cfderror" w]
 fconfigure $cfderrors -translation binary
 
-set heights [open "../heights" w]
+set baselineerrors [open "../baselineerror" w]
+fconfigure $baselineerrors -translation binary
+
+set heights [open "../height" w]
 fconfigure $heights -translation binary
 
 restart
 wave add /measurement_unit_TB
 wave add /measurement_unit_TB/UUT
-wave add /measurement_unit_TB/UUT/SlopeXing
+wave add /measurement_unit_TB/UUT/framer
 
-runclks
+set period [getsig CLK_PERIOD]
+run $period
+
 set clk 0
 #baseline registers
-writeInt32 $settings registers.baseline.offset
-writeInt32 $settings registers.baseline.subtraction
-writeInt32 $settings registers.baseline.timeconstant
-writeInt32 $settings registers.baseline.threshold
-writeInt32 $settings registers.baseline.count_threshold
-writeInt32 $settings registers.baseline.average_order 
+write_signal $settings registers.baseline.offset unsigned 
+write_signal $settings registers.baseline.subtraction unsigned 
+write_signal $settings registers.baseline.timeconstant unsigned 
+write_signal $settings registers.baseline.threshold unsigned 
+write_signal $settings registers.baseline.count_threshold unsigned 
+write_signal $settings registers.baseline.average_order unsigned 
 #capture registers
-writeInt32 $settings registers.capture.cfd_relative
-writeInt32 $settings registers.capture.constant_fraction
-writeInt32 $settings registers.capture.pulse_threshold
-writeInt32 $settings registers.capture.slope_threshold 
-writeInt32 $settings registers.capture.pulse_area_threshold 
-writeInt32 $settings height_type unsigned
-writeInt32 $settings registers.capture.threshold_rel2min
-writeInt32 $settings trigger_type unsigned
-writeInt32 $settings event_type unsigned
+write_signal $settings registers.capture.cfd_rel2min unsigned 
+write_signal $settings registers.capture.constant_fraction unsigned
+write_signal $settings registers.capture.pulse_threshold unsigned
+write_signal $settings registers.capture.slope_threshold unsigned
+write_signal $settings registers.capture.area_threshold dec
+write_signal $settings height_type unsigned
+write_signal $settings registers.capture.threshold_rel2min unsigned
+write_signal $settings trigger_type unsigned
+write_signal $settings event_type unsigned
 close $settings
 
 while {[gets $fp hexsample] >= 0} {
@@ -133,7 +107,7 @@ while {[gets $fp hexsample] >= 0} {
 		flush $pulsestarts
 		flush $slopethreshxings
 		flush $peaks
-		flush $peak_starts
+		flush $peakstart
 		flush $heights
 		flush $cfdlow
 		flush $cfdhigh
@@ -142,37 +116,37 @@ while {[gets $fp hexsample] >= 0} {
 		flush $cfderrors
 		flush $timeoverflows
 		flush $peakoverflows
+		flush $baselineerrors
 	}
 	setsig adc_sample $hexsample hex
 	
-	writeInt32 $traces adc_sample
-	writeInt32 $traces measurements.raw.sample
-	writeInt32 $traces measurements.filtered.sample
-	writeInt32 $traces measurements.slope.sample
-	
+	write_signal $traces adc_sample unsigned s
+	write_signal $traces measurements.raw.sample dec s
+	write_signal $traces measurements.filtered.sample dec s
+	write_signal $traces measurements.slope.sample dec s
 	
 	if [getsig measurements.raw.zero_xing] {
 		puts -nonewline $raw [binary format i $clk]
-		writeInt32 $raw measurements.raw.area
-		writeInt32 $raw measurements.raw.extrema
+		write_signal $raw measurements.raw.area
+		write_signal $raw measurements.raw.extrema
 	}
 
 	if [getsig measurements.filtered.zero_xing] {
 		puts -nonewline $filtered [binary format i $clk]
-		writeInt32 $filtered measurements.filtered.area
-		writeInt32 $filtered measurements.filtered.extrema
+		write_signal $filtered measurements.filtered.area
+		write_signal $filtered measurements.filtered.extrema
 	}
 
 	if [getsig measurements.slope.zero_xing] {
 		puts -nonewline $slope [binary format i $clk]
-		writeInt32 $slope measurements.slope.area
-		writeInt32 $slope measurements.slope.extrema
+		write_signal $slope measurements.slope.area
+		write_signal $slope measurements.slope.extrema
 	}
 
 	if [getsig measurements.pulse.neg_threshxing] {
 		puts -nonewline $pulse [binary format i $clk]
-		writeInt32 $pulse measurements.pulse.area
-		writeInt32 $pulse measurements.pulse.extrema
+		write_signal $pulse measurements.pulse.area
+		write_signal $pulse measurements.pulse.extrema
 	}
 	
 	if [getsig measurements.pulse.pos_threshxing] {
@@ -185,17 +159,17 @@ while {[gets $fp hexsample] >= 0} {
 	
 	if { [getsig measurements.peak] } {
 		puts -nonewline $peaks [binary format i $clk]
-		#writeInt32 $peaks measurements.slope.area
+		#write_signal $peaks measurements.slope.area
 	}
 	
 	if { [getsig measurements.peak_start] } {
-		puts -nonewline $peak_starts [binary format i $clk]	
-		#writeInt32 $peak_starts measurements.filtered.sample
+		puts -nonewline $peakstart [binary format i $clk]	
+		#write_signal $peakstart measurements.filtered.sample
 	}
 	
 	if { [getsig measurements.height_valid] } {
 		puts -nonewline $heights [binary format i $clk]
-		writeInt32 $heights measurements.height
+		write_signal $heights measurements.height unsigned s
 	}
 	
 	if { [getsig measurements.cfd_low] } {
@@ -210,13 +184,14 @@ while {[gets $fp hexsample] >= 0} {
 		puts -nonewline $triggers [binary format i $clk]
 	}
 	
-	if { [getsig valid] && [getsig ready] } {
-		writeInt32 $eventstream eventstream.data(63:32) unsigned big
-		writeInt32 $eventstream eventstream.data(31:0) unsigned big
-	}
+	write_stream eventstream
 	
 	if { [getsig cfd_error] } {
 		puts -nonewline $cfderrors [binary format i $clk]
+	}
+	
+	if { [getsig baseline_error] } {
+		puts -nonewline $baselineerrors [binary format i $clk]
 	}
 	
 	if { [getsig time_overflow] } {
@@ -226,15 +201,15 @@ while {[gets $fp hexsample] >= 0} {
 	if { [getsig peak_overflow] } {
 		puts -nonewline $peakoverflows [binary format i $clk]
 	}
-	runclks
-	#move incr to top for matlab indexing
+	
+	run $period
 	incr clk 
 }
 
 close $fp
 close $traces 
 close $peaks 
-close $peak_starts 
+close $peakstart 
 close $heights 
 close $cfdlow 
 close $cfdhigh 
@@ -248,4 +223,5 @@ close $slopethreshxings
 close $timeoverflows
 close $peakoverflows
 close $cfderrors
+close $baselineerrors
 close $eventstream

@@ -37,11 +37,10 @@ constant BUS_BITS:integer:=CHUNK_BITS*BUS_CHUNKS;
 -- data only bits of the bus
 constant BUS_DATABITS:integer:=CHUNK_DATABITS*BUS_CHUNKS;
 
---subtype datachunk is std_logic_vector(CHUNK_DATABITS-1 downto 0);
---type datachunk_array is array (natural range <>) of datachunk;
+--TODO remove the discard a last subtypes
+subtype streambus_discard_t is boolean_vector(BUS_CHUNKS-1 downto 0);
+subtype streambus_last_t is boolean_vector(BUS_CHUNKS-1 downto 0);
 
-subtype streambus_keeps_n_t is boolean_vector(BUS_CHUNKS-1 downto 0);
-subtype streambus_lasts_t is boolean_vector(BUS_CHUNKS-1 downto 0);
 subtype streamvector_t is std_logic_vector(BUS_BITS-1 downto 0);
 type streambus_t is record
 	discard:boolean_vector(BUS_CHUNKS-1 downto 0); -- keep chunk if set to 0
@@ -64,10 +63,10 @@ function set_endianness(s:signed;e:string) return std_logic_vector;
 function SetEndianness(sb:streambus_t;e:string) return streambus_t;
 function to_streambus(slv:std_logic_vector) return streambus_t;
 function to_streambus(sva:streamvector_array) return streambus_array;
-function to_streambus(chunks:datachunk_array_t;k:streambus_keeps_n_t;
-											l:streambus_lasts_t) return streambus_t;
-function to_streambus(data:std_logic_vector;k:streambus_keeps_n_t;
-											l:streambus_lasts_t) return streambus_t;
+function to_streambus(chunks:datachunk_array_t;k:streambus_discard_t;
+											l:streambus_last_t) return streambus_t;
+function to_streambus(data:std_logic_vector;k:streambus_discard_t;
+											l:streambus_last_t) return streambus_t;
 function to_std_logic(sb:streambus_t) return std_logic_vector;
 function to_std_logic(sba:streambus_array) return streamvector_array;
 --function to_datachunks(bd:streambus_t) return datachunk_array;
@@ -98,18 +97,18 @@ begin
 	return sba;
 end function;
 
-function to_streambus(chunks:datachunk_array_t;k:streambus_keeps_n_t;
-											l:streambus_lasts_t) return streambus_t is
+function to_streambus(chunks:datachunk_array_t;k:streambus_discard_t;
+											l:streambus_last_t) return streambus_t is
 variable sb:streambus_t;
 begin
-	sb.data:=chunks(3) & chunks(2) & chunks(1) & chunks(0);
+	sb.data:=chunks(0) & chunks(1) & chunks(2) & chunks(3);
 	sb.discard:=k;
 	sb.last:=l;
 	return sb;
 end function;
 	
-function to_streambus(data:std_logic_vector;k:streambus_keeps_n_t;
-											l:streambus_lasts_t) return streambus_t is
+function to_streambus(data:std_logic_vector;k:streambus_discard_t;
+											l:streambus_last_t) return streambus_t is
 variable sb:streambus_t;
 begin
 	sb.data:=data;

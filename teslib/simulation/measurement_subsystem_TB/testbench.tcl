@@ -10,6 +10,7 @@ set channels [getsig CHANNELS unsigned]
 set input [open "../input_signals/long" r]
 fconfigure $input -buffering line
 
+#TODO these now have versions in isim package change calls to use them
 proc fnames base {
 	variable channels
 	for {set c 0} {$c < $channels} {incr c} {

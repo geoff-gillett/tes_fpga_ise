@@ -67,7 +67,8 @@ type measurement_t is record
 	height_valid:boolean;
 	
 	--time from trigger to height_valid
-	rise_time:time_t;
+	trigger_time:time_t;
+	event_time:time_t;
 
 	peak_start:boolean; -- event_start
 	trigger:boolean;
@@ -76,7 +77,7 @@ type measurement_t is record
 	cfd_low:boolean; 
 	cfd_high:boolean;
 	
-	peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
+	peak_count:unsigned(PEAK_COUNT_BITS downto 0);
 	--pulse_time:unsigned(RELATIVETIME_BITS-1 downto 0);
 end record;
 

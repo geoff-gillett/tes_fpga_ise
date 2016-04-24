@@ -420,28 +420,35 @@ when IDLE =>
 when HEADER0 =>
 		outstream_valid <= TRUE;
 		outstream <= to_streambus(header,0,ENDIANNESS);
+		countstream_ready <= FALSE;
     if outstream_ready then
       stream_nextstate <= HEADER1;
     end if;
 when HEADER1 =>
 		outstream_valid <= TRUE;
 		outstream <= to_streambus(header,1,ENDIANNESS);
+		countstream_ready <= FALSE;
     if outstream_ready then
       stream_nextstate <= HEADER2;
     end if;
 when HEADER2 =>
 		outstream_valid <= TRUE;
 		outstream <= to_streambus(header,2,ENDIANNESS);
+		countstream_ready <= FALSE;
     if outstream_ready then
       stream_nextstate <= HEADER3;
     end if;
 when HEADER3 =>
+		outstream_valid <= TRUE;
 		outstream <= to_streambus(header,3,ENDIANNESS);
+		countstream_ready <= FALSE;
     if outstream_ready then
       stream_nextstate <= HEADER4;
     end if;
 when HEADER4 =>
+		outstream_valid <= TRUE;
 		outstream <= to_streambus(header,4,ENDIANNESS);
+		countstream_ready <= FALSE;
     if outstream_ready then
       stream_nextstate <= DISTRIBUTION;
     end if;

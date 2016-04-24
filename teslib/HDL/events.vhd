@@ -27,9 +27,6 @@ constant SIZE_POS:integer:=48; --LSB of size field
 constant FLAGS_POS:integer:=11;
 
 --------------------------------------------------------------------------------
---                            Discrete Types 
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
 --                            Event Types 
 --------------------------------------------------------------------------------
 -- tick regular event containing 64 bit time-stamp and overflow information
@@ -43,7 +40,7 @@ constant FLAGS_POS:integer:=11;
 --         2       | 1  |    1     |
 -- detection_type_d|tick|new_window|
 type event_type_t is record
-	detection_type:detection_d;
+	detection:detection_d;
 	tick:boolean;
 end record;
 
@@ -51,19 +48,17 @@ function to_std_logic(e:event_type_t) return std_logic_vector;
 function to_event_type_t(s:std_logic_vector) return event_type_t;
 function to_event_type_t(sb:streambus_t) return event_type_t;
 
------------------------ event flags - 16 bits-----------------------------------
--- First byte
--- |    4     |   1    |   3   |
--- |peak_count|relative|channel|
--- Second byte
--- |  2   |     1       |      1      |    3     |     1    |
--- |timing|peak_overflow|time_overflow|event_type|new_window|
+----------------------- event_flags_t - 16 bits---------------------------------
+--| 	first byte transmitted        ||          second byte transmitted        |
+--|    4     |      1       |   3   ||  2   	|   2    |    3       |     1    |
+--|peak_count|height_rel2min|channel||timing_d|height_d|event_type_t|new_window|
 type detection_flags_t is record 
 	peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0); 
-	relative:boolean; -- not sure this is useful
-	peak_overflow:boolean; 
-	time_overflow:boolean; 
-	timing_point:timing_d;
+	relative:boolean; 
+	height:height_d;
+	--peak_overflow:boolean; 
+	--time_overflow:boolean; 
+	timing:timing_d;
 	channel:unsigned(CHANNEL_BITS-1 downto 0); 
 	event_type:event_type_t; 
 	new_window:boolean;
@@ -123,7 +118,6 @@ end record;
 function to_streambus(t:tick_event_t;w:natural range 0 to 1;endianness:string) 
 return streambus_t;
 
---TODO implement
 -----------------  pulse event - 16 byte header --------------------------------
 --  | size | plength |   flags  |   time   |
 --  |     area       | pthresh? | sthresh? |  
@@ -134,7 +128,7 @@ record
 	size:unsigned(SIZE_BITS-1 downto 0);
 	length:time_t;
 	flags:detection_flags_t;
-	rel_timestamp:time_t;
+	--rel_timestamp:time_t;
 	area:area_t;
 	pulse_threshold:unsigned(SIGNAL_BITS-1 downto 0);
 	slope_threshold:unsigned(SIGNAL_BITS-1 downto 0);
@@ -146,6 +140,8 @@ function to_streambus(
 	endianness:string
 ) return streambus_t;
 
+--  |   16   |   16   |  16  |  16  |
+--  | height | minima | rise | time |
 type pulse_peak_t is
 record
 	height:signal_t;
@@ -155,35 +151,66 @@ record
 end record;
 
 function to_std_logic(p:pulse_peak_t;endianness:string) return std_logic_vector;
+function to_streambus(p:pulse_peak_t;last:boolean;endianness:string) 
+return streambus_t;
 
---TODO implement
+-- |  7  |  1  ||   2  |  2  	|   4		  |
+-- |resvd|full ||trace0|trace1|max_peaks|
+type trace_flags_t is
+record
+	trace0:trace_d;
+	trace1:trace_d;
+	max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
+	full:boolean;
+end record;
+
+function to_std_logic(f:trace_flags_t) return std_logic_vector;
+
 -----------------  trace event - 16 byte header --------------------------------
---  |   16   |     16      |     16     |      16      |
---  |  size  | trace_flags |   flags    |     time     |
---  |   res  | p thresh    |  s thresh  | pulse length | 
---  |        res           |           area            | 
---  repeating 8 byte peak records (up to 16) for extra peaks.
---  | length |  time_idx   | height_idx |     time     | 
--- need to traverse length to find trace segments
+--  |    16     |     16      |     16     |      16      |
+--  |   size    | trace_flags | det flags  |     time     |
+--  |  offset   | p thresh    |  s thresh  | pulse length | 
+--  |   resvd   |    resvd    |           area            | 
+
+--  trace length only used if full_trace
+--  pulse length is pos thresh xing to neg xing
+--  repeating (max_peaks+1) 8 byte peak records fixed space 
+--  indexs are relative to pulse start
 type trace_detection_t is
 record
 	size:unsigned(SIZE_BITS-1 downto 0);
-	length:time_t;
-	flags:detection_flags_t;
-	max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
+	length:time_t; 
+	detection_flags:detection_flags_t;
+	trace_flags:trace_flags_t;
+	offset:time_t;
 	rel_timestamp:time_t;
 	area:area_t;
 	pulse_threshold:unsigned(SIGNAL_BITS-1 downto 0);
 	slope_threshold:unsigned(SIGNAL_BITS-1 downto 0);
-	trace0:trace_d;
-	trace1:trace_d;
 end record;
 
+function to_streambus(
+	t:trace_detection_t;
+	w:natural range 0 to 2;
+	endianness:string) return streambus_t;
+
+--  length = (max_idx - min_idx)+1
+--	|   16    |     16     |   16    |    16    |
+--  | min_idx | height_idx | max_idx | time_idx | 
 type trace_peak_t is record
-	height_idx:time_t;
-	length:time_t;
-	time_idx:time_t;
-	rel_timestamp:time_t;
+	min_idx:time_t; -- negative rel to time_idx
+	height_idx:time_t; 
+	peak_idx:time_t;
+	trigger_idx:time_t;
+end record;-- peak_indx-min_idx=length
+
+function to_std_logic(t:trace_peak_t;endianness:string) return std_logic_vector;
+function to_streambus(t:trace_peak_t;endianness:string)
+return streambus_t;
+
+type part_trace_peak_t is record
+	min_time:time_t;
+	
 end record;
 
 end package events;
@@ -195,14 +222,14 @@ package body events is
 -- detection_type_d|tick|new_window|
 function to_std_logic(e:event_type_t) return std_logic_vector is
 begin
-	return to_std_logic(e.detection_type,2) &
+	return to_std_logic(e.detection,2) &
 				 to_std_logic(e.tick);
 end function;
 
 function to_event_type_t(s:std_logic_vector) return event_type_t is
 	variable e:event_type_t;
 begin
-	e.detection_type:=to_detection_d(s(s'high downto s'high-1));
+	e.detection:=to_detection_d(s(s'high downto s'high-1));
 	e.tick:=to_boolean(s(s'high-2));
 	--e.new_window:=to_boolean(s(s'high-3));
 	return e;
@@ -216,22 +243,21 @@ begin
 end function;
 
 ----------------------- event_flags_t - 16 bits---------------------------------
--- 		first byte transmitted  ||          second byte transmitted
---      4    |   1    |   3   ||  2   |     1       |      1      |    4     |
--- peak_count|relative|channel||timing|peak_overflow|time_overflow|event_type|
+-- 		first byte transmitted         ||          second byte transmitted
+--|    4     |      1       |   3   ||   2   	|    2   |     3      |     1    |
+--|peak_count|height_rel2min|channel||timing_d|height_d|event_type_t|new_window|
 function to_std_logic(f:detection_flags_t) return std_logic_vector is 
-variable slv:std_logic_vector(15 downto 0);
+	variable slv:std_logic_vector(15 downto 0);
 begin    
 				 -- first transmitted byte
-  slv := to_std_logic(f.peak_count) & 
-         to_std_logic(f.relative) &
-         to_std_logic(f.channel) &
+  slv(15 downto 12) := to_std_logic(f.peak_count);
+  slv(11) := to_std_logic(f.relative);
+  slv(10 downto 8) := to_std_logic(f.channel);
 				 -- second transmitted byte
-         to_std_logic(f.timing_point,2) &
-         to_std_logic(f.peak_overflow) &
-         to_std_logic(f.time_overflow) &  
-         to_std_logic(f.event_type) &
-         to_std_logic(f.new_window);
+  slv(7 downto 6) := to_std_logic(f.timing,2);
+  slv(5 downto 4) := to_std_logic(f.height,2);
+  slv(3 downto 1) := to_std_logic(f.event_type);
+  slv(0) := to_std_logic(f.new_window);
   return slv;
 end function;
 
@@ -283,10 +309,12 @@ begin
 	return sb;
 end function;
 
+-- TODO add the extra 8 bytes
 -------------------------- tick event 16 bytes----------------------------------
 --     |  32  |  16 | 16 |
--- w=0 |period|flags|time|
+-- w=0 |period|flags|time|  -- the 8 overflow flags should indicate event loss
 -- w=1 | full time-stamp |
+-- w=3 | peak overflow, time overflow, mux overflow framer overflow etc
 function to_streambus(t:tick_event_t;w:natural range 0 to 1;endianness:string) 
 return streambus_t is
 variable sb:streambus_t;
@@ -314,23 +342,20 @@ end function;
 --  |     area       | pthresh? | sthresh? |  
 --  repeating 8 byte peak records (up to 16) for extra peaks.
 --  | height | minima | rise | time |
-
-function to_streambus(
-	p:pulse_detection_t;
-	w:natural range 0 to 1;
-	endianness:string
-) return streambus_t is
+function to_streambus(p:pulse_detection_t;w:natural range 0 to 1;
+											endianness:string) return streambus_t is
 	variable sb:streambus_t;
 begin
 	case w is
 	when 0 =>
-		sb.data(63 downto 48):=set_endianness(p.size,endianness);
-		sb.data(47 downto 32):=set_endianness(p.length,endianness);
-		sb.data(31 downto 16):=set_endianness(p.rel_timestamp,endianness);
+		sb.data(63 downto 48) := set_endianness(p.size,endianness);
+		sb.data(47 downto 32) := set_endianness(p.length,endianness);
+		sb.data(31 downto 16) := to_std_logic(p.flags); 
+		sb.data(15 downto 0) := (others => '0');
 	when 1 =>
-		sb.data(63 downto 32):=set_endianness(p.area,endianness);
-		sb.data(31 downto 16):=set_endianness(p.pulse_threshold,endianness);
-		sb.data(15 downto 0):=set_endianness(p.slope_threshold,endianness);
+		sb.data(63 downto 32) := set_endianness(p.area,endianness);
+		sb.data(31 downto 16) := set_endianness(p.pulse_threshold,endianness);
+		sb.data(15 downto 0) := set_endianness(p.slope_threshold,endianness);
 	when others =>
 		assert FALSE report "bad word number in pulse_detection_t to_streambus()"	
 						 		 severity ERROR;
@@ -349,17 +374,87 @@ begin
 	       set_endianness(p.rel_timestamp,endianness);
 end function;
 
---TODO implement
------------------  trace event - 16 byte header --------------------------------
---  | size | plength |  flags  |   time   |
---  |     area       | pthresh | sthresh  |  
---  | num slots | trace type
---  repeating 8 byte peak records (up to 16) for extra peaks.
---  | length | time idx | height idx | time | need to traverse to find trace segments
+function to_streambus(p:pulse_peak_t;last:boolean;endianness:string)
+return streambus_t is
+	variable sb:streambus_t;
+begin
+	sb.data := to_std_logic(p, endianness);
+	sb.last := (0 => last, others => FALSE);
+	sb.discard := (others => FALSE);
+	return sb;
+end function;
 
---------------------------------------------------------------------------------
---               Discrete type conversion functions
---------------------------------------------------------------------------------
--- TODO move the function and type defs to registers
+------------------------ trace_flags_t 16 bits ---------------------------------
+-- |  7  |   1  ||   2  |  2   |    4    |
+-- |resvd| full ||trace0|trace1|max_peaks|
+function to_std_logic(f:trace_flags_t) return std_logic_vector is
+	variable slv:std_logic_vector(15 downto 0):=(others => '0');
+begin
+	slv(8):=to_std_logic(f.full);
+	slv(7 downto 6):=to_std_logic(f.trace0,2);
+	slv(5 downto 4):=to_std_logic(f.trace1,2);
+	slv(3 downto 0):=to_std_logic(f.max_peaks);
+	return slv;
+end function;
+
+-----------------  trace event - 24 byte header --------------------------------
+--  |    16     |     16      |     16     |      16      |
+--  |   size    | trace_flags | det flags  |     time     |
+--  |  offset   | p thresh    |  s thresh  | pulse length | 
+--  |   resvd   |    resvd    |           area            | 
+
+--  trace length only used if full_trace
+--  pulse length is pos thresh xing to neg xing
+--  repeating (max_peaks+1) 8 byte peak records fixed space 
+--  indexs are relative to pulse start
+--  | min_idx | height_idx | max_idx | time_idx | 
+--  trace data follows
+function to_streambus(t:trace_detection_t;w:natural range 0 to 2;
+	endianness:string) return streambus_t is
+	variable sb:streambus_t;
+begin
+	case w is
+	when 0 => 
+		sb.data(63 downto 48):=set_endianness(t.size,endianness);
+		sb.data(47 downto 32):=to_std_logic(t.trace_flags);
+		sb.data(31 downto 16):=to_std_logic(t.detection_flags);
+		sb.data(15 downto 0):=(others => '0');
+	when 1 => 
+		sb.data(63 downto 48):=set_endianness(t.offset,endianness);
+		sb.data(47 downto 32):=set_endianness(t.pulse_threshold,endianness);
+		sb.data(31 downto 16):=set_endianness(t.slope_threshold,endianness);
+		sb.data(15 downto 0):=set_endianness(t.length,endianness);
+	when 2 => 
+		sb.data(63 downto 32):=(others => '0');
+		sb.data(31 downto 0):=set_endianness(t.area,endianness);
+	end case;
+  sb.discard:=(others => FALSE);
+  sb.last:=(others => FALSE);
+  return sb;
+end function;
+
+---------------------------- trace_peak_t --------------------------------------
+--  |    16   |     16     |    16   |    16    |
+--  | min_idx | height_idx | max_idx | time_idx | 
+function to_std_logic(t:trace_peak_t;endianness:string)
+return std_logic_vector is
+	variable slv:std_logic_vector(BUS_DATABITS-1 downto 0);
+begin
+	slv(63 downto 48):=set_endianness(t.min_idx,endianness);
+	slv(47 downto 32):=set_endianness(t.height_idx,endianness);
+	slv(31 downto 16):=set_endianness(t.peak_idx,endianness);
+	slv(15 downto 0):=set_endianness(t.trigger_idx,endianness);
+	return slv;
+end function;
+
+function to_streambus(t:trace_peak_t;endianness:string)
+return streambus_t is
+	variable sb:streambus_t;
+begin
+	sb.data:=to_std_logic(t,endianness);
+  sb.discard:=(others => FALSE);
+  sb.last:=(others => FALSE);
+  return sb;
+end function;
 	
 end package body events;

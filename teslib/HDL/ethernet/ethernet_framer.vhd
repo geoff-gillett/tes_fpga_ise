@@ -270,7 +270,7 @@ begin
           if lookahead_type.tick then
             size := to_unsigned(2, SIZE_BITS);
           else
-            case lookahead_type.detection_type is
+            case lookahead_type.detection is
             when PEAK_DETECTION_D =>
               size := (0 =>'1', others => '0');
             when AREA_DETECTION_D =>

@@ -191,6 +191,7 @@ type capture_registers_t is record
 	height_rel2min:boolean;
 	timing:timing_d;
 	detection:detection_d;
+	full_trace:boolean;
 	trace0:trace_d;
 	trace1:trace_d;
 	delay:unsigned(DELAY_BITS-1 downto 0);
@@ -199,6 +200,19 @@ end record;
 type channel_registers_t is record
 	baseline:baseline_registers_t;
 	capture:capture_registers_t;
+end record;
+
+-- TODO implement
+-- idea is to be able to filter output based on the upper and lower values
+type event_filter is record
+	area_u:area_t; 
+	area_l:area_t;
+	peak_count_u:unsigned(PEAK_COUNT_BITS-1 downto 0);
+	peak_count_l:unsigned(PEAK_COUNT_BITS-1 downto 0);
+	height_peak:unsigned(PEAK_COUNT_BITS-1 downto 0);
+	use_height_peak:boolean;
+	height_u:signal_t;
+	height_l:signal_t;
 end record;
 
 type channel_register_array is array (natural range <>) 
@@ -517,7 +531,7 @@ function to_onehot(t:mca_trigger_d) return std_logic_vector is
 variable o:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0):=(others => '0');
 begin
 	if t/=DISABLED_MCA_TRIGGER_D then
-		o:=to_onehot(mca_trigger_d'pos(t)-1,NUM_MCA_TRIGGER_D-1);
+		o(mca_trigger_d'pos(t)-1) := '1';
 	end if;
 	return o;
 end function;
@@ -545,7 +559,7 @@ end function;
 function to_onehot(v:mca_value_d) return std_logic_vector is
 variable o:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0):=(others => '0');
 begin
-		o:=to_onehot(mca_value_d'pos(v),NUM_MCA_VALUE_D);
+		o(mca_value_d'pos(v)) := '1';
 	return o;
 end function;
 

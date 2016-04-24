@@ -1,212 +1,71 @@
 import numpy as np
 from .data import File
 
-measurement_subsystem_TB = dict()
 # dict containing tuples (filename, dtype, is_array, is_sliceable) representing a set of testbench output files
 # to be read to create a simulation.data Data class
 #
 # The dict key is the name to give the resulting attribute in the Data class instance
 # The file is read using numpy.fromfile() with the given dtype
-# If is array is True then all files of the form filenmameX are read, where X is a digit indicating the channel
+# If is_array is True then all files of the form filenmameX are read, where X is a digit indicating the channel
 # the created attribute is an array.
 # is_slicable boolean indicates that the attribute should be included when creating a Data.Slice object.
 # When the dtype includes a field labeled index, the slice will contain the values where the index field is
 # in the slice bounds rather than the traditional start:stop range
 
-measurement_subsystem_TB['trace'] = File(
-    'traces',
-    np.dtype([('input', np.int16), ('raw', np.int16), ('filtered', np.int16), ('slope', np.int16)]),
-    True,
-    True,
-)
-
-meas_dt=np.dtype([('index', np.int32), ('area', np.int32), ('extrema', np.int32)])
-
-measurement_subsystem_TB['raw'] = File(
-    'raw',
-    meas_dt,
-    True,
-    True
-)
-
-measurement_subsystem_TB['filtered'] = File(
-    'filtered',
-    meas_dt,
-    True,
-    True
-)
-
-measurement_subsystem_TB['slope'] = File(
-    'slope',
-    meas_dt,
-    True,
-    True
-)
-
-measurement_subsystem_TB['pulse'] = File(
-    'pulse',
-    meas_dt,
-    True,
-    True
-)
-
+meas_dt = np.dtype([('index', np.int32), ('area', np.int32), ('extrema', np.int32)])
 index_dt = np.dtype([('index', np.uint32)])
-
-measurement_subsystem_TB['pulse_start'] = File(
-    'pulsestart',
-    index_dt,
-    True,
-    True
-)
-
-measurement_subsystem_TB['slope_thresh_xing'] = File(
-    'slopethreshxing',
-    index_dt,
-    True,
-    True
-)
-
-measurement_subsystem_TB['peak'] = File(
-    'peak',
-    index_dt,
-    True,
-    True
-)
-
-measurement_subsystem_TB['peak_start'] = File(
-    'peakstart',
-    index_dt,
-    True,
-    True
-)
-
-measurement_subsystem_TB['heights'] = File(
-    'height',
-    index_dt,
-    True,
-    True
-)
-
-measurement_subsystem_TB['cfd_low'] = File(
-    'cfdlow',
-    index_dt,
-    True,
-    True
-)
-
-measurement_subsystem_TB['cfd_high'] = File(
-    'cfdhigh',
-    index_dt,
-    True,
-    True
-)
-
-measurement_subsystem_TB['trigger'] = File(
-    'trigger',
-    index_dt,
-    True,
-    True
-)
-
-stream_dt = np.dtype([('data', np.uint64), ('last', np.bool)])
-
-measurement_subsystem_TB['event_stream'] = File(
-    'muxstream',
-    stream_dt,
-    False,
-    False
-)
-
-measurement_subsystem_TB['mca_stream'] = File(
-    'mcastream',
-    stream_dt,
-    False,
-    False
-)
-
-measurement_subsystem_TB['ethernet_stream'] = File(
-    'ethernetstream',
-    stream_dt,
-    False,
-    False
-)
-
+stream_dt = np.dtype([('data', '>u8'), ('last', np.bool)])
 error_dt = np.dtype([('index', np.uint32), ('flags', np.uint8)])
+traces_dt = np.dtype([('input', np.int16), ('raw', np.int16), ('filtered', np.int16), ('slope', np.int16)])
 
-measurement_subsystem_TB['cfd_error'] = File(
-    'cfderror',
-    error_dt,
-    False,
-    True
-)
+measurement_subsystem_TB = {
+    'trace': File('traces', traces_dt, True, True),
+    'raw': File('raw', meas_dt, True, True),
+    'filtered': File('filtered', meas_dt, True, True),
+    'slope': File('slope', meas_dt, True, True),
+    'pulse': File('pulse', meas_dt, True, True),
+    'pulse_start': File('pulsestart', index_dt, True, True),
+    'slope_thresh_xing': File('slopethreshxing', index_dt, True, True),
+    'peak': File('peak', index_dt, True, True),
+    'peak_start': File('peakstart', index_dt, True, True),
+    'heights': File('height', index_dt, True, True),
+    'cfd_low': File('cfdlow', index_dt, True, True),
+    'cfd_high': File('cfdhigh', index_dt, True, True),
+    'trigger': File('trigger', index_dt, True, True),
+    'event_stream': File('muxstream', stream_dt, False, False),
+    'mca_stream': File('mcastream', stream_dt, False, False),
+    'ethernet_stream': File('ethernetstream', stream_dt, False, False),
+    'cfd_error': File('cfderror', error_dt, False, True),
+    'time_overflow': File('timeoverflow', np.int32, False, True),
+    'peak_overflow': File('peakoverflow', error_dt, False, True),
+    'mux_full': File('muxfull', error_dt, False, True),
+    'mux_overflow': File('muxoverflow', error_dt, False, True),
+    'framer_overflow': File('frameroverflow', error_dt, False, True),
+    'baseline_error': File('baselineerror', error_dt, False, True),
+    'settings': File('setting', np.int32, True, False),
+    'mca_settings': File('mcasetting', np.int32, False, False),
+    'byte_stream': File(
+        'bytestream', np.dtype([('index', np.uint32), ('data', np.uint8), ('last', np.bool)]), False, False
+    )
+}
 
-measurement_subsystem_TB['time_overflow'] = File(
-    'timeoverflow',
-    error_dt,
-    False,
-    True
-)
-
-measurement_subsystem_TB['peak_overflow'] = File(
-    'peakoverflow',
-    error_dt,
-    False,
-    True
-)
-
-
-measurement_subsystem_TB['mux_full'] = File(
-    'muxfull',
-    error_dt,
-    False,
-    True
-)
-
-measurement_subsystem_TB['mux_overflow'] = File(
-    'muxoverflow',
-    error_dt,
-    False,
-    True
-)
-
-measurement_subsystem_TB['framer_overflow'] = File(
-    'frameroverflow',
-    error_dt,
-    False,
-    True
-)
-
-measurement_subsystem_TB['baseline_error'] = File(
-    'baselineerror',
-    error_dt,
-    False,
-    True
-)
-
-measurement_subsystem_TB['time_overflow'] = File(
-    'timeoverflow',
-    np.int32,
-    False,
-    True
-)
-
-measurement_subsystem_TB['settings'] = File(
-    'setting',
-    np.int32,
-    True,
-    False
-)
-
-measurement_subsystem_TB['mca_settings'] = File(
-    'mcasetting',
-    np.int32,
-    False,
-    False
-)
-
-measurement_subsystem_TB['byte_stream'] = File(
-    'bytestream',
-    np.dtype([('index', np.uint32), ('data', np.uint8), ('last', np.bool)]),
-    False,
-    False
-)
+measurement_unit_TB = {
+    'trace': File('traces', traces_dt, False, True),
+    'raw': File('raw', meas_dt, False, True),
+    'filtered': File('filtered', meas_dt, False, True),
+    'slope': File('slope', meas_dt, False, True),
+    'pulse': File('pulse', meas_dt, False, True),
+    'pulse_start': File('pulsestart', index_dt, False, True),
+    'slope_thresh_xing': File('slopethreshxing', index_dt, False, True),
+    'peak': File('peak', index_dt, False, True),
+    'peak_start': File('peakstart', index_dt, False, True),
+    'heights': File('height', index_dt, False, True),
+    'cfd_low': File('cfdlow', index_dt, False, True),
+    'cfd_high': File('cfdhigh', index_dt, False, True),
+    'trigger': File('trigger', index_dt, False, True),
+    'event_stream': File('eventstream', stream_dt, False, False),
+    'cfd_error': File('cfderror', error_dt, False, True),
+    'time_overflow': File('timeoverflow', np.int32, False, True),
+    'peak_overflow': File('peakoverflow', error_dt, False, True),
+    'settings': File('setting', np.int32, False, False),
+}

@@ -7,12 +7,51 @@ package provide isim 14.7
 namespace eval isim {
 	namespace export -clean irand getsig setsig lin simsig waitsig \
 	vrand dec2bin bin2dec bits randbit setrandbit validsig getbool setsigp nrand \
-	write_signal
+	write_signal gen_names open_binfiles flush_files write_stream
 	
 #	variable period
 #	variable timeunit
 #	set period [lindex [show value CLK_PERIOD] 0]
 #	set timeunit [lindex [show value CLK_PERIOD] 1]
+}
+
+proc ::isim::gen_names {base chans} {
+	for {set c 0} {$c < $chans} {incr c} {
+		lappend names $base$c
+	}		
+	return $names
+}
+
+proc ::isim::open_binfiles names {
+	foreach name $names {
+		set $name [open "../$name" w]
+		fconfigure [subst $$name] -translation binary
+		lappend fp_list [subst $$name]
+	}
+	return $fp_list
+}
+
+proc ::isim::close_files fp_list {
+	foreach fp $fp_list {
+		close $fp
+	}
+}
+
+proc ::isim::flush_files fp_list {
+	foreach fp $fp_list {
+		flush $fp
+	}
+}
+
+proc ::isim::write_stream stream {
+	upvar 1 $stream s
+	if { [getsig $stream\_valid] && [getsig $stream\_ready] } {
+		#write as two 32 bit values as isim has trouble with 64 bit ints 
+		#write as a little endian 64 bit value
+		write_signal $s $stream.data(63:32) unsigned I
+		write_signal $s $stream.data(31:0) unsigned I
+		write_signal $s $stream.last(0) bin c
+	}
 }
 
 # write signal to file fp with binary format 

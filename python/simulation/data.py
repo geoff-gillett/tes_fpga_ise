@@ -181,11 +181,60 @@ class McaTriggerType(Enum):
 
 
 class EventStream:
-    def __init__(self, project, testbench, file='eventstream', repo=DEFAULT_REPO_PATH):
-        self._stream64 = Data.fromfile(file, np.uint64, project, testbench, repo)
 
-    def _index_stream(self, event_type):
-        pass
+    # NOTE copies stream64 to bytestream.
+    # Expects stream64 to contain only one PayloadType
+    def __init__(self, stream64):
+        self.last = (stream64['last'].nonzero()[0]+1)*8
+        self.bytestream = np.copy(stream64['data']).view(np.uint8)
+
+        tick = np.bitwise_and(self.bytestream[5], 0x02) != 0
+        payload = PayloadType.from_int(np.right_shift(np.bitwise_and(self.bytestream[5], 0x000C), 2))
+        event_size = self.bytestream[0:2].view(np.uint16)
+
+        if tick:
+            self.type = PayloadType.tick
+        else:
+            self.type = payload
+
+        if self.type == PayloadType.pulse:
+            pulse_peak_dt = np.dtype(
+                ([('height', np.uint16), ('minima', np.int16), ('rise_time', np.uint16), ('time', np.uint16)])
+            )
+            pulse_dt = np.dtype(
+                ([('size', np.uint16), ('length', np.uint16), ('flags', np.uint8, (2,)), ('time', np.uint16),
+                  ('area', np.int32), ('pulse_threshold', np.uint16), ('slope_threshold', np.uint16),
+                  ('peaks', pulse_peak_dt, (event_size-2,))])
+            )
+            self._event_dt = pulse_dt
+
+        else:
+            self._event_dt = None
+            NotImplementedError('{:} needs implementation in EventStream'.format(self.type))
+
+    @property
+    def events(self):
+        if self._event_dt is None:
+            return None
+        else:
+            return self.bytestream.view(self._event_dt)
+
+    class Flags:
+        def __init__(self, flags):
+            self.peak_count = np.right_shift(np.bitwise_and(flags[0], 0xF0), 4)
+            self.height_rel2min = np.bitwise_and(flags[0], 0x08) != 0
+            self.channel = np.bitwise_and(flags[0], 0x07)
+            self.timing = TriggerType.from_int(np.right_shift(np.bitwise_and(flags[1], 0xC0), 6))
+            self.height = HeightType.from_int(np.right_shift(np.bitwise_and(flags[1], 0x30), 4))
+            self.type = PayloadType.from_int(np.right_shift(np.bitwise_and(flags[1], 0x000C), 2))
+            self.tick = np.bitwise_and(flags[1], 0x02) != 0
+            self.new_window = np.bitwise_and(flags[1], 0x01) != 0
+
+        def __repr__(self):
+            return 'peak count:{:d}\nheight_rel2min:{:}\n{:}\n{:}\nchannel:{:d}\n{:}\ntick:{:}\nnew_window:{:}'.format(
+                        self.peak_count, self.height_rel2min, self.height, self.timing, self.channel, self.type,
+                        self.tick, self.new_window
+                   )
 
 
 class Data:
@@ -498,5 +547,7 @@ class Distribution:
     def __repr__(self):
         return 'Distribution: {:s} {:s} start:{:d} stop:{:d}'.format(
             self.value, self.trigger, self.start_time, self.stop_time)
+
+
 
 

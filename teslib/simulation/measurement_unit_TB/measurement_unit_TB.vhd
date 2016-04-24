@@ -48,32 +48,32 @@ signal measurements:measurement_t;
 signal commit:boolean;
 signal dump:boolean;
 signal eventstream:streambus_t;
-signal valid:boolean;
-signal ready:boolean;
+signal eventstream_valid:boolean;
+signal eventstream_ready:boolean;
 signal adc_sample:adc_sample_t;
 signal registers:channel_registers_t;
-signal height_type:unsigned(NUM_HEIGHT_D-1 downto 0);
-signal event_type:unsigned(DETECTION_D_BITS-1 downto 0);
-signal trigger_type:unsigned(TIMING_D_BITS-1 downto 0);
-signal eventstream_int:streambus_t;
+signal height_type:std_logic_vector(NUM_HEIGHT_D-1 downto 0);
+signal event_type:std_logic_vector(DETECTION_D_BITS-1 downto 0);
+signal trigger_type:std_logic_vector(TIMING_D_BITS-1 downto 0);
 --
-signal mca_value_select:boolean_vector(MCA_VALUE_SELECT_BITS-1 downto 0);
+signal mca_value_select:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
+signal mca_trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
 signal mca_value:signed(MCA_VALUE_BITS-1 downto 0);
-signal baseline_range_error:boolean;
+signal baseline_error:boolean;
 signal framer_overflow:boolean;
 
 begin
+	
 clk <= not clk after CLK_PERIOD/2;
-
-event_type <= to_unsigned(registers.capture.detection,DETECTION_D_BITS);
-height_type <= to_unsigned(registers.capture.height,NUM_HEIGHT_D);
-trigger_type 
-	<= to_unsigned(registers.capture.timing,TIMING_D_BITS);
+event_type <= to_std_logic(registers.capture.detection,DETECTION_D_BITS);
+height_type <= to_std_logic(registers.capture.height,NUM_HEIGHT_D);
+trigger_type <= to_std_logic(registers.capture.timing,TIMING_D_BITS);
 	
 UUT:entity work.measurement_unit
 generic map(
   CHANNEL => CHANNEL,
-  FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS
+  FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS,
+  ENDIANNESS => ENDIANNESS
 )
 port map(
   clk => clk,
@@ -96,20 +96,19 @@ port map(
   differentiator_reload_last => FALSE,
   measurements => measurements,
   mca_value_select => mca_value_select,
+  mca_trigger_select => mca_trigger_select,
   mca_value => mca_value,
   dump => dump,
   commit => commit,
-  baseline_range_error => baseline_range_error,
+  baseline_range_error => baseline_error,
   cfd_error => cfd_error,
   time_overflow => time_overflow,
   peak_overflow => peak_overflow,
   framer_overflow => framer_overflow,
-  eventstream => eventstream_int,
-  valid => valid,
-  ready => ready
+  eventstream => eventstream,
+  valid => eventstream_valid,
+  ready => eventstream_ready
 );
-
-eventstream <= SetEndianness(eventstream_int,ENDIANNESS);
 
 stimulus:process is
 begin
@@ -130,14 +129,18 @@ registers.capture.constant_fraction --<= (CFD_BITS-2 => '1',others => '0');
 	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
 registers.capture.cfd_rel2min <= TRUE;
 registers.capture.height <= PEAK_HEIGHT_D;
-registers.capture.event_type <= PEAK_DETECTION_D;
+registers.capture.detection <= TRACE_DETECTION_D;
 registers.capture.timing <= CFD_LOW_TIMING_D;
+registers.capture.trace0 <= FILTERED_TRACE_D;
+registers.capture.trace1 <= NO_TRACE_D;
 registers.capture.threshold_rel2min <= FALSE;
 registers.capture.area_threshold <= to_signed(500,AREA_BITS);
-registers.capture.max_peaks <= (others => '1');
+registers.capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
+registers.capture.full_trace <= TRUE;
+
 wait for CLK_PERIOD;
 reset <= '0';
-ready <= TRUE;
+eventstream_ready <= TRUE;
 wait for CLK_PERIOD;
 wait;
 end process stimulus;
