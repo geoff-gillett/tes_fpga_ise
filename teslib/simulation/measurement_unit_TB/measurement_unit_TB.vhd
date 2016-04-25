@@ -132,11 +132,11 @@ registers.capture.height <= PEAK_HEIGHT_D;
 registers.capture.detection <= TRACE_DETECTION_D;
 registers.capture.timing <= CFD_LOW_TIMING_D;
 registers.capture.trace0 <= FILTERED_TRACE_D;
-registers.capture.trace1 <= NO_TRACE_D;
+registers.capture.trace1 <= SLOPE_TRACE_D;
 registers.capture.threshold_rel2min <= FALSE;
 registers.capture.area_threshold <= to_signed(500,AREA_BITS);
 registers.capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-registers.capture.full_trace <= TRUE;
+registers.capture.full_trace <= FALSE;
 
 wait for CLK_PERIOD;
 reset <= '0';

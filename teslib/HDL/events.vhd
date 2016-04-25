@@ -182,7 +182,7 @@ record
 	length:time_t; 
 	detection_flags:detection_flags_t;
 	trace_flags:trace_flags_t;
-	offset:time_t;
+	offset:time_t;  -- redundant
 	rel_timestamp:time_t;
 	area:area_t;
 	pulse_threshold:unsigned(SIGNAL_BITS-1 downto 0);

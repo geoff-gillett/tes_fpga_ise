@@ -56,6 +56,8 @@ measurement_unit_TB = {
     'slope': File('slope', meas_dt, False, True),
     'pulse': File('pulse', meas_dt, False, True),
     'pulse_start': File('pulsestart', index_dt, False, True),
+    'pulse_stop': File('pulsestop', index_dt, False, True),
+    'event_start': File('eventstart', index_dt, False, True),
     'slope_thresh_xing': File('slopethreshxing', index_dt, False, True),
     'peak': File('peak', index_dt, False, True),
     'peak_start': File('peakstart', index_dt, False, True),

@@ -23,6 +23,9 @@ fconfigure $peaks -translation binary
 set peakstart [open "../peakstart" w]
 fconfigure $peakstart -translation binary
 
+set eventstart [open "../eventstart" w]
+fconfigure $eventstart -translation binary
+
 set cfdlow [open "../cfdlow" w]
 fconfigure $cfdlow -translation binary
 
@@ -31,6 +34,9 @@ fconfigure $cfdhigh -translation binary
 
 set pulsestarts [open "../pulsestart" w]
 fconfigure $pulsestarts -translation binary
+
+set pulsestops [open "../pulsestop" w]
+fconfigure $pulsestops -translation binary
 
 set raw [open "../raw" w]
 fconfigure $raw -translation binary
@@ -105,9 +111,11 @@ while {[gets $fp hexsample] >= 0} {
 		flush $slope
 		flush $pulse
 		flush $pulsestarts
+		flush $pulsestops
 		flush $slopethreshxings
 		flush $peaks
 		flush $peakstart
+		flush $eventstart
 		flush $heights
 		flush $cfdlow
 		flush $cfdhigh
@@ -152,6 +160,10 @@ while {[gets $fp hexsample] >= 0} {
 	if [getsig measurements.pulse.pos_threshxing] {
 		puts -nonewline $pulsestarts [binary format i $clk]
 	}
+	
+	if [getsig measurements.pulse.neg_threshxing] {
+		puts -nonewline $pulsestops [binary format i $clk]
+	}
 
 	if [getsig measurements.slope.pos_threshxing] {
 		puts -nonewline $slopethreshxings [binary format i $clk]
@@ -164,6 +176,11 @@ while {[gets $fp hexsample] >= 0} {
 	
 	if { [getsig measurements.peak_start] } {
 		puts -nonewline $peakstart [binary format i $clk]	
+		#write_signal $peakstart measurements.filtered.sample
+	}
+	
+	if { [getsig measurements.event_start] } {
+		puts -nonewline $eventstart [binary format i $clk]	
 		#write_signal $peakstart measurements.filtered.sample
 	}
 	
@@ -210,10 +227,12 @@ close $fp
 close $traces 
 close $peaks 
 close $peakstart 
+close $eventstart 
 close $heights 
 close $cfdlow 
 close $cfdhigh 
 close $pulsestarts 
+close $pulsestops 
 close $triggers
 close $raw
 close $filtered

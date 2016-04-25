@@ -178,7 +178,7 @@ signal raw_extrema,filtered_extrema:signed(WIDTH-1 downto 0);
 signal slope_extrema,pulse_extrema:signed(WIDTH-1 downto 0);
 signal filtered_area,slope_area:signed(AREA_SUM_BITS-1 downto 0);
 signal filtered_zero_xing,slope_zero_xing:boolean;
-signal trigger:boolean;
+signal trigger_cfd:boolean;
 signal area_below_threshold:boolean;
 --signal event_time:unsigned(TIME_BITS-1 downto 0);
 signal peak_count_pd:unsigned(PEAK_COUNT_BITS-1 downto 0);
@@ -217,7 +217,7 @@ signal cfd_high_done,cfd_low_done:boolean;
 signal peak_start_cfd:boolean;
 signal peaks_full:boolean;
 signal time_overflow_int:boolean;
-signal event_start:boolean;
+signal event_start_cfd:boolean;
 
 --------------------------------------------------------------------------------
 -- Signals framer stage
@@ -225,7 +225,6 @@ signal event_start:boolean;
 -- FSM state
 type frameFSMstate is (IDLE,STARTED,QUEUED);
 signal event_state,event_nextstate:frameFSMstate;
-
 signal pulse_end:boolean;
 
 -- framer signals
@@ -276,7 +275,8 @@ signal trace0_count:unsigned(ceilLog2(BUS_CHUNKS)-1 downto 0);
 signal trace1_count:unsigned(ceilLog2(BUS_CHUNKS)-1 downto 0);
 signal dual_trace:boolean;
 signal trace_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
-signal record_trace,trace_start,trace_stop:boolean;
+--signal record_trace,
+signal trace_start,trace_stop:boolean;
 signal trace_peak:trace_peak_t;
 signal trace_peak_bus,trace_peak_bus_reg,trace_peak_bus_mux:streambus_t;
 signal trace_peak_we,trace_peak_we_reg:boolean_vector(BUS_CHUNKS-1 downto 0);
@@ -288,10 +288,9 @@ signal capture_trace:boolean;
 signal trace_done:boolean;
 signal trace_clear_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal trace_peak_last:boolean;
-
+signal write_trace:boolean;
 
 -- common signals
-
 signal detection_flags:detection_flags_t;
 signal pulse_peak_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal commit_peak_event,commit_area_event:boolean;
@@ -344,8 +343,8 @@ begin
       if chunk_we_reg(c) then
         lost <= TRUE;
       else
-				bus_reg.data((c+1)*BUS_CHUNKS-1 downto c*BUS_CHUNKS)
-					  <= bus_in.data((c+1)*BUS_CHUNKS-1 downto c*BUS_CHUNKS);
+				bus_reg.data((c+1)*CHUNK_DATABITS-1 downto c*CHUNK_DATABITS)
+					  <= bus_in.data((c+1)*CHUNK_DATABITS-1 downto c*CHUNK_DATABITS);
 				chunk_we_reg(c) <= TRUE;
 			end if;
 		end if;
@@ -908,30 +907,30 @@ clear_done <= clear_count >= '0' & capture_cfd.max_peaks;
 --further thought I think it could. Meanwhile this should be OK for TES signals.
 minima_valid <= minima_cfd and filtered_is_min;
 peak_start_cfd <= minima_valid and cfd_state=WAIT_MIN;
-event_start <= minima_valid and cfd_pulse_state=IDLE; --FIXME is this correct?
+event_start_cfd <= peak_start_cfd and cfd_pulse_state=IDLE; --FIXME is this correct?
 pulse_end <= m.pulse.neg_threshxing and cfd_pulse_state=PEAKED;
 
 triggerMux:process(
 	capture_cfd.timing,cfd_low,pulse_start_cfd,slope_pos_thresh_xing_cfd,
-	cfd_pulse_state,event_start
+	cfd_pulse_state,event_start_cfd
 ) 
 begin
 	case capture_cfd.timing is
 	when PULSE_THRESH_TIMING_D => 
 		if cfd_pulse_state=FIRST_RISE then
-			trigger <= pulse_start_cfd;
+			trigger_cfd <= pulse_start_cfd;
 		else
-			trigger <= cfd_low;
+			trigger_cfd <= cfd_low;
 		end if;
 
   when SLOPE_THRESH_TIMING_D =>
-  	trigger <= slope_pos_thresh_xing_cfd;
+  	trigger_cfd <= slope_pos_thresh_xing_cfd;
   	
   when CFD_LOW_TIMING_D =>
-  	trigger <= cfd_low;
+  	trigger_cfd <= cfd_low;
   	
   when RISE_START_TIMING_D =>
-  	trigger <= event_start;
+  	trigger_cfd <= event_start_cfd;
   	
 	end case;
 end process triggerMux;
@@ -977,15 +976,15 @@ if rising_edge(clk) then
 		m.peak_count <= (others => '0');
 	else
 		
-		-- FIXME should be event start?	
-		if event_start then --FIXME this should change on valid minima??
+		m.event_start <= event_start_cfd;
+		if event_start_cfd then --FIXME this should change on valid minima??
 			capture_cfd <= capture_pd; -- FIXME this is not going to work correctly
 																 -- use extra flags and delay
 			--last_peak_count <= capture_pd.max_peaks(PEAK_COUNT_BITS-1 downto 0);
 		end if;
   
-  	m.trigger <= trigger;	
-  	if trigger then
+  	m.trigger <= trigger_cfd;	
+  	if trigger_cfd then
   		m.trigger_time <= (others => '0');
   	else
   		m.trigger_time <= m.trigger_time+1;
@@ -1007,7 +1006,7 @@ if rising_edge(clk) then
   	--FIXME clean up the registration and delay lines
 		m.peak <= peak_cfd;
     m.peak_start <= peak_start_cfd;
-    if event_start then
+    if event_start_cfd then
     	m.event_time <= (others => '0');
     else
     	m.event_time <= m.event_time+1;
@@ -1031,7 +1030,7 @@ if rising_edge(clk) then
   	
 		--peak_overflow_int <= peak_cfd and peaks_full;
   	
-  	if event_start then
+  	if event_start_cfd then
   		m.peak_count <= (others => '0'); 
   		peak_overflow_int <= FALSE; 
   	else
@@ -1185,7 +1184,7 @@ end process FSMnextstate;
 eventFSMtransition:process(event_state,m.peak_start,m.trigger,cfd_error_int,
 												   commit_int,area_dump)
 begin
-event_nextstate <= event_state;
+	event_nextstate <= event_state;
 	case event_state is 
 	when IDLE =>
 		if m.trigger then
@@ -1234,6 +1233,7 @@ begin
         	header_valid <= TRUE;
         	
         	header_flags <= detection_flags;
+        	--FIXME threshold broken
           header_pulse_threshold <= reshape(
             capture_cfd.pulse_threshold,CFD_FRAC,SIGNAL_BITS,SIGNAL_FRAC
           );
@@ -1243,13 +1243,13 @@ begin
         	
         	-- pulse header
           pulse_header.size <= resize(capture_cfd.max_peaks+3,SIZE_BITS);
-          pulse_header.length <= m.pulse.time;
+          pulse_header.length <= m.event_time+1;
           pulse_header.area <= m.pulse.area;
           
         	-- trace header
           trace_header.size 
-            <= resize(capture_cfd.max_peaks + 3 + m.event_time,SIZE_BITS);
-          trace_header.length <= m.event_time;
+            <= resize(trace_address-1,SIZE_BITS);
+          trace_header.length <= m.event_time+1;
           trace_header.area <= m.pulse.area;
         end if;
         
@@ -1380,7 +1380,6 @@ end process pulseEventFSMtransition;
 -- Trace events
 --------------------------------------------------------------------------------
 dual_trace <= capture_cfd.trace0/=NO_TRACE_D and capture_cfd.trace1/=NO_TRACE_D;
-record_trace <= capture_cfd.trace0/=NO_TRACE_D;
 
 -- input mux for different trace signals
 traceInputMux:process(capture_cfd.trace0,capture_cfd.trace1,
@@ -1391,22 +1390,22 @@ begin
   when NO_TRACE_D =>
   	trace0 <= (others => '-');
   when FILTERED_TRACE_D =>
-    trace0 <= to_std_logic(m.filtered.sample);
+    trace0 <= set_endianness(m.filtered.sample,ENDIANNESS);
   when SLOPE_TRACE_D =>
-    trace0 <= to_std_logic(m.slope.sample);
+    trace0 <= set_endianness(m.slope.sample,ENDIANNESS);
   when RAW_TRACE_D =>
-    trace0 <= to_std_logic(m.raw.sample);
+    trace0 <= set_endianness(m.raw.sample,ENDIANNESS);
   end case;	
   
   case capture_cfd.trace1 is
   when NO_TRACE_D =>
   	trace1 <= (others => '-');
   when FILTERED_TRACE_D =>
-    trace1 <= to_std_logic(m.filtered.sample);
+    trace1 <= set_endianness(m.filtered.sample,ENDIANNESS);
   when SLOPE_TRACE_D =>
-    trace1 <= to_std_logic(m.slope.sample);
+    trace1 <= set_endianness(m.slope.sample,ENDIANNESS);
   when RAW_TRACE_D =>
-    trace1 <= to_std_logic(m.raw.sample);
+    trace1 <= set_endianness(m.raw.sample,ENDIANNESS);
   end case;	
   
 end process traceInputMux;
@@ -1433,25 +1432,27 @@ if rising_edge(clk) then
       -- occurs when writing a trace data word, or just after the end of a trace
       -- while clearing or writing the header.
       
-      for c in BUS_CHUNKS-1 downto 0 loop
-        if trace_peak_we(c) then
-          if trace_peak_we_reg(c) then
-            trace_peak_lost <= TRUE;
-          else
-            trace_peak_bus_reg.data((c+1)*BUS_CHUNKS-1 downto c*BUS_CHUNKS)
-                <= trace_peak_bus.data((c+1)*BUS_CHUNKS-1 downto c*BUS_CHUNKS);
-            trace_peak_we_reg(c) <= TRUE;
-          end if;
-        end if;
-      end loop;
+--      for c in BUS_CHUNKS-1 downto 0 loop
+--        if trace_peak_we(c) then
+--          if trace_peak_we_reg(c) then
+--            trace_peak_lost <= TRUE;
+--          else
+--            trace_peak_bus_reg.data((c+1)*BUS_DATABITS-1 downto c*BUS_DATABITS)
+--                <= trace_peak_bus.data(
+--                	(c+1)*BUS_DATABITS-1 downto c*BUS_DATABITS
+--                );
+--            trace_peak_we_reg(c) <= TRUE;
+--          end if;
+--        end if;
+--      end loop;
   		
---  		bus_we_reg(
---  			trace_peak_bus,
---  			trace_peak_we,
---  			trace_peak_bus_reg,
---  			trace_peak_we_reg,
---  			trace_peak_lost
---  		);
+  		bus_we_reg(
+  			trace_peak_bus,
+  			trace_peak_we,
+  			trace_peak_bus_reg,
+  			trace_peak_we_reg,
+  			trace_peak_lost
+  		);
   		
   	end if;
   end if;
@@ -1482,15 +1483,16 @@ begin
 	end if;
 end process tracePeakMux;
 
-traceStartStop:process(capture_cfd.full_trace,peak_cfd,pulse_end_cfd,
-											 cfd_pulse_state,peak_start_cfd)
+traceStartStop:process(capture_cfd.full_trace,m.peak,peak_start_cfd,
+	event_start_cfd,m.pulse.neg_threshxing
+)
 begin
 	if capture_cfd.full_trace then
-		trace_start <= peak_start_cfd and cfd_pulse_state=IDLE;
-		trace_stop <= pulse_end_cfd;
+		trace_start <= event_start_cfd;
+		trace_stop <= m.pulse.neg_threshxing;
 	else
 		trace_start <= peak_start_cfd;
-		trace_stop <= peak_cfd;
+		trace_stop <= m.peak;
 	end if;
 end process traceStartStop;
 
@@ -1515,42 +1517,44 @@ if rising_edge(clk) then
   	if pulse_end_cfd then
   		trace_done <= TRUE;
   	end if;
-  	
+
   	if peak_start_cfd and cfd_pulse_state=IDLE then
-  		trace_address <= resize(capture_cfd.max_peaks+3,FRAMER_ADDRESS_BITS);
+  		trace_address <= resize(capture_cfd.max_peaks+4,FRAMER_ADDRESS_BITS);
       trace0_count <= (others => '0');
       trace1_count <= to_unsigned(1,ceilLog2(BUS_CHUNKS));
     else
-    	if capture_trace or trace_done then
+    	
+    	if trace_state=TRACE then
+    		trace_address <= trace_address+1;
+    	end if;
+    		
+    	if capture_trace then
 	  		trace0_count <= trace0_count+1+to_unsigned(dual_trace);
 	  		trace1_count <= trace1_count+2;
-
-        if trace0_count = BUS_CHUNKS-1 then
-          trace_address <= trace_address+1;
+	  		
+        if dual_trace then 
+          trace_reg(to_integer(trace0_count)) <= trace0;
+          trace_reg(to_integer(trace1_count)) <= trace1;
+        else
+          trace_reg(to_integer(trace0_count)) <= trace0;      
         end if;
+        
       end if;
   	end if;
-  	
-  	if capture_trace then
-      if dual_trace then 
-        trace_reg(to_integer(trace0_count)) 
-          <= set_endianness(trace0,ENDIANNESS);
-        trace_reg(to_integer(trace1_count)) 
-          <= set_endianness(trace1,ENDIANNESS);
-      else
-        trace_reg(to_integer(trace0_count)) 
-          <= set_endianness(trace0,ENDIANNESS);      
-      end if;
-    end if;
   	
   end if;
 end if;
 end process traceCapture;
 
+write_trace <= capture_trace and (
+	(not dual_trace and trace0_count=BUS_CHUNKS-1) or 
+	(dual_trace and trace1_count=BUS_CHUNKS-1)	
+);
+
 --FIXME wire up dump properly
 traceEventFSMtransition:process(peaks_full,clear_done,header_valid,area_dump, 
-																trace_start, trace_state,record_trace,
-																trace0_count,trace_done)
+	trace_start, trace_state,trace_done,write_trace
+)
 begin
 	trace_nextstate <= trace_state;
 	case trace_state is 
@@ -1573,15 +1577,8 @@ begin
   	trace_nextstate <= IDLE;
   	
   when PEAKS =>
-  	if (trace0_count=BUS_CHUNKS-1 and record_trace) 
-  		 or trace_done then
+  	if write_trace or trace_done then
   		trace_nextstate <= TRACE;
-  	elsif trace_done then --FIXME needs to hold level
-      if peaks_full then
-      	trace_nextstate <= HEADER0;
-      else
-  			trace_nextstate <= CLEAR;
-  		end if;
   	end if;
   	
   when TRACE =>
@@ -1599,6 +1596,7 @@ begin
   	if clear_done then
   		trace_nextstate <= HEADER0;
   	end if;
+  	
 	end case;
 end process traceEventFSMtransition;
 
@@ -1781,7 +1779,7 @@ port map(
   free => framer_free,
   --FIXME shouldn't length be 1 bit larger?
   length => frame_length_reg,
-  commit => commit_frame_reg, --FIXME
+  commit => commit_frame_reg, 
   stream => eventstream,
   valid => valid,
   ready => ready

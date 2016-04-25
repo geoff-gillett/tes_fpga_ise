@@ -68,6 +68,7 @@ type measurement_t is record
 	
 	--time from trigger to height_valid
 	trigger_time:time_t;
+	event_start:boolean;
 	event_time:time_t;
 
 	peak_start:boolean; -- event_start
