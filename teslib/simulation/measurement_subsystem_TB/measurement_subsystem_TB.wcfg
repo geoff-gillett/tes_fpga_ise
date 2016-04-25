@@ -1358,565 +1358,587 @@
          <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
          <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/registers" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">registers</obj_property>
-         <obj_property name="ObjectShortName">registers</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_config_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">filter_config_data[7:0]</obj_property>
-         <obj_property name="ObjectShortName">filter_config_data[7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_config_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">filter_config_valid</obj_property>
-         <obj_property name="ObjectShortName">filter_config_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_config_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">filter_config_ready</obj_property>
-         <obj_property name="ObjectShortName">filter_config_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_reload_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">filter_reload_data[31:0]</obj_property>
-         <obj_property name="ObjectShortName">filter_reload_data[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_reload_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">filter_reload_valid</obj_property>
-         <obj_property name="ObjectShortName">filter_reload_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_reload_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">filter_reload_ready</obj_property>
-         <obj_property name="ObjectShortName">filter_reload_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_reload_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">filter_reload_last</obj_property>
-         <obj_property name="ObjectShortName">filter_reload_last</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_config_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">differentiator_config_data[7:0]</obj_property>
-         <obj_property name="ObjectShortName">differentiator_config_data[7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_config_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">differentiator_config_valid</obj_property>
-         <obj_property name="ObjectShortName">differentiator_config_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_config_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">differentiator_config_ready</obj_property>
-         <obj_property name="ObjectShortName">differentiator_config_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_reload_data" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">differentiator_reload_data[31:0]</obj_property>
-         <obj_property name="ObjectShortName">differentiator_reload_data[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_reload_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">differentiator_reload_valid</obj_property>
-         <obj_property name="ObjectShortName">differentiator_reload_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_reload_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">differentiator_reload_ready</obj_property>
-         <obj_property name="ObjectShortName">differentiator_reload_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_reload_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">differentiator_reload_last</obj_property>
-         <obj_property name="ObjectShortName">differentiator_reload_last</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/measurements" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">measurements</obj_property>
-         <obj_property name="ObjectShortName">measurements</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/mca_value_select" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_value_select[11:0]</obj_property>
-         <obj_property name="ObjectShortName">mca_value_select[11:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/mca_trigger_select" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_trigger_select[9:0]</obj_property>
-         <obj_property name="ObjectShortName">mca_trigger_select[9:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/mca_value" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_value[31:0]</obj_property>
-         <obj_property name="ObjectShortName">mca_value[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/mca_value_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_value_valid</obj_property>
-         <obj_property name="ObjectShortName">mca_value_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/dump" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">dump</obj_property>
-         <obj_property name="ObjectShortName">dump</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/commit" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">commit</obj_property>
-         <obj_property name="ObjectShortName">commit</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/baseline_range_error" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline_range_error</obj_property>
-         <obj_property name="ObjectShortName">baseline_range_error</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_error" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_error</obj_property>
-         <obj_property name="ObjectShortName">cfd_error</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/time_overflow" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">time_overflow</obj_property>
-         <obj_property name="ObjectShortName">time_overflow</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_overflow" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_overflow</obj_property>
-         <obj_property name="ObjectShortName">peak_overflow</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/framer_overflow" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">framer_overflow</obj_property>
-         <obj_property name="ObjectShortName">framer_overflow</obj_property>
+      <wvobject fp_name="group510" type="group">
+         <obj_property name="label">controls</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/registers" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">registers</obj_property>
+            <obj_property name="ObjectShortName">registers</obj_property>
+         </wvobject>
+         <wvobject fp_name="group505" type="group">
+            <obj_property name="label">filter config</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_config_data" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">filter_config_data[7:0]</obj_property>
+               <obj_property name="ObjectShortName">filter_config_data[7:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_config_valid" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">filter_config_valid</obj_property>
+               <obj_property name="ObjectShortName">filter_config_valid</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_config_ready" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">filter_config_ready</obj_property>
+               <obj_property name="ObjectShortName">filter_config_ready</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_reload_data" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">filter_reload_data[31:0]</obj_property>
+               <obj_property name="ObjectShortName">filter_reload_data[31:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_reload_valid" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">filter_reload_valid</obj_property>
+               <obj_property name="ObjectShortName">filter_reload_valid</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_reload_ready" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">filter_reload_ready</obj_property>
+               <obj_property name="ObjectShortName">filter_reload_ready</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filter_reload_last" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">filter_reload_last</obj_property>
+               <obj_property name="ObjectShortName">filter_reload_last</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_config_data" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">differentiator_config_data[7:0]</obj_property>
+               <obj_property name="ObjectShortName">differentiator_config_data[7:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_config_valid" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">differentiator_config_valid</obj_property>
+               <obj_property name="ObjectShortName">differentiator_config_valid</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_config_ready" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">differentiator_config_ready</obj_property>
+               <obj_property name="ObjectShortName">differentiator_config_ready</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_reload_data" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">differentiator_reload_data[31:0]</obj_property>
+               <obj_property name="ObjectShortName">differentiator_reload_data[31:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_reload_valid" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">differentiator_reload_valid</obj_property>
+               <obj_property name="ObjectShortName">differentiator_reload_valid</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_reload_ready" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">differentiator_reload_ready</obj_property>
+               <obj_property name="ObjectShortName">differentiator_reload_ready</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/differentiator_reload_last" type="other" db_ref_id="1">
+               <obj_property name="ElementShortName">differentiator_reload_last</obj_property>
+               <obj_property name="ObjectShortName">differentiator_reload_last</obj_property>
+            </wvobject>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/measurements" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">measurements</obj_property>
+            <obj_property name="ObjectShortName">measurements</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/mca_value_select" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">mca_value_select[11:0]</obj_property>
+            <obj_property name="ObjectShortName">mca_value_select[11:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/mca_trigger_select" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">mca_trigger_select[9:0]</obj_property>
+            <obj_property name="ObjectShortName">mca_trigger_select[9:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/mca_value" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">mca_value[31:0]</obj_property>
+            <obj_property name="ObjectShortName">mca_value[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/mca_value_valid" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">mca_value_valid</obj_property>
+            <obj_property name="ObjectShortName">mca_value_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/dump" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">dump</obj_property>
+            <obj_property name="ObjectShortName">dump</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/commit" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">commit</obj_property>
+            <obj_property name="ObjectShortName">commit</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/baseline_range_error" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">baseline_range_error</obj_property>
+            <obj_property name="ObjectShortName">baseline_range_error</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_error" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_error</obj_property>
+            <obj_property name="ObjectShortName">cfd_error</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/time_overflow" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">time_overflow</obj_property>
+            <obj_property name="ObjectShortName">time_overflow</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_overflow" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">peak_overflow</obj_property>
+            <obj_property name="ObjectShortName">peak_overflow</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/framer_overflow" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">framer_overflow</obj_property>
+            <obj_property name="ObjectShortName">framer_overflow</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/eventstream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">eventstream</obj_property>
          <obj_property name="ObjectShortName">eventstream</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">valid</obj_property>
          <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/ready" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">ready</obj_property>
          <obj_property name="ObjectShortName">ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/stage1_input" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stage1_input[17:0]</obj_property>
-         <obj_property name="ObjectShortName">stage1_input[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_fir" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_fir[17:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_fir[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_fir" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_fir[17:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_fir[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/sample" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">sample[14:0]</obj_property>
-         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/baseline_estimate" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline_estimate[15:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline_estimate[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pd_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pd_state</obj_property>
-         <obj_property name="ObjectShortName">pd_state</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pd_nextstate" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pd_nextstate</obj_property>
-         <obj_property name="ObjectShortName">pd_nextstate</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pd_pulse_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pd_pulse_state</obj_property>
-         <obj_property name="ObjectShortName">pd_pulse_state</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pd_pulse_nextstate" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pd_pulse_nextstate</obj_property>
-         <obj_property name="ObjectShortName">pd_pulse_nextstate</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_threshold[17:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_threshold[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_pos_0xing_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_pos_0xing_pd</obj_property>
-         <obj_property name="ObjectShortName">slope_pos_0xing_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_neg_0xing_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_neg_0xing_pd</obj_property>
-         <obj_property name="ObjectShortName">slope_neg_0xing_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_zero_xing_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_zero_xing_pd</obj_property>
-         <obj_property name="ObjectShortName">slope_zero_xing_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/arming_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">arming_pd</obj_property>
-         <obj_property name="ObjectShortName">arming_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_pd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_pd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_pd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_pd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_pd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_pd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_pd</obj_property>
-         <obj_property name="ObjectShortName">peak_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">minima_pd</obj_property>
-         <obj_property name="ObjectShortName">minima_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_value_pd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">minima_value_pd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">minima_value_pd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/last_minima_value" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">last_minima_value[17:0]</obj_property>
-         <obj_property name="ObjectShortName">last_minima_value[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_pos_threshxing_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_pos_threshxing_pd</obj_property>
-         <obj_property name="ObjectShortName">filtered_pos_threshxing_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_neg_threshxing_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_neg_threshxing_pd</obj_property>
-         <obj_property name="ObjectShortName">filtered_neg_threshxing_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_pos_thresh_xing_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_pos_thresh_xing_pd</obj_property>
-         <obj_property name="ObjectShortName">slope_pos_thresh_xing_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_start_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_start_pd</obj_property>
-         <obj_property name="ObjectShortName">pulse_start_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_stop_pd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_stop_pd</obj_property>
-         <obj_property name="ObjectShortName">pulse_stop_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cf_of_peak" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cf_of_peak[35:0]</obj_property>
-         <obj_property name="ObjectShortName">cf_of_peak[35:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cf_of_peak_reg" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cf_of_peak_reg[35:0]</obj_property>
-         <obj_property name="ObjectShortName">cf_of_peak_reg[35:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cf_of_peak_reg2" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cf_of_peak_reg2[35:0]</obj_property>
-         <obj_property name="ObjectShortName">cf_of_peak_reg2[35:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_thresh_pd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_low_thresh_pd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_low_thresh_pd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_thresh_pd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_high_thresh_pd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_high_thresh_pd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/signal_for_cfd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">signal_for_cfd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">signal_for_cfd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_pipe" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_pipe[1:4]</obj_property>
-         <obj_property name="ObjectShortName">peak_pipe[1:4]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/first_rise_pipe" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">first_rise_pipe[1:4]</obj_property>
-         <obj_property name="ObjectShortName">first_rise_pipe[1:4]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/queue_overflow" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">queue_overflow</obj_property>
-         <obj_property name="ObjectShortName">queue_overflow</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_for_cfd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">minima_for_cfd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">minima_for_cfd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/maxima_for_cfd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">maxima_for_cfd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">maxima_for_cfd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/capture_pd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">capture_pd</obj_property>
-         <obj_property name="ObjectShortName">capture_pd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_cfd_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_cfd_delay[17:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_cfd_delay[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_cfd_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_cfd_delay[17:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_cfd_delay[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/raw_cfd_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_cfd_delay[17:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_cfd_delay[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/flags_pd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">flags_pd[6:0]</obj_property>
-         <obj_property name="ObjectShortName">flags_pd[6:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/flags_cfd_delay" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">flags_cfd_delay[6:0]</obj_property>
-         <obj_property name="ObjectShortName">flags_cfd_delay[6:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/queue_rd_en" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">queue_rd_en</obj_property>
-         <obj_property name="ObjectShortName">queue_rd_en</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/queue_full" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">queue_full</obj_property>
-         <obj_property name="ObjectShortName">queue_full</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/queue_empty" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">queue_empty</obj_property>
-         <obj_property name="ObjectShortName">queue_empty</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/queue_wr_en" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">queue_wr_en</obj_property>
-         <obj_property name="ObjectShortName">queue_wr_en</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_queue_dout" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_low_queue_dout[17:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_low_queue_dout[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_queue_dout" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_high_queue_dout[17:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_high_queue_dout[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_queue_dout" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">minima_queue_dout[17:0]</obj_property>
-         <obj_property name="ObjectShortName">minima_queue_dout[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/m" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">m</obj_property>
-         <obj_property name="ObjectShortName">m</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_area" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_area[33:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_area[33:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/raw_extrema" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_extrema[17:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_extrema[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_extrema" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_extrema[17:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_extrema[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_extrema" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_extrema[17:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_extrema[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_extrema" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_extrema[17:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_extrema[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_area" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_area[33:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_area[33:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_area" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_area[33:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_area[33:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_zero_xing" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_zero_xing</obj_property>
-         <obj_property name="ObjectShortName">filtered_zero_xing</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_zero_xing" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_zero_xing</obj_property>
-         <obj_property name="ObjectShortName">slope_zero_xing</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/trigger" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">trigger</obj_property>
-         <obj_property name="ObjectShortName">trigger</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/area_below_threshold" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">area_below_threshold</obj_property>
-         <obj_property name="ObjectShortName">area_below_threshold</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/event_time" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">event_time[15:0]</obj_property>
-         <obj_property name="ObjectShortName">event_time[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_count_pd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_count_pd[2:0]</obj_property>
-         <obj_property name="ObjectShortName">peak_count_pd[2:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/height_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">height_valid</obj_property>
-         <obj_property name="ObjectShortName">height_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_overflow_int" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_overflow_int</obj_property>
-         <obj_property name="ObjectShortName">peak_overflow_int</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_length" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_length[15:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_length[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_overflow" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_overflow</obj_property>
-         <obj_property name="ObjectShortName">pulse_overflow</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_count" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_count[3:0]</obj_property>
-         <obj_property name="ObjectShortName">peak_count[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/raw_area" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_area[33:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_area[33:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/raw_zero_xing" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_zero_xing</obj_property>
-         <obj_property name="ObjectShortName">raw_zero_xing</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/capture_cfd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">capture_cfd</obj_property>
-         <obj_property name="ObjectShortName">capture_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_state</obj_property>
-         <obj_property name="ObjectShortName">cfd_state</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_nextstate" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_nextstate</obj_property>
-         <obj_property name="ObjectShortName">cfd_nextstate</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_cfd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_cfd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_cfd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_cfd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_cfd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_cfd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/raw_cfd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">raw_cfd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_cfd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_low_threshold[17:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_low_threshold[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_value_cfd" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">minima_value_cfd[17:0]</obj_property>
-         <obj_property name="ObjectShortName">minima_value_cfd[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_pos_thresh_xing_cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_pos_thresh_xing_cfd</obj_property>
-         <obj_property name="ObjectShortName">slope_pos_thresh_xing_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_neg_0xing_cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_neg_0xing_cfd</obj_property>
-         <obj_property name="ObjectShortName">slope_neg_0xing_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">minima_cfd</obj_property>
-         <obj_property name="ObjectShortName">minima_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_low</obj_property>
-         <obj_property name="ObjectShortName">cfd_low</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_high</obj_property>
-         <obj_property name="ObjectShortName">cfd_high</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_pos_0xing_cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_pos_0xing_cfd</obj_property>
-         <obj_property name="ObjectShortName">slope_pos_0xing_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_cfd</obj_property>
-         <obj_property name="ObjectShortName">peak_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/max_at_cfd_reg" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">max_at_cfd_reg</obj_property>
-         <obj_property name="ObjectShortName">max_at_cfd_reg</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_pulse_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_pulse_state</obj_property>
-         <obj_property name="ObjectShortName">cfd_pulse_state</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_pulse_nextstate" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_pulse_nextstate</obj_property>
-         <obj_property name="ObjectShortName">cfd_pulse_nextstate</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_stop_cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_stop_cfd</obj_property>
-         <obj_property name="ObjectShortName">pulse_stop_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_start_cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_start_cfd</obj_property>
-         <obj_property name="ObjectShortName">pulse_start_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_cfd_reg" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_cfd_reg[17:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_cfd_reg[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_cfd_reg2" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_cfd_reg2[17:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_cfd_reg2[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_is_min" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">filtered_is_min</obj_property>
-         <obj_property name="ObjectShortName">filtered_is_min</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_xing" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_low_xing</obj_property>
-         <obj_property name="ObjectShortName">cfd_low_xing</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_xing" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_high_xing</obj_property>
-         <obj_property name="ObjectShortName">cfd_high_xing</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_error_int" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_error_int</obj_property>
-         <obj_property name="ObjectShortName">cfd_error_int</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">minima_valid</obj_property>
-         <obj_property name="ObjectShortName">minima_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_threshold" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_high_threshold[17:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_high_threshold[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_reset" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_reset</obj_property>
-         <obj_property name="ObjectShortName">cfd_reset</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_crossed" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_low_crossed</obj_property>
-         <obj_property name="ObjectShortName">cfd_low_crossed</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_crossed" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_high_crossed</obj_property>
-         <obj_property name="ObjectShortName">cfd_high_crossed</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_done" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_high_done</obj_property>
-         <obj_property name="ObjectShortName">cfd_high_done</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_done" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_low_done</obj_property>
-         <obj_property name="ObjectShortName">cfd_low_done</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_start" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_start</obj_property>
-         <obj_property name="ObjectShortName">peak_start</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peaks_full" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peaks_full</obj_property>
-         <obj_property name="ObjectShortName">peaks_full</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/time_overflow_int" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">time_overflow_int</obj_property>
-         <obj_property name="ObjectShortName">time_overflow_int</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/fixed_length" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">fixed_length</obj_property>
-         <obj_property name="ObjectShortName">fixed_length</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/event_start" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">event_start</obj_property>
-         <obj_property name="ObjectShortName">event_start</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="group506" type="group">
+         <obj_property name="label">DSP</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/stage1_input" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">stage1_input[17:0]</obj_property>
+            <obj_property name="ObjectShortName">stage1_input[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_fir" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_fir[17:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_fir[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_fir" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_fir[17:0]</obj_property>
+            <obj_property name="ObjectShortName">slope_fir[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/sample" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">sample[14:0]</obj_property>
+            <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/baseline_estimate" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">baseline_estimate[15:0]</obj_property>
+            <obj_property name="ObjectShortName">baseline_estimate[15:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group507" type="group">
+         <obj_property name="label">pulse detection</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pd_state" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">pd_state</obj_property>
+            <obj_property name="ObjectShortName">pd_state</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pd_nextstate" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">pd_nextstate</obj_property>
+            <obj_property name="ObjectShortName">pd_nextstate</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pd_pulse_state" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">pd_pulse_state</obj_property>
+            <obj_property name="ObjectShortName">pd_pulse_state</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pd_pulse_nextstate" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">pd_pulse_nextstate</obj_property>
+            <obj_property name="ObjectShortName">pd_pulse_nextstate</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_threshold" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">pulse_threshold[17:0]</obj_property>
+            <obj_property name="ObjectShortName">pulse_threshold[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_pos_0xing_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_pos_0xing_pd</obj_property>
+            <obj_property name="ObjectShortName">slope_pos_0xing_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_neg_0xing_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_neg_0xing_pd</obj_property>
+            <obj_property name="ObjectShortName">slope_neg_0xing_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_zero_xing_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_zero_xing_pd</obj_property>
+            <obj_property name="ObjectShortName">slope_zero_xing_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/arming_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">arming_pd</obj_property>
+            <obj_property name="ObjectShortName">arming_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_pd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">slope_pd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_pd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_pd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">peak_pd</obj_property>
+            <obj_property name="ObjectShortName">peak_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">minima_pd</obj_property>
+            <obj_property name="ObjectShortName">minima_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_value_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">minima_value_pd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">minima_value_pd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/last_minima_value" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">last_minima_value[17:0]</obj_property>
+            <obj_property name="ObjectShortName">last_minima_value[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_pos_threshxing_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_pos_threshxing_pd</obj_property>
+            <obj_property name="ObjectShortName">filtered_pos_threshxing_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_neg_threshxing_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_neg_threshxing_pd</obj_property>
+            <obj_property name="ObjectShortName">filtered_neg_threshxing_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_pos_thresh_xing_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_pos_thresh_xing_pd</obj_property>
+            <obj_property name="ObjectShortName">slope_pos_thresh_xing_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_start_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">pulse_start_pd</obj_property>
+            <obj_property name="ObjectShortName">pulse_start_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_stop_pd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">pulse_stop_pd</obj_property>
+            <obj_property name="ObjectShortName">pulse_stop_pd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cf_of_peak" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cf_of_peak[35:0]</obj_property>
+            <obj_property name="ObjectShortName">cf_of_peak[35:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cf_of_peak_reg" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cf_of_peak_reg[35:0]</obj_property>
+            <obj_property name="ObjectShortName">cf_of_peak_reg[35:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cf_of_peak_reg2" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cf_of_peak_reg2[35:0]</obj_property>
+            <obj_property name="ObjectShortName">cf_of_peak_reg2[35:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_thresh_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low_thresh_pd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">cfd_low_thresh_pd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_thresh_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high_thresh_pd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">cfd_high_thresh_pd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/signal_for_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">signal_for_cfd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">signal_for_cfd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_pipe" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">peak_pipe[1:4]</obj_property>
+            <obj_property name="ObjectShortName">peak_pipe[1:4]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/first_rise_pipe" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">first_rise_pipe[1:4]</obj_property>
+            <obj_property name="ObjectShortName">first_rise_pipe[1:4]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/queue_overflow" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_overflow</obj_property>
+            <obj_property name="ObjectShortName">queue_overflow</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_for_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">minima_for_cfd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">minima_for_cfd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/maxima_for_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">maxima_for_cfd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">maxima_for_cfd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/capture_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">capture_pd</obj_property>
+            <obj_property name="ObjectShortName">capture_pd</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group508" type="group">
+         <obj_property name="label">delays to CFD</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_cfd_delay" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_cfd_delay[17:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_cfd_delay[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_cfd_delay" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_cfd_delay[17:0]</obj_property>
+            <obj_property name="ObjectShortName">slope_cfd_delay[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/raw_cfd_delay" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">raw_cfd_delay[17:0]</obj_property>
+            <obj_property name="ObjectShortName">raw_cfd_delay[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/flags_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">flags_pd[6:0]</obj_property>
+            <obj_property name="ObjectShortName">flags_pd[6:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/flags_cfd_delay" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">flags_cfd_delay[6:0]</obj_property>
+            <obj_property name="ObjectShortName">flags_cfd_delay[6:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/queue_rd_en" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_rd_en</obj_property>
+            <obj_property name="ObjectShortName">queue_rd_en</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/queue_full" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_full</obj_property>
+            <obj_property name="ObjectShortName">queue_full</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/queue_empty" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_empty</obj_property>
+            <obj_property name="ObjectShortName">queue_empty</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/queue_wr_en" type="logic" db_ref_id="1">
+            <obj_property name="ElementShortName">queue_wr_en</obj_property>
+            <obj_property name="ObjectShortName">queue_wr_en</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_queue_dout" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low_queue_dout[17:0]</obj_property>
+            <obj_property name="ObjectShortName">cfd_low_queue_dout[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_queue_dout" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high_queue_dout[17:0]</obj_property>
+            <obj_property name="ObjectShortName">cfd_high_queue_dout[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_queue_dout" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">minima_queue_dout[17:0]</obj_property>
+            <obj_property name="ObjectShortName">minima_queue_dout[17:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group509" type="group">
+         <obj_property name="label">Measurement</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/m" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">m</obj_property>
+            <obj_property name="ObjectShortName">m</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_area" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">pulse_area[33:0]</obj_property>
+            <obj_property name="ObjectShortName">pulse_area[33:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/raw_extrema" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">raw_extrema[17:0]</obj_property>
+            <obj_property name="ObjectShortName">raw_extrema[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_extrema" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_extrema[17:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_extrema[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_extrema" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_extrema[17:0]</obj_property>
+            <obj_property name="ObjectShortName">slope_extrema[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_extrema" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">pulse_extrema[17:0]</obj_property>
+            <obj_property name="ObjectShortName">pulse_extrema[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_area" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_area[33:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_area[33:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_area" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_area[33:0]</obj_property>
+            <obj_property name="ObjectShortName">slope_area[33:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_zero_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_zero_xing</obj_property>
+            <obj_property name="ObjectShortName">filtered_zero_xing</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_zero_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_zero_xing</obj_property>
+            <obj_property name="ObjectShortName">slope_zero_xing</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/area_below_threshold" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">area_below_threshold</obj_property>
+            <obj_property name="ObjectShortName">area_below_threshold</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_count_pd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">peak_count_pd[3:0]</obj_property>
+            <obj_property name="ObjectShortName">peak_count_pd[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_overflow_int" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">peak_overflow_int</obj_property>
+            <obj_property name="ObjectShortName">peak_overflow_int</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_length" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">pulse_length[15:0]</obj_property>
+            <obj_property name="ObjectShortName">pulse_length[15:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/raw_area" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">raw_area[33:0]</obj_property>
+            <obj_property name="ObjectShortName">raw_area[33:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/raw_zero_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">raw_zero_xing</obj_property>
+            <obj_property name="ObjectShortName">raw_zero_xing</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/capture_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">capture_cfd</obj_property>
+            <obj_property name="ObjectShortName">capture_cfd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_state" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_state</obj_property>
+            <obj_property name="ObjectShortName">cfd_state</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_nextstate" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_nextstate</obj_property>
+            <obj_property name="ObjectShortName">cfd_nextstate</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_cfd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_cfd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_cfd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">slope_cfd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/raw_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">raw_cfd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">raw_cfd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_threshold" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low_threshold[17:0]</obj_property>
+            <obj_property name="ObjectShortName">cfd_low_threshold[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_value_cfd" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">minima_value_cfd[17:0]</obj_property>
+            <obj_property name="ObjectShortName">minima_value_cfd[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_pos_thresh_xing_cfd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_pos_thresh_xing_cfd</obj_property>
+            <obj_property name="ObjectShortName">slope_pos_thresh_xing_cfd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_neg_0xing_cfd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_neg_0xing_cfd</obj_property>
+            <obj_property name="ObjectShortName">slope_neg_0xing_cfd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_cfd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">minima_cfd</obj_property>
+            <obj_property name="ObjectShortName">minima_cfd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low</obj_property>
+            <obj_property name="ObjectShortName">cfd_low</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high</obj_property>
+            <obj_property name="ObjectShortName">cfd_high</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/slope_pos_0xing_cfd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_pos_0xing_cfd</obj_property>
+            <obj_property name="ObjectShortName">slope_pos_0xing_cfd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_cfd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">peak_cfd</obj_property>
+            <obj_property name="ObjectShortName">peak_cfd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_pulse_state" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_pulse_state</obj_property>
+            <obj_property name="ObjectShortName">cfd_pulse_state</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_pulse_nextstate" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_pulse_nextstate</obj_property>
+            <obj_property name="ObjectShortName">cfd_pulse_nextstate</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_start_cfd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">pulse_start_cfd</obj_property>
+            <obj_property name="ObjectShortName">pulse_start_cfd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_cfd_reg" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_cfd_reg[17:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_cfd_reg[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_cfd_reg2" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_cfd_reg2[17:0]</obj_property>
+            <obj_property name="ObjectShortName">filtered_cfd_reg2[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/filtered_is_min" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">filtered_is_min</obj_property>
+            <obj_property name="ObjectShortName">filtered_is_min</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low_xing</obj_property>
+            <obj_property name="ObjectShortName">cfd_low_xing</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_xing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high_xing</obj_property>
+            <obj_property name="ObjectShortName">cfd_high_xing</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_error_int" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_error_int</obj_property>
+            <obj_property name="ObjectShortName">cfd_error_int</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/minima_valid" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">minima_valid</obj_property>
+            <obj_property name="ObjectShortName">minima_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_threshold" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high_threshold[17:0]</obj_property>
+            <obj_property name="ObjectShortName">cfd_high_threshold[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_reset" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_reset</obj_property>
+            <obj_property name="ObjectShortName">cfd_reset</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_crossed" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low_crossed</obj_property>
+            <obj_property name="ObjectShortName">cfd_low_crossed</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_crossed" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high_crossed</obj_property>
+            <obj_property name="ObjectShortName">cfd_high_crossed</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_high_done" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_high_done</obj_property>
+            <obj_property name="ObjectShortName">cfd_high_done</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/cfd_low_done" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">cfd_low_done</obj_property>
+            <obj_property name="ObjectShortName">cfd_low_done</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peaks_full" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">peaks_full</obj_property>
+            <obj_property name="ObjectShortName">peaks_full</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/time_overflow_int" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">time_overflow_int</obj_property>
+            <obj_property name="ObjectShortName">time_overflow_int</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/m.peak_start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">.peak_start</obj_property>
+         <obj_property name="ObjectShortName">m.peak_start</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/m.peak" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">.peak</obj_property>
+         <obj_property name="ObjectShortName">m.peak</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/m.trigger" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">.trigger</obj_property>
+         <obj_property name="ObjectShortName">m.trigger</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/m.event_start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">.event_start</obj_property>
+         <obj_property name="ObjectShortName">m.event_start</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/m.height_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">.height_valid</obj_property>
+         <obj_property name="ObjectShortName">m.height_valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/m.peak_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">.peak_count</obj_property>
+         <obj_property name="ObjectShortName">m.peak_count</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/event_state" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">event_state</obj_property>
          <obj_property name="ObjectShortName">event_state</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/event_nextstate" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">event_nextstate</obj_property>
-         <obj_property name="ObjectShortName">event_nextstate</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_state" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">pulse_state</obj_property>
@@ -1924,23 +1946,11 @@
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_nextstate" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_nextstate</obj_property>
-         <obj_property name="ObjectShortName">pulse_nextstate</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/frame_word" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">frame_word</obj_property>
          <obj_property name="ObjectShortName">frame_word</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/frame_free" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_free[14:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_free[14:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/chunk_we" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">chunk_we[3:0]</obj_property>
-         <obj_property name="ObjectShortName">chunk_we[3:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/frame_we" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">frame_we[3:0]</obj_property>
@@ -1970,45 +1980,17 @@
          <obj_property name="ElementShortName">area_event</obj_property>
          <obj_property name="ObjectShortName">area_event</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_chunk_we" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_chunk_we[3:0]</obj_property>
-         <obj_property name="ObjectShortName">peak_chunk_we[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/area_chunk_we" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">area_chunk_we[3:0]</obj_property>
-         <obj_property name="ObjectShortName">area_chunk_we[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/single_word_event" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">single_word_event</obj_property>
-         <obj_property name="ObjectShortName">single_word_event</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_peak" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_peak[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_peak[3:0]</obj_property>
+         <obj_property name="ElementShortName">pulse_peak</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_peak_we" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">pulse_peak_we[3:0]</obj_property>
          <obj_property name="ObjectShortName">pulse_peak_we[3:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_peak_reg" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_peak_reg[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_peak_reg[3:0]</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_peak_we_reg" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">pulse_peak_we_reg[3:0]</obj_property>
          <obj_property name="ObjectShortName">pulse_peak_we_reg[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_peak_mux" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_peak_mux[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_peak_mux[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/header0_chunk" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">header0_chunk[3:0]</obj_property>
-         <obj_property name="ObjectShortName">header0_chunk[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/header1_chunk" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">header1_chunk[3:0]</obj_property>
-         <obj_property name="ObjectShortName">header1_chunk[3:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/header_valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">header_valid</obj_property>
@@ -2023,8 +2005,8 @@
          <obj_property name="ObjectShortName">trace1[15:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/trace_reg" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_reg[3:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_reg[3:0]</obj_property>
+         <obj_property name="ElementShortName">trace_reg[0:3]</obj_property>
+         <obj_property name="ObjectShortName">trace_reg[0:3]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/trace0_count" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">trace0_count[1:0]</obj_property>
@@ -2038,101 +2020,29 @@
          <obj_property name="ElementShortName">dual_trace</obj_property>
          <obj_property name="ObjectShortName">dual_trace</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/single_trace" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">single_trace</obj_property>
-         <obj_property name="ObjectShortName">single_trace</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/trace_address" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">trace_address[13:0]</obj_property>
          <obj_property name="ObjectShortName">trace_address[13:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/trace_reg_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_reg_valid</obj_property>
-         <obj_property name="ObjectShortName">trace_reg_valid</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/detection_flags" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">detection_flags</obj_property>
          <obj_property name="ObjectShortName">detection_flags</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/dump_reg" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">dump_reg</obj_property>
-         <obj_property name="ObjectShortName">dump_reg</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/frame_overflow_int" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_overflow_int</obj_property>
-         <obj_property name="ObjectShortName">frame_overflow_int</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_peak_address" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">pulse_peak_address[13:0]</obj_property>
          <obj_property name="ObjectShortName">pulse_peak_address[13:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/commit_peak" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">commit_peak</obj_property>
-         <obj_property name="ObjectShortName">commit_peak</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/commit_area" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">commit_area</obj_property>
-         <obj_property name="ObjectShortName">commit_area</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_start_reg" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_start_reg</obj_property>
-         <obj_property name="ObjectShortName">peak_start_reg</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/last_peak" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">last_peak</obj_property>
          <obj_property name="ObjectShortName">last_peak</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/last_peak_count" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">last_peak_count[3:0]</obj_property>
-         <obj_property name="ObjectShortName">last_peak_count[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peaks_done" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peaks_done</obj_property>
-         <obj_property name="ObjectShortName">peaks_done</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/frame_full" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_full</obj_property>
-         <obj_property name="ObjectShortName">frame_full</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/commit_frame" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">commit_frame</obj_property>
          <obj_property name="ObjectShortName">commit_frame</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/commit_reg" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">commit_reg</obj_property>
-         <obj_property name="ObjectShortName">commit_reg</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/last_clear_peak" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">last_clear_peak</obj_property>
-         <obj_property name="ObjectShortName">last_clear_peak</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/peak_lost" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_lost</obj_property>
-         <obj_property name="ObjectShortName">peak_lost</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/event_lost" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">event_lost</obj_property>
          <obj_property name="ObjectShortName">event_lost</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/clear_address" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">clear_address[13:0]</obj_property>
-         <obj_property name="ObjectShortName">clear_address[13:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/clear_count" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">clear_count[3:0]</obj_property>
-         <obj_property name="ObjectShortName">clear_count[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/last_clear" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">last_clear</obj_property>
-         <obj_property name="ObjectShortName">last_clear</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/pulse_peak_mux_we" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_peak_mux_we[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_peak_mux_we[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/\changen(1)\/measurementUnit/rise_time" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">rise_time[15:0]</obj_property>
-         <obj_property name="ObjectShortName">rise_time[15:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

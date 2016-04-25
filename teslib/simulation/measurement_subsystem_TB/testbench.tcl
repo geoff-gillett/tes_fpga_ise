@@ -2,71 +2,32 @@
 package require isim
 namespace import isim::*
 
-variable channels
+#variable channels
 set channels [getsig CHANNELS unsigned]
 
 # input signal text file has 2 byte ascii hex value per line 
 # TODO make inputs binary files
-set input [open "../input_signals/long" r]
+set input [open "../input_signals/short" r]
 fconfigure $input -buffering line
-
-#TODO these now have versions in isim package change calls to use them
-proc fnames base {
-	variable channels
-	for {set c 0} {$c < $channels} {incr c} {
-		lappend names $base$c
-	}		
-	return $names
-}
-
-proc open_files base {
-	set names [fnames $base]
-	foreach name $names {
-		set $name [open "../$name" w]
-		fconfigure [subst $$name] -translation binary
-		lappend fp_list [subst $$name]
-	}
-	return $fp_list
-}
-
-proc close_files fp_list {
-	foreach fp $fp_list {
-		close $fp
-	}
-}
-
-proc flush_files fp_list {
-	foreach fp $fp_list {
-		flush $fp
-	}
-}
-
-proc write_stream stream {
-	upvar 1 $stream s
-	if { [getsig $stream\_valid] && [getsig $stream\_ready] } {
-		#write as two 32 bit values as isim has trouble with 64 bit ints 
-		write_signal $s $stream.data(63:32) unsigned I
-		write_signal $s $stream.data(31:0) unsigned I
-		write_signal $s $stream.last(0) bin c
-	}
-}
 
 # open data files for binary writing
 # per channel data files
-set settings [open_files setting]
-set traces [open_files traces]
-set peaks [open_files peak]
-set peakstarts [open_files peakstart]
-set cfdlows [open_files cfdlow]
-set cfdhighs [open_files cfdhigh]
-set pulsestarts [open_files pulsestart]
-set raws [open_files raw]
-set filtereds [open_files filtered]
-set slopes [open_files slope]
-set pulses [open_files pulse]
-set slopethreshxings [open_files slopethreshxing]
-set triggers [open_files trigger]
-set heights [open_files height]
+set settings [open_binfiles [gen_names setting $channels]]
+set traces [open_binfiles [gen_names traces $channels]]
+set peaks [open_binfiles [gen_names peak $channels]]
+set peakstarts [open_binfiles [gen_names peakstart $channels]]
+set eventstarts [open_binfiles [gen_names eventstart $channels]]
+set cfdlows [open_binfiles [gen_names cfdlow $channels]]
+set cfdhighs [open_binfiles [gen_names cfdhigh $channels]]
+set pulsestarts [open_binfiles [gen_names pulsestart $channels]]
+set pulsestops [open_binfiles [gen_names pulsestop $channels]]
+set raws [open_binfiles [gen_names raw $channels]]
+set filtereds [open_binfiles [gen_names filtered $channels]]
+set slopes [open_binfiles [gen_names slope $channels]]
+set pulses [open_binfiles [gen_names pulse $channels]]
+set slopethreshxings [open_binfiles [gen_names slopethreshxing $channels]]
+set triggers [open_binfiles [gen_names trigger $channels]]
+set heights [open_binfiles [gen_names height $channels]]
 
 #single data files
 set muxfull [open "../muxfull" w]
@@ -143,6 +104,7 @@ foreach fp $settings {
   write_signal $fp registers($c).baseline.threshold unsigned i
   write_signal $fp registers($c).baseline.count_threshold unsigned i
   write_signal $fp registers($c).baseline.average_order unsigned i
+	
   #capture registers
   write_signal $fp registers($c).capture.cfd_rel2min bin i
   write_signal $fp registers($c).capture.constant_fraction unsigned i
@@ -185,9 +147,11 @@ while {[gets $input hexsample] >= 0} {
 		flush_files $slopes
 		flush_files $pulses
 		flush_files $pulsestarts
+		flush_files $pulsestops
 		flush_files $slopethreshxings
 		flush_files $peaks
 		flush_files $peakstarts
+		flush_files $eventstarts
 		flush_files $heights
 		flush_files $cfdlows
 		flush_files $cfdhighs
@@ -261,6 +225,13 @@ while {[gets $input hexsample] >= 0} {
       puts -nonewline $fp [binary format i $clk]
     }
 	}
+	
+	set c 0
+	foreach fp $pulsestops {
+    if [getsig measurements($c).pulse.neg_threshxing] {
+      puts -nonewline $fp [binary format i $clk]
+    }
+	}
 
 	set c 0
 	foreach fp $slopethreshxings {
@@ -281,6 +252,14 @@ while {[gets $input hexsample] >= 0} {
 	set c 0
 	foreach fp $peakstarts {
     if { [getsig measurements($c).peak_start] } {
+      puts -nonewline $fp [binary format i $clk]	
+    }
+		incr c
+	}
+	
+	set c 0
+	foreach fp $eventstarts {
+    if { [getsig measurements($c).event_start] } {
       puts -nonewline $fp [binary format i $clk]	
     }
 		incr c
@@ -389,20 +368,22 @@ close_files $filtereds
 close_files $slopes
 close_files $pulses
 close_files $pulsestarts
+close_files $pulsestops
 close_files $slopethreshxings
 close_files $peaks
 close_files $peakstarts
+close_files $eventstarts
 close_files $heights
 close_files $cfdlows
 close_files $cfdhighs
 close_files $triggers
-flush $muxstream
-flush $cfderror
-flush $timeoverflow
-flush $peakoverflow
-flush $muxfull
-flush $muxoverflow
-flush $ethernetstream
-flush $mcastream
-flush $frameroverflow
-flush $baselineerror
+close $muxstream
+close $cfderror
+close $timeoverflow
+close $peakoverflow
+close $muxfull
+close $muxoverflow
+close $ethernetstream
+close $mcastream
+close $frameroverflow
+close $baselineerror

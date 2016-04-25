@@ -71,3 +71,5 @@ python/simulation/__pycache__/
 *.xml
 *.project
 *.prefs
+python/tes/__pycache__/
+python/tes/simulation/__pycache__/

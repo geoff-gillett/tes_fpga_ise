@@ -30,7 +30,7 @@ use work.dsptypes.all;
 entity measurement_unit_TB is
 generic(
 	CHANNEL:integer:=7;
-	FRAMER_ADDRESS_BITS:integer:=10;
+	FRAMER_ADDRESS_BITS:integer:=14;
 	ENDIANNESS:string:="LITTLE"
 );
 end entity measurement_unit_TB;
@@ -129,7 +129,7 @@ registers.capture.constant_fraction --<= (CFD_BITS-2 => '1',others => '0');
 	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
 registers.capture.cfd_rel2min <= TRUE;
 registers.capture.height <= PEAK_HEIGHT_D;
-registers.capture.detection <= TRACE_DETECTION_D;
+registers.capture.detection <= PEAK_DETECTION_D;
 registers.capture.timing <= CFD_LOW_TIMING_D;
 registers.capture.trace0 <= FILTERED_TRACE_D;
 registers.capture.trace1 <= SLOPE_TRACE_D;

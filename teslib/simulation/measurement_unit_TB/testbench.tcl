@@ -5,7 +5,7 @@ namespace import isim::*
 #TODO move this to isim package
 # e=0 little endian 1=big endian
 
-set fp [open "../input_signals/double_peak" r]
+set fp [open "../input_signals/short" r]
 fconfigure $fp -buffering line
 
 set settings [open "../setting" w]
@@ -152,6 +152,7 @@ while {[gets $fp hexsample] >= 0} {
 	}
 
 	if [getsig measurements.pulse.neg_threshxing] {
+		puts -nonewline $pulsestops [binary format i $clk]
 		puts -nonewline $pulse [binary format i $clk]
 		write_signal $pulse measurements.pulse.area
 		write_signal $pulse measurements.pulse.extrema
@@ -161,9 +162,6 @@ while {[gets $fp hexsample] >= 0} {
 		puts -nonewline $pulsestarts [binary format i $clk]
 	}
 	
-	if [getsig measurements.pulse.neg_threshxing] {
-		puts -nonewline $pulsestops [binary format i $clk]
-	}
 
 	if [getsig measurements.slope.pos_threshxing] {
 		puts -nonewline $slopethreshxings [binary format i $clk]

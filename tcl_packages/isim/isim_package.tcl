@@ -7,7 +7,7 @@ package provide isim 14.7
 namespace eval isim {
 	namespace export -clean irand getsig setsig lin simsig waitsig \
 	vrand dec2bin bin2dec bits randbit setrandbit validsig getbool setsigp nrand \
-	write_signal gen_names open_binfiles flush_files write_stream
+	write_signal gen_names open_binfiles close_files flush_files write_stream
 	
 #	variable period
 #	variable timeunit
