@@ -72,9 +72,10 @@ set heights [open "../height" w]
 fconfigure $heights -translation binary
 
 restart
+
 wave add /measurement_unit_TB
 wave add /measurement_unit_TB/UUT
-wave add /measurement_unit_TB/UUT/framer
+#wave add /measurement_unit_TB/UUT/framer
 
 set period [getsig CLK_PERIOD]
 run $period

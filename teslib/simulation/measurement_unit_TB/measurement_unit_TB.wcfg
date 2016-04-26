@@ -520,205 +520,209 @@
          <obj_property name="ElementShortName">cfd_low_threshold[17:0]</obj_property>
          <obj_property name="ObjectShortName">cfd_low_threshold[17:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/slope_pos_thresh_xing_cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">slope_pos_thresh_xing_cfd</obj_property>
-         <obj_property name="ObjectShortName">slope_pos_thresh_xing_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/peak_start_cfd" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_start_cfd</obj_property>
-         <obj_property name="ObjectShortName">peak_start_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_start" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_start</obj_property>
-         <obj_property name="ObjectShortName">trace_start</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_stop" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_stop</obj_property>
-         <obj_property name="ObjectShortName">trace_stop</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/capture_trace" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">capture_trace</obj_property>
-         <obj_property name="ObjectShortName">capture_trace</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_done" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_done</obj_property>
-         <obj_property name="ObjectShortName">trace_done</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/clear_done" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">clear_done</obj_property>
-         <obj_property name="ObjectShortName">clear_done</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/peaks_full" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">peaks_full</obj_property>
-         <obj_property name="ObjectShortName">peaks_full</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_peak</obj_property>
-         <obj_property name="ObjectShortName">trace_peak</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_bus" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_peak_bus</obj_property>
-         <obj_property name="ObjectShortName">trace_peak_bus</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_we" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_peak_we[3:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_peak_we[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_bus_reg" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_peak_bus_reg</obj_property>
-         <obj_property name="ObjectShortName">trace_peak_bus_reg</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_we_reg" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_peak_we_reg[3:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_peak_we_reg[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_bus_mux" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_peak_bus_mux</obj_property>
-         <obj_property name="ObjectShortName">trace_peak_bus_mux</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_we_mux" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_peak_we_mux[3:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_peak_we_mux[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/capture_trace" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">capture_trace</obj_property>
-         <obj_property name="ObjectShortName">capture_trace</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_start" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_start</obj_property>
-         <obj_property name="ObjectShortName">trace_start</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_stop" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_stop</obj_property>
-         <obj_property name="ObjectShortName">trace_stop</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_done" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_done</obj_property>
-         <obj_property name="ObjectShortName">trace_done</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m.pulse.neg_threshxing" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">.neg_threshxing</obj_property>
-         <obj_property name="ObjectShortName">m.pulse.neg_threshxing</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m.peak_start" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">.peak_start</obj_property>
-         <obj_property name="ObjectShortName">m.peak_start</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m.trigger" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">.trigger</obj_property>
-         <obj_property name="ObjectShortName">m.trigger</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m.height_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">.height_valid</obj_property>
-         <obj_property name="ObjectShortName">m.height_valid</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m.peak" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">.peak</obj_property>
-         <obj_property name="ObjectShortName">m.peak</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m.event_time" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">.event_time</obj_property>
-         <obj_property name="ObjectShortName">m.event_time</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m.peak_count" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">.peak_count</obj_property>
-         <obj_property name="ObjectShortName">m.peak_count</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_state</obj_property>
-         <obj_property name="ObjectShortName">trace_state</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#a0a0a4</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m.slope.sample" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">.sample</obj_property>
-         <obj_property name="ObjectShortName">m.slope.sample</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m.filtered.sample" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">.sample</obj_property>
-         <obj_property name="ObjectShortName">m.filtered.sample</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace0_count" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace0_count[1:0]</obj_property>
-         <obj_property name="ObjectShortName">trace0_count[1:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace1_count" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace1_count[1:0]</obj_property>
-         <obj_property name="ObjectShortName">trace1_count[1:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_address" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_address[9:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace0" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace0[15:0]</obj_property>
-         <obj_property name="ObjectShortName">trace0[15:0]</obj_property>
-         <obj_property name="Radix">HEXRADIX</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#a0a0a4</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace1" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace1[15:0]</obj_property>
-         <obj_property name="ObjectShortName">trace1[15:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#a0a0a4</obj_property>
-         <obj_property name="Radix">HEXRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_reg" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_reg[0:3]</obj_property>
-         <obj_property name="ObjectShortName">trace_reg[0:3]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-         <obj_property name="Radix">HEXRADIX</obj_property>
-         <wvobject fp_name="/measurement_unit_tb/UUT/trace_reg[0]" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">[0]</obj_property>
-            <obj_property name="ObjectShortName">trace_reg[0]</obj_property>
+      <wvobject fp_name="group236" type="group">
+         <obj_property name="label">trace FSM</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/slope_pos_thresh_xing_cfd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">slope_pos_thresh_xing_cfd</obj_property>
+            <obj_property name="ObjectShortName">slope_pos_thresh_xing_cfd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/peak_start_cfd" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">peak_start_cfd</obj_property>
+            <obj_property name="ObjectShortName">peak_start_cfd</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_start" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_start</obj_property>
+            <obj_property name="ObjectShortName">trace_start</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_stop" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_stop</obj_property>
+            <obj_property name="ObjectShortName">trace_stop</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/capture_trace" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">capture_trace</obj_property>
+            <obj_property name="ObjectShortName">capture_trace</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_done" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_done</obj_property>
+            <obj_property name="ObjectShortName">trace_done</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/clear_done" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">clear_done</obj_property>
+            <obj_property name="ObjectShortName">clear_done</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/peaks_full" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">peaks_full</obj_property>
+            <obj_property name="ObjectShortName">peaks_full</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_peak</obj_property>
+            <obj_property name="ObjectShortName">trace_peak</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_bus" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_peak_bus</obj_property>
+            <obj_property name="ObjectShortName">trace_peak_bus</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_we" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_peak_we[3:0]</obj_property>
+            <obj_property name="ObjectShortName">trace_peak_we[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_bus_reg" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_peak_bus_reg</obj_property>
+            <obj_property name="ObjectShortName">trace_peak_bus_reg</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_we_reg" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_peak_we_reg[3:0]</obj_property>
+            <obj_property name="ObjectShortName">trace_peak_we_reg[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_bus_mux" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_peak_bus_mux</obj_property>
+            <obj_property name="ObjectShortName">trace_peak_bus_mux</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_we_mux" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_peak_we_mux[3:0]</obj_property>
+            <obj_property name="ObjectShortName">trace_peak_we_mux[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/capture_trace" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">capture_trace</obj_property>
+            <obj_property name="ObjectShortName">capture_trace</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_start" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_start</obj_property>
+            <obj_property name="ObjectShortName">trace_start</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_stop" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_stop</obj_property>
+            <obj_property name="ObjectShortName">trace_stop</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_done" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_done</obj_property>
+            <obj_property name="ObjectShortName">trace_done</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.pulse.neg_threshxing" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.neg_threshxing</obj_property>
+            <obj_property name="ObjectShortName">m.pulse.neg_threshxing</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.peak_start" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.peak_start</obj_property>
+            <obj_property name="ObjectShortName">m.peak_start</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.trigger" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.trigger</obj_property>
+            <obj_property name="ObjectShortName">m.trigger</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.height_valid" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.height_valid</obj_property>
+            <obj_property name="ObjectShortName">m.height_valid</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.peak" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">.peak</obj_property>
+            <obj_property name="ObjectShortName">m.peak</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.event_time" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.event_time</obj_property>
+            <obj_property name="ObjectShortName">m.event_time</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.peak_count" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.peak_count</obj_property>
+            <obj_property name="ObjectShortName">m.peak_count</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_state" type="other" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_state</obj_property>
+            <obj_property name="ObjectShortName">trace_state</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#a0a0a4</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.slope.sample" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.sample</obj_property>
+            <obj_property name="ObjectShortName">m.slope.sample</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/m.filtered.sample" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.sample</obj_property>
+            <obj_property name="ObjectShortName">m.filtered.sample</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#008080</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace0_count" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace0_count[1:0]</obj_property>
+            <obj_property name="ObjectShortName">trace0_count[1:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace1_count" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace1_count[1:0]</obj_property>
+            <obj_property name="ObjectShortName">trace1_count[1:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_address" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_address[13:0]</obj_property>
+            <obj_property name="ObjectShortName">trace_address[13:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ff0000</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace0" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace0[15:0]</obj_property>
+            <obj_property name="ObjectShortName">trace0[15:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#a0a0a4</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace1" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace1[15:0]</obj_property>
+            <obj_property name="ObjectShortName">trace1[15:0]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#a0a0a4</obj_property>
             <obj_property name="Radix">HEXRADIX</obj_property>
          </wvobject>
-         <wvobject fp_name="/measurement_unit_tb/UUT/trace_reg[1]" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">[1]</obj_property>
-            <obj_property name="ObjectShortName">trace_reg[1]</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/trace_reg" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">trace_reg[0:3]</obj_property>
+            <obj_property name="ObjectShortName">trace_reg[0:3]</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#ff0000</obj_property>
             <obj_property name="Radix">HEXRADIX</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_unit_tb/UUT/trace_reg[2]" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">[2]</obj_property>
-            <obj_property name="ObjectShortName">trace_reg[2]</obj_property>
-            <obj_property name="Radix">HEXRADIX</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_unit_tb/UUT/trace_reg[3]" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">[3]</obj_property>
-            <obj_property name="ObjectShortName">trace_reg[3]</obj_property>
-            <obj_property name="Radix">HEXRADIX</obj_property>
+            <wvobject fp_name="/measurement_unit_tb/UUT/trace_reg[0]" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">[0]</obj_property>
+               <obj_property name="ObjectShortName">trace_reg[0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_unit_tb/UUT/trace_reg[1]" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">[1]</obj_property>
+               <obj_property name="ObjectShortName">trace_reg[1]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_unit_tb/UUT/trace_reg[2]" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">[2]</obj_property>
+               <obj_property name="ObjectShortName">trace_reg[2]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_unit_tb/UUT/trace_reg[3]" type="array" db_ref_id="1">
+               <obj_property name="ElementShortName">[3]</obj_property>
+               <obj_property name="ObjectShortName">trace_reg[3]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
          </wvobject>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/frame_word" type="array" db_ref_id="1">
@@ -747,8 +751,8 @@
          </wvobject>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/frame_address" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_address[9:0]</obj_property>
+         <obj_property name="ElementShortName">frame_address[13:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_address[13:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
@@ -765,8 +769,8 @@
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/frame_address_reg" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_address_reg[9:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_address_reg[9:0]</obj_property>
+         <obj_property name="ElementShortName">frame_address_reg[13:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_address_reg[13:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
@@ -781,10 +785,6 @@
          <obj_property name="ObjectShortName">commit_frame_reg</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#ff0000</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/trace_peak_address" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_peak_address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_peak_address[9:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/cfd_pulse_state" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">cfd_pulse_state</obj_property>
@@ -905,10 +905,6 @@
          <obj_property name="ElementShortName">peaks_full</obj_property>
          <obj_property name="ObjectShortName">peaks_full</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/last_peak" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">last_peak</obj_property>
-         <obj_property name="ObjectShortName">last_peak</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/dump_int" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">dump_int</obj_property>
          <obj_property name="ObjectShortName">dump_int</obj_property>
@@ -917,17 +913,37 @@
          <obj_property name="ElementShortName">time_overflow_int</obj_property>
          <obj_property name="ObjectShortName">time_overflow_int</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">m</obj_property>
-         <obj_property name="ObjectShortName">m</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/capture_cfd" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">capture_cfd</obj_property>
          <obj_property name="ObjectShortName">capture_cfd</obj_property>
       </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/m" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">m</obj_property>
+         <obj_property name="ObjectShortName">m</obj_property>
+      </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/m.pulse.neg_threshxing" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">.neg_threshxing</obj_property>
          <obj_property name="ObjectShortName">m.pulse.neg_threshxing</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/m.peak_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">.peak_count</obj_property>
+         <obj_property name="ObjectShortName">m.peak_count</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_last</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/peaks_full" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peaks_full</obj_property>
+         <obj_property name="ObjectShortName">peaks_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/peak_overflow_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_overflow_int</obj_property>
+         <obj_property name="ObjectShortName">peak_overflow_int</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/event_state" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">event_state</obj_property>
@@ -941,25 +957,138 @@
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/m.peak_count" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">.peak_count</obj_property>
-         <obj_property name="ObjectShortName">m.peak_count</obj_property>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_bus" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_bus</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_bus</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/clear_count" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">clear_count[3:0]</obj_property>
-         <obj_property name="ObjectShortName">clear_count[3:0]</obj_property>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_we[3:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_we[3:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_bus_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_bus_reg</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_bus_reg</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_we_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_we_reg[3:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_we_reg[3:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_bus_mux" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_bus_mux</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_bus_mux</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_we_mux" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_we_mux[3:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_we_mux[3:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_last</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_last</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_lost" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_lost</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_lost</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/frame_length" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_length[13:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_length[13:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_addr[13:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_addr[13:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/commit_frame" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_frame</obj_property>
+         <obj_property name="ObjectShortName">commit_frame</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/frame_word" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_word</obj_property>
+         <obj_property name="ObjectShortName">frame_word</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         <wvobject fp_name="/measurement_unit_tb/UUT/frame_word.discard" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.discard</obj_property>
+            <obj_property name="ObjectShortName">frame_word.discard</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/frame_word.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">frame_word.last</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_unit_tb/UUT/frame_word.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">frame_word.data</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/frame_address" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_address[13:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_address[13:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/frame_we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_we[3:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_we[3:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/frame_word_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_word_reg</obj_property>
+         <obj_property name="ObjectShortName">frame_word_reg</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/frame_address_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_address_reg[13:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_address_reg[13:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/frame_we_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_we_reg[3:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_we_reg[3:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/commit_frame_reg" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_frame_reg</obj_property>
+         <obj_property name="ObjectShortName">commit_frame_reg</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/clear_done" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">clear_done</obj_property>
          <obj_property name="ObjectShortName">clear_done</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_we_mux" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">pulse_peak_we_mux[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pulse_peak_we_mux[3:0]</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/peak_cfd" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">peak_cfd</obj_property>
          <obj_property name="ObjectShortName">peak_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_unit_tb/UUT/pulse_peak_we_mux" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">pulse_peak_we_mux[3:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_peak_we_mux[3:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/detection_flags" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">detection_flags</obj_property>
@@ -1010,8 +1139,8 @@
          <obj_property name="ObjectShortName">data</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/address" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">address[9:0]</obj_property>
+         <obj_property name="ElementShortName">address[13:0]</obj_property>
+         <obj_property name="ObjectShortName">address[13:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/chunk_we" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">chunk_we[3:0]</obj_property>
@@ -1022,16 +1151,16 @@
          <obj_property name="ObjectShortName">success</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/length" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">length[9:0]</obj_property>
-         <obj_property name="ObjectShortName">length[9:0]</obj_property>
+         <obj_property name="ElementShortName">length[13:0]</obj_property>
+         <obj_property name="ObjectShortName">length[13:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/commit" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">commit</obj_property>
          <obj_property name="ObjectShortName">commit</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/free" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">free[10:0]</obj_property>
-         <obj_property name="ObjectShortName">free[10:0]</obj_property>
+         <obj_property name="ElementShortName">free[14:0]</obj_property>
+         <obj_property name="ObjectShortName">free[14:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/stream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">stream</obj_property>
@@ -1066,16 +1195,16 @@
          <obj_property name="ObjectShortName">we[3:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/rd_ptr" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">rd_ptr[9:0]</obj_property>
-         <obj_property name="ObjectShortName">rd_ptr[9:0]</obj_property>
+         <obj_property name="ElementShortName">rd_ptr[13:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_ptr[13:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/wr_addr" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">wr_addr[9:0]</obj_property>
-         <obj_property name="ObjectShortName">wr_addr[9:0]</obj_property>
+         <obj_property name="ElementShortName">wr_addr[13:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_addr[13:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/free_ram" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">free_ram[10:0]</obj_property>
-         <obj_property name="ObjectShortName">free_ram[10:0]</obj_property>
+         <obj_property name="ElementShortName">free_ram[14:0]</obj_property>
+         <obj_property name="ObjectShortName">free_ram[14:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/read_ram" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">read_ram</obj_property>
@@ -1106,8 +1235,8 @@
          <obj_property name="ObjectShortName">latency</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_unit_tb/UUT/framer/frame_ram" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_ram[0:1023]</obj_property>
-         <obj_property name="ObjectShortName">frame_ram[0:1023]</obj_property>
+         <obj_property name="ElementShortName">frame_ram[0:16383]</obj_property>
+         <obj_property name="ObjectShortName">frame_ram[0:16383]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

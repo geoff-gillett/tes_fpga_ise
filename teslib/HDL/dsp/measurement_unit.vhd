@@ -262,8 +262,9 @@ signal pulse_peak:pulse_peak_t;
 signal pulse_peak_bus,pulse_peak_bus_reg,pulse_peak_bus_mux:streambus_t;
 signal pulse_peak_we,pulse_peak_we_reg:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal pulse_peak_we_mux:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal pulse_peak_lost:boolean;
-signal pulse_peak_last:boolean;
+signal pulse_peak_lost,pulse_peak_last:boolean;
+signal last_pulse_peak_addr:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal pulse_peak_addr:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 
 --trace events
 type traceFSMstate is (IDLE,HEADER0,HEADER1,HEADER2,PEAKS,TRACE,CLEAR);
@@ -283,24 +284,27 @@ signal trace_peak_we,trace_peak_we_reg:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal trace_peak_we_mux:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal trace_peak_lost:boolean;
 signal trace_header:trace_detection_t;
-signal trace_peak_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal trace_peak_clear_addr:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal capture_trace:boolean;
 signal trace_done:boolean;
-signal trace_clear_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+--signal trace_clear_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal trace_peak_addr:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal trace_peak_last:boolean;
+signal last_trace_peak_addr:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal write_trace:boolean;
+--signal trace_peak_full:boolean;
 
 -- common signals
 signal detection_flags:detection_flags_t;
-signal pulse_peak_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal pulse_peak_clear_addr:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal commit_peak_event,commit_area_event:boolean;
-signal last_peak:boolean;
+--signal last_peak:boolean;
 --signal last_peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 signal commit_frame:boolean;
 signal clear_done:boolean;
 signal event_lost:boolean;
-signal clear_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
-signal clear_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
+--signal clear_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+--signal clear_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 
 -- needs to live in a combinatorial process
 procedure bus_we_mux(bus_reg:in streambus_t;
@@ -899,10 +903,10 @@ cfd_high_done <= cfd_high_crossed or (peak_cfd and cfd_high_xing);
 cfd_low_done <= cfd_high_crossed or (peak_cfd and cfd_high_xing);
 cfd_error_int <= (peak_cfd and not (cfd_low_done and cfd_high_done)) 
 									or queue_overflow;
---FIXME this cannot be right anymore
+									
 peaks_full <= m.peak_count > '0' & capture_cfd.max_peaks;
 --FIXME this has problems when peaks_full
-clear_done <= clear_count >= '0' & capture_cfd.max_peaks;
+--clear_done <= clear_count >= '0' & capture_cfd.max_peaks;
 --FIXME The CFD process will not work properly on arbitrary signals. With some 
 --further thought I think it could. Meanwhile this should be OK for TES signals.
 minima_valid <= minima_cfd and filtered_is_min;
@@ -974,12 +978,18 @@ if rising_edge(clk) then
  		m.pulse.time <= (others => '0');
 		capture_cfd <= registers.capture;
 		m.peak_count <= (others => '0');
+		--for framer
 	else
 		
 		m.event_start <= event_start_cfd;
 		if event_start_cfd then --FIXME this should change on valid minima??
 			capture_cfd <= capture_pd; -- FIXME this is not going to work correctly
 																 -- use extra flags and delay
+			--for framer
+	    last_pulse_peak_addr 
+    		<= resize(capture_pd.max_peaks+2,FRAMER_ADDRESS_BITS);
+    	last_trace_peak_addr 
+    		<= resize(capture_pd.max_peaks+3,FRAMER_ADDRESS_BITS);
 			--last_peak_count <= capture_pd.max_peaks(PEAK_COUNT_BITS-1 downto 0);
 		end if;
   
@@ -1032,6 +1042,8 @@ if rising_edge(clk) then
   	
   	if event_start_cfd then
   		m.peak_count <= (others => '0'); 
+        pulse_peak_addr <= to_unsigned(2,FRAMER_ADDRESS_BITS);
+        trace_peak_addr <= to_unsigned(3,FRAMER_ADDRESS_BITS);
   		peak_overflow_int <= FALSE; 
   	else
   		if peak_cfd then
@@ -1039,6 +1051,9 @@ if rising_edge(clk) then
   				peak_overflow_int <= TRUE;
   			else
   				m.peak_count <= m.peak_count + 1;	
+  				-- for framer
+  				pulse_peak_addr <= resize(m.peak_count + 1 + 2,FRAMER_ADDRESS_BITS);
+  				trace_peak_addr <= resize(m.peak_count + 1 + 3,FRAMER_ADDRESS_BITS);
   			end if;
   		end if;
   	end if;
@@ -1121,6 +1136,7 @@ peak_event.minima <= m.filtered.sample;
 peak_event_we(2) <= m.peak_start;
 peak_event.flags <= detection_flags;
 peak_event_we(1) <= m.peak_start; 
+peak_event_we(0) <= m.height_valid;
 commit_peak_event <= m.height_valid;
 --area event
 area_event.area <= m.pulse.area;
@@ -1140,6 +1156,7 @@ pulse_peak.rise_time <= m.trigger_time;
 pulse_peak_we(1) <= m.height_valid;
 pulse_peak.rel_timestamp <= m.event_time; 
 pulse_peak_we(0) <= m.trigger;
+pulse_peak_bus <= to_streambus(pulse_peak,pulse_peak_last,ENDIANNESS);
 --trace event
 trace_header.detection_flags <= header_flags;
 trace_header.slope_threshold <= header_slope_threshold;
@@ -1162,9 +1179,9 @@ trace_peak_bus <= to_streambus(trace_peak,ENDIANNESS);
 -- Framer FSMs
 --------------------------------------------------------------------------------
 -- FIXME different for trace
-clear_address <= resize(clear_count+2,FRAMER_ADDRESS_BITS); 
-trace_clear_address <= resize(clear_count+3,FRAMER_ADDRESS_BITS); 
-last_peak <= m.peak_count = '0' & capture_cfd.max_peaks;
+--clear_address <= resize(clear_count+2,FRAMER_ADDRESS_BITS); 
+--trace_clear_address <= resize(clear_count+3,FRAMER_ADDRESS_BITS); 
+--last_peak <= m.peak_count = '0' & capture_cfd.max_peaks;
 
 FSMnextstate:process(clk)
 begin
@@ -1262,17 +1279,24 @@ end process headers;
 addressCounters:process(clk)
 begin
 	if rising_edge(clk) then
-		if pulse_state=CLEAR or trace_state=CLEAR then
-			pulse_peak_address <= pulse_peak_address+1;
-			trace_peak_address <= trace_peak_address+1;
-		else
-      pulse_peak_address <= resize(m.peak_count+2,FRAMER_ADDRESS_BITS);
-      trace_peak_address <= resize(m.peak_count+3,FRAMER_ADDRESS_BITS);
+		
+		if pulse_state=CLEAR then
+			pulse_peak_clear_addr <= pulse_peak_clear_addr+1;
+		else 
+      pulse_peak_clear_addr <= pulse_peak_addr;
     end if;
-    pulse_peak_last <= pulse_peak_address = capture_cfd.max_peaks+2;
-    trace_peak_last <= trace_peak_address = capture_cfd.max_peaks+3;
+    
+		if trace_state=CLEAR then
+			trace_peak_clear_addr <= trace_peak_clear_addr+1;
+		else
+			trace_peak_clear_addr <= resize(m.peak_count+3,FRAMER_ADDRESS_BITS);
+		end if;
+		
 	end if;
 end process addressCounters;
+
+pulse_peak_last <= pulse_peak_clear_addr = last_pulse_peak_addr;
+trace_peak_last <= trace_peak_clear_addr = last_trace_peak_addr;
 
 --------------------------------------------------------------------------------
 -- Pulse events
@@ -1287,7 +1311,7 @@ if rising_edge(clk) then
   else
   	
   	-- FIXME this may break on event_type change
-  	if (capture_cfd.detection=PEAK_DETECTION_D and pulse_state=PEAKS) then 
+  	if (capture_cfd.detection=PULSE_DETECTION_D and pulse_state=PEAKS) then 
 	    pulse_peak_we_reg <= (others => FALSE);
 	  	pulse_peak_lost <= FALSE;
   	else
@@ -1295,13 +1319,13 @@ if rising_edge(clk) then
       -- NOTE this registration is to handle the case were a peak data point
       -- just after the end of a trace while clearing or writing the header.
   		
-  		bus_we_reg(
-  			pulse_peak_bus,
-  			pulse_peak_we,
-  			pulse_peak_bus_reg,
-  			pulse_peak_we_reg,
-  			pulse_peak_lost
-  		);
+      bus_we_reg(
+        pulse_peak_bus,
+        pulse_peak_we,
+        pulse_peak_bus_reg,
+        pulse_peak_we_reg,
+        pulse_peak_lost
+      );
   		
   	end if;
   end if;
@@ -1309,7 +1333,7 @@ end if;
 end process pulsePeakreg;
 
 pulsePeakMux:process(pulse_peak_lost,pulse_peak_we,pulse_peak_we_reg,
-	pulse_peak_bus,pulse_peak_bus_reg,last_peak
+	pulse_peak_bus,pulse_peak_bus_reg
 )
 begin
 	
@@ -1324,8 +1348,6 @@ begin
 			pulse_peak_we_mux
 		);
 		
-		pulse_peak_bus_mux.last(0) <= last_peak;
-		
 	else
 		pulse_peak_bus_mux.data <= (others  => '-');
 		pulse_peak_bus_mux.last <= (others  => FALSE);
@@ -1335,7 +1357,7 @@ begin
 end process pulsePeakMux;
 
 pulseEventFSMtransition:process(pulse_state,header_valid,m.pulse.neg_threshxing,
-	dump_int,peak_start_cfd,pulse_peak_last
+	dump_int,peak_start_cfd,pulse_peak_last,peaks_full
 )
 begin
 	pulse_nextstate <= pulse_state;
@@ -1360,7 +1382,7 @@ begin
   	if dump_int then
   		pulse_nextstate <= IDLE;
   	elsif m.pulse.neg_threshxing then
-  		if pulse_peak_last then
+  		if peaks_full then
   			pulse_nextstate <= HEADER0;
   		else
   			pulse_nextstate <= CLEAR;
@@ -1432,20 +1454,6 @@ if rising_edge(clk) then
       -- occurs when writing a trace data word, or just after the end of a trace
       -- while clearing or writing the header.
       
---      for c in BUS_CHUNKS-1 downto 0 loop
---        if trace_peak_we(c) then
---          if trace_peak_we_reg(c) then
---            trace_peak_lost <= TRUE;
---          else
---            trace_peak_bus_reg.data((c+1)*BUS_DATABITS-1 downto c*BUS_DATABITS)
---                <= trace_peak_bus.data(
---                	(c+1)*BUS_DATABITS-1 downto c*BUS_DATABITS
---                );
---            trace_peak_we_reg(c) <= TRUE;
---          end if;
---        end if;
---      end loop;
-  		
   		bus_we_reg(
   			trace_peak_bus,
   			trace_peak_we,
@@ -1607,9 +1615,10 @@ framer_overflow <= frame_overflow;
 
 framerCtlMux:process(capture_cfd,trace_state,pulse_state,area_event_we,
 	commit_area_event,commit_peak_event,header_valid,peak_event_we,pulse_header,
-	pulse_peak_address,pulse_peak_bus_mux,pulse_peak_we_mux,trace_address,
-	trace_done,trace_header,trace_peak_address,trace_peak_bus_mux,
-	trace_peak_we_mux,trace_reg,pulse_peak_last,area_event,peak_event
+	pulse_peak_clear_addr,pulse_peak_bus_mux,pulse_peak_we_mux,trace_address,
+	trace_done,trace_header,trace_peak_clear_addr,trace_peak_bus_mux,
+	trace_peak_we_mux,trace_reg,pulse_peak_last,area_event,peak_event,
+	pulse_peak_addr,trace_peak_addr,peaks_full,last_pulse_peak_addr
 )
 begin
 	case capture_cfd.detection is
@@ -1641,8 +1650,12 @@ begin
 		when PEAKS =>
       commit_frame <= FALSE;
       frame_word <= pulse_peak_bus_mux; 
-      frame_address <= pulse_peak_address;
-      frame_we <= pulse_peak_we_mux;
+      frame_address <= pulse_peak_addr;
+      if peaks_full then
+      	frame_we <= (others => FALSE);
+      else
+      	frame_we <= pulse_peak_we_mux;
+      end if;
       frame_length <= (others => '-');
 			
 		when HEADER0 =>
@@ -1653,18 +1666,18 @@ begin
       frame_length <= (others => '-');
       
 		when HEADER1 =>
-      commit_frame <= FALSE;
+      commit_frame <= TRUE;
       frame_word <= to_streambus(pulse_header,1,ENDIANNESS);
       frame_address <= (0 => '1', others => '0');
       frame_we <= (others => TRUE);
-      frame_length <= pulse_peak_address;
+      frame_length <= last_pulse_peak_addr + 1;
       
 		when CLEAR =>
       commit_frame <= FALSE;
       frame_word.data <= (others => '-');
       frame_word.discard <= (others => FALSE);
-      frame_word.last <= (0 => pulse_peak_last,others => FALSE);
-      frame_address <= pulse_peak_address;
+      frame_word.last <= (0 => pulse_peak_last, others => FALSE);
+      frame_address <= pulse_peak_clear_addr;
       frame_we <= (others => TRUE);
       frame_length <= (others => '-');
 		end case;	
@@ -1704,13 +1717,18 @@ begin
 		when PEAKS =>
       commit_frame <= FALSE;
       frame_word <= trace_peak_bus_mux; 
-      frame_address <= trace_peak_address;
-      frame_we <= trace_peak_we_mux;
+      frame_address <= trace_peak_addr;
+      if peaks_full then
+      	frame_we <= (others => FALSE);
+      else
+      	frame_we <= trace_peak_we_mux;
+      end if;
       frame_length <= (others => '-');
       
 		when TRACE =>
 			commit_frame <= FALSE;
-      frame_word <= to_streambus(trace_reg,(others => FALSE), 
+      frame_word <= to_streambus(trace_reg,
+      	(others => FALSE), 
         (0 => trace_done, others => FALSE)
       ); 
       frame_address <= trace_address;
@@ -1722,7 +1740,7 @@ begin
       frame_word.data <= (others => '-');
       frame_word.discard <= (others => FALSE);
       frame_word.last <= (others => FALSE);
-      frame_address <= trace_peak_address;
+      frame_address <= trace_peak_clear_addr;
       frame_we <= (others => TRUE);
       frame_length <= (others => '-');
       
