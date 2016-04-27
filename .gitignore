@@ -73,3 +73,5 @@ python/simulation/__pycache__/
 *.prefs
 python/tes/__pycache__/
 python/tes/simulation/__pycache__/
+teslib/Vivado/
+teslib/vivado_IP/*/*

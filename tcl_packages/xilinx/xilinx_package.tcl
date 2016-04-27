@@ -1,9 +1,9 @@
 # tcl scripts for xilinx ISE 14.7
 # Geoff Gillett
-package provide xilinx 14.7.4
+package provide xilinx 2015.4.1
 
 namespace eval xilinx {
-	namespace export create_projects update_version src build_bitstream versionHex
+	namespace export make_project update_version src build_bitstream versionHex
 }
 	
 # TB_file includes .vhd extension and possible path
@@ -19,16 +19,12 @@ proc ::xilinx::Create_simset {TB_file} {
 		puts "adding structural simulation files"
 		add_files -fileset $name $structural
 	}
-	#update_compile_order -fileset $name
-	#update_compile_order -fileset $name
-	#update_compile_order -fileset $name
-	# Disabling source management mode.  
-	#This is to allow the top design properties to be set without GUI intervention.
+	
 	set_property top $name $simset
 	set_property top_lib {} $simset
 	set_property top_arch {} $simset
 	set_property top_file {} $simset
-	update_compile_order -fileset $name
+	#update_compile_order -fileset $name
 	set wcfgName [file rootname $TB_file].wcfg
 	if {[file exists $wcfgName]} { 
 		puts "Using $wcfgName"
@@ -36,28 +32,32 @@ proc ::xilinx::Create_simset {TB_file} {
 	}
 }
 	
-# add all IP cores in IP_coresDir
-proc ::xilinx::Process_IP_cores {IP_coresDir} {
-	puts "Processing $IP_coresDir"
-	set IP_cores [glob -nocomplain $IP_coresDir/*.{xco}]
-	if { [llength $IP_cores] != 0 } {
-		# need to check if core has .xci and .xco if so use the .xci 
-		# currently just looks for .xco
-		# create a directory under IP_cores and copy .xco to it
-		foreach core $IP_cores {
-    	set name [file tail [file rootname $core]]
-			if ![file exists $IP_coresDir/$name] {
-				file mkdir $IP_coresDir/$name
-			}
-			if ![file exists $IP_coresDir/$name/$name.xco] {
-				file copy $core $IP_coresDir/$name/$name.xco
-			}
-			add_files -norecurse $IP_coresDir/$name/$name.xco
-		}
-    generate_target {synthesis} [get_ips]
-	}
-}
+proc ::xilinx::process_cores {vivado cores_dir} {
+	
+	set cores [glob -nocomplain $cores_dir/*.{xci}]
 
+	puts "Processing IP in $cores_dir"
+
+  #create a dir for each core and copy core file to it and generate
+  if { [llength $cores] != 0 } {
+    foreach core $cores {
+      set name [file tail [file rootname $core]]
+      if ![file exists $cores_dir/$name] {
+        file mkdir $cores_dir/$name
+      }
+			
+      if ![file exists $cores_dir/$name] {
+        file mkdir $cores_dir/$name
+      }
+      if ![file exists $cores_dir/$name/$name.xci] {
+        file copy $core $cores_dir/$name/$name.xci
+      }
+      add_files -norecurse $cores_dir/$name/$name.xci
+    }
+    generate_target all [get_ips]
+  }
+}
+		
 #return a list of all vhdl sources under dir searches sub-dirs
 proc ::xilinx::get_sources {dir} {
 	
@@ -67,7 +67,7 @@ proc ::xilinx::get_sources {dir} {
   foreach subdir $subdirs {
     set sources [concat $sources [get_sources $subdir]]
   }
-	puts "get_sorces:$sources"
+	puts "get_sources:$sources"
 	return $sources
 }
 
@@ -81,7 +81,10 @@ proc ::xilinx::get_sources {dir} {
 #		vhdl files under the HDL sub-directory are recursively added 
 # Otherwise the dependency file is directly added (add_files -norecurse)
 # NOTE: paths cannot contain spaces
-proc ::xilinx::Process_deps {projname buildDir scriptsDir} {
+#
+#FIXME need separate vivado/planahead depsfile?
+# 
+proc ::xilinx::process_deps {vivado projname buildDir scriptsDir} {
 	if [file exists $scriptsDir/$projname.dep] {
     puts "Processing dependency file $scriptsDir/$projname.dep"
     set depsfile [open $scriptsDir/$projname.dep]
@@ -94,14 +97,22 @@ proc ::xilinx::Process_deps {projname buildDir scriptsDir} {
         set depfile [file normalize $depfile]
 				
         if { [file isdirectory $depfile]} {
+					
         	if {[file exists $depfile/HDL]} {
         		set sources [get_sources $depfile/HDL]
         	} {
         		set sources [glob -nocomplain $depfile/*.{vhd,vhdl}]
         	}
-          if [file exists $depfile/IP_cores] {
-            Process_IP_cores $depfile/IP_cores
-          }
+					
+					if $vivado {
+            if [file exists $depfile/vivado_IP] {
+              process_cores $vivado $depfile/vivado_IP
+            }
+					} {
+            if [file exists $depfile/IP_cores] {
+              process_cores $vivado $depfile/IP_cores
+            }
+					}
         } {
           set sources $depfile
         }
@@ -141,7 +152,7 @@ proc ::xilinx::build_bitstream {top  synth implementation} {
 	  set_property top_lib {} [current_fileset]
 	  set_property top_arch {} [current_fileset]
 	  set_property top_file {} [current_fileset]
-	  update_compile_order -fileset [current_fileset]
+	  #update_compile_order -fileset [current_fileset]
 	}
 	set synthOK [string equal [get_property status $syn] "XST Complete!"]
 	set synthDirty [get_property needs_refresh $syn]
@@ -189,6 +200,7 @@ proc ::xilinx::update_version {synth} {
 proc ::xilinx::process_simdir {simDir projname buildDir} {
 	# add linkfiles file
 	#handle structural
+	
 	puts "processing $simDir"
 	set files [glob -nocomplain  $simDir/*]
 	set TBfile [ lsearch -all -inline -regexp $files {_TB\.(vhd|vhdl)$} ]
@@ -204,7 +216,8 @@ proc ::xilinx::process_simdir {simDir projname buildDir} {
 	set simset [get_filesets $name]
 	set_property SOURCE_SET sources_1 $simset
 	add_files -fileset $name -norecurse $vhdlFiles
-  set isedir $buildDir/PlanAhead/$projname.sim/$name
+	#FIXME viv change was $builddir/PlanAhead
+  set isedir $buildDir/$projname.sim/$name
   file mkdir $isedir
 	if {[file exists $simDir/structural]} {
 		puts "adding structural simulation files"
@@ -218,7 +231,7 @@ proc ::xilinx::process_simdir {simDir projname buildDir} {
 	set_property top_lib {} $simset
 	set_property top_arch {} $simset
 	set_property top_file {} $simset
-	update_compile_order -fileset $name
+	#update_compile_order -fileset $name
 	set wcfgName [file rootname $TBfile].wcfg
 	if {[file exists $wcfgName]} { 
 		#puts "Using $wcfgName"
@@ -236,25 +249,40 @@ proc ::xilinx::process_simdir {simDir projname buildDir} {
 
 # optional args dependency HDL dirs 
 # sourceDir is the source project directory
-proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} { 
+proc ::xilinx::make_project {tool name {sourceDir "../"} {buildDir "../"} args} {
+	set vivado [string equal $tool vivado]
+
 	set scriptsDir [pwd]
 	set buildDir [file normalize $buildDir]
 	set sourceDir [file normalize $sourceDir]
-	create_project $name $buildDir/PlanAhead -part xc6vlx240tff1156-1
-	set_property board ML605 [current_project]
+	
+	if { $vivado } {
+		set buildDir $buildDir/Vivado
+		create_project $name $buildDir -part xc7vx485tffg1761-2
+		set_property board_part xilinx.com:vc707:part0:1.2 [current_project]
+	} {
+		set buildDir $buildDir/PlanAhead
+    create_project $name $buildDir/PlanAhead -part xc6vlx240tff1156-1
+    set_property board ML605 [current_project]
+	}
+		
 	set_property target_language VHDL [current_project]
 	puts "Adding $sourceDir/HDL"
   add_files $sourceDir/HDL 
-#  if [regexp {lib$} $name] {
-#    #puts "Adding library $name"
-##    set libName [string range $name 0 end-8]
-#    set libName $name
-#    set libFiles [glob -nocomplain $sourceDir/HDL/*.{vhd,vhdl} ]
-#    set_property library $libName [get_files $libFiles]
-#    puts "Adding library $libName\n $libFiles]"
-#  } 
-	if [file exists $sourceDir/IP_cores] { Process_IP_cores $sourceDir/IP_cores }
-	Process_deps $name $buildDir $scriptsDir
+	
+	process_deps $vivado $name $buildDir $scriptsDir
+	
+	#FIXME changed
+	if $vivado {
+    if [file exists $sourceDir/vivado_IP] { 
+      process_cores $vivado $sourceDir/vivado_IP 
+    }
+	} {
+    if [file exists $sourceDir/IP_cores] { 
+      process_cores $vivado $sourceDir/IP_cores 
+    }
+	}
+	
 	## changes start here
 	puts "Processing simulation directorys"
 	set simDirs [glob -nocomplain -type d $sourceDir/simulation/*_TB]
@@ -270,6 +298,7 @@ proc ::xilinx::create_projects {name {sourceDir "../"} {buildDir "../"} args} {
     	import_files -fileset $constraintName $constraintDir
 		}
 	}
+	
 	set constraints [glob -nocomplain $sourceDir/constraints/*.ucf]
 	if {[ llength $constraints]!=0} {
     foreach constraint $constraints {

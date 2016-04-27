@@ -40,6 +40,11 @@
 			<locationURI>SIMULATION</locationURI>
 		</link>
 		<link>
+			<name>vivado_IP</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/vivado_IP</locationURI>
+		</link>
+		<link>
 			<name>Common Libraries/DRAG_REUSABLE_LIBRARIES_HERE.txt</name>
 			<type>1</type>
 			<locationURI>sigasiresource:/vhdl/readme2.txt</locationURI>
@@ -114,6 +119,24 @@
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-*.jou</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1461726326949</id>
+			<name>vivado_IP</name>
+			<type>13</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.xci</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1461726326958</id>
+			<name>vivado_IP</name>
+			<type>13</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.coe</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>

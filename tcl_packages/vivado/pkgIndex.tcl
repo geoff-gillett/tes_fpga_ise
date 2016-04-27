@@ -7,4 +7,4 @@
 # in response to "package require" commands.  When this
 # script is sourced, the variable $dir must contain the
 # full path name of this file's directory.
-package ifneeded vivado 2015.4 [list source [file join $dir vivado_package.tcl]]
+package ifneeded vivado 2015.4.1 [list source [file join $dir vivado_package.tcl]]

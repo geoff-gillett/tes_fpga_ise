@@ -1,3 +1,5 @@
 ../../extensions extensions
 ../../streamlib streamlib
 ../../mcalib mcalib
+../../teslib/PSM/IO_controller_program.vhd 
+../../teslib/PSM/channel_program.vhd 

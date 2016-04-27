@@ -1,1 +1,1 @@
-xilinx::create_projects teslib ../ ../
+xilinx::make_project planahesd teslib ../ ../
