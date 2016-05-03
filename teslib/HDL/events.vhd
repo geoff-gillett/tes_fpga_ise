@@ -288,7 +288,9 @@ begin
   sb.data := set_endianness(e.height,endianness) &
              set_endianness(e.minima,endianness) &
              to_std_logic(e.flags) & 
-             set_endianness(e.rel_timestamp,endianness);
+             --ideally this should be '-' (don't care) but makes writing to
+             --simulation data files harder
+             "0000000000000000"; -- replaced with rel_timestamp by mux
 	sb.discard := (others => FALSE);
 	sb.last := (0 => TRUE, others => FALSE);
 	return sb;
@@ -303,7 +305,7 @@ return	streambus_t is
 begin
   sb.data := set_endianness(a.area,endianness) &
              to_std_logic(a.flags) & 
-  					 set_endianness(a.rel_timestamp,endianness);
+             "0000000000000000"; -- replaced with rel_timestamp by mux
 	sb.discard := (others => FALSE);
 	sb.last := (0 => TRUE, others => FALSE);
 	return sb;
@@ -314,6 +316,7 @@ end function;
 --     |  32  |  16 | 16 |
 -- w=0 |period|flags|time|  -- the 8 overflow flags should indicate event loss
 -- w=1 | full time-stamp |
+-- TODO implement
 -- w=3 | peak overflow, time overflow, mux overflow framer overflow etc
 function to_streambus(t:tick_event_t;w:natural range 0 to 1;endianness:string) 
 return streambus_t is
@@ -323,7 +326,7 @@ begin
 	when 0 =>
     sb.data := set_endianness(t.period,endianness) &
                to_std_logic(t.flags) &
-    					 set_endianness(t.rel_timestamp,endianness);
+	             "0000000000000000"; -- replaced with rel_timestamp by mux
     sb.discard := (others => FALSE);
     sb.last := (others => FALSE);
   when 1 =>

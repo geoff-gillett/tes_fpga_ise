@@ -1,13 +1,13 @@
 import numpy as np
 from .data import File
 
-# dict containing tuples (filename, dtype, is_array, is_sliceable) representing a set of testbench output files
+# dict containing tuples (filename, dtype, is_list, is_sliceable) representing a set of testbench output files
 # to be read to create a simulation.data Data class
 #
 # The dict key is the name to give the resulting attribute in the Data class instance
 # The file is read using numpy.fromfile() with the given dtype
-# If is_array is True then all files of the form filenmameX are read, where X is a digit indicating the channel
-# the created attribute is an array.
+# If is_list is True then all files of the form filenmameX are read, where X is a digit indicating the channel
+# the created attribute is a list of values.
 # is_slicable boolean indicates that the attribute should be included when creating a Data.Slice object.
 # When the dtype includes a field labeled index, the slice will contain the values where the index field is
 # in the slice bounds rather than the traditional start:stop range
@@ -34,7 +34,8 @@ measurement_subsystem_TB = {
     'cfd_low': File('cfdlow', index_dt, True, True),
     'cfd_high': File('cfdhigh', index_dt, True, True),
     'trigger': File('trigger', index_dt, True, True),
-    'event_stream': File('muxstream', stream_dt, False, False),
+    'mux_stream': File('muxstream', stream_dt, False, False),
+    'event_stream': File('eventstream', stream_dt, True, False),
     'mca_stream': File('mcastream', stream_dt, False, False),
     'ethernet_stream': File('ethernetstream', stream_dt, False, False),
     'cfd_error': File('cfderror', error_dt, False, True),

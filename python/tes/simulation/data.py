@@ -239,11 +239,12 @@ class EventStream:
 
 class Data:
 
-    def __init__(self, fileset, channels, project, testbench, repo=DEFAULT_REPO_PATH):
+    def __init__(self, fileset, channels, project, testbench, tool='PlanAhead', repo=DEFAULT_REPO_PATH):
         self._fileset = fileset
         self.channels = channels
         self.project = project
         self.testbench = testbench
+        self.tool = tool
         self.creation_date = datetime.now()
 
         for file in fileset:
@@ -255,17 +256,17 @@ class Data:
                     data.append(
                         self.fromfile(
                             '{:s}{:d}'.format(fileinfo.filename, c),
-                            fileinfo.dtype, project, testbench, repo
+                            fileinfo.dtype, project, testbench, tool, repo
                         )
                     )
             else:
-                data = self.fromfile(fileinfo.filename, fileinfo.dtype, project, testbench, repo)
+                data = self.fromfile(fileinfo.filename, fileinfo.dtype, project, testbench, tool, repo)
 
             setattr(self, file, data)
 
     @staticmethod
-    def fromfile(file, dt, project, testbench, repo=DEFAULT_REPO_PATH):
-        path = repo + project + '\\PlanAhead\\' + project + '.sim\\' + testbench + '\\'
+    def fromfile(file, dt, project, testbench, tool='PlanAhead', repo=DEFAULT_REPO_PATH):
+        path = repo + project + '\\' + tool + '\\' + project + '.sim\\' + testbench + '\\'
         # print(path + file)
         if ospath.isfile(path + file):
             return np.fromfile(path + file, dt)
@@ -405,10 +406,10 @@ class Packet:
         self.payload = byte_stream[24:]
 
         if self.ethertype == 0x88B5:
-            if np.bitwise_and(self.payload[5], 0x02):
+            if np.bitwise_and(self.bytes[20], 0x02):
                 self.payload_type = PayloadType.tick
             else:
-                self.payload_type = PayloadType.from_int(np.right_shift(np.bitwise_and(self.payload[5], 0x0C), 2))
+                self.payload_type = PayloadType.from_int(np.right_shift(np.bitwise_and(self.bytes[20], 0x0C), 2))
         elif self.ethertype == 0x88B6:
             self.payload_type = PayloadType.mca
         else:

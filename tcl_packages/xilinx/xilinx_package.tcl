@@ -1,37 +1,131 @@
-# tcl scripts for xilinx ISE 14.7
+# tcl scripts for xilinx ISE 14.7 and vivado 2015.4.2
 # Geoff Gillett
-package provide xilinx 2015.4.1
+package provide xilinx 2015.4.2
+
+namespace eval sim {
+	namespace export write_signal gen_names open_binfiles close_files \
+	flush_files write_signal
+}
+
+proc ::sim::gen_names {base chans} {
+	for {set c 0} {$c < $chans} {incr c} {
+		lappend names $base$c
+	}		
+	return $names
+}
+
+proc ::sim::open_binfiles names {
+	foreach name $names {
+		set $name [open "../$name" w]
+		fconfigure [subst $$name] -translation binary
+		lappend fp_list [subst $$name]
+	}
+	return $fp_list
+}
+
+proc ::sim::close_files fp_list {
+	foreach fp $fp_list {
+		close $fp
+	}
+}
+
+proc ::sim::flush_files fp_list {
+	foreach fp $fp_list {
+		flush $fp
+	}
+}
+
+# write signal to file fp with binary format 
+proc ::sim::write_signal { fp signal {getsig_type dec} {format i} } {
+	set val [getsig $signal $getsig_type]
+	if { [string equal $val TRUE] } {
+		set val 1
+  } 
+	if { [string equal $val FALSE] } {
+		set val 0
+  } 
+	if { [string equal $val x] } {
+		set val 0
+	}
+	if { [string equal $val X] } {
+		set val 0
+	}
+	if { [string equal $val u] } {
+		set val 0
+	}
+	if { [string equal $val U] } {
+		set val 0
+	}
+	if { [string equal $val ?] } {
+		set val 0
+	}
+	puts -nonewline $fp [binary format $format $val]
+}
+
+namespace eval isim { namespace export getsig setsig write_stream }
+
+proc ::isim::getsig {name {radix ""}} {
+  if { $radix == "" } {
+    return [show value $name]
+  } else {
+    return [show value $name -radix $radix]
+  }
+}
+
+proc ::isim::setsig {name value {radix ""} } {
+	if { $radix == "" } {
+		put $name $value 
+	} {
+		put $name $value -radix $radix
+	}
+  return $value
+}
+
+proc ::isim::write_stream { fp stream } {
+	if { [getsig $stream\_valid] && [getsig $stream\_ready] } {
+		#write as two 32 bit values as isim has trouble with 64 bit ints (tcl 8.4)
+		#so write two big endian 32 bit ints
+		#write the stream as a big endian 64 bit value so it has the same byte order 
+		#as transmission 
+		write_signal $fp $stream.data(63:32) unsigned I
+		write_signal $fp $stream.data(31:0) unsigned I
+		write_signal $fp $stream.last(0) unsigned c
+	}
+}
+
+namespace eval xsim { namespace export getsig setsig write_stream }
+
+proc ::xsim::getsig {name {radix ""}} {
+  if { $radix == "" } {
+    return [get_value $name]
+  } else {
+    return [get_value -radix $radix $name]
+  }
+}
+
+proc ::xsim::setsig {name value {radix ""} } {
+	if { $radix == "" } {
+		set_value $name $value
+	} {
+		set_value -radix $radix $name $value 
+	}
+  #isim force add $name $value -radix $radix
+  return $value
+}
+
+proc ::xsim::write_stream { fp stream } {
+	if { [getsig $stream\_valid] && [getsig $stream\_ready] } {
+		#vivado 2015.4 has a bug with get_value of a vector slice within a record
+		#but can handle 64 bit ints better (tcl 8.5)
+		write_signal $fp $stream.data unsigned W
+		write_signal $fp $stream.last(0) unsigned c
+	}
+}
 
 namespace eval xilinx {
 	namespace export make_project update_version src build_bitstream versionHex
 }
-	
-# TB_file includes .vhd extension and possible path
-proc ::xilinx::Create_simset {TB_file} { 
-	set name [file tail [file rootname $TB_file]]
-	puts "Creating simulation set $name"
-	create_fileset -simset $name
-	set simset [get_filesets $name]
-	set_property SOURCE_SET sources_1 $simset
-	add_files -fileset $name -norecurse $TB_file
-	set structural [file dirname $TB_file]/structural
-	if {[file exists $structural]} {
-		puts "adding structural simulation files"
-		add_files -fileset $name $structural
-	}
-	
-	set_property top $name $simset
-	set_property top_lib {} $simset
-	set_property top_arch {} $simset
-	set_property top_file {} $simset
-	#update_compile_order -fileset $name
-	set wcfgName [file rootname $TB_file].wcfg
-	if {[file exists $wcfgName]} { 
-		puts "Using $wcfgName"
-		set_property isim.wcfg [file nativename [file normalize $wcfgName]]	$simset
-	}
-}
-	
+
 proc ::xilinx::process_cores {vivado cores_dir} {
 	
 	set cores [glob -nocomplain $cores_dir/*.{xci}]
@@ -197,51 +291,66 @@ proc ::xilinx::update_version {synth} {
 	}
 }
 	
-proc ::xilinx::process_simdir {simDir projname buildDir} {
+proc ::xilinx::process_simdir {vivado sim_dir projname buildDir} {
 	# add linkfiles file
 	#handle structural
 	
-	puts "processing $simDir"
-	set files [glob -nocomplain  $simDir/*]
-	set TBfile [ lsearch -all -inline -regexp $files {_TB\.(vhd|vhdl)$} ]
-	set vhdlFiles [ lsearch -all -inline -regexp $files {\.(vhd|vhdl)$} ]
-
-	if {[llength $TBfile] != 1} {
-		error "$dir does not contain exactly one test-bench file (*_TB.vhd)"
+	puts "processing $sim_dir"
+	set files [glob -nocomplain  $sim_dir/*]
+	set TB_file [ lsearch -all -inline -regexp $files {_TB\.(vhd|vhdl)$} ]
+	set vhdl_files [ lsearch -all -inline -regexp $files {\.(vhd|vhdl)$} ]
+	set viv_wfcgs [lsearch -all -inline -regexp $files {_behav\.wcfg$} ]
+	
+	if {[llength $TB_file] != 1} {
+		error "$dir should contain exactly one test-bench file (*_TB.vhd)"
 	}
+	
 	#Create_simset $TBfiles
-	set name [file tail [file rootname $TBfile]]
+	set name [file tail [file rootname $TB_file]]
 	puts "Creating simulation set $name"
 	create_fileset -simset $name
 	set simset [get_filesets $name]
 	set_property SOURCE_SET sources_1 $simset
-	add_files -fileset $name -norecurse $vhdlFiles
+	add_files -fileset $name -norecurse $vhdl_files
 	#FIXME viv change was $builddir/PlanAhead
-  set isedir $buildDir/$projname.sim/$name
-  file mkdir $isedir
-	if {[file exists $simDir/structural]} {
-		puts "adding structural simulation files"
-    set struct [open $simDir/structural]
-    foreach sfile [split [read $struct] \n] {
-    	add_files -fileset $name -norecurse $sfile
-			puts $sfile
+  set tooldir $buildDir/$projname.sim/$name
+  file mkdir $tooldir
+	
+	# add any structural sim files if using planahead
+	if { !$vivado } { 
+    if {[file exists $sim_dir/structural]} {
+      puts "adding structural simulation files"
+      set struct [open $sim_dir/structural]
+      foreach sfile [split [read $struct] \n] {
+        add_files -fileset $name -norecurse $sfile
+        puts $sfile
+      }
     }
 	}
+	
 	set_property top $name $simset
 	set_property top_lib {} $simset
 	set_property top_arch {} $simset
 	set_property top_file {} $simset
-	#update_compile_order -fileset $name
-	set wcfgName [file rootname $TBfile].wcfg
-	if {[file exists $wcfgName]} { 
-		#puts "Using $wcfgName"
-		set_property isim.wcfg [file nativename [file normalize $wcfgName]]	$simset
+	
+	if { $vivado } {
+		#vivado can add multiple wfcgs
+		foreach wfcg $vivado_wfcgs {
+      add_files -fileset $TB_file -norecurse $wcfg
+      set_property xsim.view $wfcg [get_filesets $TB_file]	
+		}
+		set vivado_wfcgs [glob -nocomplian  ]
+	} {
+    set wcfgName [file rootname $TB_file].wcfg
+    if {[file exists $wcfgName]} { 
+      set_property isim.wcfg [file nativename [file normalize $wcfgName]]	$simset
+    }
 	}
 	
-	if [file exists $simDir/linkfiles] {
-    set links [open $simDir/linkfiles]
+	if [file exists $sim_dir/linkfiles] {
+    set links [open $sim_dir/linkfiles]
     foreach lfile [split [read $links] \n] {
-      file link $isedir/[file tail $lfile] $lfile
+      file link $tooldir/[file tail $lfile] $lfile
     }
 	}
 	
@@ -262,7 +371,7 @@ proc ::xilinx::make_project {tool name {sourceDir "../"} {buildDir "../"} args} 
 		set_property board_part xilinx.com:vc707:part0:1.2 [current_project]
 	} {
 		set buildDir $buildDir/PlanAhead
-    create_project $name $buildDir/PlanAhead -part xc6vlx240tff1156-1
+    create_project $name $buildDir -part xc6vlx240tff1156-1
     set_property board ML605 [current_project]
 	}
 		
@@ -283,11 +392,11 @@ proc ::xilinx::make_project {tool name {sourceDir "../"} {buildDir "../"} args} 
     }
 	}
 	
-	## changes start here
 	puts "Processing simulation directorys"
-	set simDirs [glob -nocomplain -type d $sourceDir/simulation/*_TB]
-	foreach simdir $simDirs { process_simdir $simdir $name $buildDir  }
+	set sim_dirs [glob -nocomplain -type d $sourceDir/simulation/*_TB]
+	foreach sim_dir $sim_dirs { process_simdir $vivado $sim_dir $name $buildDir }
 	
+	#TODO add vivado constraints
 	puts "Creating constraint sets"
 	set constraintDirs [glob -nocomplain -type d $sourceDir/constraints/*]
 	if {[llength $constraintDirs]} {
@@ -312,6 +421,7 @@ proc ::xilinx::make_project {tool name {sourceDir "../"} {buildDir "../"} args} 
 		puts "creating runs"
 		source $sourceDir/scripts/runs.tcl
 	}
+	
 }
 
 

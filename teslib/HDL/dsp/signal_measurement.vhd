@@ -12,12 +12,16 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
---
+
+library extensions;
+use extensions.logic.all;
+
 use work.types.all;
 
 -- Assumes FRAC >= AREA_FRAC
 --TODO handle for AREA_FRAC > FRAC
 --TODO add closest xings
+
 entity signal_measurement is
 generic(
 	WIDTH:integer:=18;
@@ -78,6 +82,7 @@ xing0 <= neg0 or pos0;
 
 first_closest <= diff_reg < diff;
 
+--FIXME could remove some register levels
 measurement:process(clk)
 begin
 if rising_edge(clk) then
@@ -103,7 +108,7 @@ if rising_edge(clk) then
   	pos_threshxing <= not was_above and above;
   	neg_threshxing <= not above and was_above;
   	
-    signal_reg <= signal_in;
+    signal_reg <= to_0ifX(signal_in);
     signal_reg2 <= signal_reg;
 		signal_out <= signal_reg2;
 		
@@ -116,16 +121,16 @@ if rising_edge(clk) then
     pos_0closest <= (pos0 and first_closest) or pos_xing_next;
     neg_0closest <= (neg0 and first_closest) or neg_xing_next;
     
+ 		area <= area_int;
   	if xing0_reg then
   		area_int <= resize(signal_reg2,AREA_BITS);
-  		area <= area_int;
   	else
   		area_int <= area_int + signal_reg2;
   	end if;
   	
+ 		extrema <= extrema_int;
   	if xing0_reg then
   		extrema_int <= signal_reg2;
-  		extrema <= extrema_int;
   	else
   		if was_above0 then
   			if signal_reg2 > extrema_int then

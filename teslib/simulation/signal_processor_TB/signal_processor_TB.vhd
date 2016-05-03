@@ -111,7 +111,7 @@ registers.capture.constant_fraction <= to_unsigned((2**17)/8,CFD_BITS-1); --20%
 registers.baseline.subtraction <= FALSE;
 registers.capture.cfd_rel2min <= TRUE;
 
-registers.capture.height <= CFD_HIGH_D;
+registers.capture.height <= CFD_HEIGHT_D;
 registers.capture.threshold_rel2min <= TRUE;
 registers.capture.area_threshold <= to_signed(500,AREA_BITS);
 wait for CLK_PERIOD;

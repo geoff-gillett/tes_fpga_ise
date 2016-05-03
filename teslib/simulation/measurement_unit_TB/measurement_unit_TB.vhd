@@ -117,13 +117,13 @@ registers.capture.pulse_threshold <= to_unsigned(300,DSP_BITS-DSP_FRAC-1) &
 registers.capture.slope_threshold <= to_unsigned(10,DSP_BITS-SLOPE_FRAC-1) & 
 																 to_unsigned(0,SLOPE_FRAC);
 registers.baseline.timeconstant 
-	<= to_unsigned(2**15,BASELINE_TIMECONSTANT_BITS);
+	<= to_unsigned(2**14,BASELINE_TIMECONSTANT_BITS);
 registers.baseline.threshold 
 	<= to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
 registers.baseline.count_threshold 
-	<= to_unsigned(150,BASELINE_COUNTER_BITS);
+	<= to_unsigned(40,BASELINE_COUNTER_BITS);
 registers.baseline.average_order <= 4;
-registers.baseline.offset <= to_std_logic(260,ADC_BITS);
+registers.baseline.offset <= to_std_logic(180,ADC_BITS);
 registers.baseline.subtraction <= TRUE;
 registers.capture.constant_fraction --<= (CFD_BITS-2 => '1',others => '0');
 	<= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
@@ -137,6 +137,9 @@ registers.capture.threshold_rel2min <= FALSE;
 registers.capture.area_threshold <= to_signed(500,AREA_BITS);
 registers.capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 registers.capture.full_trace <= FALSE;
+
+mca_value_select <= (4 => '1', others => '0'); -- slope area
+mca_trigger_select <= (3 => '1', others => '0'); -- slope 0xing
 
 wait for CLK_PERIOD;
 reset <= '0';

@@ -1026,7 +1026,7 @@ if rising_edge(clk) then
     when PEAK_HEIGHT_D =>
     	m.height_valid <= peak_cfd;
 
-    when CFD_HIGH_D =>
+    when CFD_HEIGHT_D =>
     	m.height_valid <= cfd_high;
 
     when SLOPE_INTEGRAL_D =>

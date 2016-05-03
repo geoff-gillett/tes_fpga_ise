@@ -1,6 +1,8 @@
-#
-package require isim
-namespace import isim::*
+#measurement_subsystem_TB
+package require xilinx
+namespace import ::isim::*
+namespace import ::sim::*
+
 
 #variable channels
 set channels [getsig CHANNELS unsigned]
@@ -28,6 +30,7 @@ set pulses [open_binfiles [gen_names pulse $channels]]
 set slopethreshxings [open_binfiles [gen_names slopethreshxing $channels]]
 set triggers [open_binfiles [gen_names trigger $channels]]
 set heights [open_binfiles [gen_names height $channels]]
+set eventstreams [open_binfiles [gen_names eventstream $channels]]
 
 #single data files
 set muxfull [open "../muxfull" w]
@@ -66,11 +69,15 @@ fconfigure $mcasetting -translation binary
 set bytestream [open "../bytestream" w]
 fconfigure $bytestream -translation binary
 
+set baseline [open "../baseline" w]
+fconfigure $baseline -translation binary
+
 restart
 
 # set up wave database
 wave add /measurement_subsystem_TB
-wave add /measurement_subsystem_TB/\\chanGen(1)\\/measurementUnit
+#wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator
+#wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator/mostFrequent
 #wave add /measurement_subsystem_TB/mux
 #wave add /measurement_subsystem_TB/mux/buffers
 wave add /measurement_subsystem_TB/enet
@@ -80,7 +87,7 @@ wave add /measurement_subsystem_TB/enet
 #wave add /measurement_subsystem_TB/mca
 #wave add /measurement_subsystem_TB/mca/MCA
 #wave add /measurement_subsystem_TB/mca/mcaAdapter
-wave add /measurement_subsystem_TB/cdc
+#wave add /measurement_subsystem_TB/cdc
 
 # advance past reset so settings are valid
 run 8 ns 
@@ -156,6 +163,8 @@ while {[gets $input hexsample] >= 0} {
 		flush_files $cfdlows
 		flush_files $cfdhighs
 		flush_files $triggers
+		flush_files $eventstreams
+		flush $baseline
 		flush $muxstream
 		flush $cfderror
 		flush $timeoverflow
@@ -170,6 +179,9 @@ while {[gets $input hexsample] >= 0} {
 	}
 	
 	setsig adc_sample $hexsample hex
+	
+	#channel0 baseline
+	write_signal $baseline \\chanGen(0)\\/measurementUnit/baseline_estimate
 	
 	set c 0
 	foreach fp $traces {
@@ -298,9 +310,19 @@ while {[gets $input hexsample] >= 0} {
 		incr c
 	}
 
-	write_stream muxstream
-	write_stream mcastream
-	write_stream ethernetstream
+	set c 0
+	foreach fp $eventstreams {
+		if { [getsig eventstreams_ready($c)] && [getsig eventstreams_valid($c)] } {
+			write_signal $fp eventstreams($c).data(63:32) unsigned I
+			write_signal $fp eventstreams($c).data(31:0) unsigned I
+			write_signal $fp eventstreams($c).last(0) unsigned c
+		}
+		incr c
+	}
+
+	write_stream $muxstream muxstream
+	write_stream $mcastream mcastream
+	write_stream $ethernetstream ethernetstream
 	
 	if { [getsig cfd_errors_u unsigned] != 0 } {
 		puts -nonewline $cfderror [binary format i $clk]
@@ -340,10 +362,10 @@ while {[gets $input hexsample] >= 0} {
 		if {![getsig bytestream_ready]} {
 			# ifg = interframe gap
 			incr ifg
-			if {$ifg == 19} {setsig bytestream_ready 1}
+			if {$ifg == 19} {setsig bytestream_ready 1 bin}
 		}
 		if {$packet_last} {
-			setsig bytestream_ready 0
+			setsig bytestream_ready 0 bin
 			set packet_last 0
 			set ifg 0
 		} else {
@@ -377,6 +399,8 @@ close_files $heights
 close_files $cfdlows
 close_files $cfdhighs
 close_files $triggers
+close_files $eventstreams
+close $baseline
 close $muxstream
 close $cfderror
 close $timeoverflow

@@ -1,11 +1,12 @@
-#
-package require isim
-namespace import isim::*
+#measurement_unit_TB
+package require xilinx
 
-#TODO move this to isim package
-# e=0 little endian 1=big endian
+#find out if script is sourced into isim or xsim
+set is_isim [catch version]
+if $is_isim { namespace import ::isim::* } { namespace import ::xsim::* }
+namespace import ::sim::*
 
-set fp [open "../input_signals/short" r]
+set fp [open "../input_signals/double_peak" r]
 fconfigure $fp -buffering line
 
 set settings [open "../setting" w]
@@ -73,12 +74,20 @@ fconfigure $heights -translation binary
 
 restart
 
-wave add /measurement_unit_TB
-wave add /measurement_unit_TB/UUT
-#wave add /measurement_unit_TB/UUT/framer
+#if {$is_isim} {
+#	wave add /measurement_unit_TB
+#	wave add /measurement_unit_TB/UUT
+#	wave add /measurement_unit_TB/UUT/baselineEstimator
+#	wave add /measurement_unit_TB/UUT/baselineEstimator/mostFrequent
+#} {
+#	log_wave /measurement_unit_TB
+#	log_wave /measurement_unit_TB/UUT
+#	log_wave /measurement_unit_TB/UUT/baselineEstimator
+#	log_wave /measurement_unit_TB/UUT/baselineEstimator/mostFrequent
+#}
 
 set period [getsig CLK_PERIOD]
-run $period
+run [lindex $period 0] [lindex $period 1]
 
 set clk 0
 #baseline registers
@@ -200,7 +209,7 @@ while {[gets $fp hexsample] >= 0} {
 		puts -nonewline $triggers [binary format i $clk]
 	}
 	
-	write_stream eventstream
+	write_stream $eventstream eventstream
 	
 	if { [getsig cfd_error] } {
 		puts -nonewline $cfderrors [binary format i $clk]
@@ -218,7 +227,7 @@ while {[gets $fp hexsample] >= 0} {
 		puts -nonewline $peakoverflows [binary format i $clk]
 	}
 	
-	run $period
+	run [lindex $period 0] [lindex $period 1]
 	incr clk 
 }
 
