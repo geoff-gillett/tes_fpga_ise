@@ -20,13 +20,13 @@ type boolean_vector is array (natural range <>) of boolean;
 --------------------------------------------------------------------------------
 function to_boolean(a:std_logic) return boolean; 
 function to_boolean(sv:std_logic_vector) return boolean_vector;
---function to_boolean(u:unsigned) return boolean_vector;
 function to_boolean(i,w:natural) return boolean_vector;
+function to_boolean(u:unsigned) return boolean_vector;
 function to_std_logic(a:boolean) return std_logic;
 function to_std_logic(b:boolean_vector) return std_logic_vector;
 function to_unsigned(b:boolean_vector) return unsigned;
 function to_unsigned(b:boolean) return unsigned;
-
+function resize(b:boolean_vector;s:natural) return boolean_vector;
 --------------------------------------------------------------------------------
 -- Bitwise boolean logic on boolean_vector
 --------------------------------------------------------------------------------
@@ -85,6 +85,16 @@ begin
 	else 
 		return to_unsigned(0,1);
 	end if;
+end function;
+
+function to_boolean(u:unsigned) return boolean_vector is
+begin
+	return to_boolean(std_logic_vector(u));
+end function;
+
+function resize(b:boolean_vector;s:natural) return boolean_vector is
+begin
+	return to_boolean(resize(to_unsigned(b),s));
 end function;
 --------------------------------------------------------------------------------
 -- Bitwise boolean logic on boolean_vector

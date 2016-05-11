@@ -15,10 +15,8 @@ use ieee.numeric_std.all;
 
 library extensions;
 use extensions.boolean_vector.all;
+use extensions.logic.all;
 
---use work.types.all;
---use work.functions.all;
---
 library streamlib;
 use streamlib.types.all;
 
@@ -28,11 +26,10 @@ generic(
   CHANNELS:integer:=9
 );
 port(
-  --
   sel:in std_logic_vector(CHANNELS-1 downto 0);
   instreams:in streambus_array(CHANNELS-1 downto 0);
   valids:in boolean_vector(CHANNELS-1 downto 0);
-  --
+  
   mux_stream:out streambus_t;
 	mux_valid:out boolean
 );
@@ -43,7 +40,6 @@ architecture combinatorial of eventstream_select is
 type input_array is array(0 to BUS_BITS-1) of 
 										std_logic_vector(CHANNELS-1 downto 0);
 signal mux_inputs:input_array;
-signal unused:std_logic_vector(12-CHANNELS-1 downto 0):=(others => '0');
 signal valid_int:std_logic;
 signal input_streamvectors:streamvector_array(CHANNELS-1 downto 0);
 signal mux_streamvector:streamvector_t;
@@ -63,24 +59,17 @@ begin
 	
 	selector:entity work.select_1of12
   port map(
-    input=> (unused & mux_inputs(bit)),
-    sel => (unused & sel),
+    input => resize(mux_inputs(bit),12),
+    sel => resize(sel,12),
     output => mux_streamvector(bit)
   );
 end generate;
 
 validMux:entity work.select_1of12
 port map(
-  input  => (unused & to_std_logic(valids)),
-  sel    => (unused & sel),
+  input  => resize(to_std_logic(valids),12),
+  sel    => resize(sel,12),
   output => valid_int
 );
-
---lastMux:entity teslib.select_1of12
---port map(
---  input  => (unused & to_std_logic(lasts)),
---  sel    => (unused & sel),
---  output => last_int
---);
 
 end architecture combinatorial;

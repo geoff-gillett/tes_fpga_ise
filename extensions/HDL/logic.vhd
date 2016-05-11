@@ -53,6 +53,8 @@ function ceilLog2(a:integer) return integer;
 -- reshape shifts and resizes to output width and frac
 function reshape(u:unsigned;in_frac,width,frac:integer) return unsigned;
 function reshape(s:signed;in_frac,width,frac:integer) return signed;
+
+function resize(slv:std_logic_vector;w:natural) return std_logic_vector;
 	
 end package logic;
 
@@ -177,10 +179,22 @@ end function;
 function reshape(s:signed;in_frac,width,frac:integer) return signed is
 begin
 	if IN_FRAC > FRAC then
-		return resize(shift_right(s,in_frac-frac),width);
+		return shift_right(resize(s,width),in_frac-frac);
 	else
-		return resize(shift_left(s,frac-in_frac),width);
+		return shift_left(resize(s,width),frac-in_frac);
 	end if;
 end function;
 
+-- assumes downto 0
+function resize(slv:std_logic_vector;w:natural) return std_logic_vector is
+variable o:std_logic_vector(w-1 downto 0) := (others => '0');
+begin
+	if slv'length >= w then
+		o := slv(w-1 downto 0);
+	else
+		o(slv'length-1 downto 0) := slv;
+	end if;
+	return o;
+end function;
+	
 end package body logic;

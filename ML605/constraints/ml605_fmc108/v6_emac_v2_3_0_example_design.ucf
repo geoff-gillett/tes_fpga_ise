@@ -108,9 +108,9 @@ Net mdc              LOC = AP14 | IOSTANDARD = LVCMOS25;
 Net mdio             LOC = AN14 | IOSTANDARD = LVCMOS25;
 
 # lock to unused header
-Net serial_response  LOC = AN23 | IOSTANDARD = LVCMOS25;
-Net tx_statistics_s  LOC = AP22 | IOSTANDARD = LVCMOS25;
-Net rx_statistics_s  LOC = AG21 | IOSTANDARD = LVCMOS25;
+###Net serial_response  LOC = AN23 | IOSTANDARD = LVCMOS25;
+###Net tx_statistics_s  LOC = AP22 | IOSTANDARD = LVCMOS25;
+###Net rx_statistics_s  LOC = AG21 | IOSTANDARD = LVCMOS25;
 
 Net gmii_rxd<7>      LOC = AC13 | IOSTANDARD = LVCMOS25;
 Net gmii_rxd<6>      LOC = AC12 | IOSTANDARD = LVCMOS25;
@@ -161,12 +161,12 @@ Net gmii_rx_clk      LOC = AP11 | IOSTANDARD = LVCMOS25;
 # design level of wrapper hierarchy, the net names should be translated to
 # match your design.
 ###############################################################################
-#NET "clk_in_p" TNM_NET = "clk_in_p";
-#TIMESPEC "TS_v6_emac_v2_3_0_clk_in_p" = PERIOD "clk_in_p" 5.000 ns HIGH 50% INPUT_JITTER 50.0ps;
+###NET "clk_in_p" TNM_NET = "clk_in_p";
+###TIMESPEC "TS_v6_emac_v2_3_0_clk_in_p" = PERIOD "clk_in_p" 5.000 ns HIGH 50% INPUT_JITTER 50.0ps;
 
 
 # Ethernet GTX_CLK high quality 125 MHz reference clock
-NET "gtx_clk_bufg" TNM_NET = "ref_gtx_clk";
+NET "IO_clk" TNM_NET = "ref_gtx_clk";
 TIMEGRP "v6_emac_v2_3_0_clk_ref_gtx" = "ref_gtx_clk";
 TIMESPEC "TS_v6_emac_v2_3_0_clk_ref_gtx" = PERIOD "v6_emac_v2_3_0_clk_ref_gtx" 8 ns HIGH 50 %;
 

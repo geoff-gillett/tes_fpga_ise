@@ -82,7 +82,7 @@ port map(
   instream_readys => instream_readys,
   full => full,
   tick_period => tick_period,
-  overflows => overflows,
+  mux_overflows => overflows,
   muxstream => muxstream,
   valid => valid,
   ready => ready

@@ -687,7 +687,7 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
     mca_value_valid => mca_value_valids(c),
     dump => dumps(c),
     commit => commits(c),
-    baseline_range_error => baseline_errors(c),
+    baseline_underflow => baseline_errors(c),
     cfd_error => cfd_errors(c),
     time_overflow => time_overflows(c),
     peak_overflow => peak_overflows(c),
@@ -723,7 +723,7 @@ port map(
   full => open,
   tick_period => global.tick_period,
   window => to_unsigned(5,RELATIVETIME_BITS),
-  overflows => framer_overflows,
+  mux_overflows => framer_overflows,
   muxstream => muxstream,
   valid => muxstream_valid,
   ready => muxstream_ready

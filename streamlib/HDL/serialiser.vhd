@@ -52,13 +52,11 @@ attribute shreg_extract:string;
 attribute shreg_extract of data_shifter:signal is "NO";
 signal valid_int,valid_read,last_int,read_stream,ready_int,data_valid:boolean;
 signal valid_read_pipe,last_read_pipe,last_shifter:boolean_vector(1 to LATENCY);
-attribute shreg_extract of valid_read_pipe,last_read_pipe,last_shifter:signal is "NO";
+attribute shreg_extract of valid_read_pipe,last_read_pipe,last_shifter:
+					signal is "NO";
 signal read_en_pipe:boolean_vector(1 to LATENCY);
 signal stream_int:ramword;
 signal shift_addr:integer range 0 to LATENCY;
---attribute keep:string;
---attribute keep of shift_addr:signal is "TRUE";
---attribute keep of data_valid:signal is "TRUE";
 signal read_ram:boolean;
 --
 begin

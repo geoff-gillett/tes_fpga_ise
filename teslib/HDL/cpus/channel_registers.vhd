@@ -31,7 +31,7 @@
 -- baseline.threshold		  		address bit 8
 -- baseline.count_threshold		address bit 9
 -- baseline flags							address bit 10
--- reserved										address bit 11
+-- input select								address bit 11
 --
 -- 2  downto 0  baseline.average_order
 -- 4 						baseline.subtraction 
@@ -55,6 +55,7 @@ use work.registers.all;
 -- expects s_clk = 2*reg_clk
 entity channel_registers is
 generic(
+	CHANNEL:integer:=0;
 	CONFIG_BITS:integer:=8;
 	CONFIG_STREAM_WIDTH:integer:=8;
 	COEF_BITS:integer:=25;
@@ -170,6 +171,7 @@ if rising_edge(reg_clk) then
 		reg.capture.trace0 <= DEFAULT_TRACE0;
 		reg.capture.trace1 <= DEFAULT_TRACE1;
 		reg.capture.delay <= DEFAULT_DELAY;
+		reg.capture.input_sel <= (CHANNEL => '1',others => '0');
   else
     if write then
       if address(DELAY_ADDR_BIT)='1' then
@@ -225,8 +227,12 @@ if rising_edge(reg_clk) then
         	<= to_integer(unsigned(data(2 downto 0))); 
         reg.baseline.subtraction <= to_boolean(data(4));
       end if;
+      if address(INPUT_SEL_ADDR_BIT)='1' then
+      	reg.capture.input_sel <= data(CHANNELS-1 downto 0);
+      	reg.capture.invert <= data(CHANNELS)='1';
+      end if;
       if address(FILTER_CONFIG_ADDR_BIT)='1' then
-      	
+      	--TODO implement
       end if;
     end if;
   end if;
@@ -380,7 +386,9 @@ reg_data(BL_THRESHOLD_ADDR_BIT)
 reg_data(BL_COUNT_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.baseline.count_threshold,AXI_DATA_BITS));
 reg_data(BL_FLAGS_ADDR_BIT) <= baseline_flags(reg);
-reg_data(11) <= (others => '0');
+reg_data(INPUT_SEL_ADDR_BIT) <= resize(to_std_logic(reg.capture.invert) & 
+			 														reg.capture.input_sel,AXI_DATA_BITS
+		 														);
 
 selectorGen:for b in 0 to AXI_DATA_BITS-1 generate
 	--variable reg_bits:std_logic_vector(11 downto 0);

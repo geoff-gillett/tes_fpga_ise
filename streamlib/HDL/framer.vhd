@@ -35,11 +35,9 @@ port(
   --! frame address
   address:in unsigned(ADDRESS_BITS-1 downto 0);
   chunk_we:in boolean_vector(BUS_CHUNKS-1 downto 0);
-  success:out boolean; --Write or commit success 1 clk after
-  -- length of frame to commit
   length:in unsigned(ADDRESS_BITS-1 downto 0);
   commit:in boolean;
-  free:out unsigned(ADDRESS_BITS downto 0);
+  free:out unsigned(ADDRESS_BITS-1 downto 0);
   --
   stream:out streambus_t;
   valid:out boolean;
@@ -50,25 +48,19 @@ end entity framer;
 architecture TDP of framer is
 --
 --RAM read_latency is 2 but the address increments 1clk after read_ram asserted
-constant LATENCY:integer:=3; -- LATENCY for serialiser
+constant LATENCY:integer:=2; -- LATENCY for serialiser
 --
 type frame_buffer is array (0 to 2**ADDRESS_BITS-1) of streamvector_t;
 shared variable frame_ram:frame_buffer:=(others => (others => '0'));
---signal last_int,valid_int,valid_reg,ready_int:boolean;
---signal stream_int:std_logic_vector(BUS_BITS-1 downto 0);
 signal input_word,ram_dout,ram_data,stream_vector:streamvector_t;
 signal we:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal rd_ptr,wr_addr:unsigned(ADDRESS_BITS-1 downto 0);
-signal free_ram:unsigned(ADDRESS_BITS downto 0);
-signal read_ram,ram_empty,read_en:boolean;
---attribute keep:string;
---attribute keep of ram_data:signal is "TRUE";
-signal wr_valid_int:boolean;
---attribute keep of wr_valid_int:signal is "TRUE";
---
+signal rd_ptr,wr_addr,wr_ptr:unsigned(ADDRESS_BITS-1 downto 0);
+signal free_ram:unsigned(ADDRESS_BITS-1 downto 0);
+signal read_ram,read_en:boolean;
+--signal wr_valid_int:boolean;
 begin
 free <= free_ram;
-success <= wr_valid_int; 
+--success <= wr_valid_int; 
 --------------------------------------------------------------------------------
 -- Frame buffer
 --------------------------------------------------------------------------------
@@ -87,8 +79,8 @@ begin
 if rising_edge(clk) then
   for i in 0 to BUS_CHUNKS-1 loop
     if we(i) then
-      frame_ram(to_integer(to_0IfX(wr_addr)))
-      					((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS)
+      frame_ram(to_integer(to_0IfX(wr_addr))) 
+      		((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS)
         :=input_word((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS);
     end if;
   end loop;
@@ -99,64 +91,42 @@ framePortB:process(clk)
 begin
 if rising_edge(clk) then
 	ram_dout <= frame_ram(to_integer(to_0IfX(rd_ptr)));
-	if read_en then
+	if read_en and read_ram then
 		frame_ram(to_integer(to_0Ifx(rd_ptr))):=(others => '0');
 	end if;
   ram_data <= ram_dout; -- register output
 end if;
 end process framePortB;
---ram_data <= ram_reg; --to keep name FIXME does not work
 
 ramPointers:process(clk)
-variable wr,rdNext:unsigned(ADDRESS_BITS-1 downto 0);
-variable free,freeNext:unsigned(ADDRESS_BITS downto 0)
-                      :=(ADDRESS_BITS => '1',others => '0');
 variable empty:boolean;
-variable sel:boolean_vector(1 downto 0);
 begin
 if rising_edge(clk) then
   if reset = '1' then
     wr_addr <= (others => '-');
-    rd_ptr <= (others => '1');
-    wr:=(others => '0');
-    rdNext:=(others => '0');
-    free:=(ADDRESS_BITS => '1',others => '0');
-    freeNext:=(ADDRESS_BITS => '0',others => '1');
-    free_ram <= (ADDRESS_BITS => '1',others => '0');
-    ram_empty <= TRUE;
+    rd_ptr <= (others => '0');
+    wr_ptr <= (others => '0');
+    free_ram <= (others => '1');
   else
-    if ('0' & to_0IfX(address)) >= to_0IfX(free_ram) then
-      we <= (others => FALSE);
-      wr_valid_int <= FALSE;
-    else
+  	
+  	empty:=rd_ptr=wr_ptr;	
+    if to_0ifX(free_ram) > ('0' & to_0IfX(address)) then
       we <= chunk_we;
-      wr_valid_int <= TRUE;
+    else
+      we <= (others => FALSE);
     end if;
-    wr_addr <= wr+address;
-    empty:=free_ram(ADDRESS_BITS)='1';
-    --TODO infer DSP for this adder subtractor;
-    freeNext:=free_ram+1;
-    sel:=(commit and (('0' & to_0IfX(length)) <= to_0IfX(free_ram))) & 
-         (read_ram and not ram_empty);
-    case sel is
-      when (FALSE,FALSE) => free:=free_ram; 
-      when (TRUE,FALSE) => free:=free_ram-length; 
-      when (FALSE,TRUE) => free:=freeNext;
-      when (TRUE,TRUE) => free:=freeNext-length;
-    end case;
-    ram_empty <= free(ADDRESS_BITS)='1';
-    free_ram <= free;
-    if read_ram and not ram_empty then
-      rd_ptr <= rdNext;
-      rdNext:=rdNext+1;
-    end if;
-    if commit then
-      if ('0' & to_0IfX(length)) >= to_0IfX(free_ram) then
-        wr_valid_int <= FALSE;
-      else
-        wr:=wr+length;
-        wr_valid_int <= TRUE;
+    wr_addr <= wr_ptr + address;
+    
+    free_ram <= rd_ptr-wr_ptr-1;
+    if commit then 
+      if ('0' & to_0IfX(length)) <= to_0IfX(free_ram) then
+      	wr_ptr <= wr_ptr + length;
+      	--free_ram <= free_ram - length + to_unsigned(read_en and read_ram);
       end if;
+    end if;
+    
+    if not empty and read_en and read_ram then
+      rd_ptr <= rd_ptr + 1;
     end if;
   end if;
 end if;
@@ -165,7 +135,7 @@ end process ramPointers;
 --------------------------------------------------------------------------------
 -- Streaming interface 
 --------------------------------------------------------------------------------
-read_en <= not ram_empty;
+read_en <= rd_ptr /= wr_ptr;
 serialiser:entity work.serialiser
 generic map(
   LATENCY => LATENCY,

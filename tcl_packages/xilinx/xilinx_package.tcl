@@ -126,27 +126,28 @@ namespace eval xilinx {
 	namespace export make_project update_version src build_bitstream versionHex
 }
 
+#expects either *.xci or *.xco having both will cause an error *.xci prefered
 proc ::xilinx::process_cores {vivado cores_dir} {
 	
-	set cores [glob -nocomplain $cores_dir/*.{xci}]
+	set cores [glob -nocomplain $cores_dir/*.{xci,xco}]
 
 	puts "Processing IP in $cores_dir"
 
   #create a dir for each core and copy core file to it and generate
   if { [llength $cores] != 0 } {
-    foreach core $cores {
-      set name [file tail [file rootname $core]]
+		
+    foreach corepath $cores {
+			set corefile [file tail $corepath]
+      set name [file rootname $corefile]
+			#create a build directory
       if ![file exists $cores_dir/$name] {
         file mkdir $cores_dir/$name
       }
-			
-      if ![file exists $cores_dir/$name] {
-        file mkdir $cores_dir/$name
-      }
-      if ![file exists $cores_dir/$name/$name.xci] {
-        file copy $core $cores_dir/$name/$name.xci
-      }
-      add_files -norecurse $cores_dir/$name/$name.xci
+			# copy core file to it
+      if ![file exists $cores_dir/$name/$corefile] {
+        file copy $corepath $cores_dir/$name/$corefile
+      } 
+      add_files -norecurse $cores_dir/$name/$corefile
     }
     generate_target all [get_ips]
   }

@@ -3,14 +3,34 @@ package require xilinx
 namespace import ::isim::*
 namespace import ::sim::*
 
+#testbench settings
+set height_min 50
+set height_max 800
+set low_level 10
+set space_min 1
+set space_max 100
+set mark_min 10
+set mark_max 1000
+set sim_clks 100000
+# The cfd breaks if the space is to longer than the cfd delay as the minima 
+#occcurs at the start of the space. If the space is longer than space limit
+#add a minima
+set space_lim 10
 
-#variable channels
+#seed the prng for repeatability
+expr srand(23)
+
+proc randint {min max} {
+	return [expr $min+int( rand()*($max-$min+1) ) ]
+}
+
 set channels [getsig CHANNELS unsigned]
-
-# input signal text file has 2 byte ascii hex value per line 
-# TODO make inputs binary files
-set input [open "../input_signals/long" r]
-fconfigure $input -buffering line
+# initialise array for random rectangular pulse stimulus
+for {set c 0} {$c < $channels} {incr c} {
+	set chan(state$c) 0
+	set chan(next$c) 0
+	set chan(last_space$c) 0
+}
 
 # open data files for binary writing
 # per channel data files
@@ -72,18 +92,23 @@ fconfigure $mcasetting -translation binary
 set bytestream [open "../bytestream" w]
 fconfigure $bytestream -translation binary
 
-set baseline [open "../baseline" w]
-fconfigure $baseline -translation binary
-
 restart
 
 # set up wave database
-wave add /measurement_subsystem_TB
-#wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator
+wave add /measurement_overflow_TB
+wave add /measurement_overflow_TB/\\chanGen(0)\\/measurementUnit
+wave add /measurement_overflow_TB/\\chanGen(1)\\/measurementUnit
+#wave add /measurement_overflow_TB/\\chanGen(2)\\/measurementUnit
+#wave add /measurement_overflow_TB/\\chanGen(3)\\/measurementUnit
+#wave add /measurement_overflow_TB/\\chanGen(4)\\/measurementUnit
+#wave add /measurement_overflow_TB/\\chanGen(5)\\/measurementUnit
+#wave add /measurement_overflow_TB/\\chanGen(6)\\/measurementUnit
+#wave add /measurement_overflow_TB/\\chanGen(7)\\/measurementUnit
 #wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator/mostFrequent
-#wave add /measurement_subsystem_TB/mux
+wave add /measurement_overflow_TB/mux
 #wave add /measurement_subsystem_TB/mux/buffers
-wave add /measurement_subsystem_TB/enet
+wave add /measurement_overflow_TB/enet
+wave add /measurement_overflow_TB/enet/framer
 #wave add /measurement_subsystem_TB/enet/eventbuffer
 #wave add /measurement_subsystem_TB/enet/eventbuffer/streambuffer
 #wave add /measurement_subsystem_TB/enet/eventbuffer/lookaheadslice
@@ -144,9 +169,7 @@ set clk 0
 set ifg 0
 set packet_last 0
 
-while {[gets $input hexsample] >= 0} {
-#while {$clk < 50000} {}
-  #gets $input hexsample
+while { $clk < $sim_clks } {
 	
 	if {![expr $clk % 10000]} {
 		# print progress and flush files every 10000 clks
@@ -167,7 +190,6 @@ while {[gets $input hexsample] >= 0} {
 		flush_files $cfdhighs
 		flush_files $triggers
 		flush_files $eventstreams
-		flush $baseline
 		flush $muxstream
 		flush $cfderror
 		flush $timeoverflow
@@ -182,14 +204,33 @@ while {[gets $input hexsample] >= 0} {
 		flush $bytestream
 	}
 	
-	setsig adc_sample $hexsample hex
-	
-	#channel0 baseline
-	write_signal $baseline \\chanGen(0)\\/measurementUnit/baseline_estimate
+	for {set c 0} {$c < $channels} {incr c} {
+		if { $chan(next$c) == $clk } {
+			if { $chan(state$c) } {
+				if { $chan(last_space$c) > $space_lim } {
+					set chan(next$c) [expr $clk + 10]
+					setsig adc_samples($c) 0 dec
+					set chan(last_space$c) 0
+				} {
+					setsig adc_samples($c) [randint $height_min $height_max] unsigned
+					set chan(state$c) 0
+					set t [randint $mark_min $mark_max]
+					set chan(next$c) [expr $clk + $t]
+					#puts "$clk:next mark$c:$t next:$chan(next$c)"
+				}
+			} {
+        setsig adc_samples($c) $low_level dec
+        set chan(state$c) 1
+        set t [randint $space_min $space_max]
+				set chan(last_space$c) [expr $clk + $t]
+        set chan(next$c) [expr $clk + $t]
+				#puts "$clk - next space$c:$t next:$chan(next$c)"
+			}
+		}
+	}
 	
 	set c 0
 	foreach fp $traces {
-		write_signal $fp adc_sample unsigned s
 		write_signal $fp measurements($c).raw.sample dec s
 		write_signal $fp measurements($c).filtered.sample dec s
 		write_signal $fp measurements($c).slope.sample dec s
@@ -330,7 +371,7 @@ while {[gets $input hexsample] >= 0} {
 	
 	if { [getsig cfd_errors_u unsigned] != 0 } {
 		puts -nonewline $cfderror [binary format i $clk]
-		write_signal $cfderror cfd_error_u unsigned c 
+		write_signal $cfderror cfd_errors_u unsigned c 
 	}
 	
 	if { [getsig time_overflows_u unsigned] != 0 } {
@@ -387,7 +428,6 @@ while {[gets $input hexsample] >= 0} {
 	incr clk 
 }
 
-close $input
 close_files $traces
 close_files $raws
 close_files $filtereds
@@ -404,7 +444,6 @@ close_files $cfdlows
 close_files $cfdhighs
 close_files $triggers
 close_files $eventstreams
-close $baseline
 close $muxstream
 close $cfderror
 close $timeoverflow

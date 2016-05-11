@@ -22,10 +22,11 @@ package events is
 --------------------------------------------------------------------------------
 --                            Constants
 --------------------------------------------------------------------------------
-constant RELATIVETIME_POS:integer:=16;
-constant SIZE_POS:integer:=48; --LSB of size field
-constant FLAGS_POS:integer:=11;
+--constant RELATIVETIME_POS:integer:=16;
+--constant SIZE_POS:integer:=48; --LSB of size field
+--constant FLAGS_POS:integer:=11;
 
+constant TICK_BUSWORDS:integer:=3;	-- must be 2 or 3
 --------------------------------------------------------------------------------
 --                            Event Types 
 --------------------------------------------------------------------------------
@@ -38,7 +39,7 @@ constant FLAGS_POS:integer:=11;
 -- event type - either tick or one of four detection types
 --------------------------------------------------------------------------------
 --         2       | 1  |    1     |
--- detection_type_d|tick|new_window|
+-- detection_type_d|tick|new_window| -- new window is added by mux
 type event_type_t is record
 	detection:detection_d;
 	tick:boolean;
@@ -56,8 +57,6 @@ type detection_flags_t is record
 	peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0); 
 	relative:boolean; 
 	height:height_d;
-	--peak_overflow:boolean; 
-	--time_overflow:boolean; 
 	timing:timing_d;
 	channel:unsigned(CHANNEL_BITS-1 downto 0); 
 	event_type:event_type_t; 
@@ -68,13 +67,11 @@ function to_std_logic(f:detection_flags_t) return std_logic_vector;
 
 --------------------------- tick flags 16 bits ---------------------------------
 -- First byte
--- |    8    |
--- |overflows|
--- Second byte
--- |3|    1    |     3    |1|
--- |0|tick_lost|type_flags|0|
+-- | 2 |      1       |     1     |      3     |1|
+-- | 0 | mux_overflow | tick_lost | type_flags |0|
+
 type tickflags_t is record 
-	overflow:boolean_vector(7 downto 0); 
+	--mux_overflow:boolean;
 	tick_lost:boolean;
 	event_type:event_type_t; 
 end record;
@@ -82,8 +79,8 @@ end record;
 function to_std_logic(f:tickflags_t) return std_logic_vector;
 
 ---------------------------- peak event 8 bytes --------------------------------
--- |  16  |  16  |  16 | 16 |
--- |height|minima|flags|time|
+-- |   16   |   16   |  16   |  16  |
+-- | height | minima | flags | time |
 type peak_detection_t is record -- entire peak only event
   height:signal_t; 
   minima:signal_t;  
@@ -99,23 +96,36 @@ function to_streambus(e:peak_detection_t;endianness:string) return streambus_t;
 type area_detection_t is record
 	area:area_t; 
 	flags:detection_flags_t; 
-	rel_timestamp:time_t; 
+	--rel_timestamp:time_t; 
 end record;
 
 function to_streambus(a:area_detection_t;endianness:string) return streambus_t;
 	
 -------------------------- tick event 16 bytes----------------------------------
---     |  32  |  16 | 16 |
--- w=0 |period|flags|time|
--- w=1 | full time-stamp |
+--     |                   32                |  16  |  16  |
+-- w=0 |                  period             | flags| time |
+-- w=1 |                    full time-stamp                |
+-- last word only when TICK_BUSWORDS=3
+--     |     8      |    8    |    8     |     8     |    8     |    8     |16|
+-- w=2 | framer_ovf | mux_ovf | meas_ovf | cfd_error | peak_ovf | time_ovf | 0|
 type tick_event_t is record
   period:unsigned(TICK_PERIOD_BITS-1 downto 0);
   flags:tickflags_t; 
 	rel_timestamp:time_t; 
   full_timestamp:unsigned(TIMESTAMP_BITS-1 downto 0); --64
+  events_lost:boolean_vector(CHANNELS-1 downto 0);
+  framer_overflows:boolean_vector(CHANNELS-1 downto 0);
+  measurement_overflows:boolean_vector(CHANNELS-1 downto 0);
+  mux_overflows:boolean_vector(CHANNELS-1 downto 0);
+  peak_overflows:boolean_vector(CHANNELS-1 downto 0);
+  time_overflows:boolean_vector(CHANNELS-1 downto 0);
+  baseline_underflows:boolean_vector(CHANNELS-1 downto 0);
+  cfd_errors:boolean_vector(CHANNELS-1 downto 0);
+  commits:unsigned(23 downto 0);
+  dumps:unsigned(23 downto 0);
 end record;
 
-function to_streambus(t:tick_event_t;w:natural range 0 to 1;endianness:string) 
+function to_streambus(t:tick_event_t;w:natural range 0 to 2;endianness:string) 
 return streambus_t;
 
 -----------------  pulse event - 16 byte header --------------------------------
@@ -208,13 +218,9 @@ function to_std_logic(t:trace_peak_t;endianness:string) return std_logic_vector;
 function to_streambus(t:trace_peak_t;endianness:string)
 return streambus_t;
 
-type part_trace_peak_t is record
-	min_time:time_t;
-	
-end record;
-
 end package events;
-
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 package body events is
 
 ------------------------- event_type_t - 4 bits --------------------------------
@@ -261,26 +267,23 @@ begin
   return slv;
 end function;
 
-------------------------- tick flags - 16 bits ---------------------------------
--- |    8    ||3|    1    |    3     |1|
--- |overflows||0|tick_lost|type_flags|0|
+------------------------- tick flags - 8 bits ---------------------------------
+-- | 3 |     1     |      3     | 1 |
+-- | 0 | tick_lost | type_flags | 0 |
 function to_std_logic(f:tickflags_t) 
 return std_logic_vector is 
-variable slv:std_logic_vector(15 downto 0);
+variable slv:std_logic_vector(7 downto 0);
 begin
-				 -- first byte transmitted 
-  slv := to_std_logic(f.overflow) &
-				 -- second byte transmitted 
-         to_std_logic(0,3) &
-         to_std_logic(f.tick_lost) & 
+  slv := to_std_logic(0,3) &
+         to_std_logic(f.tick_lost) &
          to_std_logic(f.event_type) &
          '0';
 	return slv;
 end function;
 
 ---------------------------- peak event 8 bytes --------------------------------
--- |  16  |  16  |  16 | 16 |
--- |height|minima|flags|time|
+-- |   16   |   16   |  16   |  16  |
+-- | height | minima | flags | time |
 function to_streambus(e:peak_detection_t;endianness:string) 
 return	streambus_t is
 	variable sb:streambus_t;
@@ -313,24 +316,39 @@ end function;
 
 -- TODO add the extra 8 bytes
 -------------------------- tick event 16 bytes----------------------------------
---     |  32  |  16 | 16 |
--- w=0 |period|flags|time|  -- the 8 overflow flags should indicate event loss
--- w=1 | full time-stamp |
--- TODO implement
--- w=3 | peak overflow, time overflow, mux overflow framer overflow etc
-function to_streambus(t:tick_event_t;w:natural range 0 to 1;endianness:string) 
+--     |                   32                |  16  |  16  |
+-- w=0 |                  period             | flags| time |
+-- w=1 |                    full time-stamp                |
+-- last word only when TICK_BUSWORDS=3
+--     |     8      |    8    |    8     |     8     |    8     |    8     | ...
+-- w=2 | framer_ovf | mux_ovf | meas_ovf | cfd_error | peak_ovf | time_ovf | ...
+-- ... |      8       | 8 |
+-- ... | baseline_unf | 0 |   
+function to_streambus(t:tick_event_t;w:natural range 0 to 2;endianness:string) 
 return streambus_t is
 variable sb:streambus_t;
 begin
 	case w is
 	when 0 =>
     sb.data := set_endianness(t.period,endianness) &
+               "00000000" & -- reserved
                to_std_logic(t.flags) &
 	             "0000000000000000"; -- replaced with rel_timestamp by mux
     sb.discard := (others => FALSE);
     sb.last := (others => FALSE);
   when 1 =>
     sb.data := set_endianness(t.full_timestamp,endianness);
+    sb.discard := (others => FALSE);
+    sb.last := (0 => TICK_BUSWORDS=2, others => FALSE);					
+  when 2 =>
+    sb.data := resize(to_std_logic(t.framer_overflows),CHANNELS) &
+    					 resize(to_std_logic(t.mux_overflows),CHANNELS) &
+    					 resize(to_std_logic(t.measurement_overflows),CHANNELS) &
+    					 resize(to_std_logic(t.cfd_errors),CHANNELS) &
+    					 resize(to_std_logic(t.peak_overflows),CHANNELS) &
+    					 resize(to_std_logic(t.time_overflows),CHANNELS) &
+    					 resize(to_std_logic(t.baseline_underflows),CHANNELS) &
+    					 to_std_logic(0, 8);
     sb.discard := (others => FALSE);
     sb.last := (0 => TRUE, others => FALSE);					
   when others =>

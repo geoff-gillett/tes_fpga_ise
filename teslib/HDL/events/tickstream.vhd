@@ -35,13 +35,19 @@ generic(
 port (
   clk:in std_logic;
   reset:in std_logic;
-  --
+  
   tick:out boolean;
   timestamp:out unsigned(TIMESTAMP_BITS-1 downto 0);
   tick_period:in unsigned(TICKPERIOD_BITS-1 downto 0);
-  --
-  overflow:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  --
+ 
+  mux_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  cfd_errors:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  framer_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  measurement_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  peak_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  time_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  baseline_underflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+ 
   tickstream:out streambus_t;
   valid:out boolean;
   ready:in boolean
@@ -53,20 +59,26 @@ architecture aligned of tickstream is
 constant CHANNELS:integer:=2**CHANNEL_BITS;
 constant ADDRESS_BITS:integer:=9;
 --
-signal overflow_reg:boolean_vector(CHANNELS-1 downto 0);
+signal events_lost_reg:boolean_vector(CHANNELS-1 downto 0);
+signal framer_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
+signal baseline_underflow_reg:boolean_vector(CHANNELS-1 downto 0);
+signal peak_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
+signal time_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
+signal measurement_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
+signal mux_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
+signal cfd_error_reg:boolean_vector(CHANNELS-1 downto 0);
 signal full,tick_int,tick_reg,missed_tick,last_tick_missed,commit:boolean;
-type FSMstate is (IDLE,FIRST,SECOND);
+type FSMstate is (IDLE,FIRST,SECOND,THIRD);
 signal state,nextstate:FSMstate;
 signal data:streambus_t;
 signal address:unsigned(ADDRESS_BITS-1 downto 0);
-signal free:unsigned(ADDRESS_BITS downto 0);
+signal free:unsigned(ADDRESS_BITS-1 downto 0);
 signal wr_en:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal tick_event:tick_event_t;
---signal tick_bus:streambus_array_t(1 downto 0);
 signal time_stamp:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal tick_pipe:boolean_vector(0 to TICKPIPE_DEPTH);
 signal current_period:unsigned(TICKPERIOD_BITS-1 downto 0);
---
+
 begin
 tick <= tick_int;
 tick_event.rel_timestamp <= (others => '-');
@@ -88,33 +100,76 @@ port map(
   address => address,
   chunk_we => wr_en,
   free => free,
-  length => to_unsigned(2,ADDRESS_BITS),
+  length => to_unsigned(TICK_BUSWORDS,ADDRESS_BITS),
   commit => commit,
   stream => tickstream,
   valid => valid,
   ready => ready
 );
-full <= free < to_unsigned(2,ADDRESS_BITS+1);
---tick_bus <= to_streambus(tick_event,ENDIANNESS);
+full <= free < to_unsigned(TICK_BUSWORDS,ADDRESS_BITS+1);
 
-overflowReg:process(clk)
+Reg:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      overflow_reg <= (others => FALSE);
+      events_lost_reg <= (others => FALSE);
+      framer_overflow_reg <= (others => FALSE);
+      measurement_overflow_reg <= (others => FALSE);
+      cfd_error_reg <= (others => FALSE);
     else
     	if tick_int then
-    		tick_event.full_timestamp <= time_stamp;
-        tick_event.flags.overflow(CHANNELS-1 downto 0) 
-        	<= overflow_reg or overflow;
+    		
+        tick_event.events_lost  
+        	<= resize(
+        			events_lost_reg or framer_overflows or 
+        		 	cfd_errors or measurement_overflows or mux_overflows,8
+        		);
+        events_lost_reg <= (others => FALSE);
+        
+    		tick_event.mux_overflows <= resize(mux_overflow_reg or mux_overflows,8);
+        mux_overflow_reg <= (others => FALSE);
+    		
+    		tick_event.measurement_overflows 
+    			<= resize(measurement_overflow_reg or measurement_overflows,8);
+        measurement_overflow_reg <= (others => FALSE);
+        
+    		tick_event.baseline_underflows 
+    			<= resize(baseline_underflow_reg or baseline_underflows,8);
+        baseline_underflow_reg <= (others => FALSE);
+
+        tick_event.framer_overflows 
+        	<= resize(framer_overflow_reg or framer_overflows,8);
+        framer_overflow_reg <= (others => FALSE);
+        
+        tick_event.peak_overflows
+        	<= resize(peak_overflow_reg or peak_overflows,8);
+        peak_overflow_reg <= (others => FALSE);
+        
+        tick_event.time_overflows
+        	<= resize(time_overflow_reg or time_overflows,8);
+        time_overflow_reg <= (others => FALSE);
+        
+        tick_event.cfd_errors
+        	<= resize(cfd_error_reg or cfd_errors,8);
+        cfd_error_reg <= (others => FALSE);
+        
         tick_event.period <= current_period;
-        overflow_reg <= (others => FALSE);
+    		tick_event.full_timestamp <= time_stamp;
+    		
       else 
-      	overflow_reg <= overflow_reg or overflow;
+      	events_lost_reg <= events_lost_reg or framer_overflows or cfd_errors;
+      	framer_overflow_reg <= framer_overflow_reg or framer_overflows;
+      	mux_overflow_reg <= mux_overflow_reg or mux_overflows;
+      	measurement_overflow_reg 
+      		<= measurement_overflow_reg or measurement_overflows;
+      	peak_overflow_reg <= peak_overflow_reg or peak_overflows;
+      	time_overflow_reg <= time_overflow_reg or time_overflows;
+      	baseline_underflow_reg <= baseline_underflow_reg or baseline_underflows;
+      	cfd_error_reg <= cfd_error_reg or cfd_errors;
       end if;
     end if;
   end if;
-end process overflowReg;
+end process Reg;
 
 FSMnextstate:process(clk)
 begin
@@ -138,11 +193,17 @@ when IDLE =>
 when FIRST =>
 	nextstate <= SECOND;
 when SECOND =>
-  nextstate <= IDLE;
+	if TICK_BUSWORDS=3 then
+		nextstate <= THIRD;
+	else
+		nextstate <= IDLE;
+	end if;
+when THIRD => 
+	nextstate <= IDLE;
 end case;
 end process FSMtransition;
 
-reg:process(clk)
+errors:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
@@ -170,11 +231,16 @@ if rising_edge(clk) then
         data <= to_streambus(tick_event,1,ENDIANNESS);
         wr_en <= (others => TRUE);
         address <= (0 => '1', others => '0');
+        commit <= TICK_BUSWORDS=2;
+     when THIRD =>
+        data <= to_streambus(tick_event,2,ENDIANNESS);
+        wr_en <= (others => TRUE);
+        address <= (1 => '1', others => '0');
         commit <= TRUE;
     end case;
   end if;
 end if;
-end process reg;
+end process errors;
 
 tick_int <= tick_pipe(TICKPIPE_DEPTH);
 tickPipe:process(clk)

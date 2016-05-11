@@ -179,7 +179,7 @@ type baseline_registers_t is record
 end record;
 
 type capture_registers_t is record
-	-- max peaks in pulse event sets length of pulse event
+	-- sets length of pulse event
 	max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
 	constant_fraction:unsigned(CFD_BITS-2 downto 0);
 	pulse_threshold:unsigned(DSP_BITS-2 downto 0);
@@ -195,6 +195,8 @@ type capture_registers_t is record
 	trace0:trace_d;
 	trace1:trace_d;
 	delay:unsigned(DELAY_BITS-1 downto 0);
+	input_sel:std_logic_vector(CHANNELS-1 downto 0);
+	invert:boolean;
 end record;
 
 type channel_registers_t is record
@@ -241,8 +243,7 @@ type channel_register_array is array (natural range <>)
 -- baseline.threshold		  		address bit 8
 -- baseline.count_threshold		address bit 9
 -- baseline flags							address bit 10
--- reserved										address bit 11  -- TODO make this select adc input
---                                               and its sign
+-- input select								address bit 11  
 --
 -- 2  downto 0  baseline.average_order
 -- 4 						baseline.subtraction 
@@ -259,7 +260,7 @@ constant BL_TIMECONSTANT_ADDR_BIT:integer:=7;
 constant BL_THRESHOLD_ADDR_BIT:integer:=8;
 constant BL_COUNT_THRESHOLD_ADDR_BIT:integer:=9;
 constant BL_FLAGS_ADDR_BIT:integer:=10;
-constant RESERVED_ADDR_BIT:integer:=11;
+constant INPUT_SEL_ADDR_BIT:integer:=11;
 
 -- FIR AXI streams
 constant FILTER_CONFIG_ADDR_BIT:integer:=20;
@@ -345,6 +346,7 @@ type global_registers_t is record
 	channel_enable:std_logic_vector(CHANNELS-1 downto 0);
 	mca:mca_registers_t;
 	iodelay_control:std_logic_vector(IODELAY_CONTROL_BITS-1 downto 0);
+	window:unsigned(TIME_BITS-1 downto 0);
 end record;
 
 -- ADDRESS MAP (one hot)
@@ -369,7 +371,7 @@ end record;
 -- status     											address bit 9 READ ONLY??
 --		0	fmc108 internal clk enable
 --    1  VCO power enable
--- RESERVED													address bit 10
+-- window														address bit 10
 -- RESERVED													address bit 11
 --
 -- iodelay_control                  address bit 12 WRITE ONLY
@@ -391,6 +393,7 @@ constant TICK_LATENCY_ADDR_BIT:integer:=6;
 constant ADC_ENABLE_ADDR_BIT:integer:=7;
 constant CHANNEL_ENABLE_ADDR_BIT:integer:=8;
 constant STATUS_ADDR_BIT:integer:=9;
+constant WINDOW_ADDR_BIT:integer:=10;
 
 constant IODELAY_CONTROL_ADDR_BIT:integer:=12;
 constant MCA_UPDATE_ADDR_BIT:integer:=13;

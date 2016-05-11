@@ -160,7 +160,7 @@ if LATENCY=2 then
     when "00100" => read <= FALSE;
     when "01100" => read <= FALSE; 
       --report "serialiser logic failure:" & to_string(LUT_in) severity FAILURE;
-      report "serialiser was failure:" severity NOTE;
+      --report "serialiser was failure:" severity NOTE;
     when "00101" => read <= TRUE;
     when "01101" => read <= FALSE;
     -- pending=0 addr=3
@@ -177,25 +177,25 @@ if LATENCY=2 then
     -- pending=2 addr=0
     when "11000" => read <= FALSE; -- fails here 
       --report "serialiser logic failure:" & to_string(LUT_in) severity FAILURE;
-      report "was failure:" severity NOTE;
+      --report "was failure:" severity NOTE;
     when "10001" => read <= TRUE;
     when "11001" => read <= TRUE;
     -- pending=1 addr=1
     when "10010" => read <= FALSE;
     when "11010" => read <= FALSE;
       --report "serialiser logic failure:" & to_string(LUT_in) severity FAILURE;
-      report "was failure:" severity NOTE;
+      --report "was failure:" severity NOTE;
     when "10011" => read <= TRUE;
     when "11011" => read <= FALSE;
     -- pending=1 addr=2
     when "10100" => read <= FALSE;
-      report "serialiser logic failure:" severity NOTE;
+      --report "was failure:" severity NOTE;
     when "11100" => read <= FALSE;  --here
-      report "was failure:" severity NOTE;
+      --report "was failure:" severity NOTE;
     when "10101" => read <= FALSE;
       report "serialiser logic failure:" severity FAILURE;
     when "11101" => read <= FALSE; -- here
-      report "serialiser logic failure:" severity NOTE;
+      --report "was failure:" severity NOTE;
     -- pending=1 addr=3
     when "10110" => read <= FALSE;
       report "serialiser logic failure:" severity FAILURE;

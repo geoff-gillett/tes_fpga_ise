@@ -106,10 +106,8 @@ begin
 					-- FIXME implement
 					null;
 				end if;
-				if address(IODELAY_CONTROL_ADDR_BIT)='1' then
-					reg.iodelay_control <= data(IODELAY_CONTROL_BITS-1 downto 0);
-				else
-					reg.iodelay_control <= (others => '0');
+				if address(WINDOW_ADDR_BIT)='1' then
+					reg.window <= unsigned(data(TIME_BITS-1 downto 0));
 				end if;
 			end if;	
 			-- strobing registers
@@ -142,13 +140,11 @@ reg_data(TICK_PERIOD_ADDR_BIT)
    <= to_std_logic(resize(reg.tick_period,AXI_DATA_BITS));
 reg_data(TICK_LATENCY_ADDR_BIT)
    <= to_std_logic(resize(reg.tick_latency,AXI_DATA_BITS));
-reg_data(ADC_ENABLE_ADDR_BIT)
-   <= to_std_logic(resize(unsigned(reg.adc_enable),AXI_DATA_BITS));
-reg_data(CHANNEL_ENABLE_ADDR_BIT)
-   <= to_std_logic(resize(unsigned(reg.channel_enable),AXI_DATA_BITS));
+reg_data(ADC_ENABLE_ADDR_BIT) <= resize(reg.adc_enable,AXI_DATA_BITS);
+reg_data(CHANNEL_ENABLE_ADDR_BIT) <= resize(reg.channel_enable,AXI_DATA_BITS);
 -- FIXME implement
 reg_data(STATUS_ADDR_BIT) <= (others => '0');
-reg_data(10) <= (others => '0');  -- reserved
+reg_data(10) <= to_std_logic(resize(reg.window,AXI_DATA_BITS));  -- reserved
 reg_data(11) <= (others => '0');
 
 selectorGen:for b in 0 to AXI_DATA_BITS-1 generate

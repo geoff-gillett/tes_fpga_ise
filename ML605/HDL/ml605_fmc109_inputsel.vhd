@@ -37,7 +37,7 @@ use tes.registers.all;
 use tes.adc.all;
 use tes.measurements.all;
 
-entity ml605_fmc108 is
+entity ml605_fmc108_inputsel is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=12;
@@ -119,9 +119,9 @@ port(
   frame_error:out std_logic;
   frame_errorn:out std_logic
 );
-end entity ml605_fmc108;
+end entity ml605_fmc108_inputsel;
 
-architecture RTL of ml605_fmc108 is
+architecture RTL of ml605_fmc108_inputsel is
 --------------------------------------------------------------------------------
 -- Constants
 --------------------------------------------------------------------------------
@@ -204,6 +204,10 @@ signal fifo_rd_en:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal enables_reg:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
 signal adc_samples,fifo_dout:adc_sample_array(ADC_CHANNElS-1 downto 0);
+signal adc_input:adc_sample_array(ADC_CHANNElS-1 downto 0);
+type adc_bit_array is array (natural range <>) of 
+		 std_logic_vector(CHANNELS-1 downto 0);
+signal adc_input_bits:adc_bit_array(ADC_BITS-1 downto 0);
 signal fifo_empty:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
 signal FMC_internal_clk_en_int,FMC_VCO_power_en_int,FMC_present:std_logic;
@@ -615,6 +619,7 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
 
   channelReg:entity tes.channel_registers
   generic map(
+  	CHANNEL => c,
     CONFIG_BITS => CONFIG_BITS,
     CONFIG_STREAM_WIDTH => CONFIG_BITS,
     COEF_BITS => COEF_BITS,
@@ -673,6 +678,17 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
     axis_error => axis_error(c)
   );
 	
+	-- input mux
+  inputSelGen:for b in ADC_BITS-1 downto 0 generate 
+  	adc_input_bits(b)(c) <= adc_input(c)(b);
+ 		inputSel:entity tes.select_1of12
+   	port map(
+     	input  => resize(adc_input_bits(b),12),
+     	sel => resize(channel_registers(c).capture.input_sel,12),
+     	output => adc_input(c)(b)
+   	);
+  end generate;
+
   delay:entity tes.RAM_delay
   generic map(
     DEPTH => 2**DELAY_BITS,
@@ -680,7 +696,7 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
   )
   port map(
     clk => signal_clk,
-    data_in => adc_samples(c),
+    data_in => adc_input(c),
     delay => to_integer(channel_registers(c).capture.delay),
     delayed => adc_delayed(c)
   );
@@ -737,6 +753,8 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
   );
 end generate signalChanGen;
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
 mux:entity tes.eventstream_mux
 generic map(
   CHANNEL_BITS => CHANNEL_BITS,
@@ -803,14 +821,11 @@ port map(
   clk => signal_clk,
   reset => reset0,
   initialising => open,
-  --TODO remove redundant register port
+  --TODO remove redundant register ports
   update_asap => global.mca.update_asap,
-  --TODO remove redundant register port
   update_on_completion => global.mca.update_on_completion,
   updated => updated, --TODO implement CPU interupt
-  --TODO remove redundant register port
   registers => global.mca,
-  --TODO remove redundant register port
   tick_period => global.tick_period,
   channel_select => channel_select,
   value_select => value_select,
@@ -865,37 +880,37 @@ port map(
 TEMAC:entity work.v6_emac_v2_3
 port map(
   global_reset_IO_clk => global_reset_IO_clk,
-  IO_clk              => IO_clk,
-  s_axi_aclk          => io_clk,
-  refclk_bufg         => refclk,
-  tx_axis_fifo_tdata  => bytestream,
+  IO_clk => io_clk,
+  s_axi_aclk => io_clk,
+  refclk_bufg => refclk,
+  tx_axis_fifo_tdata => bytestream,
   tx_axis_fifo_tvalid => to_std_logic(bytestream_valid),
   tx_axis_fifo_tready => bytestream_ready,
-  tx_axis_fifo_tlast  => to_std_logic(bytestream_last),
-  phy_resetn          => phy_resetn,
-  gmii_txd            => gmii_txd,
-  gmii_tx_en          => gmii_tx_en,
-  gmii_tx_er          => gmii_tx_er,
-  gmii_tx_clk         => gmii_tx_clk,
-  gmii_rxd            => gmii_rxd,
-  gmii_rx_dv          => gmii_rx_dv,
-  gmii_rx_er          => gmii_rx_er,
-  gmii_rx_clk         => gmii_rx_clk,
-  gmii_col            => gmii_col,
-  gmii_crs            => gmii_crs,
-  mii_tx_clk          => mii_tx_clk,
-  mdio                => mdio,
-  mdc                 => mdc,
-  tx_statistics_s     => tx_statistics_s,
-  rx_statistics_s     => rx_statistics_s,
-  pause_req_s         => pause_req_s,
-  mac_speed           => mac_speed,
-  update_speed        => update_speed,
-  serial_command      => serial_command,
-  serial_response     => serial_response,
-  reset_error         => reset_error,
-  frame_error         => frame_error,
-  frame_errorn        => frame_errorn
+  tx_axis_fifo_tlast => to_std_logic(bytestream_last),
+  phy_resetn => phy_resetn,
+  gmii_txd => gmii_txd,
+  gmii_tx_en => gmii_tx_en,
+  gmii_tx_er => gmii_tx_er,
+  gmii_tx_clk => gmii_tx_clk,
+  gmii_rxd => gmii_rxd,
+  gmii_rx_dv => gmii_rx_dv,
+  gmii_rx_er => gmii_rx_er,
+  gmii_rx_clk => gmii_rx_clk,
+  gmii_col => gmii_col,
+  gmii_crs => gmii_crs,
+  mii_tx_clk => mii_tx_clk,
+  mdio => mdio,
+  mdc => mdc,
+  tx_statistics_s => tx_statistics_s,
+  rx_statistics_s => rx_statistics_s,
+  pause_req_s => pause_req_s,
+  mac_speed => mac_speed,
+  update_speed => update_speed,
+  serial_command => serial_command,
+  serial_response => serial_response,
+  reset_error => reset_error,
+  frame_error => frame_error,
+  frame_errorn => frame_errorn
 );
 
 globalReg:entity tes.global_registers

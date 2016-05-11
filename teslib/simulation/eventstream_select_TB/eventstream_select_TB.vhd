@@ -67,7 +67,7 @@ busGen:for chan in 0 to CHANNELS-1 generate
 	instreams(chan).last <= (0 => TRUE, others =>FALSE);
 end generate;
 
-UUT:entity work.eventstream_selector
+UUT:entity work.eventstream_select
 generic map(
   CHANNELS => CHANNELS
 )

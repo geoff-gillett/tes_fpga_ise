@@ -8,6 +8,14 @@ from datetime import datetime
 DEFAULT_REPO_PATH = 'c:\\TES_project\\fpga_ise\\'
 File = namedtuple('File', ['filename', 'dtype', 'is_list', 'is_sliceable'])
 
+tick_dt = np.dtype([('period', np.uint32), ('flags', np.uint8, (2,1)), ('time', np.uint16),
+                    ('timestamp', np.uint64),
+                    ('framer_ovf', np.uint8),
+                    ('mux_ovf', np.uint8), ('measurement_ovf', np.uint8), ('cfd_error', np.uint8),
+                    ('peak_ovf', np.uint8), ('time_ovf', np.uint8), ('baseline_unf', np.uint8), ('reserved', np.uint8)])
+
+area_dt = np.dtype([('area', np.uint32), ('flags', np.uint8, (2,)), ('time', np.uint16)])
+
 
 class HeightType(Enum):
     @staticmethod
@@ -426,6 +434,29 @@ class Packet:
             pname = self.payload_type.name
         return 'ethertype:{:04X} length:{:d} Payload:{:s} frame:{:d} protocol:{:d}'.format(
             self.ethertype, self.length, pname, self.frame_sequence, self.protocol_sequence)
+
+    @property
+    def events(self):
+        if self.payload_type == PayloadType.tick:
+            return self.payload.view(tick_dt)
+        elif self.payload_type == PayloadType.area:
+            return self.payload.view(area_dt)
+        else:
+            raise NotImplementedError()
+
+    @staticmethod
+    def channel(events):
+        return np.bitwise_and(events['flags'][:, 0], 0x07)
+
+# class Events:
+#     def __init__(self, packet):
+#         self.packet = packet
+#         if packet.payload_type == PayloadType.tick:
+#             self.data = packet.payload.view(tick_dt)
+#         elif self.payload_type == PayloadType.area:
+#             return self.payload.view(area_dt)
+#         else:
+#             raise NotImplementedError()
 
 
 class PacketStream:

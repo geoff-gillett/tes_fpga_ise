@@ -1,1 +1,1 @@
-xilinx::create_projects streamlib ../ ../
+xilinx::make_project PlanAhead streamlib ../ ../

@@ -86,7 +86,7 @@ signal framer_word:streambus_t;
 signal framer_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal framer_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal commit_frame:boolean;
-signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
+signal framer_free:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 --signal frame_we:boolean;
 signal mtu_int:unsigned(MTU_BITS-1 downto 0);
 signal tick_latency_count:unsigned(TICK_LATENCY_BITS-1 downto 0);
@@ -258,7 +258,7 @@ begin
     			event_s_type <= lookahead_type;
         
           if lookahead_type.tick then
-            size := to_unsigned(2, SIZE_BITS);
+            size := to_unsigned(3, SIZE_BITS);
           else
             case lookahead_type.detection is
             when PEAK_DETECTION_D =>
@@ -310,7 +310,6 @@ begin
 		end if;
 	end if;
 end process tickLatency;
-
 
 seqNumbers:process(clk)
 begin
@@ -529,7 +528,7 @@ begin
 		framer_address <= (0 => '1', others => '0');
 		framer_word.data(CHUNK_DATABITS-1 downto 0) 
 			<= set_endianness(
-				resize(shift_left(frame_address,3), CHUNK_DATABITS),
+				shift_left(resize(frame_address, CHUNK_DATABITS),3),
 				ENDIANNESS
 			);
 		framer_word.discard <= (others => FALSE);
@@ -576,7 +575,7 @@ port map(
   data => framer_word,
   address => framer_address,
   chunk_we => framer_we,
-  success => open,
+  --success => open,
   length => frame_address, --TODO check this
   commit => commit_frame,
   free => framer_free,

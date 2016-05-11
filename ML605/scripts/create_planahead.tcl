@@ -1,1 +1,1 @@
-xilinx::create_projects ML605 ../ ../
+xilinx::make_project PlanAhead ML605 ../ ../

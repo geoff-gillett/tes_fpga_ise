@@ -100,7 +100,7 @@ port map(
   mca_value => mca_value,
   dump => dump,
   commit => commit,
-  baseline_range_error => baseline_error,
+  baseline_underflow => baseline_error,
   cfd_error => cfd_error,
   time_overflow => time_overflow,
   peak_overflow => peak_overflow,

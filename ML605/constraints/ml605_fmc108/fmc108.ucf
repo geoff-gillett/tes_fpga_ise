@@ -31,10 +31,10 @@ NET "adc_clk_p[3]" LOC = AH25;
 #-------------------------------------------------------------------------------
 # LOCs for ADC clock BUFRs
 #-------------------------------------------------------------------------------
-#INST "adcClks[0].adcClkBufr" LOC = BUFR_X1Y0;
-#INST "adcClks[1].adcClkBufr" LOC = BUFR_X1Y1;
-#INST "adcClks[2].adcClkBufr" LOC = BUFR_X1Y2;
-#INST "adcClks[3].adcClkBufr" LOC = BUFR_X1Y3;
+INST "adcClks[0].adcClkBufr" LOC = BUFR_X1Y0;
+INST "adcClks[1].adcClkBufr" LOC = BUFR_X1Y1;
+INST "adcClks[2].adcClkBufr" LOC = BUFR_X1Y2;
+INST "adcClks[3].adcClkBufr" LOC = BUFR_X1Y3;
 
 #-------------------------------------------------------------------------------
 # LVDS data from ADC 

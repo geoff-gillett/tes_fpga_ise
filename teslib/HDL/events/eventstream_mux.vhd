@@ -8,7 +8,6 @@
 -- Target Devices: virtex6
 -- Tool versions: ISE 14.7
 --------------------------------------------------------------------------------
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -47,12 +46,18 @@ port(
   instream_valids:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
   instream_readys:out boolean_vector(2**CHANNEL_BITS-1 downto 0);
   full:out boolean;
-  -- tick event
+  
   tick_period:in unsigned(TICKPERIOD_BITS-1 downto 0);
-  overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  cfd_errors:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  framer_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  mux_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  measurement_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  peak_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  time_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  baseline_underflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+	
   window:in unsigned(RELTIME_BITS-1 downto 0);
-  --dirty:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  --
+  
   muxstream:out streambus_t;
   valid:out boolean;
   ready:in boolean
@@ -80,7 +85,7 @@ signal tickstream:streambus_t;
 signal muxstream_int_valid,muxstream_int_ready,muxstream_last:boolean;
 signal tickstream_valid:boolean;
 signal tickstream_ready:boolean;
---
+
 signal streams:streambus_array(CHANNELS downto 0);
 signal muxstream_int,stream_int:streambus_t;
 signal valids,readys:boolean_vector(CHANNELS downto 0);
@@ -110,7 +115,13 @@ port map(
   tick => tick,
   timestamp => timestamp,
   tick_period => tick_period,
-  overflow => overflows,
+  mux_overflows => mux_overflows,
+  cfd_errors => cfd_errors,
+  baseline_underflows => baseline_underflows,
+  framer_overflows => framer_overflows,
+  measurement_overflows => measurement_overflows,
+  peak_overflows => peak_overflows,
+  time_overflows => time_overflows,
   tickstream => tickstream,
   valid => tickstream_valid,
   ready => tickstream_ready
@@ -171,27 +182,24 @@ port map(
   valid => valids(0)
 );
 
-selector:entity work.eventstream_selector
+selector:entity work.eventstream_select
 generic map(
   CHANNELS => CHANNELS+1
 )
 port map(
-  sel => to_boolean(sel),
+  sel => sel,
   instreams => streams,
   valids => valids,
-  stream => muxstream_int,
- 	valid => muxstream_int_valid
+  mux_stream => muxstream_int,
+ 	mux_valid => muxstream_int_valid
 );
 
 muxstream_last <= muxstream_int.last(0);
 muxstream_handshake <= muxstream_int_valid and muxstream_int_ready;
 muxstream_last_handshake <= muxstream_handshake and muxstream_last;
-
 pulses_done <= started = handled(CHANNELS downto 1);-- and time_valid; 
 time_done <= pulses_done and to_std_logic(ticked) = handled(0);
 read_next <= arb_state=NEXT_TIME;
-
---sel_valid <= TRUE;
 
 -- clk1 req
 -- clk2 gnt onehot index 
@@ -203,22 +211,18 @@ arbiter:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then 
---  	sel_int <= (others => '0');
   	handled <= (others => '0');
   	gnt <= (others => '0');
   else
-  	--gnt <= req and std_logic_vector(unsigned(not req)+1);
   	
     if arb_state=IDLE then
     	handled <= (others => '0');		
     elsif muxstream_last_handshake then
-      handled(CHANNELS downto 1) <= handled(CHANNELS downto 1) or 
-                                    gnt or dumped;
+      handled(CHANNELS downto 1) <= handled(CHANNELS downto 1) or gnt or 
+      															(dumped and started);
     end if;
     													
-    --if arb_state=ARBITRATE then
-	    gnt <= req and std_logic_vector(unsigned(not req)+1);
-    --end if;		
+	  gnt <= req and std_logic_vector(unsigned(not req)+1);
     													  
   end if;
 end if;
@@ -234,7 +238,6 @@ if rising_edge(clk) then
   else
   	arb_state <= arb_nextstate;
   	out_state <= out_nextstate; 
-    --state <= nextstate;
   end if;
 end if;
 end process fsmNextstate;
@@ -351,8 +354,6 @@ stream_int.data <= muxstream_int.data(63 downto 17) &
 stream_int.last <= muxstream_int.last;
 stream_int.discard <= muxstream_int.discard;
 
---FIXME is this right?							
---stream_valid_int <= muxstream_valid and arb_state/=IDLE;
 
 outStreamReg:entity streamlib.streambus_register_slice
 port map(

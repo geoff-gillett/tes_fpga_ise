@@ -110,7 +110,6 @@ signal started_int:std_logic_vector(CHANNELS-1 downto 0);
 signal commited_starts:boolean;
 --
 begin
-full <= buffers_full='1';
 valid <= buffer_state=VALIDEVENT;
 started <= started_reg;
 eventtime <= resize(eventtime_reg,TIMESTAMP_BITS);
@@ -134,7 +133,7 @@ port map(
   full => time_full, 
   almost_full => buffers_full, -- tell measurement unit to block starts
   empty => time_empty
-);
+); 
 --
 time_wr_en <= to_std_logic(unaryOR(start) or tick);
 time_in(TIMEFIFO_BITS-1 downto TIMETAG_BITS+CHANNELS+1) <= (others => '0');
@@ -211,6 +210,7 @@ if rising_edge(clk) then
       eventtime_reg <= (others => '-');
       all_dumped_reg <= FALSE;
 	    no_starts_reg <= FALSE; 
+			full <= buffers_full='1';
     end if;
   end if;
 end if;

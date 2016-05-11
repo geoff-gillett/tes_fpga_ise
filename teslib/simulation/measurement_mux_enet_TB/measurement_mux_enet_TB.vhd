@@ -116,7 +116,7 @@ begin
     mca_value => open,
     dump => dumps(c),
     commit => commits(c),
-    baseline_range_error => baseline_range_errors(c),
+    baseline_underflow => baseline_range_errors(c),
     cfd_error => cfd_errors(c),
     time_overflow => time_overflows(c),
     peak_overflow => peak_overflows(c),
@@ -171,7 +171,7 @@ port map(
   full => mux_full,
   tick_period => tick_period,
   window => window,
-  overflows => mux_overflows,
+  mux_overflows => mux_overflows,
   muxstream => muxstream,
   valid => muxstream_valid,
   ready => muxstream_ready

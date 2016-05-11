@@ -81,14 +81,19 @@ port(
   mca_value:out signed(MCA_VALUE_BITS-1 downto 0);
   mca_value_valid:out boolean;
 
+	mux_full:in boolean;
+	
+	start:out boolean;
   dump:out boolean;
   commit:out boolean;
   
-  baseline_range_error:out boolean;
   cfd_error:out boolean;
   time_overflow:out boolean;
   peak_overflow:out boolean;
   framer_overflow:out boolean;
+	mux_overflow:out boolean;
+  measurement_overflow:out boolean;
+  baseline_underflow:out boolean;
   
   eventstream:out streambus_t;
   valid:out boolean;
@@ -120,7 +125,6 @@ constant NUM_FLAGS:integer:=7;
 -- internal area accumulator width
 constant AREA_SUM_BITS:integer:=TIME_BITS+WIDTH;
 
---signal just_reset:boolean;
 --------------------------------------------------------------------------------
 -- Signals for DSP stage
 --------------------------------------------------------------------------------
@@ -179,13 +183,9 @@ signal slope_extrema,pulse_extrema:signed(WIDTH-1 downto 0);
 signal filtered_area,slope_area:signed(AREA_SUM_BITS-1 downto 0);
 signal filtered_zero_xing,slope_zero_xing:boolean;
 signal trigger_cfd:boolean;
-signal area_below_threshold:boolean;
---signal event_time:unsigned(TIME_BITS-1 downto 0);
+signal area_above_threshold:boolean;
 signal peak_count_pd:unsigned(PEAK_COUNT_BITS-1 downto 0);
---signal height_valid:boolean;
-signal peak_overflow_int:boolean;
 signal pulse_length:unsigned(TIME_BITS-TIME_FRAC-1 downto 0);
---signal peak_count:unsigned(PEAK_COUNT_BITS downto 0);
 signal raw_area:signed(AREA_SUM_BITS-1 downto 0);
 signal raw_zero_xing:boolean;
 
@@ -216,7 +216,6 @@ signal cfd_low_crossed,cfd_high_crossed:boolean;
 signal cfd_high_done,cfd_low_done:boolean;
 signal peak_start_cfd:boolean;
 signal peaks_full:boolean;
-signal time_overflow_int:boolean;
 signal event_start_cfd:boolean;
 
 --------------------------------------------------------------------------------
@@ -229,9 +228,9 @@ signal pulse_end:boolean;
 
 -- framer signals
 signal frame_word:streambus_t;
-signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
+signal framer_free:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_we:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal commit_int,area_dump:boolean;
+signal area_dump:boolean;
 signal frame_length:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_word_reg:streambus_t;
@@ -241,6 +240,8 @@ signal frame_length_reg:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal commit_frame_reg:boolean;
 signal frame_overflow:boolean;
 signal dump_int:boolean;
+signal mux_overflow_int:boolean;
+signal start_int:boolean;
 
 -- fixed 8 byte events (single word)
 --signal peak_event:datachunk_array_t(BUS_CHUNKS-1 downto 0); 
@@ -358,6 +359,9 @@ end bus_we_reg;
 begin
 measurements <= m; --are the measurements needed externally?
 commit <= commit_frame_reg;
+mux_overflow <= mux_overflow_int;
+start <= start_int;
+measurement_overflow <= event_lost;
 
 valueMux:entity work.mca_value_selector
 generic map(
@@ -405,7 +409,7 @@ port map(
   count_threshold => registers.baseline.count_threshold,
   average_order => registers.baseline.average_order,
   baseline_estimate => baseline_estimate,
-  range_error => baseline_range_error 
+  range_error => baseline_underflow 
 );
 
 baselineSubraction:process(clk)
@@ -535,14 +539,12 @@ begin
 			pd_pulse_nextstate <= FIRST_RISE;
 		end if;
 	when FIRST_RISE =>
-		--if filtered_neg_threshxing_pd or pulse_overflow or peak_overflow_int then
 		if filtered_neg_threshxing_pd  then
 			pd_pulse_nextstate <= IDLE;
 		elsif slope_neg_0xing_pd then 
 			pd_pulse_nextstate <= PEAKED;
 		end if;
 	when PEAKED =>
---		if filtered_neg_threshxing_pd or pulse_overflow or peak_overflow_int then
 		if filtered_neg_threshxing_pd  then
 			pd_pulse_nextstate <= IDLE;
 		end if;
@@ -574,14 +576,14 @@ if rising_edge(clk) then
       capture_pd <= registers.capture;
       if capture_pd.threshold_rel2min and pd_pulse_state=IDLE then
         pulse_threshold 
-          <= filtered_pd+signed('0' & registers.capture.pulse_threshold);
+          <= filtered_pd + signed('0' & registers.capture.pulse_threshold);
       else
         pulse_threshold <= signed('0' & registers.capture.pulse_threshold);
       end if;
     end if;
     
-     if arming_pd then 
-       minima_value_pd <= last_minima_value;
+    if arming_pd then 
+    	minima_value_pd <= last_minima_value;
     end if;
     
     if peak_pd then
@@ -594,7 +596,7 @@ if rising_edge(clk) then
       end if;
     end if;
      
-     -- multiplier pipeline
+    -- multiplier pipeline
     peak_pipe <= shift(peak_pd,peak_pipe);
     first_rise_pipe <= shift(pd_pulse_state=FIRST_RISE,first_rise_pipe);
      -- absorbed into multiplier macro
@@ -978,7 +980,6 @@ if rising_edge(clk) then
  		m.pulse.time <= (others => '0');
 		capture_cfd <= registers.capture;
 		m.peak_count <= (others => '0');
-		--for framer
 	else
 		
 		m.event_start <= event_start_cfd;
@@ -992,7 +993,20 @@ if rising_edge(clk) then
     		<= resize(capture_pd.max_peaks+3,FRAMER_ADDRESS_BITS);
 			--last_peak_count <= capture_pd.max_peaks(PEAK_COUNT_BITS-1 downto 0);
 		end if;
-  
+ 		
+		if trigger_cfd then 
+			if mux_full then
+				mux_overflow_int <= TRUE;
+			else
+				if capture_cfd.detection /= PEAK_DETECTION_D then
+					start_int <= cfd_pulse_state = FIRST_RISE;
+				else
+					start_int <= TRUE;
+				end if;
+			end if;
+		else
+			start_int <= FALSE;
+ 		end if; 
   	m.trigger <= trigger_cfd;	
   	if trigger_cfd then
   		m.trigger_time <= (others => '0');
@@ -1000,14 +1014,12 @@ if rising_edge(clk) then
   		m.trigger_time <= m.trigger_time+1;
   	end if;
   	
-  	--FIXME need external time_overflow flag
-  	
+  	time_overflow <= FALSE;	
   	if pulse_start_cfd then
       m.pulse.time <= (others => '0');
-      time_overflow_int <= FALSE;
     else
       if m.pulse.time=to_unsigned(2**TIME_BITS-1,TIME_BITS) then
-        time_overflow_int <= TRUE;
+        time_overflow <= TRUE;
       else
         m.pulse.time <= m.pulse.time+1;
       end if;
@@ -1038,24 +1050,22 @@ if rising_edge(clk) then
       end if;
     end case;
   	
-		--peak_overflow_int <= peak_cfd and peaks_full;
-  	
+ 		peak_overflow <= peak_cfd and peaks_full; 
   	if event_start_cfd then
   		m.peak_count <= (others => '0'); 
-        pulse_peak_addr <= to_unsigned(2,FRAMER_ADDRESS_BITS);
-        trace_peak_addr <= to_unsigned(3,FRAMER_ADDRESS_BITS);
-  		peak_overflow_int <= FALSE; 
+      pulse_peak_addr <= to_unsigned(2,FRAMER_ADDRESS_BITS);
+      trace_peak_addr <= to_unsigned(3,FRAMER_ADDRESS_BITS);
   	else
-  		if peak_cfd then
-  			if peaks_full then
-  				peak_overflow_int <= TRUE;
-  			else
+  		if peak_cfd and not peaks_full then
+  			if m.peak_count /= 
+  					to_unsigned(2**PEAK_COUNT_BITS-1,PEAK_COUNT_BITS) then
   				m.peak_count <= m.peak_count + 1;	
-  				-- for framer
-  				pulse_peak_addr <= resize(m.peak_count + 1 + 2,FRAMER_ADDRESS_BITS);
-  				trace_peak_addr <= resize(m.peak_count + 1 + 3,FRAMER_ADDRESS_BITS);
   			end if;
-  		end if;
+      	if not peaks_full then
+        	pulse_peak_addr <= resize(m.peak_count + 1 + 2,FRAMER_ADDRESS_BITS);
+        	trace_peak_addr <= resize(m.peak_count + 1 + 3,FRAMER_ADDRESS_BITS);
+        end if;
+      end if;
   	end if;
   		
   	if pulse_start_cfd then
@@ -1066,9 +1076,9 @@ if rising_edge(clk) then
   			pulse_extrema <= filtered_cfd;
   		end if;
   		pulse_area <= pulse_area+filtered_cfd;
-  		area_below_threshold 
-  			<= to_0ifX(pulse_area) < 
-  				 resize(capture_cfd.area_threshold,AREA_SUM_BITS);
+--  		area_above_threshold  --FIXME out of sync
+--  			<= to_0ifX(pulse_area) < 
+--  				 resize(capture_cfd.area_threshold,AREA_SUM_BITS);
   	end if;
   	
   	--FIXME these no longer need to registered	
@@ -1083,6 +1093,9 @@ if rising_edge(clk) then
     m.cfd_high <= cfd_high;
     
     --measurements.event_start <= min_valid and cfd_state=WAIT_MIN;
+    m.pulse.area <= reshape(pulse_area,FRAC,AREA_BITS,AREA_FRAC);
+    m.pulse.area_above_threshold <= area_above_threshold;
+    m.pulse.extrema <= reshape(pulse_extrema,FRAC,SIGNAL_BITS,SIGNAL_FRAC);
     
     m.pulse.pos_threshxing <= pulse_start_cfd;
     m.pulse.neg_threshxing <= pulse_end_cfd;
@@ -1109,10 +1122,9 @@ if rising_edge(clk) then
 end if;
 end process pulseMeasurement;
 
-peak_overflow <= peak_overflow_int;
-time_overflow <= time_overflow_int;
-m.pulse.area <= reshape(pulse_area,FRAC,AREA_BITS,AREA_FRAC);
-m.pulse.extrema <= reshape(pulse_extrema,FRAC,SIGNAL_BITS,SIGNAL_FRAC);
+area_above_threshold 
+	<= to_0ifX(pulse_area) >= 
+		 reshape(capture_cfd.area_threshold,AREA_FRAC,AREA_SUM_BITS,FRAC);
 
 --------------------------------------------------------------------------------
 -- Framer stage
@@ -1142,8 +1154,8 @@ commit_peak_event <= m.height_valid;
 area_event.area <= m.pulse.area;
 area_event.flags <= detection_flags;
 area_event_we <= (others => m.pulse.neg_threshxing);
-commit_area_event <= m.pulse.neg_threshxing and not area_below_threshold;
-area_dump <= m.pulse.neg_threshxing and area_below_threshold;
+commit_area_event <= m.pulse.neg_threshxing and m.pulse.area_above_threshold;
+area_dump <= m.pulse.neg_threshxing and not m.pulse.area_above_threshold;
 --pulse event
 pulse_header.flags <= header_flags;
 pulse_header.slope_threshold <= header_slope_threshold;
@@ -1178,11 +1190,6 @@ trace_peak_bus <= to_streambus(trace_peak,ENDIANNESS);
 --------------------------------------------------------------------------------
 -- Framer FSMs
 --------------------------------------------------------------------------------
--- FIXME different for trace
---clear_address <= resize(clear_count+2,FRAMER_ADDRESS_BITS); 
---trace_clear_address <= resize(clear_count+3,FRAMER_ADDRESS_BITS); 
---last_peak <= m.peak_count = '0' & capture_cfd.max_peaks;
-
 FSMnextstate:process(clk)
 begin
 	if rising_edge(clk) then
@@ -1198,13 +1205,14 @@ begin
 	end if;
 end process FSMnextstate;
 
-eventFSMtransition:process(event_state,m.peak_start,m.trigger,cfd_error_int,
-												   commit_int,area_dump)
+eventFSMtransition:process(event_state,m.peak_start,start_int,cfd_error_int,
+												   commit_frame,dump_int
+)
 begin
 	event_nextstate <= event_state;
 	case event_state is 
 	when IDLE =>
-		if m.trigger then
+		if start_int then
 			event_nextstate <= QUEUED;
 		elsif m.peak_start then -- event_start???
 			event_nextstate <= STARTED;
@@ -1212,11 +1220,11 @@ begin
 	when STARTED =>
 		if cfd_error_int then
 			event_nextstate <= IDLE;
-		elsif m.trigger then
+		elsif start_int then
 			event_nextstate <= QUEUED;
 		end if; 
 	when QUEUED =>
-		if commit_int or area_dump then
+		if commit_frame or dump_int then
 			event_nextstate <= IDLE;
 		end if;
 	end case;
@@ -1229,45 +1237,50 @@ begin
 			header_valid <= FALSE;
 		else
 			
-			if commit_frame then
-				header_valid <= FALSE;
-				event_lost <= FALSE;
-			end if;
+			event_lost <= FALSE;
 			
-			if m.trigger then
-				
-				if header_valid then
-					event_lost <= TRUE;
-				else
-					trace_header.offset <= m.event_time;
-				end if;
-				
-      elsif m.pulse.neg_threshxing then
-
-        if header_valid then 
-          event_lost <= TRUE; --TODO: check if need to dump
-        else
-        	header_valid <= TRUE;
-        	
-        	header_flags <= detection_flags;
-        	--FIXME threshold broken
-          header_pulse_threshold <= reshape(
-            capture_cfd.pulse_threshold,CFD_FRAC,SIGNAL_BITS,SIGNAL_FRAC
-          );
-          header_slope_threshold <= reshape(
-            capture_cfd.slope_threshold,CFD_FRAC,SIGNAL_BITS,SIGNAL_FRAC
-          );
-        	
-        	-- pulse header
-          pulse_header.size <= resize(capture_cfd.max_peaks+3,SIZE_BITS);
-          pulse_header.length <= m.event_time+1;
-          pulse_header.area <= m.pulse.area;
+			if commit_frame or dump_int then 
+				header_valid <= FALSE;
+			end if;
+		
+			if capture_cfd.detection=PULSE_DETECTION_D or 
+				 capture_cfd.detection=TRACE_DETECTION_D then
+        if m.trigger then 
           
-        	-- trace header
-          trace_header.size 
-            <= resize(trace_address-1,SIZE_BITS);
-          trace_header.length <= m.event_time+1;
-          trace_header.area <= m.pulse.area;
+          if header_valid then
+            event_lost <= TRUE; -- FIXME expose this
+          else
+            trace_header.offset <= m.event_time;
+          end if;
+          
+        elsif m.pulse.neg_threshxing then
+
+          if header_valid then 
+            event_lost <= TRUE; --TODO: check if need to dump
+            header_valid <= FALSE;
+          elsif  m.pulse.area_above_threshold then
+            header_valid <= TRUE;
+            
+            header_flags <= detection_flags;
+            --FIXME threshold broken
+            header_pulse_threshold <= reshape(
+              capture_cfd.pulse_threshold,CFD_FRAC,SIGNAL_BITS,SIGNAL_FRAC
+            );
+            header_slope_threshold <= reshape(
+              capture_cfd.slope_threshold,CFD_FRAC,SIGNAL_BITS,SIGNAL_FRAC
+            );
+            
+            -- pulse header
+            pulse_header.size <= resize(capture_cfd.max_peaks+3,SIZE_BITS);
+            pulse_header.length <= m.event_time+1;
+            pulse_header.area <= m.pulse.area;
+            
+            -- trace header
+            trace_header.size <= resize(trace_address-1,SIZE_BITS);
+            trace_header.length <= m.event_time+1;
+            trace_header.area <= m.pulse.area;
+          end if;
+          
         end if;
         
       end if;
@@ -1368,9 +1381,7 @@ begin
 		end if;
 		
 	when HEADER0 =>
-		if dump_int then
-			pulse_nextstate <= IDLE;
-		elsif header_valid then
+		if header_valid then
 			pulse_nextstate <= HEADER1;
 		end if;
 
@@ -1390,9 +1401,7 @@ begin
   	end if;
   	
   when CLEAR =>
-  	if dump_int then
-  		pulse_nextstate <= IDLE;
-  	elsif pulse_peak_last then
+  	if pulse_peak_last then
   		pulse_nextstate <= HEADER0;
   	end if;
 	end case;
@@ -1560,9 +1569,8 @@ write_trace <= capture_trace and (
 );
 
 --FIXME wire up dump properly
-traceEventFSMtransition:process(peaks_full,clear_done,header_valid,area_dump, 
-	trace_start, trace_state,trace_done,write_trace
-)
+traceEventFSMtransition:process(peaks_full,clear_done,header_valid,dump_int, 
+	trace_start, trace_state,trace_done,write_trace)
 begin
 	trace_nextstate <= trace_state;
 	case trace_state is 
@@ -1572,9 +1580,7 @@ begin
 		end if;
 		
 	when HEADER0 =>
-		if area_dump then
-			trace_nextstate <= PEAKS;
-		elsif header_valid then
+		if header_valid then
 			trace_nextstate <= HEADER1;
 		end if;
 		
@@ -1585,19 +1591,23 @@ begin
   	trace_nextstate <= IDLE;
   	
   when PEAKS =>
-  	if write_trace or trace_done then
+  	if dump_int then
+  		trace_nextstate <= IDLE;
+  	elsif write_trace or trace_done then
   		trace_nextstate <= TRACE;
   	end if;
   	
   when TRACE =>
-  	if trace_done then
+  	if dump_int then
+  		trace_nextstate <= IDLE;
+  	elsif trace_done then
       if peaks_full then
       	trace_nextstate <= HEADER0;
       else
   			trace_nextstate <= CLEAR;
   		end if;
   	else
-  		trace_nextstate <= PEAKS;
+  		trace_nextstate <= PEAKS; 
   	end if;
   	
   when CLEAR =>
@@ -1749,6 +1759,7 @@ begin
 	
 end process framerCtlMux;
 
+dump_int <= frame_overflow or area_dump or cfd_error_int;
 frameCtlreg:process(clk)
 begin
 	if rising_edge(clk) then
@@ -1772,9 +1783,8 @@ begin
 				frame_overflow <= TRUE;
 			end if;
 			
-			dump_int <= frame_overflow or area_dump;
 			if event_state=QUEUED then
-				dump <= frame_overflow or area_dump;
+				dump <= frame_overflow or area_dump or cfd_error_int;
 			else
 				dump <= FALSE;
 			end if;
