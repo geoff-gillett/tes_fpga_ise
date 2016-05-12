@@ -365,6 +365,10 @@ end process FMCfunction;
 --------------------------------------------------------------------------------
 -- Clock and resets 
 --------------------------------------------------------------------------------
+-- FIXME there could be an issue here whit the FMC not coming up and having no 
+-- IO_clk, io_clk could be derived by the onboard clock but this would have
+-- undefined phase relative to sample_clk, does this break the ethernet cdc?
+
 fmc108mmcm:fmc108_clk_tree
 port map
 (

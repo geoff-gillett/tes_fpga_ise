@@ -10,7 +10,7 @@ NET "sys_clk_?" DIFF_TERM = "TRUE";
 NET "sys_clk_p" LOC = J9;
 NET "sys_clk_n" LOC = H9;
 NET "sys_clk_p" TNM_NET = "sys_clk";
-
+TIMESPEC TS_SYS_CLK = PERIOD "sys_clk" 5 ns HIGH 50 %;
 ################################################################################
 # FMC108 ADC mezzanine card
 ################################################################################
@@ -28,9 +28,11 @@ NET "adc_clk_n[2]" LOC = AM27;
 NET "adc_clk_p[2]" LOC = AN27;
 NET "adc_clk_n[3]" LOC = AJ25;
 NET "adc_clk_p[3]" LOC = AH25;
+
 #-------------------------------------------------------------------------------
 # LOCs for ADC clock BUFRs
 #-------------------------------------------------------------------------------
+# FIXME make adc clk 0 drive a BUFG?
 INST "adcClks[0].adcClkBufr" LOC = BUFR_X1Y0;
 INST "adcClks[1].adcClkBufr" LOC = BUFR_X1Y1;
 INST "adcClks[2].adcClkBufr" LOC = BUFR_X1Y2;
@@ -231,6 +233,9 @@ NET "adc_clk_p[3]" TNM_NET = "adc_chip3_clk";
 TIMESPEC TS_adc_chip3_clk = PERIOD "adc_chip3_clk" 4 ns HIGH 50 %;
 
 NET "signal_clk" TNM_NET = "signal_clk";
+TIMESPEC TS_SIGNAL_CLK = PERIOD "signal_clk" 4 ns HIGH 50 %;
+NET "io_clk" TNM_NET = "io_clk";
+TIMESPEC TS_IO_CLK = PERIOD "io_clk" TS_SIGNAL_CLK / 2;
 
 TIMESPEC TS_chip0tosignal = FROM "adc_chip0_clk" TO "signal_clk" TIG ;
 TIMESPEC TS_signaltochip0 = FROM "signal_clk" TO "adc_chip0_clk" TIG ;
@@ -241,10 +246,15 @@ TIMESPEC TS_signaltochip2 = FROM "signal_clk" TO "adc_chip2_clk" TIG ;
 TIMESPEC TS_chip3tosignal = FROM "adc_chip3_clk" TO "signal_clk" TIG ;
 TIMESPEC TS_signaltochip3 = FROM "signal_clk" TO "adc_chip3_clk" TIG ;
 
-NET "*spi_clk" TIG;
-NET "*spi_ce_n*" TIG;
-NET "*spi_miso*" TIG;
-NET "*spi_mosi" TIG;
+NET "ADC_spi*" TNM_NET = "ADC_SPI";
+TIMESPEC TS_ADC_SPI = TO "ADC_SPI" TIG;  
+NET "AD9510_spi*" TNM_NET = "AD9510_SPI";
+TIMESPEC TS_AD9510_SPI = TO "AD9510_spi" TIG;  
+
+###NET "*spi_clk" TIG;
+###NET "*spi_ce_n*" TIG;
+###NET "*spi_miso*" TIG;
+###NET "*spi_mosi" TIG;
 NET "FMC_AD9510_status" TIG;
 NET "FMC_power_good" TIG;
 NET "FMC_present_n" TIG;

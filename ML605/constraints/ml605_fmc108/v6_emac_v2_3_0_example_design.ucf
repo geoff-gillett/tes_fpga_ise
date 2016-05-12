@@ -166,14 +166,15 @@ Net gmii_rx_clk      LOC = AP11 | IOSTANDARD = LVCMOS25;
 
 
 # Ethernet GTX_CLK high quality 125 MHz reference clock
-NET "IO_clk" TNM_NET = "ref_gtx_clk";
-TIMEGRP "v6_emac_v2_3_0_clk_ref_gtx" = "ref_gtx_clk";
-TIMESPEC "TS_v6_emac_v2_3_0_clk_ref_gtx" = PERIOD "v6_emac_v2_3_0_clk_ref_gtx" 8 ns HIGH 50 %;
+#NET "" TNM_NET = "ref_gtx_clk";
+#TIMEGRP "v6_emac_v2_3_0_clk_ref_gtx" = "ref_gtx_clk";
+#TIMESPEC "TS_v6_emac_v2_3_0_clk_ref_gtx" = PERIOD "v6_emac_v2_3_0_clk_ref_gtx" 8 ns HIGH 50 %;
 
 # Multiplexed 1 Gbps, 10/100 Mbps output inherits constraint from GTX_CLK
 NET "*tx_mac_aclk*" TNM_NET  = "clk_tx_mac";
 TIMEGRP "v6_emac_v2_3_0_clk_ref_mux" = "clk_tx_mac";
-TIMESPEC "TS_v6_emac_v2_3_0_clk_ref_mux" = PERIOD "v6_emac_v2_3_0_clk_ref_mux" TS_v6_emac_v2_3_0_clk_ref_gtx HIGH 50%;
+#TIMESPEC "TS_v6_emac_v2_3_0_clk_ref_mux" = PERIOD "v6_emac_v2_3_0_clk_ref_mux" TS_v6_emac_v2_3_0_clk_ref_gtx HIGH 50%;
+TIMESPEC TS_v6_emac_v2_3_0_clk_ref_mux = PERIOD "v6_emac_v2_3_0_clk_ref_mux" 8 ns HIGH 50 %;
 
 # Ethernet GMII PHY-side receive clock
 NET "gmii_rx_clk" TNM_NET = "phy_clk_rx";
@@ -186,9 +187,9 @@ TIMEGRP "v6_emac_v2_3_0_config_clk" = "clk_axi";
 TIMESPEC "TS_v6_emac_v2_3_0_config_clk"      = PERIOD "v6_emac_v2_3_0_config_clk" 8 ns HIGH 50 %;
 
 # define TIGs between unrelated clock domains
-TIMESPEC "TS_clock_path_gtx2cpu" = FROM "clock_generator_clkout0" TO "clock_generator_clkout1" TIG;
-TIMESPEC "TS_clock_path_gtx2ref" = FROM "clock_generator_clkout0" TO "clock_generator_clkout2" TIG;
-TIMESPEC "TS_clock_path_cpu2gtx" = FROM "clock_generator_clkout1" TO "clock_generator_clkout0" TIG;
+###TIMESPEC "TS_clock_path_gtx2cpu" = FROM "clock_generator_clkout0" TO "clock_generator_clkout1" TIG;
+###TIMESPEC "TS_clock_path_gtx2ref" = FROM "clock_generator_clkout0" TO "clock_generator_clkout2" TIG;
+###TIMESPEC "TS_clock_path_cpu2gtx" = FROM "clock_generator_clkout1" TO "clock_generator_clkout0" TIG;
 PIN "*bufgmux_speed_clk.I1" TIG;
 PIN "*bufgmux_speed_clk.CE0" TIG;
 

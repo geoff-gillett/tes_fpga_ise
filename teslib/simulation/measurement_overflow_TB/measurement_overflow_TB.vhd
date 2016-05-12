@@ -348,7 +348,7 @@ for c in CHANNELS-1 downto 0 loop
   registers(c).baseline.count_threshold 
     <= to_unsigned(30,BASELINE_COUNTER_BITS);
   registers(c).baseline.average_order <= 4;
-  registers(c).baseline.offset <= to_std_logic(100,ADC_BITS);
+  registers(c).baseline.offset <= to_std_logic(20,ADC_BITS);
   registers(c).baseline.subtraction <= FALSE;
   registers(c).capture.constant_fraction 
     <= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
