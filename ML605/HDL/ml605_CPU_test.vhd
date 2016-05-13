@@ -37,7 +37,7 @@ use tes.registers.all;
 use tes.adc.all;
 use tes.measurements.all;
 
-entity ml605_fmc108 is
+entity ml605_CPU_test is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=12;
@@ -119,9 +119,9 @@ port(
   frame_error:out std_logic;
   frame_errorn:out std_logic
 );
-end entity ml605_fmc108;
+end entity ml605_CPU_test;
 
-architecture RTL of ml605_fmc108 is
+architecture RTL of ml605_CPU_test is
 --------------------------------------------------------------------------------
 -- Constants
 --------------------------------------------------------------------------------
@@ -375,7 +375,7 @@ port map
 (
   adc_chip0_clk => adc_chip_clk(0),
   signal_clk => signal_clk,
-  io_clk => io_clk,
+  io_clk => open,
   locked => fmc108_mmcm_locked
 );
     
@@ -385,7 +385,7 @@ port map
   sys_clk_P => sys_clk_p,
   sys_clk_N => sys_clk_n,
   refclk => refclk,
-  io_clk => open,
+  io_clk => io_clk,
   locked => onboard_mmcm_locked
 );
 
@@ -866,7 +866,6 @@ port map(
   bytestream_ready => to_boolean(bytestream_ready),
   bytestream_last => bytestream_last
 );
-
 
 TEMAC:entity work.v6_emac_v2_3
 port map(

@@ -547,15 +547,15 @@ INST "TEMAC/v6emac_fifo_block/v6emac_block/BUFGMUX_SPEED_CLK" LOC = BUFGCTRL_X0Y
 ###############################################################################
 # TES_digitiser timing constraints
 ###############################################################################
-PIN "mainCPU.reset?" TIG;
-#NET "*channel_tx*" TIG;
-#NET "*channel_rx*" TIG;
-PIN "mainCPU.main_?x" TIG;
-PIN "mainCPU.channel_?x" TIG;
+net "reset?" TIG;
+PIN "mainCpu.main_?x" TIG;
+PIN "mainCpu.channel_?x*" TIG;
 PIN "*spi_clk" TIG;
-#NET "*spi_ce_n*" TIG;
-#NET "*spi_miso*" TIG;
-#NET "*spi_mosi" TIG;
+PIN "*spi_ce_n*" TIG;
+PIN "*spi_miso*" TIG;
+PIN "*spi_mosi" TIG;
+PIN "mainCpu.spi*" TIG;
+NET "mainCpu/*spi*" TIG;
 NET "FMC_AD9510_status" TIG;
 NET "FMC_power_good" TIG;
 NET "FMC_present_n" TIG;
