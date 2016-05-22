@@ -140,6 +140,7 @@
                     OUTPUTK SEL_DATA, IO_SEL_CO_PORT       ;set to write data
                     CALL write_value
                     OUTPUTK REG_WRITE, CONTROL_CO_PORT     ; write it
+                    CALL read_value                        ; read value back
                     RETURN
                     ;
                     ;-----------------------------------------------------------
@@ -250,7 +251,7 @@
                     ; SUBROTINE respond_decerr
                     ; sends slave error response (AXI_DECERR invalid address)
                     ;-----------------------------------------------------------
-    respond_slverr: AND command, COMMAND_BITS
+    respond_slverr: AND command, COMMAND_BITS  ; need the and??
                     OR command, AXI_SLVERR
                     JUMP send_response_byte    ;returns to caller
                     ;
@@ -265,10 +266,10 @@
                     ; register usage
                     ; s6, send_hex_byte uses s0 ,s4, s5
                     ;-----------------------------------------------------------
-     send_response: LOAD s4, command
-                    AND s4, COMMAND_BITS
-                    COMPARE s4, WRITE
-                    JUMP Z, send_response_byte
+     send_response: ;LOAD s4, command
+                    ;AND s4, COMMAND_BITS
+                    ;COMPARE s4, WRITE
+                    ;JUMP Z, send_response_byte
                     LOAD s4, command 
                     TEST s4, ~COMMAND_BITS
                     JUMP NZ, send_response_byte
@@ -299,3 +300,25 @@ send_response_byte: LOAD s4, command
                     LOAD value1, 00
                     LOAD value0, 00
                     RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE version
+                    ; Loads value3-value0 with version number
+                    ; Format:YMDDHHMM relating to the time of assembly
+                    ; where Y the year is mod 16
+                    ;-----------------------------------------------------------
+           version: CALL clear_value_regs
+                    LOAD value3, datestamp_year
+                    SL0 value3
+                    SL0 value3
+                    SL0 value3
+                    SL0 value3
+                    OR value3, datestamp_month
+                    LOAD value2, datestamp_day
+                    LOAD value1, timestamp_hours
+                    LOAD value0, timestamp_minutes
+                    AND command, COMMAND_BITS
+                    JUMP send_response                ; (RTC)
+                    ;
+                    ;-----------------------------------------------------------
+                    ;-----------------------------------------------------------

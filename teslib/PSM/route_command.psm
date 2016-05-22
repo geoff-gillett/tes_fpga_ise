@@ -1,11 +1,10 @@
                     ;-----------------------------------------------------------
-                    ; Company: Quantum Technology Laboratory
                     ; Engineer: Geoff Gillett
                     ; Date:12/11/2013 
                     ;
                     ; Design Name: TES_digitiser
                     ; Module Name: route_command
-                    ; Project Name: control_unit
+                    ; Project Name: teslib
                     ; Target Devices: KCPSM6
                     ; Tool versions: ISE 14.7
                     ;-----------------------------------------------------------
@@ -19,7 +18,7 @@
                     ;-----------------------------------------------------------
                     ; Routing is based on the MSB of address: (address3)
                     ;
-                    ;   00-CHANNEL_MASK   TES Channels
+                    ;   00-CHANNEL_MASK   Channel
                     ;
                     ;   CHANNEL_MASK+1    General registers
                     ;
@@ -27,19 +26,21 @@
                     ;                       LSB:SPI address
                     ;                       2nd LSB: SPI channel select
                     ;
-                    ;  >CHANNEL_MASK+2    AXI bus (NOT IMPLEMENTED)
-                    ;
+                    ;  >CHANNEL_MASK+3    AXI lite bus (NOT IMPLEMENTED)
+                    ; TODO make channel mask fixed at 4 bits
                     ;-----------------------------------------------------------
-     route_command: FETCH s3, TES_channel_mask
-                    ADD s3, 01
-                    COMPARE address3, s3
+     route_command: ;FETCH s3, TES_channel_mask
+                    ;ADD s3, 01
+                    ;COMPARE address3, s3
+                    COMPARE address3, 10
                     JUMP C, channel_register     ; returns to caller
                     JUMP Z, global_register      ; returns to caller
-                    ADD s3, 01
-                    COMPARE address3, s3
+                    ;ADD s3, 01
+                    ;COMPARE address3, s3
+                    COMPARE address3, 20				 ; spi?
                     JUMP NZ, respond_decerr      ; returns to caller
-       SPI_handler: COMPARE address1, 00
-                    JUMP Z, respond_decerr
+       SPI_handler: COMPARE address1, 00	
+                    JUMP Z, respond_decerr				; no chip selects
                    	FETCH s0, AD9510_spi_ce_bit
                     COMPARE address1, s0
                     JUMP C, ADC_SPI_handler       ; returns to caller

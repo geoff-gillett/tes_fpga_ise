@@ -1,19 +1,15 @@
                     ;-----------------------------------------------------------
-                    ; Company: Quantum Technology Laboratory
                     ; Engineer: Geoff Gillett
                     ; Date:12/11/2013 
                     ;
                     ; Design Name: TES_digitiser
                     ; Module Name: IO_controller
-                    ; Project Name: control_unit
+                    ; Project Name: teslib
                     ; Target Devices: KCPSM6
                     ; Tool versions: ISE 14.7
                     ;-----------------------------------------------------------
                     ; IO_controller receives handles, and responds to ASCII
                     ; commands over a UART connection to the host PC
-                    ;
-                    ; Note: The majority of this file is taken directly from 
-                    ;       the KCPSM6 demo files.
                     ;-----------------------------------------------------------
                     ; Input ASCII command format (Big endian)
                     ; VVVVVVVV:AAAAAAAA:CC:TERMINATOR
@@ -24,7 +20,7 @@
                     ; 02 - AXI Read  (value from address)
                     ; 03 - System reset (Address and Value must be zero)
                     ;
-                    ; The command is converted to numbers in registers
+                    ; The command is converted to numbers in named registers
                     ;
                     ;       value3:value2:value1:value0  
                     ;       address3:address2:address2:address0
@@ -113,36 +109,18 @@
                     JUMP send_response
                     ;
                     ;-----------------------------------------------------------
-                    ; SUBROUTINE version
-                    ; Loads value3-value0 with version number
-                    ; Format:YMDDHHMM relating to the time of assembly
-                    ; where Y the year is mod 16
-                    ;-----------------------------------------------------------
-           version: CALL clear_value_regs
-                    LOAD value3, datestamp_year
-                    SL0 value3
-                    SL0 value3
-                    SL0 value3
-                    SL0 value3
-                    OR value3, datestamp_month
-                    LOAD value2, datestamp_day
-                    LOAD value1, timestamp_hours
-                    LOAD value0, timestamp_minutes
-                    AND command, COMMAND_BITS
-                    JUMP send_response                ; (RTC)
-                    ;
-                    ;-----------------------------------------------------------
                     ; Reset sequencer
                     ;-----------------------------------------------------------
-    reset_sequence: CALL delay_40us
+    reset_sequence: CALL delay_40us 									 ;wait for ethernet 
                     OUTPUTK RESET_TIER1, RESET_CO_PORT ;reset0 low
                     CALL store_features            
                     CALL initialise_AD9510
                     CALL initialise_ADCs
                     CALL store_features     
-     pipeline_wait: INPUT s0, STATUS_IN_PORT
-                    TEST s0, pipeline_MMCM_locked
-                    JUMP Z, pipeline_wait       
+     ;pipeline_wait: INPUT s0, STATUS_IN_PORT
+                    ;TEST s0, pipeline_MMCM_locked
+                    ;JUMP Z, pipeline_wait       
+                    ;CALL delay_40us
                     OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset1 low
                     CALL delay_40us
                     OUTPUTK 00, RESET_CO_PORT ;reset2 low

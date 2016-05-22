@@ -221,6 +221,7 @@ type channel_register_array is array (natural range <>)
 		 of channel_registers_t;
 		 
 -- ADDRESS MAP (one hot)
+-- cpu_version                address 0  READ ONLY (no bits set)
 -- capture control register 	address bit 0
 --
 -- 1  downto 0  detection
@@ -242,11 +243,11 @@ type channel_register_array is array (natural range <>)
 -- baseline.timeconstant  		address bit 7				
 -- baseline.threshold		  		address bit 8
 -- baseline.count_threshold		address bit 9
--- baseline flags							address bit 10
--- input select								address bit 11  
---
+-- baseline.flags							address bit 10
 -- 2  downto 0  baseline.average_order
 -- 4 						baseline.subtraction 
+--
+-- input select								address bit 11  
 
 -- One-hot addresses
 constant CAPTURE_ADDR_BIT:integer:=0;
@@ -269,7 +270,7 @@ constant DIFFERENTIATOR_CONFIG_ADDR_BIT:integer:=22;
 constant DIFFERENTIATOR_RELOAD_ADDR_BIT:integer:=23;
 
 -- reset values
-constant DEFAULT_DETECTION:detection_d:=PULSE_DETECTION_D;
+constant DEFAULT_DETECTION:detection_d:=PEAK_DETECTION_D;
 constant DEFAULT_TIMING:timing_d:=CFD_LOW_TIMING_D;
 constant DEFAULT_MAX_PEAKS:unsigned(PEAK_COUNT_BITS-1 downto 0)
 				 :=(others => '0');
@@ -347,12 +348,16 @@ type global_registers_t is record
 	mca:mca_registers_t;
 	iodelay_control:std_logic_vector(IODELAY_CONTROL_BITS-1 downto 0);
 	window:unsigned(TIME_BITS-1 downto 0);
+	FMC108_internal_clk:boolean;
+	VCO_power:boolean;
 end record;
 
 -- ADDRESS MAP (one hot)
--- Features 											 	address 0x0000 implemented in CPU READ ONLY
--- HDL version										 	address bit 0  READ ONLY
+-- IO_controler version							address 0      implemented in CPU READ ONLY
+-- Features 											 	address bit 23 implemented in CPU READ ONLY
+-- HDL version										 	address bit 0   READ ONLY
 --
+-- Readable registers use lowest 12 bits to simplify read mux (select1of12)
 -- MCA control register            	address bit 1
 -- 		3  downto 0  	value
 -- 		7  downto 4  	trigger
@@ -368,11 +373,13 @@ end record;
 -- adc_enable												address bit 7
 -- channel_enable										address bit 8
 --
--- status     											address bit 9 READ ONLY??
+-- flags     												address bit 9
 --		0	fmc108 internal clk enable
 --    1  VCO power enable
 -- window														address bit 10
--- RESERVED													address bit 11
+-- RESERVED													address bit 11 
+--
+-- write only strobe registers 
 --
 -- iodelay_control                  address bit 12 WRITE ONLY
 --		16 downto 14		channel				TODO describe how iodelay works
@@ -383,6 +390,7 @@ end record;
 --    0	update_on_completion
 -- 		1 update_asap
 
+
 constant HDL_VERSION_ADDR_BIT:integer:=0;
 constant MCA_CONTROL_REGISTER_ADDR_BIT:integer:=1;
 constant MCA_LOWEST_VALUE_ADDR_BIT:integer:=2;
@@ -392,15 +400,16 @@ constant TICK_PERIOD_ADDR_BIT:integer:=5;
 constant TICK_LATENCY_ADDR_BIT:integer:=6;
 constant ADC_ENABLE_ADDR_BIT:integer:=7;
 constant CHANNEL_ENABLE_ADDR_BIT:integer:=8;
-constant STATUS_ADDR_BIT:integer:=9;
+constant FLAGS_ADDR_BIT:integer:=9;
 constant WINDOW_ADDR_BIT:integer:=10;
 
 constant IODELAY_CONTROL_ADDR_BIT:integer:=12;
 constant MCA_UPDATE_ADDR_BIT:integer:=13;
-
-constant NUM_STATUS_BITS:integer:=2; 
-constant STATUS_FMC108_INTERNAL_CLK_BIT:integer:=0;
-constant STATUS_VCO_POWER_BIT:integer:=1;
+-- control flags
+constant NUM_CTL_FLAGS:integer:=2; 
+constant CTL_FMC108_INTERNAL_CLK_BIT:integer:=0;
+constant CTL_VCO_POWER_BIT:integer:=1;
+--MCA flags
 constant MCA_UPDATE_ON_COMPLETION_BIT:integer:=0;
 constant MCA_UPDATE_ASAP:integer:=1;
 
@@ -416,7 +425,7 @@ constant DEFAULT_TICK_LATENCY:unsigned(TICK_LATENCY_BITS-1 downto 0)
 constant DEFAULT_MCA_TICKS:unsigned(MCA_TICKCOUNT_BITS-1 downto 0)
 				 :=to_unsigned(1,MCA_TICKCOUNT_BITS);
 constant DEFAULT_MCA_BIN_N:unsigned(MCA_BIN_N_BITS-1 downto 0)
-				 :=to_unsigned(1,MCA_BIN_N_BITS);
+				 :=to_unsigned(0,MCA_BIN_N_BITS);
 constant DEFAULT_MCA_LAST_BIN:unsigned(MCA_ADDRESS_BITS-1 downto 0)
 				 :=to_unsigned(2**MCA_ADDRESS_BITS-1,MCA_ADDRESS_BITS);
 constant DEFAULT_MCA_TRIGGER:mca_trigger_d:=DISABLED_MCA_TRIGGER_D;

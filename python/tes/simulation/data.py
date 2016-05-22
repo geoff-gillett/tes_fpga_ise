@@ -17,6 +17,7 @@ tick_dt = np.dtype([('period', np.uint32), ('flags', np.uint8, (2,1)), ('time', 
 area_dt = np.dtype([('area', np.uint32), ('flags', np.uint8, (2,)), ('time', np.uint16)])
 
 
+# TODO import from tes_interface.registers
 class HeightType(Enum):
     @staticmethod
     def from_int(value):

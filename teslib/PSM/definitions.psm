@@ -47,7 +47,7 @@
                     CONSTANT ERROR_BITS,       	11000000'b
                     CONSTANT COMMAND_BITS,     	00001111'b
                     ; end of transmission
-                    CONSTANT TERMINATOR,        0D    	
+                    CONSTANT TERMINATOR,        0A    	
                     ; scratch locations	
                     constant temp,							00
                     CONSTANT TES_channels,			01

@@ -76,3 +76,4 @@ python/tes/simulation/__pycache__/
 teslib/Vivado/
 teslib/vivado_IP/*/*
 teslib/simulation/measurement_overflow_TB/.ipynb_checkpoints/
+.texlipse

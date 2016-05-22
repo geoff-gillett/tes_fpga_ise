@@ -43,16 +43,17 @@ constant SPI_IO_PORT_CLK_BIT:integer:=0;
 
 -- status bits
 constant STATUS_TX_NOTEMPTY_BIT:integer:=0;
---constant STATUS_CHAN_TX_NOTEMPTY_BIT:integer:=1;
 constant STATUS_TX_FULL_BIT:integer:=1;
---constant STATUS_CHAN_TX_FULL_BIT:integer:=3;
 constant STATUS_RX_NOTEMPTY_BIT:integer:=2;
---constant STATUS_CHAN_RX_NOTEMPTY_BIT:integer:=5;
+--IO_controller status bits
 constant STATUS_FMC_PRESENT_BIT:integer:=3;
 constant STATUS_FMC_POWER_BIT:integer:=4;
 constant STATUS_FMC_AD9510_BIT:integer:=5;
 constant STATUS_PIPELINE_LOCK_BIT:integer:=6;
---constant STATUS_AXI_HANDSHAKE_BIT:integer:=7;
+-- channel_controller status bits
+constant STATUS_AXIS_READY_BIT:integer:=3;
+constant STATUS_AXIS_DONE_BIT:integer:=4;
+constant STATUS_AXIS_ERROR_BIT:integer:=5;
 
 -- IO selection
 constant IO_SEL_COO_PORTID_BIT:integer:=0;

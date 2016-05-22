@@ -1,0 +1,259 @@
+%% TES digitiser manual
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{upquote}
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+\newsavebox{\fieldname}
+\newlength{\fieldwidth}
+\newsavebox{\bits}
+\newsavebox{\bitlabel}
+\newlength{\bitlabelwidth}
+\settowidth{\bitlabelwidth}{\code{ field}}
+\savebox{\bitlabel}{\raisebox{0.9\baselineskip}
+{\makebox[0pt][r]{\makebox[\bitlabelwidth][r]{bit}}}}
+\savebox{\bitlabel}
+{\makebox[\bitlabelwidth][r]{field}\usebox{\bitlabel}\hspace{-12pt}}
+
+\newcommand{\bitfield}[3]{
+\savebox{\fieldname}{\code{#1}}
+\settowidth{\fieldwidth}{\usebox{\fieldname}}
+\savebox{\bits}{\raisebox{.9\baselineskip}
+{\makebox[0pt][l]{\makebox[\fieldwidth]{\code{#2}\hfill\code{#3}}}}}
+\mbox{%
+\colorbox[gray]{0.9}
+{\mbox{\usebox{\bits}\usebox{\fieldname}}\rule[-.2\baselineskip]
+{0pt}{1.7\baselineskip}}\rule[-.6\baselineskip]{0pt}{2.5\baselineskip}
+\hspace{-18pt}}}
+
+\newcommand{\bitflag}[2]{
+\savebox{\fieldname}{\code{#1}}
+\settowidth{\fieldwidth}{\usebox{\fieldname}}
+\savebox{\bits}{\raisebox{0.9\baselineskip}
+{\makebox[0pt][l]{\makebox[\fieldwidth][c]{\code{#2}}}}}
+\mbox{%
+\colorbox[gray]{0.9}
+{\mbox{\usebox{\bits}\usebox{\fieldname}}\rule[-.2\baselineskip]
+{0pt}{1.7\baselineskip}}\rule[-.6\baselineskip]{0pt}{2.5\baselineskip}
+\hspace{-18pt}}}
+
+\newenvironment{fielddesc}
+{\texttt\bgroup}
+{\egroup}
+
+\newenvironment{regfields}
+{\usebox{\bitlabel}}
+{}
+
+\newenvironment{register}[2]
+{\vspace{0.6\baselineskip}\begin{minipage}{\textwidth}%
+\code{#1}
+
+\code{address:}\code{#2}
+
+\vspace{0.5\baselineskip}
+\begin{regfields}}
+{\end{regfields}\end{minipage}\vspace{0.5\baselineskip}}
+
+
+\newcommand{\return}{\code{\textbackslash r}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{.5\baselineskip}
+\setlength{\fboxsep}{2pt}
+
+\begin{document}
+
+
+\section{Registers}
+
+\subsection{Serial protocol}
+
+The register IO protocol is compatible with the AMBA AXI Lite specification and
+is currently transported over a RS232 serial connection via the Silicon Labs
+CP210x USB to UART Bridge on the development board.
+Commands and responses are encoded as \emph{ASCII hex characters}
+\code{(0-9,A-F)} and terminated with a carriage return \return{} \code{(0x0D)}.
+
+\subsubsection{Commands}
+
+Commands are 19 characters in length including the terminator in this format
+
+\begin{fielddesc}
+"VVVVVVVVAAAAAAAA0C\return" 
+\end{fielddesc}
+
+where the 8 hex characters "\code{VVVVVVVV}" represent the 32 bit value to be
+written, "\code{AAAAAAAA}" the 32 bit register address and "\code{C}" one of the
+following command op-codes.
+
+\begin{fielddesc}
+\begin{tabular}{l l}
+"1" & write register \\
+"2" & read register \\
+"3" & reset (warm reboot of FPGA)
+\end{tabular}
+\end{fielddesc} 
+
+The value part is ignored in a read command but must be present, and must be
+"\code{00000000}" for a valid reset.
+
+\subsubsection{Responses}
+
+After a command is processed a 3 or 11 character response is returned
+
+\begin{fielddesc}
+\begin{tabular}{l l}
+"RC\return"                  & write response \\
+"VVVVVVVVRC\return"          & read or reset response \\
+\end{tabular}
+\end{fielddesc}
+
+where "\code{C}" is the op-code being responded to, "\code{R}" the response
+code and "\code{VVVVVVV}" the returned value.
+The 4 bit response code indicates errors during the command
+
+\begin{regfields}
+\bitflag{non-hex}{3}
+\bitflag{bad length}{2}
+\bitfield{AXI response}{1}{0}
+\end{regfields}
+
+the \code{non-hex} bit indicates that illegal characters were found in
+the command, the \code{bad length} bit indicates the received command was not 19
+characters long, and the 2 bit \code{AXI response} flags any processing errors 
+
+\begin{fielddesc}
+\begin{tabular}{l l}
+00 & OKAY \\ 
+10 & SLVERR \\
+11 & DECERR \\
+\end{tabular}
+\end{fielddesc}
+
+A \code{DECERR} indicates an unknown address, and a \code{SLVERR} a command
+error, eg writing to a read-only register. The value in a reset response is the
+FPGA features register.
+
+\subsubsection{Addresses}
+
+\begin{regfields}
+\bitfield{\makebox[0.125\textwidth][c]{route}}{31}{24}
+\bitfield{\makebox[0.5\textwidth][c]{24 bit address}}{23}{0}
+\end{regfields}
+
+The MSB of the address is used to route the command to various sub-systems
+within the design
+
+\begin{fielddesc}
+\begin{tabular}{l l}
+"0C" & registers for channel "C" \\ 
+"10" & global registers \\
+"20" & SPI communication \\
+\end{tabular}
+\end{fielddesc}
+
+the SPI channels communicate with the chips on FMC daughter board,
+the four ADS62P49 ADC chips and the Analogue Devices AD9510 clock distribution
+chip. SPI address are of the form
+
+\begin{regfields}
+\bitfield{\makebox[30pt]{20}}{31}{24}
+\bitfield{reserved}{23}{16}
+\bitfield{chip select}{15}{8}
+\bitfield{address}{7}{0}
+\end{regfields}
+
+with a FMC108 installed the chip selects are
+
+\begin{fielddesc}
+\begin{tabular}{l l}
+bit 0 & ADS62P49 chip 0 (channels 0 and 1)\\
+bit 1 & ADS62P49 chip 1 (channels 2 and 3)\\
+bit 2 & ADS62P49 chip 2 (channels 4 and 5)\\
+bit 3 & ADS62P49 chip 3 (channels 6 and 7)\\
+bit 4 & AD9510 chip \\
+\end{tabular}
+\end{fielddesc}
+
+\clearpage
+\subsection{Global registers}
+
+\begin{register}{cpu\_version}{01000000 READ ONLY}
+\bitfield{ year }{31}{28}
+\bitfield{month}{27}{24}
+\bitfield{ day }{23}{16}
+\bitfield{hour}{15}{8}
+\bitfield{minute}{7}{0}
+\end{register}
+The build date for the software running on the main picoblaze CPU that controls
+register IO, \code{year} is modulo 16.
+
+\begin{register}{HDL version}{01000001}
+	\bitfield{reserved}{31}{24}
+	\bitfield{git short SHA-1}{23}{0}
+\end{register}
+The short SHA-1 for the git commit of the HDL source.
+
+\begin{register}{FPGA features}{01800000 READ ONLY}
+\bitflag{AD9510 status}{10}
+\bitflag{FMC power}{9}
+\bitflag{ FMC }{8}
+\bitfield{ ADC }{7}{4}
+\bitfield{Channels}{3}{0}
+\end{register}
+
+\begin{fielddesc}
+\begin{tabular}{l l}
+AD9510 status & See data sheet \\
+FMC power & FMC card booted with out error and is powered up\\
+FMC present & FMC card is installed \\ 
+ADC & number of adc chips on the FMC card\\
+DSP & number of processing channels instantiated in the FPGA.\\
+\end{tabular}
+\end{fielddesc}
+
+\begin{register}{ADC enable}{01000080}
+\bitfield{reserved}{31}{8}
+\bitfield{enable bits}{7}{0}
+\end{register}
+Each enable bit corresponds to the same ADC channel number, disabling an ADC
+channel puts it in stand-by mode.
+
+\begin{register}{Channel enable}{01000100}
+\bitfield{reserved}{31}{8}
+\bitfield{enable bits}{7}{0}
+\end{register}
+Each enable bit corresponds to the same processing channel, disabling a channel
+prevents any information from that channel appearing in the event stream.
+
+\begin{register}{Tick period}{01000010}
+\bitfield{tick period}{31}{0}
+\end{register}
+The length of time between tick events in system clocks ($4 ns$).
+
+\begin{register}{Tick latency}{01000020}
+\bitfield{tick latency}{31}{0}
+\end{register}
+The maximum allowed to elapse since the last tick event was put in the event
+stream before the event buffer is flushed.
+
+
+
+\section{VHDL Notes}
+
+\begin{verbatim}
+Reset sequence
+CPU reset - main CPU
+reset0    - AD9510, ADCs, ADC FIFOs, 
+            Global and channel registers, 
+            Channel CPUs, ethernet_framer
+reset1    - eventstream_mux, MCA
+reset2    - measurement_unit
+\end{verbatim}
+
+\end{document}

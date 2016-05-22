@@ -1,11 +1,10 @@
                     ;-----------------------------------------------------------
-                    ; Company: Quantum Technology Laboratory
                     ; Engineer: Geoff Gillett
                     ; Date:12/11/2013 
                     ;
                     ; Design Name: TES_digitiser
                     ; Module Name: ADC_IO
-                    ; Project Name: control_unit
+                    ; Project Name: teslib
                     ; Target Devices: KCPSM6
                     ; Tool versions: ISE 14.7
                     ;
@@ -126,9 +125,9 @@
                     ; sets adc_enables register to the new value
                     ;-----------------------------------------------------------
                     ;
- ;write_adc_enables: OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset2 high
- write_adc_enables: CALL write_register          ; write new adc_enables 
-                    JUMP send_response           ; returns to caller
+ write_adc_enables: OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset2 high
+ ;write_adc_enables: CALL write_register          ; write new adc_enables 
+                    ;JUMP send_response           ; returns to caller
                     ;
                     LOAD s6, value0              ; save the new adc_enables
                     LOAD value0, 00           
@@ -137,8 +136,8 @@
                     LOAD s0, 00000001'b 
                     OUTPUT s0, SPI_SEL_O_PORT    ; select SPI to adc chip 1
                     CALL ADC_power_state
-                    SR0 s4
-                    SR0 s4
+                    SR0 s4											 ; shift adc_enables 
+                    SR0 s4											 ; to set up for chip 2
                     LOAD s0, 00000010'b 
                     OUTPUT s0, SPI_SEL_O_PORT    ; select SPI to adc chip 2
                     CALL ADC_power_state
@@ -156,8 +155,8 @@
                     CALL delay_1ms               ; wait for ADCs to power-up
                     LOAD value0, s6
                     CALL write_register          ; write new adc_enables 
-                    CALL delay_40us
-                    ;OUTPUTK 00, RESET_CO_PORT    ; reset2 low
+                    OUTPUTK 00, RESET_CO_PORT    ; reset2 low
+                    ;CALL delay_40us
                     JUMP send_response           ; returns to caller
                     ;
                     ;-----------------------------------------------------------
@@ -166,8 +165,7 @@
                     ; sets power up/down and stand by states for ADC chips 
                     ; and channels based on the new adc_enables setting in
                     ; value0. If no channels are required on a chip it is 
-                    ; powered down, otherwise unused channels are placed in
-                    ; standby
+                    ; put in standby mode. 
                     ;
                     ; REQUIRES s4 set to enables for the ADC chip bit0 channel A
                     ; bit1 channel B
@@ -176,7 +174,7 @@
                     ;-----------------------------------------------------------
    ADC_power_state: TEST s4, 03
                     JUMP Z, ADC_chip_standby    ; returns to caller 
-                    JUMP NC, ADC_chip_powerup   ; returns to caller 
+                    JUMP NC, ADC_chip_normal    ; returns to caller 
                     ; only one adc channel active
                     TEST s4, 01
                     JUMP Z, ADC_a_standby       ; returns to caller 
@@ -300,7 +298,7 @@ ADC_chip_powerdown: CALL ADC_write_enable
                     ; the addresses are also used to validate commands
                     ; A value of FF terminates the table  
                     ;-----------------------------------------------------------
-TABLE ADC_default1#,[00,00, 20,00, 3F,20, 40,08, 41,80, 44,00, 50,46, 51,00]
+TABLE ADC_default1#,[00,80, 20,00, 3F,21, 40,08, 41,80, 44,00, 50,46, 51,00]
 TABLE ADC_default2#,[52,00, 53,00, 55,00, 57,00, 62,00, 63,00, 66,00, 68,00]
 TABLE ADC_default3#,[6A,00, 75,00, 76,00, FF]  
       ADC_defaults: LOAD&RETURN s2, ADC_default1#  

@@ -202,6 +202,9 @@ in_port <= uart_rx_byte when port_id(UART_IO_PORTID_BIT)='1'
                         else (STATUS_TX_NOTEMPTY_BIT => tx_not_empty,
                               STATUS_TX_FULL_BIT => tx_full,
                               STATUS_RX_NOTEMPTY_BIT => rx_not_empty,
+                              STATUS_AXIS_READY_BIT => to_std_logic(axis_ready),
+                              STATUS_AXIS_DONE_BIT => to_std_logic(axis_done),
+                              STATUS_AXIS_ERROR_BIT => to_std_logic(axis_error),
                               others => '-') 
                         when port_id(STATUS_IN_PORTID_BIT)='1' 
                         else (others => '-');

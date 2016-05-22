@@ -122,15 +122,16 @@ port(
 end entity ml605_CPU_test;
 
 architecture RTL of ml605_CPU_test is
+	
 --------------------------------------------------------------------------------
 -- Constants
 --------------------------------------------------------------------------------
 constant ADC_CHANNELS:integer:=ADC_CHIPS*ADC_CHIP_CHANNELS;
 constant SPI_CHANNELS:integer:=ADC_CHIPS+1; -- +1 for AD9510
+
 --------------------------------------------------------------------------------
 -- Components
 --------------------------------------------------------------------------------
-
 component fmc108_clk_tree
 port
 (
@@ -207,7 +208,7 @@ signal enables_reg:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal adc_samples,fifo_dout:adc_sample_array(ADC_CHANNElS-1 downto 0);
 signal fifo_empty:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
-signal FMC_internal_clk_en_int,FMC_VCO_power_en_int,FMC_present:std_logic;
+signal FMC_present:std_logic;
 
 --------------------------------------------------------------------------------
 -- Main CPU signals
@@ -347,8 +348,8 @@ AD9510_spi_clk <= spi_clk;
 ADC_spi_mosi <= spi_mosi;
 AD9510_spi_mosi <= spi_mosi;
 FMC_reset <= reset0;
-FMC_internal_clk_en <= '1'; --FMC_internal_clk_en_int;
-FMC_VCO_power_en <= '1';  --FMC_VCO_power_en_int;
+FMC_internal_clk_en <= to_std_logic(global.FMC108_internal_clk);
+FMC_VCO_power_en <= to_std_logic(global.VCO_power);
 --
 
 -- FIXME what does this do?
@@ -389,12 +390,12 @@ port map
   locked => onboard_mmcm_locked
 );
 
---TODO add reset?    
+--TODO make this a RO flag
 idelayctrl_inst:idelayctrl
 port map (
    rdy => iodelayctrl_rdy,  -- 1-bit output indicates validity of the refclk
-   refclk => refclk, -- 1-bit reference clock input
-   rst => '0'        -- 1-bit reset input
+   refclk => refclk, 				-- 1-bit reference clock input
+   rst => '0'        				-- 1-bit reset input
 );
 
 reset_enable <= fmc108_mmcm_locked and onboard_mmcm_locked and iodelayctrl_rdy;    
@@ -477,7 +478,7 @@ begin
     idatain => adc_clk_bufds(chip),
     inc => iodelay_clk_inc(chip),
     odatain => '0',
-    rst => reset0,
+    rst => '0',
     t => '1'
   );
   
@@ -532,7 +533,7 @@ adcChipGen:for chip in 0 to ADC_CHIPS-1 generate
         idatain => adc_ddr(chip*ADC_CHIP_CHANNELS+chan)(bit),
         inc => iodelay_inc(chip*ADC_CHIP_CHANNELS+chan)(bit),
         odatain => '0',
-        rst => reset0,
+        rst => '0',
         t => '1'
       );
       
@@ -545,7 +546,7 @@ adcChipGen:for chip in 0 to ADC_CHIPS-1 generate
           c => adc_chip_clk(chip),
           ce => '1',
           d => adc_ddr_delay(chip*ADC_CHIP_CHANNELS+chan)(bit),
-          r => reset0,
+          r => '0',
           s => '0'
         );
         
@@ -607,7 +608,7 @@ begin
       else
         fifo_reset <= '0';
         if fifo_valid=enables_reg then 
-            fifo_rd_en <= fifo_valid;
+            fifo_rd_en <= enables_reg;
         end if;
       end if;
     end if;
@@ -679,6 +680,7 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
     axis_error => axis_error(c)
   );
 	
+	--TODO add reset??
   delay:entity tes.RAM_delay
   generic map(
     DEPTH => 2**DELAY_BITS,
@@ -699,7 +701,7 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
   )
   port map(
     clk => signal_clk,
-    reset => reset0,
+    reset => reset2,
     adc_sample => adc_delayed(c),
     registers => channel_registers(c),
     filter_config_data => filter_config_data(c),
@@ -743,6 +745,7 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
   );
 end generate signalChanGen;
 --------------------------------------------------------------------------------
+
 mux:entity tes.eventstream_mux
 generic map(
   CHANNEL_BITS => CHANNEL_BITS,
@@ -755,7 +758,7 @@ generic map(
 )
 port map(
   clk => signal_clk,
-  reset => reset0,
+  reset => reset1,
   start => starts,
   commit => commits,
   dump => dumps,
@@ -784,7 +787,7 @@ generic map(
 )
 port map(
   clk => signal_clk,
-  reset => reset0,
+  reset => reset1,
   channel_select => channel_select,
   values => mca_values,
   valids => mca_value_valids,
@@ -807,7 +810,7 @@ generic map(
 )
 port map(
   clk => signal_clk,
-  reset => reset0,
+  reset => reset1,
   initialising => open,
   --TODO remove redundant register port
   update_asap => global.mca.update_asap,
@@ -932,6 +935,7 @@ port map(
   pipeline_mmcm_locked => fmc108_mmcm_locked,
   reset0 => reset0,
   reset1 => reset1,
+  -- reset for signal path goes high while adc_enables changes
   reset2 => reset2,
   interrupt => FALSE,
   interrupt_ack => open,

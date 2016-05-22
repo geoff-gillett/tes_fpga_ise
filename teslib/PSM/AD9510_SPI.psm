@@ -54,7 +54,7 @@ AD9510_SPI_handler: COMPARE command, READ
                     ;     
                     ;-----------------------------------------------------------
                     ; SUBROUTINE initialise_AD9510
-                    ; default values are in the TABLE ADC_defaults
+                    ; default values are in the TABLE AD9510_defaults
                     ; USES s0,s1,s2,s3,s4,s5,s6
                     ;-----------------------------------------------------------
  initialise_AD9510: FETCH s6, AD9510_spi_ce_bit

@@ -4,7 +4,7 @@
                     ;
                     ; Design Name: TES_digitiser
                     ; Module Name: command_handler.psm
-                    ; Project Name: channel
+                    ; Project Name: teslib
                     ; Target Devices: KCPSM6
                     ; Tool versions: ISE 14.7
                     ;-----------------------------------------------------------
@@ -16,37 +16,59 @@
                     JUMP Z, write_channel_reg
                     JUMP respond_slverr        ; should not be able to get here
                     ;
- write_channel_reg: CALL onehot_address24
+ write_channel_reg: CALL check_chan_addr
                     JUMP Z, respond_slverr     ; returns to caller
                     JUMP NC, respond_decerr    ; returns to caller
-                    COMPARE s2, NUM_CHANNEL_REGS
-                    JUMP NC, respond_decerr;   ; returns to caller
+                    TEST s2, 03               
+                    JUMP Z, respond_decerr           ; invalid address
+                    TEST s2, 02              
+                    JUMP Z, respond_slverr           ; not writable
                     CALL write_register
-                    JUMP send_response_byte
+                    JUMP send_response
                     ;
-  read_channel_reg: CALL onehot_address24
+  read_channel_reg: CALL check_chan_addr
                     JUMP Z, version     ; returns to caller
                     JUMP NC, respond_decerr    ; returns to caller
-                    COMPARE s2, NUM_CHANNEL_REGS
-                    JUMP NC, respond_decerr;   ; returns to caller
+                    JUMP Z, version                  ; (RTC)
+                    JUMP NC, respond_decerr          ; not one-hot (RTC)
+                    TEST s2, 03
+                    JUMP Z, respond_decerr					 ; invalid address
+                    TEST s2, 01
+                    JUMP Z, respond_slverr					 ; not readable (RTC)
                     CALL read_register
                     JUMP send_response
                     ;
                     ;-----------------------------------------------------------
-                    ; SUBROUTINE get_response_byte
-                    ; adds response bits to command
-                    ; uses s3, s6
+                    ; TABLE Channel address map lookup table
+                    ; used to test address validity and R/W access
+                    ; format: address bit 0 access, ..., address bit 23 access
+                    ; where access bit 0 indicates readable bit 1 writable
+                    ;
+TABLE chan_access#, [3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0]'d           
+       chan_access: LOAD&RETURN s2, chan_access#
+                    ;
                     ;-----------------------------------------------------------
-; get_chan_response: INPUT s3, STATUS_IN_PORT
-;                    TEST s3, STATUS_RESPONSE_VALID
-;                    JUMP Z, get_chan_response
-;                    INPUT s6, RESP_IN_PORT
-;                    AND s6, CHAN_RESPONSE_MASK
-;                    SL0 s6
-;                    SL0 s6
-;                    SL0 s6
-;                    SL0 s6
-;                    AND command, ~AXI_BITS
-;                    OR command, s6
-;                    RETURN
-                    
+                    ; SUBROUTINE check_chan_addr
+                    ; checks access for global register
+                    ;
+                    ; RETURN flags and value in s2
+                    ;   C  and NZ -> is one-hot s2=access
+                    ;   NC and NZ -> more than one bit set s2=?
+                    ;   NC and Z  -> no bits set s2=?
+                    ;
+                    ; USES s2,s4,s5
+                    ;-----------------------------------------------------------
+   check_chan_addr: CALL onehot_address24
+   									RETURN NC
+   									RETURN Z
+   									LOAD s5, chan_access'upper
+										LOAD s4, chan_access'lower
+										ADD s4, s2
+										ADDCY s5, 00
+                    CALL@ (s5, s4)
+                    OR s4, 01										; reset z
+                    HWBUILD s4                  ; set c
+                    RETURN
+            				; 
+                    ;-----------------------------------------------------------
+                    ;-----------------------------------------------------------

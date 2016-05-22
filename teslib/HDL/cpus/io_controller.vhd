@@ -189,7 +189,7 @@ if rising_edge(clk) then
     reset1_int <= '1';
     reset2_int <= '1';
   else
-    cpu_reset <= '0';
+  	cpu_reset <= '0';
     if k_write_strobe='1' and port_id(RESET_COO_PORTID_BIT)='1' then
       cpu_reset <= out_port(RESET_SYSTEM_BIT);
       reset0_int <= out_port(RESET_TIER0);

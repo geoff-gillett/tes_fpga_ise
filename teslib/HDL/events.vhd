@@ -100,7 +100,7 @@ type area_detection_t is record
 end record;
 
 function to_streambus(a:area_detection_t;endianness:string) return streambus_t;
-	
+--TODO add flag to indicate the first tick after reset	
 -------------------------- tick event 16 bytes----------------------------------
 --     |                   32                |  16  |  16  |
 -- w=0 |                  period             | flags| time |

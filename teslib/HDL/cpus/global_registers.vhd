@@ -23,7 +23,9 @@ use work.registers.all;
 
 entity global_registers is
 generic(
-  HDL_VERSION:register_data_t:=to_std_logic(42,REGISTER_DATA_BITS)
+  HDL_VERSION:register_data_t:=to_std_logic(42,REGISTER_DATA_BITS);
+  MIN_TICK_PERIOD:integer:=MIN_TICK_PERIOD;
+  MIN_MTU:integer:=64
 );
 port (
   reg_clk:in std_logic;
@@ -68,6 +70,8 @@ begin
 			reg.mca.trigger <= DEFAULT_MCA_TRIGGER;
 			reg.mca.value <= DEFAULT_MCA_VALUE;
 			reg.mca.lowest_value <= DEFAULT_MCA_LOWEST_VALUE;
+			reg.FMC108_internal_clk <= TRUE;
+			reg.VCO_power <= TRUE;
 		else
 			if write then
 				if address(MCA_CONTROL_REGISTER_ADDR_BIT)='1' then
@@ -84,10 +88,18 @@ begin
 					reg.mca.ticks <= unsigned(data(MCA_TICKCOUNT_BITS-1 downto 0));
 				end if;
 				if address(MTU_ADDR_BIT)='1' then
-					reg.mtu <= unsigned(data(MTU_BITS-1 downto 0));
+					if unsigned(data(MTU_BITS-1 downto 0)) < MIN_MTU then
+						reg.mtu <= to_unsigned(MIN_MTU,MTU_BITS);
+					else
+						reg.mtu <= unsigned(data(MTU_BITS-1 downto 0));
+					end if;
 				end if;
 				if address(TICK_PERIOD_ADDR_BIT)='1' then
-					reg.tick_period <= unsigned(data(TICK_PERIOD_BITS-1 downto 0));
+					if unsigned(data(TICK_PERIOD_BITS-1 downto 0)) < MIN_TICK_PERIOD then
+						reg.tick_period <= to_unsigned(MIN_TICK_PERIOD, TICK_PERIOD_BITS);
+					else
+						reg.tick_period <= unsigned(data(TICK_PERIOD_BITS-1 downto 0));
+					end if;
 				end if;
 				if address(TICK_LATENCY_ADDR_BIT)='1' then
 					reg.tick_latency <= unsigned(data(TICK_LATENCY_BITS-1 downto 0));
@@ -98,18 +110,16 @@ begin
 				if address(CHANNEL_ENABLE_ADDR_BIT)='1' then
 					reg.channel_enable <= data(CHANNELS-1 downto 0);
 				end if;
-				if address(STATUS_ADDR_BIT)='1' then
-					-- FIXME implement
-					null;
-				end if;
-				if address(STATUS_ADDR_BIT)='1' then
-					-- FIXME implement
-					null;
+				if address(FLAGS_ADDR_BIT)='1' then
+					reg.FMC108_internal_clk 
+						<= to_boolean(data(CTL_FMC108_INTERNAL_CLK_BIT));
+					reg.VCO_power <= to_boolean(data(CTL_VCO_POWER_BIT));
 				end if;
 				if address(WINDOW_ADDR_BIT)='1' then
 					reg.window <= unsigned(data(TIME_BITS-1 downto 0));
 				end if;
 			end if;	
+			
 			-- strobing registers
       if write and address(IODELAY_CONTROL_ADDR_BIT)='1' then
         reg.iodelay_control <= data(IODELAY_CONTROL_BITS-1 downto 0);
@@ -129,7 +139,7 @@ begin
 	end if;
 end process regwrite;
 	
-reg_data(HDL_VERSION_ADDR_BIT) <= HDL_VERSION;
+reg_data(HDL_VERSION_ADDR_BIT) <= HDL_VERSION; --FIXME 
 reg_data(MCA_CONTROL_REGISTER_ADDR_BIT) <= mca_control_register(reg.mca);
 reg_data(MCA_LOWEST_VALUE_ADDR_BIT)
    <= to_std_logic(resize(reg.mca.lowest_value,AXI_DATA_BITS));
@@ -143,9 +153,13 @@ reg_data(TICK_LATENCY_ADDR_BIT)
 reg_data(ADC_ENABLE_ADDR_BIT) <= resize(reg.adc_enable,AXI_DATA_BITS);
 reg_data(CHANNEL_ENABLE_ADDR_BIT) <= resize(reg.channel_enable,AXI_DATA_BITS);
 -- FIXME implement
-reg_data(STATUS_ADDR_BIT) <= (others => '0');
-reg_data(10) <= to_std_logic(resize(reg.window,AXI_DATA_BITS));  -- reserved
-reg_data(11) <= (others => '0');
+reg_data(FLAGS_ADDR_BIT) <= (
+	CTL_FMC108_INTERNAL_CLK_BIT => to_std_logic(reg.FMC108_internal_clk),
+	CTL_VCO_POWER_BIT => to_std_logic(reg.VCO_power),
+	others => '-'
+);
+reg_data(WINDOW_ADDR_BIT) <= to_std_logic(resize(reg.window,AXI_DATA_BITS));  
+reg_data(11) <= (others => '-');
 
 selectorGen:for b in 0 to AXI_DATA_BITS-1 generate
 begin

@@ -31,10 +31,9 @@
 -- baseline.threshold		  		address bit 8
 -- baseline.count_threshold		address bit 9
 -- baseline flags							address bit 10
+-- 	2  downto 0  baseline.average_order
+-- 	4 						baseline.subtraction 
 -- input select								address bit 11
---
--- 2  downto 0  baseline.average_order
--- 4 						baseline.subtraction 
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -391,7 +390,6 @@ reg_data(INPUT_SEL_ADDR_BIT) <= resize(to_std_logic(reg.capture.invert) &
 		 														);
 
 selectorGen:for b in 0 to AXI_DATA_BITS-1 generate
-	--variable reg_bits:std_logic_vector(11 downto 0);
 begin
 	
 	bitGen:for reg in 0 to 11 generate
@@ -405,7 +403,6 @@ begin
     sel => address(11 downto 0),
     output => value(b)
   );
-  
 end generate;
 
 end architecture RTL;
