@@ -125,8 +125,8 @@
                     ; sets adc_enables register to the new value
                     ;-----------------------------------------------------------
                     ;
- write_adc_enables: OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset2 high
- ;write_adc_enables: CALL write_register          ; write new adc_enables 
+ ;write_adc_enables: OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset2 high
+ write_adc_enables: CALL write_register          ; write new adc_enables 
                     ;JUMP send_response           ; returns to caller
                     ;
                     LOAD s6, value0              ; save the new adc_enables
@@ -155,7 +155,7 @@
                     CALL delay_1ms               ; wait for ADCs to power-up
                     LOAD value0, s6
                     CALL write_register          ; write new adc_enables 
-                    OUTPUTK 00, RESET_CO_PORT    ; reset2 low
+                    ;OUTPUTK 00, RESET_CO_PORT    ; reset2 low
                     ;CALL delay_40us
                     JUMP send_response           ; returns to caller
                     ;

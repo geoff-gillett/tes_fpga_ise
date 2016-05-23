@@ -37,7 +37,7 @@ use tes.registers.all;
 use tes.adc.all;
 use tes.measurements.all;
 
-entity ml605_CPU_test is
+entity ml605_v6_emac is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=12;
@@ -119,9 +119,9 @@ port(
   frame_error:out std_logic;
   frame_errorn:out std_logic
 );
-end entity ml605_CPU_test;
+end entity ml605_v6_emac;
 
-architecture RTL of ml605_CPU_test is
+architecture RTL of ml605_v6_emac is
 	
 --------------------------------------------------------------------------------
 -- Constants
@@ -171,7 +171,7 @@ end component adc_fifo;
 -- Clock and reset signals
 --------------------------------------------------------------------------------
 signal global_reset_IO_clk,IO_clk,signal_clk:std_logic;
-signal reset0,reset1,reset2,CPU_reset,fmc108_MMCM_locked:std_logic;
+signal reset0,reset1,reset2,fmc108_MMCM_locked:std_logic;
 
 signal refclk : std_logic;
 signal onboard_mmcm_locked:std_logic;
@@ -189,7 +189,6 @@ attribute keep:string;
 attribute keep of reset0:signal is "true";
 attribute keep of reset1:signal is "true";
 attribute keep of reset2:signal is "true";
-attribute keep of CPU_reset:signal is "true";
 
 --------------------------------------------------------------------------------
 -- FMC108 signals
@@ -817,7 +816,6 @@ port map(
   --TODO remove redundant register port
   update_on_completion => global.mca.update_on_completion,
   updated => updated, --TODO implement CPU interupt
-  --TODO remove redundant register port
   registers => global.mca,
   --TODO remove redundant register port
   tick_period => global.tick_period,

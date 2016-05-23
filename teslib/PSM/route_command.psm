@@ -29,16 +29,15 @@
                     ;  >CHANNEL_MASK+3    AXI lite bus (NOT IMPLEMENTED)
                     ; TODO make channel mask fixed at 4 bits
                     ;-----------------------------------------------------------
-     route_command: ;FETCH s3, TES_channel_mask
-                    ;ADD s3, 01
-                    ;COMPARE address3, s3
-                    COMPARE address3, 10
-                    JUMP C, channel_register     ; returns to caller
-                    JUMP Z, global_register      ; returns to caller
-                    ;ADD s3, 01
-                    ;COMPARE address3, s3
-                    COMPARE address3, 20				 ; spi?
-                    JUMP NZ, respond_decerr      ; returns to caller
+     route_command: COMPARE address3, 10
+                    JUMP Z, global_register      	; returns to caller
+                    COMPARE address3, 20				 	; spi?
+                    JUMP NZ, SPI_handler 
+      							FETCH s3, TES_channels
+                    COMPARE address3, s3
+                    JUMP NC, respond_decerr     	; returns to caller
+                    JUMP channel_register	      	; returns to caller
+                    ; FIXME move channel_register here
        SPI_handler: COMPARE address1, 00	
                     JUMP Z, respond_decerr				; no chip selects
                    	FETCH s0, AD9510_spi_ce_bit
@@ -51,15 +50,12 @@
                     JUMP Z, read_global_reg       ; returns to caller
                     JUMP write_global_reg         ; returns to caller
                     ;
-  channel_register: FETCH s1, TES_channels
-                    COMPARE address3, s1
-                    JUMP NC, respond_decerr       ; bad channel (RTC)
-                    LOAD s3, address3
-                    LOAD s4, chan_decode'upper
-                    ADD s3, chan_decode'lower
+  channel_register: LOAD s4, chan_decode'upper
+                    LOAD s3, chan_decode'lower
+                    ADD s3, address3
                     ADDCY s4, 00
                     CALL@ (s4, s3)
-                    OUTPUT s3, UART_CHAN_SEL_O_PORT  ;select channel to forward 
+                    OUTPUT s2, UART_CHAN_SEL_O_PORT  ;select channel to forward 
                     OUTPUTK SEL_CHAN_UART, IO_SEL_CO_PORT  ;select channel UART
                     LOAD s4, value3                        ;transmit command
                     CALL send_hex_byte
@@ -81,6 +77,8 @@
                     CALL send_hex_byte
                     LOAD s5, TERMINATOR
                     CALL UART_Tx
+                    ; FIXME the channels could respond in binary
+                    ; if the response was made a fixed length (5 bytes)
       get_response: CALL clear_value_regs ;process response
                     LOAD s6, 00           ;count the digits in s6
                     LOAD s4, 00           ;count bad digits in s4
@@ -118,7 +116,7 @@
                     ;-----------------------------------------------------------
 TABLE chanDecode1#, [00000001,00000010,00000100,00001000,00010000,00100000]'b
 TABLE chanDecode2#, [01000000,10000000]'b
-       chan_decode: LOAD&RETURN s3, chanDecode1#
-                    LOAD&RETURN s3, chanDecode2#
+       chan_decode: LOAD&RETURN s2, chanDecode1#
+                    LOAD&RETURN s2, chanDecode2#
                     ;
                     
