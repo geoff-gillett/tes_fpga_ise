@@ -166,6 +166,20 @@ port (
 );
 end component adc_fifo;
 
+component ethernet_cdc_fifo
+port(
+  rst:in std_logic;
+  wr_clk:in std_logic;
+  rd_clk:in std_logic;
+  din:in std_logic_vector(71 downto 0);
+  wr_en:in std_logic;
+  rd_en:in std_logic;
+  dout:out std_logic_vector(8 downto 0);
+  full:out std_logic;
+  empty:out std_logic
+);
+end component;
+
 --------------------------------------------------------------------------------
 -- Clock and reset signals
 --------------------------------------------------------------------------------
@@ -323,14 +337,21 @@ signal ethernetstream:streambus_t;
 signal ethernetstream_valid:boolean;
 signal ethernetstream_ready:boolean;
 signal bytestream:std_logic_vector(7 downto 0);
-signal bytestream_valid:boolean;
+signal bytestream_valid:std_logic;
 signal bytestream_ready:std_logic;
-signal bytestream_last:boolean;
+signal bytestream_last:std_logic;
 
-attribute S:string;
-attribute S of bytestream:signal is "TRUE";
-attribute S of bytestream_valid:signal is "TRUE";
-attribute S of bytestream_ready:signal is "TRUE";
+signal cdc_fifo_din:std_logic_vector(71 downto 0);
+signal cdc_fifo_wr_en:std_logic;
+signal cdc_fifo_rd_en:std_logic;
+signal cdc_fifo_dout:std_logic_vector(8 downto 0);
+signal cdc_fifo_full:std_logic;
+signal cdc_fifo_empty:std_logic;
+
+--attribute S:string;
+--attribute S of bytestream:signal is "TRUE";
+--attribute S of bytestream_valid:signal is "TRUE";
+--attribute S of bytestream_ready:signal is "TRUE";
 --------------------------------------------------------------------------------
 signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
@@ -397,7 +418,7 @@ port map (
    rst => '0'        -- 1-bit reset input
 );
 
-reset_enable <= fmc108_mmcm_locked and onboard_mmcm_locked and iodelayctrl_rdy;    
+reset_enable <= onboard_mmcm_locked;    
 glbl_reset_gen:entity tes.reset_sync
 port map(
   clk => io_clk,
@@ -852,56 +873,71 @@ port map(
   ethernetstream_ready => ethernetstream_ready
 );
 
-cdc:entity tes.CDC_bytestream_adapter
-port map(
-  s_clk => signal_clk,
-  s_reset => reset0,
-  streambus => ethernetstream,
-  streambus_valid => ethernetstream_valid,
-  streambus_ready => ethernetstream_ready,
-  b_clk => IO_clk,
-  b_reset => reset0,
-  bytestream => bytestream,
-  bytestream_valid => bytestream_valid,
-  bytestream_ready => to_boolean(bytestream_ready),
-  bytestream_last => bytestream_last
+cdc_fifo_din <= '0' & ethernetstream.data(63 downto 56) &
+								'0' & ethernetstream.data(55 downto 48) &
+								'0' & ethernetstream.data(47 downto 40) &
+								'0' & ethernetstream.data(39 downto 32) &
+								'0' & ethernetstream.data(31 downto 24) &
+								'0' & ethernetstream.data(23 downto 16) &
+								'0' & ethernetstream.data(15 downto 8) &
+								to_std_logic(ethernetstream.last(0)) &
+								ethernetstream.data(7 downto 0);
+
+ethernetstream_ready <= cdc_fifo_full='0';
+cdc_fifo_wr_en <= to_std_logic(ethernetstream_ready and ethernetstream_valid);
+
+enetCdc:ethernet_cdc_fifo
+port map (
+  rst => reset0,
+  wr_clk => signal_clk,
+  rd_clk => io_clk,
+  din => cdc_fifo_din,
+  wr_en => cdc_fifo_wr_en,
+  rd_en => cdc_fifo_rd_en,
+  dout => cdc_fifo_dout,
+  full => cdc_fifo_full,
+  empty => cdc_fifo_empty
 );
 
+bytestream_valid <= not cdc_fifo_empty;
+cdc_fifo_rd_en <= bytestream_valid and bytestream_ready;
+bytestream <= cdc_fifo_dout(7 downto 0);
+bytestream_last <= cdc_fifo_dout(8);
 
 TEMAC:entity work.v6_emac_v2_3
 port map(
   global_reset_IO_clk => global_reset_IO_clk,
-  IO_clk              => IO_clk,
-  s_axi_aclk          => io_clk,
-  refclk_bufg         => refclk,
-  tx_axis_fifo_tdata  => bytestream,
-  tx_axis_fifo_tvalid => to_std_logic(bytestream_valid),
+  IO_clk => IO_clk,
+  s_axi_aclk => io_clk,
+  refclk_bufg => refclk,
+  tx_axis_fifo_tdata => bytestream,
+  tx_axis_fifo_tvalid => bytestream_valid,
   tx_axis_fifo_tready => bytestream_ready,
-  tx_axis_fifo_tlast  => to_std_logic(bytestream_last),
-  phy_resetn          => phy_resetn,
-  gmii_txd            => gmii_txd,
-  gmii_tx_en          => gmii_tx_en,
-  gmii_tx_er          => gmii_tx_er,
-  gmii_tx_clk         => gmii_tx_clk,
-  gmii_rxd            => gmii_rxd,
-  gmii_rx_dv          => gmii_rx_dv,
-  gmii_rx_er          => gmii_rx_er,
-  gmii_rx_clk         => gmii_rx_clk,
-  gmii_col            => gmii_col,
-  gmii_crs            => gmii_crs,
-  mii_tx_clk          => mii_tx_clk,
-  mdio                => mdio,
-  mdc                 => mdc,
-  tx_statistics_s     => tx_statistics_s,
-  rx_statistics_s     => rx_statistics_s,
-  pause_req_s         => pause_req_s,
-  mac_speed           => mac_speed,
-  update_speed        => update_speed,
-  serial_command      => serial_command,
-  serial_response     => serial_response,
-  reset_error         => reset_error,
-  frame_error         => frame_error,
-  frame_errorn        => frame_errorn
+  tx_axis_fifo_tlast => bytestream_last,
+  phy_resetn => phy_resetn,
+  gmii_txd => gmii_txd,
+  gmii_tx_en => gmii_tx_en,
+  gmii_tx_er => gmii_tx_er,
+  gmii_tx_clk => gmii_tx_clk,
+  gmii_rxd => gmii_rxd,
+  gmii_rx_dv => gmii_rx_dv,
+  gmii_rx_er => gmii_rx_er,
+  gmii_rx_clk => gmii_rx_clk,
+  gmii_col => gmii_col,
+  gmii_crs => gmii_crs,
+  mii_tx_clk => mii_tx_clk,
+  mdio => mdio,
+  mdc => mdc,
+  tx_statistics_s => tx_statistics_s,
+  rx_statistics_s => rx_statistics_s,
+  pause_req_s => pause_req_s,
+  mac_speed => mac_speed,
+  update_speed => update_speed,
+  serial_command => serial_command,
+  serial_response => serial_response,
+  reset_error => reset_error,
+  frame_error => frame_error,
+  frame_errorn => frame_errorn
 );
 
 globalReg:entity tes.global_registers
