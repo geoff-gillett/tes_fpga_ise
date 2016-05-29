@@ -56,7 +56,7 @@ constant MTU_BITS:integer:=16;
 constant TICK_PERIOD_BITS:integer:=32;
 constant MIN_TICK_PERIOD:integer:=2**16;
 constant TICK_LATENCY_BITS:integer:=32;
-constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=14;
+constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=12;
 constant IODELAY_CONTROL_BITS:integer:=ADC_BITS+ADC_CHANNELS+2*ADC_CHIPS;
 
 -- Discrete Types --------------------------------------------------------------

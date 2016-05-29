@@ -171,6 +171,8 @@ if rising_edge(reg_clk) then
 		reg.capture.trace1 <= DEFAULT_TRACE1;
 		reg.capture.delay <= DEFAULT_DELAY;
 		reg.capture.input_sel <= (CHANNEL => '1',others => '0');
+		--FIXME This needs to be implemented
+		reg.capture.full_trace <= FALSE;
   else
     if write then
       if address(DELAY_ADDR_BIT)='1' then

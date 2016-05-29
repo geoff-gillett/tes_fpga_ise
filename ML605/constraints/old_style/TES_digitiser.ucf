@@ -1,6 +1,5 @@
 ################################################################################
-# ML605 development board TES_digitiser design
-# mca_test constraints
+# ML605 development board TES digitiser design
 # Geoff Gillett
 ################################################################################
 #-------------------------------------------------------------------------------
@@ -15,9 +14,29 @@ NET "sys_clk_n" LOC = H9;
 NET "sys_clk_p" TNM_NET = "sys_clk";
 TIMESPEC TS_SYS_CLK = PERIOD "sys_clk" 5 ns HIGH 50 %;
 
-NET "IO_clk" TNM_NET = "IO_clk";
-NET "refclk" TNM_NET = "iodelay_ref_clk";
-#NET "s_axi_aclk" TNM_NET = "axi_clk"; -- this old 100 MHz clk no longer implemented
+#-------------------------------------------------------------------------------
+# 250Mhz source clk from the first (0) ADC chip drives the MMCM
+# Other clock constraints will be inferred from MMCM component
+#-------------------------------------------------------------------------------
+NET "adc_clk_p[0]" TNM_NET = "adc_chip0_clk";
+TIMESPEC TS_adc_chip0_clk = PERIOD "adc_chip0_clk" 4 ns HIGH 50 %;
+NET "adc_clk_p[1]" TNM_NET = "adc_chip1_clk";
+TIMESPEC TS_adc_chip1_clk = PERIOD "adc_chip1_clk" 4 ns HIGH 50 %;
+NET "adc_clk_p[2]" TNM_NET = "adc_chip2_clk";
+TIMESPEC TS_adc_chip2_clk = PERIOD "adc_chip2_clk" 4 ns HIGH 50 %;
+NET "adc_clk_p[3]" TNM_NET = "adc_chip3_clk";
+TIMESPEC TS_adc_chip3_clk = PERIOD "adc_chip3_clk" 4 ns HIGH 50 %;
+
+NET "signal_clk" TNM_NET = "signal_clk";
+TIMESPEC TS_SIGNAL_CLK = PERIOD "signal_clk" 4 ns HIGH 50 %;
+NET "io_clk" TNM_NET = "io_clk";
+TIMESPEC TS_IO_CLK = PERIOD "io_clk" TS_SIGNAL_CLK / 2;
+
+TIMESPEC TS_CHIP0_TIG = FROM "adc_chip0_clk" TO "signal_clk" TIG;
+TIMESPEC TS_CHIP1_TIG = FROM "adc_chip1_clk" TO "signal_clk" TIG;
+TIMESPEC TS_CHIP2_TIG = FROM "adc_chip2_clk" TO "signal_clk" TIG;
+TIMESPEC TS_CHIP3_TIG = FROM "adc_chip3_clk" TO "signal_clk" TIG;
+
 #TIMESPEC TS_axi_clk = PERIOD "idelay_ref_clk" 10 ns HIGH 50 %;
 #-------------------------------------------------------------------------------
 # USB-UART LEDs and reset switch
@@ -30,8 +49,9 @@ NET "main_Tx" DRIVE = 4;
 NET "main_Tx" SLEW = SLOW;
 #NET "main_?x" TIG;
 
-
 NET "global_reset" LOC = H10;
+NET "global_rest" TIG;
+
 # LEDs for debuging
 NET "LEDs[0]" LOC = AC22;
 NET "LEDs[1]" LOC = AC24;
@@ -259,32 +279,6 @@ NET "FMC_reset" LOC = V29;
 NET "FMC_power_good" LOC = J27;
 NET "FMC_present_n" LOC = AP25;
 
-#-------------------------------------------------------------------------------
-# 250Mhz source clk from the first (0) ADC chip drives the MMCM
-# Other clock constraints will be inferred from MMCM component
-#-------------------------------------------------------------------------------
-NET "adc_clk_p[0]" TNM_NET = "adc_chip0_clk";
-TIMESPEC TS_adc_chip0_clk = PERIOD "adc_chip0_clk" 4 ns HIGH 50 %;
-NET "adc_clk_p[1]" TNM_NET = "adc_chip1_clk";
-TIMESPEC TS_adc_chip1_clk = PERIOD "adc_chip1_clk" 4 ns HIGH 50 %;
-NET "adc_clk_p[2]" TNM_NET = "adc_chip2_clk";
-TIMESPEC TS_adc_chip2_clk = PERIOD "adc_chip2_clk" 4 ns HIGH 50 %;
-NET "adc_clk_p[3]" TNM_NET = "adc_chip3_clk";
-TIMESPEC TS_adc_chip3_clk = PERIOD "adc_chip3_clk" 4 ns HIGH 50 %;
-
-NET "signal_clk" TNM_NET = "signal_clk";
-#TIMESPEC TS_SIGNAL_CLK = PERIOD "signal_clk" 4 ns HIGH 50 %;
-NET "io_clk" TNM_NET = "io_clk";
-#TIMESPEC TS_IO_CLK = PERIOD "io_clk" TS_SIGNAL_CLK / 2;
-
-TIMESPEC TS_chip0tosignal = FROM "adc_chip0_clk" TO "signal_clk" TIG;
-TIMESPEC TS_signaltochip0 = FROM "signal_clk" TO "adc_chip0_clk" TIG;
-TIMESPEC TS_chip1tosignal = FROM "adc_chip1_clk" TO "signal_clk" TIG;
-TIMESPEC TS_signaltochip1 = FROM "signal_clk" TO "adc_chip1_clk" TIG;
-TIMESPEC TS_chip2tosignal = FROM "adc_chip2_clk" TO "signal_clk" TIG;
-TIMESPEC TS_signaltochip2 = FROM "signal_clk" TO "adc_chip2_clk" TIG;
-TIMESPEC TS_chip3tosignal = FROM "adc_chip3_clk" TO "signal_clk" TIG;
-TIMESPEC TS_signaltochip3 = FROM "signal_clk" TO "adc_chip3_clk" TIG;
 
 #-------------------------------------------------------------------------------
 ################################################################################
@@ -389,7 +383,7 @@ NET "gmii_rx_clk" LOC = AP11;
 NET "gmii_rx_clk" IOSTANDARD = LVCMOS25;
 ################################################################################
 # Ethernet GTX_CLK high quality 125 MHz reference clock
-#NET "TEMAC/gtx_clk_bufg" TNM_NET = "ref_gtx_clk";
+NET "io_clk" TNM_NET = "ref_gtx_clk";
 #TIMEGRP v6_emac_v2_3_0_clk_ref_gtx =  "ref_gtx_clk";
 #TIMESPEC TS_v6_emac_v2_3_0_clk_ref_gtx = PERIOD "v6_emac_v2_3_0_clk_ref_gtx" 8 ns HIGH 50 %;
 
@@ -411,7 +405,7 @@ TIMESPEC TS_v6_emac_v2_3_0_config_clk = PERIOD "v6_emac_v2_3_0_config_clk" 8 ns 
 
 # define TIGs between unrelated clock domains
 #TIMESPEC TS_clock_path_gtx2cpu = FROM "IO_clk" TO "axi_clk" TIG ;
-TIMESPEC TS_clock_path_gtx2ref = FROM "IO_clk" TO "iodelay_ref_clk" TIG ;
+#TIMESPEC TS_clock_path_gtx2ref = FROM "IO_clk" TO "iodelay_ref_clk" TIG ;
 #TIMESPEC TS_clock_path_cpu2gtx = FROM "axi_clk" TO "IO_clk" TIG ;
 ##
 PIN "*bufgmux_speed_clk.I1" TIG;
@@ -544,17 +538,18 @@ INST "TEMAC/v6emac_fifo_block/v6emac_block/gmii_interface/gmii_tx_er" IOB =TRUE;
 # Locate the GMII physical interface pins
 # Locate the 125 MHz reference clock buffer
 INST "TEMAC/v6emac_fifo_block/v6emac_block/BUFGMUX_SPEED_CLK" LOC = BUFGCTRL_X0Y6;
+
 ###############################################################################
 # TES_digitiser timing constraints
 ###############################################################################
-net "reset?" TIG;
+PIN "mainCpu/reset*" TIG;
 PIN "mainCpu.main_?x" TIG;
 PIN "mainCpu.channel_?x*" TIG;
 PIN "*spi_clk" TIG;
 PIN "*spi_ce_n*" TIG;
 PIN "*spi_miso*" TIG;
 PIN "*spi_mosi" TIG;
-PIN "mainCpu.spi*" TIG;
+PIN "mainCpu/spi*" TIG;
 NET "mainCpu/*spi*" TIG;
 NET "FMC_AD9510_status" TIG;
 NET "FMC_power_good" TIG;

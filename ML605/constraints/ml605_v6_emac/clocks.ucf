@@ -1,0 +1,73 @@
+################################################################################
+# ML605 development board TES digitiser design
+# Geoff Gillett
+################################################################################
+#CONFIG PART = xc6vlx240tff1156-1;
+
+#-------------------------------------------------------------------------------
+# ML605 on board 200MHz Differential Clock.
+#-------------------------------------------------------------------------------
+# Drives onboard_clock_tree MMCM 
+# outputs axi_clk and refclk
+# axi_clk drives the AXI-lite FSM that brings up the Ethernet MAC
+#-------------------------------------------------------------------------------
+
+NET "sys_clk_?" IOSTANDARD = LVDS_25;
+NET "sys_clk_?" DIFF_TERM = "TRUE";
+NET "sys_clk_p" LOC = J9;
+NET "sys_clk_n" LOC = H9;
+NET "sys_clk_p" TNM_NET = "sys_clk";
+TIMESPEC TS_SYS_CLK = PERIOD "sys_clk" 5 ns HIGH 50 %;
+
+#-------------------------------------------------------------------------------
+# FMC108 clocks
+#-------------------------------------------------------------------------------
+# 250Mhz differential clock from the first ADC chip (0) drives fmc108_clock_tree
+# fmc108mmcm generates signal_clk and io_clock
+# Each ADC chip has its own clock domain a FIFO is used to cross into the common
+# signal_clk domain
+# io_clk drives the Ethernet MAC
+#-------------------------------------------------------------------------------
+NET "adc_clk_?[?]" IOSTANDARD = LVDS_25;
+NET "adc_clk_?[?]" DIFF_TERM = "TRUE";
+NET "adc_clk_n[0]" LOC = AF21;
+NET "adc_clk_p[0]" LOC = AF20;
+NET "adc_clk_n[1]" LOC = AL19;
+NET "adc_clk_p[1]" LOC = AK19;
+NET "adc_clk_n[2]" LOC = AM27;
+NET "adc_clk_p[2]" LOC = AN27;
+NET "adc_clk_n[3]" LOC = AJ25;
+NET "adc_clk_p[3]" LOC = AH25;
+NET "adc_clk_n[0]" LOC = AF21;
+#-------------------------------------------------------------------------------
+# LOCs for ADC clock BUFRs
+#-------------------------------------------------------------------------------
+INST "adcClks[0].adcClkBufr" LOC = BUFR_X1Y0;
+INST "adcClks[1].adcClkBufr" LOC = BUFR_X1Y1;
+INST "adcClks[2].adcClkBufr" LOC = BUFR_X1Y2;
+INST "adcClks[3].adcClkBufr" LOC = BUFR_X1Y3;
+
+NET "adc_clk_p[0]" TNM_NET = "adc_chip0_clk";
+TIMESPEC TS_adc_chip0_clk = PERIOD "adc_chip0_clk" 4 ns HIGH 50 %;
+NET "adc_clk_p[1]" TNM_NET = "adc_chip1_clk";
+TIMESPEC TS_adc_chip1_clk = PERIOD "adc_chip1_clk" 4 ns HIGH 50 %;
+NET "adc_clk_p[2]" TNM_NET = "adc_chip2_clk";
+TIMESPEC TS_adc_chip2_clk = PERIOD "adc_chip2_clk" 4 ns HIGH 50 %;
+NET "adc_clk_p[3]" TNM_NET = "adc_chip3_clk";
+TIMESPEC TS_adc_chip3_clk = PERIOD "adc_chip3_clk" 4 ns HIGH 50 %;
+
+# fmc108mmcm outputs, ideally these should be derived by the tools but I can't 
+# figure out how to to refer to them constrain the CDC paths in the ADC FIFOs 
+NET "signal_clk" TNM_NET = "signal_clk";
+TIMESPEC TS_SIGNAL_CLK = PERIOD "signal_clk" 4 ns HIGH 50 %;
+NET "io_clk" TNM_NET = "io_clk";
+TIMESPEC TS_IO_CLK = PERIOD "io_clk" TS_SIGNAL_CLK / 2;
+
+# TIG To fix timing problems in the ADC CDC FIFOs TODO: figure out a more 
+# precise way
+TIMESPEC TS_CHIP0_TIG = FROM "adc_chip0_clk" TO "signal_clk" TIG;
+TIMESPEC TS_CHIP1_TIG = FROM "adc_chip1_clk" TO "signal_clk" TIG;
+TIMESPEC TS_CHIP2_TIG = FROM "adc_chip2_clk" TO "signal_clk" TIG;
+TIMESPEC TS_CHIP3_TIG = FROM "adc_chip3_clk" TO "signal_clk" TIG;
+
+

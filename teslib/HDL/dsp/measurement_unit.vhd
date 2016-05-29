@@ -302,6 +302,7 @@ signal commit_peak_event,commit_area_event:boolean;
 --signal last_peak:boolean;
 --signal last_peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 signal commit_frame:boolean;
+--FIXME clear done is never assigned
 signal clear_done:boolean;
 signal event_lost:boolean;
 --signal clear_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);

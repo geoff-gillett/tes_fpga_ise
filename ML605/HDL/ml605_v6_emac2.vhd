@@ -37,7 +37,7 @@ use tes.registers.all;
 use tes.adc.all;
 use tes.measurements.all;
 
-entity ml605_v6_emac is
+entity ml605_v6_emac2 is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=12;
@@ -119,9 +119,9 @@ port(
   frame_error:out std_logic;
   frame_errorn:out std_logic
 );
-end entity ml605_v6_emac;
+end entity ml605_v6_emac2;
 
-architecture RTL of ml605_v6_emac is
+architecture RTL of ml605_v6_emac2 is
 	
 --------------------------------------------------------------------------------
 -- Constants
@@ -420,7 +420,6 @@ begin
 		FMC_present <= not FMC_present_n;
 	end if;
 end process fmcPres;
-
 
 -- map iodelay control bits ce and inc
 iodelayControl:process(signal_clk)
