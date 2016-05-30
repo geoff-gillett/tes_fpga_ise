@@ -88,7 +88,7 @@
                     ;-----------------------------------------------------------
                     ; General input ports
                     ;-----------------------------------------------------------
-                    CONSTANT RESP_IN_PORT,          01000000'b
+                    CONSTANT AXIRESP_IN_PORT,       01000000'b
                     CONSTANT STATUS_IN_PORT,        10000000'b
                     ;
                     ;-----------------------------------------------------------
@@ -121,13 +121,16 @@
                     CONSTANT FMC_present,           00001000'b ; 
                     CONSTANT FMC_power,             00010000'b ;
                     CONSTANT FMC_AD9510_status,			00100000'b
-                    CONSTANT pipeline_MMCM_locked,  01000000'b
+                    CONSTANT fmc_mmcm_locked,  			01000000'b
+                    CONSTANT idelay_ready,  				10000000'b
                     ;
                     ;-----------------------------------------------------------
                     ; IO_SEL port bits (Constant optimised output port)
                     ;-----------------------------------------------------------
                     CONSTANT SEL_ADDRESS,           00000001'b
                     CONSTANT SEL_DATA,              00000010'b
+                    CONSTANT SEL_AXI,          			00000100'b
+                    CONSTANT SEL_AXI_ADDRESS,       00001000'b
                     CONSTANT SEL_MAIN_UART,         00100000'b
                     CONSTANT SEL_CHAN_UART,         01000000'b
                     ;
@@ -138,6 +141,8 @@
                     CONSTANT RESET_UART_RX,         00000010'b
                     CONSTANT RESET_UART,            00000011'b                    
                     CONSTANT REG_WRITE,             00001000'b
+                    CONSTANT AXI_WRITE,             01000000'b
+                    CONSTANT AXI_READ,              10000000'b
                     ;
                     ;-----------------------------------------------------------
                     ; RESET port bits (Constant optimised output port)

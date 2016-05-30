@@ -111,7 +111,7 @@
                     ;-----------------------------------------------------------
                     ; Reset sequencer
                     ;-----------------------------------------------------------
-    reset_sequence: CALL delay_40us 									 ;wait for ethernet 
+    reset_sequence: CALL delay_64ns 									 ;iodelays need 50ns reset 
                     OUTPUTK RESET_TIER1, RESET_CO_PORT ;reset0 low
                     CALL store_features            
                     CALL initialise_AD9510

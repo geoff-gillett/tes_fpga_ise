@@ -26,9 +26,9 @@
                     ; 1ms is 125,000 clock cycles requiring 15,625 delay 
                     ; iterations
                     ;       
-       delay_128ns: LOAD s2, 00
+	      delay_64ns: LOAD s2, 00
                     LOAD s1, 00
-                    LOAD s0, 04
+                    LOAD s0, 01
                     JUMP software_delay
                     ;
          delay_1ms: LOAD s2, 00

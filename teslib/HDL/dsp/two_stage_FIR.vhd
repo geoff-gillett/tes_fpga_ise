@@ -30,23 +30,23 @@ port(
   clk:in std_logic;
   sample_in:in signed(WIDTH-1 downto 0);
   stage1_config_data:in std_logic_vector(7 downto 0);
-  stage1_config_valid:in boolean;
-  stage1_config_ready:out boolean;
+  stage1_config_valid:in std_logic;
+  stage1_config_ready:out std_logic;
   stage1_reload_data:in std_logic_vector(31 downto 0);
-  stage1_reload_valid:in boolean;
-  stage1_reload_ready:out boolean;
-  stage1_reload_last:in boolean;
-	stage1_reload_last_missing:out boolean;
- 	stage1_reload_last_unexpected:out boolean;
+  stage1_reload_valid:in std_logic;
+  stage1_reload_ready:out std_logic;
+  stage1_reload_last:in std_logic;
+	stage1_reload_last_missing:out std_logic;
+ 	stage1_reload_last_unexpected:out std_logic;
   stage2_config_data:in std_logic_vector(7 downto 0);
-  stage2_config_valid:in boolean;
-  stage2_config_ready:out boolean;
+  stage2_config_valid:in std_logic;
+  stage2_config_ready:out std_logic;
   stage2_reload_data:in std_logic_vector(31 downto 0);
-  stage2_reload_valid:in boolean;
-  stage2_reload_ready:out boolean;
-  stage2_reload_last:in boolean;
-	stage2_reload_last_missing:out boolean;
- 	stage2_reload_last_unexpected:out boolean;
+  stage2_reload_valid:in std_logic;
+  stage2_reload_ready:out std_logic;
+  stage2_reload_last:in std_logic;
+	stage2_reload_last_missing:out std_logic;
+ 	stage2_reload_last_unexpected:out std_logic;
   -- output signals
   stage1:out signed(WIDTH-1 downto 0);
   stage2:out signed(WIDTH-1 downto 0)
@@ -98,28 +98,10 @@ end component;
 
 signal stage1_out:std_logic_vector(23 downto 0);
 signal stage2_out:std_logic_vector(31 downto 0);
-signal stage1_config_ready_int:std_logic;
-signal stage1_reload_ready_int:std_logic;
-signal stage2_config_ready_int:std_logic;
-signal stage2_reload_ready_int:std_logic;
 signal stage1_delayed:std_logic_vector(WIDTH-1 downto 0);
-signal stage1_reload_last_missing_int:std_logic;
-signal stage1_reload_last_unexpected_int:std_logic;
-signal stage2_reload_last_missing_int:std_logic;
-signal stage2_reload_last_unexpected_int:std_logic;
 
 begin
 	
-stage1_config_ready <= to_boolean(stage1_config_ready_int);
-stage1_reload_ready <= to_boolean(stage1_reload_ready_int);
-stage1_reload_last_missing <= to_boolean(stage1_reload_last_missing_int);
-stage1_reload_last_unexpected <= to_boolean(stage1_reload_last_unexpected_int);
-stage2_config_ready <= to_boolean(stage2_config_ready_int);
-stage2_reload_ready <= to_boolean(stage2_reload_ready_int);
-stage2_reload_last_missing <= to_boolean(stage2_reload_last_missing_int);
-stage2_reload_last_unexpected <= to_boolean(stage2_reload_last_unexpected_int);
-
-
 --------------------------------------------------------------------------------
 -- FIR filter stages with reloadable coefficients (FIR compiler 6.3)
 --------------------------------------------------------------------------------
@@ -130,17 +112,17 @@ port map(
   s_axis_data_tvalid => '1',
   s_axis_data_tready => open,
   s_axis_data_tdata => to_std_logic(resize(sample_in,24)),
-  s_axis_config_tvalid => to_std_logic(stage1_config_valid),
-  s_axis_config_tready => stage1_config_ready_int,
+  s_axis_config_tvalid => stage1_config_valid,
+  s_axis_config_tready => stage1_config_ready,
   s_axis_config_tdata => stage1_config_data,
-  s_axis_reload_tvalid => to_std_logic(stage1_reload_valid),
-  s_axis_reload_tready => stage1_reload_ready_int,
-  s_axis_reload_tlast => to_std_logic(stage1_reload_last),
+  s_axis_reload_tvalid => stage1_reload_valid,
+  s_axis_reload_tready => stage1_reload_ready,
+  s_axis_reload_tlast => stage1_reload_last,
   s_axis_reload_tdata => stage1_reload_data,
   m_axis_data_tvalid => open,
   m_axis_data_tdata => stage1_out,
-  event_s_reload_tlast_missing => stage1_reload_last_missing_int,
-  event_s_reload_tlast_unexpected => stage1_reload_last_unexpected_int
+  event_s_reload_tlast_missing => stage1_reload_last_missing,
+  event_s_reload_tlast_unexpected => stage1_reload_last_unexpected
 );
 
 stage2FIRfilter:stage2_FIR_23
@@ -149,17 +131,17 @@ port map(
   s_axis_data_tvalid => '1',
   s_axis_data_tready => open,
   s_axis_data_tdata => stage1_out,
-  s_axis_config_tvalid => to_std_logic(stage2_config_valid),
-  s_axis_config_tready => stage2_config_ready_int,
+  s_axis_config_tvalid => stage2_config_valid,
+  s_axis_config_tready => stage2_config_ready,
   s_axis_config_tdata => stage2_config_data,
-  s_axis_reload_tvalid => to_std_logic(stage2_reload_valid),
-  s_axis_reload_tready => stage2_reload_ready_int,
-  s_axis_reload_tlast => to_std_logic(stage2_reload_last),
+  s_axis_reload_tvalid => stage2_reload_valid,
+  s_axis_reload_tready => stage2_reload_ready,
+  s_axis_reload_tlast => stage2_reload_last,
   s_axis_reload_tdata => stage2_reload_data,
   m_axis_data_tvalid => open,
   m_axis_data_tdata => stage2_out,
-  event_s_reload_tlast_missing => stage2_reload_last_missing_int,
-  event_s_reload_tlast_unexpected => stage2_reload_last_unexpected_int
+  event_s_reload_tlast_missing => stage2_reload_last_missing,
+  event_s_reload_tlast_unexpected => stage2_reload_last_unexpected
 );
 
 --------------------------------------------------------------------------------

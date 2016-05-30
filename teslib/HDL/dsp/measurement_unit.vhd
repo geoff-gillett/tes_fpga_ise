@@ -56,23 +56,23 @@ port(
   
   -- FIR filters AXI interfaces
   filter_config_data:in std_logic_vector(7 downto 0);
-  filter_config_valid:in boolean;
-  filter_config_ready:out boolean;
+  filter_config_valid:in std_logic;
+  filter_config_ready:out std_logic;
   filter_reload_data:in std_logic_vector(31 downto 0);
-  filter_reload_valid:in boolean;
-  filter_reload_ready:out boolean;
-  filter_reload_last:in boolean;
-  filter_reload_last_missing:out boolean;
-  filter_reload_last_unexpected:out boolean;
+  filter_reload_valid:in std_logic;
+  filter_reload_ready:out std_logic;
+  filter_reload_last:in std_logic;
+  filter_reload_last_missing:out std_logic;
+  filter_reload_last_unexpected:out std_logic;
   differentiator_config_data:in std_logic_vector(7 downto 0);
-  differentiator_config_valid:in boolean;
-  differentiator_config_ready:out boolean;
+  differentiator_config_valid:in std_logic;
+  differentiator_config_ready:out std_logic;
   differentiator_reload_data:in std_logic_vector(31 downto 0);
-  differentiator_reload_valid:in boolean;
-  differentiator_reload_ready:out boolean;
-  differentiator_reload_last:in boolean;
-  differentiator_reload_last_missing:out boolean;
-  differentiator_reload_last_unexpected:out boolean;
+  differentiator_reload_valid:in std_logic;
+  differentiator_reload_ready:out std_logic;
+  differentiator_reload_last:in std_logic;
+  differentiator_reload_last_missing:out std_logic;
+  differentiator_reload_last_unexpected:out std_logic;
 
   measurements:out measurement_t;
   

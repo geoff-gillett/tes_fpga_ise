@@ -8,7 +8,6 @@
 -- Target Devices: virtex6
 -- Tool versions: ISE 14.7
 --------------------------------------------------------------------------------
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -176,14 +175,14 @@ signal reset0,reset1,reset2,fmc108_MMCM_locked:std_logic;
 
 signal refclk : std_logic;
 signal onboard_mmcm_locked:std_logic;
-signal iodelayctrl_rdy:std_ulogic;
+signal idelayctrl_rdy:std_ulogic;
 signal reset_enable:std_logic;
 signal iodelay_inc:ddr_sample_array(ADC_CHANNELS-1 downto 0);
 signal iodelay_ce:ddr_sample_array(ADC_CHANNELS-1 downto 0);
 signal iodelay_clk_inc:std_logic_vector(ADC_CHIPS-1 downto 0);
 signal iodelay_clk_ce:std_logic_vector(ADC_CHIPS-1 downto 0);
 
-signal adc_chip_clk,adc_clk_bufds:std_logic_vector(ADC_CHIPS-1 downto 0);
+signal adc_clk,adc_clk_bufds:std_logic_vector(ADC_CHIPS-1 downto 0);
 signal adc_clk_delayed:std_logic_vector(ADC_CHIPS-1 downto 0);
 
 attribute keep:string;
@@ -206,8 +205,6 @@ signal fifo_rd_en:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal enables_reg:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
 signal adc_samples,fifo_dout:adc_sample_array(ADC_CHANNElS-1 downto 0);
-constant ADC_PIPE_DEPTH:integer:=2;
-signal adc_input_pipe:adc_sample_array(ADC_PIPE_DEPTH-1 downto 0);
 
 signal fifo_empty:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
@@ -220,10 +217,11 @@ signal spi_clk,spi_mosi:std_logic;
 signal spi_ce_n,spi_miso:std_logic_vector(SPI_CHANNELS-1 downto 0);
 
 signal global:global_registers_t;
-signal global_address:register_address_t;
-signal global_data:register_data_t;
+signal reg_address:register_address_t;
+signal reg_data:register_data_t;
 signal global_value:register_data_t;
 signal global_write:boolean;
+signal reg_write:boolean;
 
 --------------------------------------------------------------------------------
 -- Channel CPU signals
@@ -233,8 +231,10 @@ signal channel_tx:std_logic_vector(2**CHANNEL_BITS-1 downto 0);
 
 signal channel_address:registeraddress_array(DSP_CHANNELS-1 downto 0);
 signal channel_data,channel_value:registerdata_array(DSP_CHANNELS-1 downto 0);
-signal write:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal axis_ready,axis_done,axis_error:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal channel_reg_write:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal channel_reg_write_io_clk:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal axis_done:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal axis_error:std_logic_vector(DSP_CHANNELS-1 downto 0);
 
 signal channel_registers:channel_register_array(DSP_CHANNELS-1 downto 0);
 
@@ -252,31 +252,25 @@ type config_array is array (natural range <>) of
 	std_logic_vector(CONFIG_BITS-1 downto 0);
 type coef_array is array (natural range <>) of 
 	std_logic_vector(COEF_WIDTH-1 downto 0);
-										 
 signal filter_config_data:config_array(DSP_CHANNELS-1 downto 0);
-signal filter_config_valid:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal filter_config_ready:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal filter_reload_data:coef_array(DSP_CHANNELS-1 downto 0);
-signal filter_reload_valid:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal filter_reload_ready:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal filter_reload_last:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal filter_reload_last_error:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal differentiator_config_data:config_array(DSP_CHANNELS-1 downto 0);
-signal differentiator_config_valid:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal differentiator_config_ready:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal differentiator_reload_data:coef_array(DSP_CHANNELS-1 downto 0);
-signal differentiator_reload_valid:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal differentiator_reload_ready:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal differentiator_reload_last:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal differentiator_reload_last_error:boolean_vector(DSP_CHANNELS-1 downto 0);
-
-signal filter_reload_last_missing:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal filter_reload_last_unexpected:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal differentiator_reload_last_missing:
-			 boolean_vector(DSP_CHANNELS-1 downto 0);
-signal differentiator_reload_last_unexpected:
-			 boolean_vector(DSP_CHANNELS-1 downto 0);
-
+signal filter_config_valid:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal filter_config_ready:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal filter_data:coef_array(DSP_CHANNELS-1 downto 0);
+signal filter_valid:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal filter_ready:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal filter_last:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal filter_last_missing:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal filter_last_unexpected:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal dif_config_data:config_array(DSP_CHANNELS-1 downto 0);
+signal dif_config_valid:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal dif_config_ready:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal dif_data:coef_array(DSP_CHANNELS-1 downto 0);
+signal dif_valid:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal dif_ready:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal dif_last:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal dif_last_missing:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal dif_last_unexpected:std_logic_vector(DSP_CHANNELS-1 downto 0);
+										 
 signal measurements:measurement_array(DSP_CHANNELS-1 downto 0);
 
 -- MCA
@@ -338,7 +332,6 @@ attribute S of bytestream_ready:signal is "TRUE";
 --------------------------------------------------------------------------------
 signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
-
 begin
 LEDs <= overflow_LEDs;
 
@@ -377,7 +370,7 @@ end process FMCfunction;
 fmc108mmcm:fmc108_clk_tree
 port map
 (
-  adc_chip0_clk => adc_chip_clk(0),
+  adc_chip0_clk => adc_clk(0),
   signal_clk => signal_clk,
   io_clk => io_clk, --open,
   locked => fmc108_mmcm_locked
@@ -397,12 +390,12 @@ port map
 --TODO make this a RO flag
 idelayctrl_inst:idelayctrl
 port map (
-   rdy => iodelayctrl_rdy,  -- 1-bit output indicates validity of the refclk
-   refclk => refclk, 				-- 1-bit reference clock input
-   rst => '0'        				-- 1-bit reset input
+   rdy => idelayctrl_rdy,  
+   refclk => refclk, 				
+   rst => reset0        				
 );
 
-reset_enable <= fmc108_mmcm_locked and onboard_mmcm_locked and iodelayctrl_rdy;    
+reset_enable <= onboard_mmcm_locked;    
 glbl_reset_gen:entity tes.reset_sync
 port map(
   clk => io_clk,
@@ -420,7 +413,6 @@ begin
 		FMC_present <= not FMC_present_n;
 	end if;
 end process fmcPres;
-
 
 -- map iodelay control bits ce and inc
 iodelayControl:process(signal_clk)
@@ -457,9 +449,9 @@ end process iodelayControl;
 -- input buffers and iodelays for the ADC chip clocks
 -- TODO should there be an iodelay for adc_chip_clk(0)? it drives the MMCM
 -- make sure reset sequence is sane
-adcClks:for chip in ADC_CHIPS-1 downto 0 generate
+adcClk:for chip in ADC_CHIPS-1 downto 0 generate
 begin
-	adcClkBufds:ibufds
+	clkIbufds:ibufds
   generic map(
     DIFF_TERM => TRUE,
     IOSTANDARD => "LVDS_25"
@@ -470,7 +462,7 @@ begin
     IB => adc_clk_n(chip)
   );
   
-  adcClkDelay:iodelaye1
+  clkIodelay:iodelaye1
   generic map(
     DELAY_SRC => "I",
     IDELAY_TYPE => "VARIABLE",
@@ -491,8 +483,16 @@ begin
     rst => '0',
     t => '1'
   );
-  
-  adcClkBufr:bufr
+end generate;  
+
+adcClkBufgInst:bufg
+port map(
+   O => adc_clk(0), 
+   I => adc_clk_delayed(0)  
+);
+
+adcBufr:for chip in ADC_CHIPS-1 downto 1 generate
+  bufrInst:bufr
   generic map (
   	SIM_DEVICE => "VIRTEX6",
     BUFR_DIVIDE => "BYPASS"
@@ -501,20 +501,20 @@ begin
     ce => '1',
     clr => '0',
     i  => adc_clk_delayed(chip),
-    o  => adc_chip_clk(chip)
+    o  => adc_clk(chip)
   );
 end generate;
 
 -- instantiate input buffers, iodelays, DDR to SDR components and CDC FIFOs
 -- for each ADC DDR data line.
-adcChipGen:for chip in 0 to ADC_CHIPS-1 generate
+adcChip:for chip in 0 to ADC_CHIPS-1 generate
 	begin
-  adcChanGen:for chan in 0 to ADC_CHIP_CHANNELS-1 generate
+  chan:for chan in 0 to ADC_CHIP_CHANNELS-1 generate
   begin
-    adcDdrBitGen:for bit in 0 to ADC_BITS/2-1 generate
+    ddrBit:for bit in 0 to ADC_BITS/2-1 generate
   	begin
   	
-      dataIbufds:ibufds
+      bufdsInst:ibufds
       generic map(
         DIFF_TERM => TRUE,
         IOSTANDARD => "LVDS_25"
@@ -526,7 +526,7 @@ adcChipGen:for chip in 0 to ADC_CHIPS-1 generate
       );
       
       -- adjustable delay for each data channel
-      dataIoDelay:iodelaye1
+      iodelayInst:iodelaye1
       generic map(
         DELAY_SRC => "I",
         IDELAY_TYPE => "VARIABLE",
@@ -549,25 +549,25 @@ adcChipGen:for chip in 0 to ADC_CHIPS-1 generate
       );
       
       -- DDR to SDR conversion  
-      dataIddr:iddr
+     	iddrInst:iddr
         generic map(DDR_CLK_EDGE => "SAME_EDGE_PIPELINED")
         port map(
           q1 => adc_sdr(chip*ADC_CHIP_CHANNELS+chan)(2*bit),
           q2 => adc_sdr(chip*ADC_CHIP_CHANNELS+chan)(2*bit+1),
-          c => adc_chip_clk(chip),
+          c => adc_clk(chip),
           ce => '1',
           d => adc_ddr_delay(chip*ADC_CHIP_CHANNELS+chan)(bit),
           r => '0',
           s => '0'
         );
         
-    end generate adcDdrBitGen;
+    end generate ddrBit;
     
     -- this fifo crosses from the individual chip clk domains the the common 
     -- signal_clk domain.
-    FIFO:component adc_fifo
+    cdcFifo:component adc_fifo
     port map(
-      wr_clk => adc_chip_clk(chip),
+      wr_clk => adc_clk(chip),
       rst => fifo_reset_chipclk(chip),
       rd_clk => signal_clk,
       din => adc_sdr(chip*ADC_CHIP_CHANNELS+chan),
@@ -579,32 +579,32 @@ adcChipGen:for chip in 0 to ADC_CHIPS-1 generate
     );
     
     -- register the fifo douts and fifo_valid (not empty)
-    fifoReg:process(signal_clk)
+    cdcfifoReg:process(signal_clk)
     begin
       if rising_edge(signal_clk) then
         adc_samples(chip*ADC_CHIP_CHANNELS+chan) 
         	<= fifo_dout(chip*ADC_CHIP_CHANNELS+chan);
         fifo_valid <= not fifo_empty;
       end if;
-    end process fifoReg;
+    end process cdcfifoReg;
     
-  end generate adcChanGen;
- 
- 	-- sync fifo reset to the individual chip_clks 
-  resetSync:entity tes.sync_level
-  generic map(INITIALISE => "11")
-  port map(
-    clk => adc_chip_clk(chip),
-    data_in => fifo_reset,
-    data_out => fifo_reset_chipclk(chip)
-  );
+  end generate chan;
   
-end generate adcChipGen;
+ 	resetSync:entity tes.sync_2FF
+  generic map(
+   	INIT => "11"
+  )
+  port map(
+    out_clk => adc_clk(chip),
+    input   => fifo_reset,
+    output  => fifo_reset_chipclk(chip)
+  );
+end generate adcChip;
 
 -- control is via adc_enables
 -- When enable changes pulse FIFO reset and wait till all enabled FIFOs are 
 -- not empty before asserting setting rd_en
-enable:process(signal_clk)
+adcEnable:process(signal_clk)
 begin
   if rising_edge(signal_clk) then
     if reset0 = '1' then
@@ -624,73 +624,72 @@ begin
       end if;
     end if;
   end if;
-end process enable;
+end process adcEnable;
 
 --------------------------------------------------------------------------------
 -- processing channels
 --------------------------------------------------------------------------------
-signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
+tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 
-  channelReg:entity tes.channel_registers
+	registers:entity tes.channel_registers
   generic map(
+    CHANNEL => c,
     CONFIG_BITS => CONFIG_BITS,
-    CONFIG_STREAM_WIDTH => CONFIG_BITS,
+    CONFIG_WIDTH => CONFIG_BITS,
     COEF_BITS => COEF_BITS,
-    COEF_STREAM_WIDTH => COEF_WIDTH
+    COEF_WIDTH => COEF_WIDTH
   )
   port map(
-    reg_clk => io_clk,
-    reg_reset => reset0,
+    clk => signal_clk,
+    reset => reset0,
     data => channel_data(c),
     address => channel_address(c),
-    write => write(c),
+    write => channel_reg_write(c),
     value => channel_value(c),
-    axis_ready => axis_ready(c),
     axis_done => axis_done(c),
     axis_error => axis_error(c),
-    stream_clk => signal_clk,
-    stream_reset => reset0,
     registers => channel_registers(c),
     filter_config_data => filter_config_data(c),
     filter_config_valid => filter_config_valid(c),
     filter_config_ready => filter_config_ready(c),
-    filter_reload_data => filter_reload_data(c),
-    filter_reload_valid => filter_reload_valid(c),
-    filter_reload_ready => filter_reload_ready(c),
-    filter_reload_last => filter_reload_last(c),
-    filter_reload_last_error => filter_reload_last_error(c),
-    differentiator_config_data => differentiator_config_data(c),
-    differentiator_config_valid => differentiator_config_valid(c),
-    differentiator_config_ready => differentiator_config_ready(c),
-    differentiator_reload_data => differentiator_reload_data(c),
-    differentiator_reload_valid => differentiator_reload_valid(c),
-    differentiator_reload_ready => differentiator_reload_ready(c),
-    differentiator_reload_last => differentiator_reload_last(c),
-    differentiator_reload_last_error => differentiator_reload_last_error(c)
+    filter_data => filter_data(c),
+    filter_valid => filter_valid(c),
+    filter_ready => filter_ready(c),
+    filter_last => filter_last(c),
+    filter_last_missing => filter_last_missing(c),
+    filter_last_unexpected => filter_last_unexpected(c),
+    dif_config_data => dif_config_data(c),
+    dif_config_valid => dif_config_valid(c),
+    dif_config_ready => dif_config_ready(c), --differentiator_config_ready,
+    dif_data => dif_data(c),
+    dif_valid => dif_valid(c),
+    dif_ready => dif_ready(c),
+    dif_last => dif_last(c),
+    dif_last_missing => dif_last_missing(c),
+    dif_last_unexpected => dif_last_missing(c)
   );
-	
-	filter_reload_last_error(c) <= filter_reload_last_unexpected(c) or 
-																 filter_reload_last_missing(c);
-	
-	differentiator_reload_last_error(c) 
-		<= differentiator_reload_last_unexpected(c) or 
-			 differentiator_reload_last_missing(c);
-																 
-  channelController:entity tes.channel_controller
+  
+  regWriteSync:entity tes.sync_2FF
   port map(
-    clk => io_clk,
-    reset => reset0,
-    uart_tx => channel_rx(c),
-    uart_rx => channel_tx(c),
-    address => channel_address(c),
-    data_out => channel_data(c),
-    data_in => channel_value(c),
-    write => write(c),
-    axis_ready => axis_ready(c),
-    axis_done => axis_done(c),
-    axis_error => axis_error(c)
+    out_clk => signal_clk,
+    input => channel_reg_write_io_clk(c),
+    output => channel_reg_write(c)
   );
-	
+
+	cpu:entity tes.channel_controller
+		port map(
+			clk => io_clk,
+			reset => reset0,
+			uart_tx => channel_rx(c),
+			uart_rx => channel_tx(c),
+			reg_address => channel_address(c),
+			reg_data => channel_data(c),
+			reg_value => channel_value(c),
+			reg_write => channel_reg_write_io_clk(c),
+			axis_done => axis_done(c),
+			axis_error => axis_error(c)
+		);
+
 	--TODO add reset??
   delay:entity tes.RAM_delay
   generic map(
@@ -704,7 +703,7 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
     delayed => adc_delayed(c)
   );
 
-	measurementUnit:entity tes.measurement_unit
+	measurement:entity tes.measurement_unit
   generic map(
     FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
     CHANNEL => c,
@@ -718,22 +717,21 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
     filter_config_data => filter_config_data(c),
     filter_config_valid => filter_config_valid(c),
     filter_config_ready => filter_config_ready(c),
-    filter_reload_data => filter_reload_data(c),
-    filter_reload_valid => filter_reload_valid(c),
-    filter_reload_ready => filter_reload_ready(c),
-    filter_reload_last => filter_reload_last(c),
-    filter_reload_last_missing => filter_reload_last_missing(c),
-    filter_reload_last_unexpected => filter_reload_last_unexpected(c),
-    differentiator_config_data => differentiator_config_data(c),
-    differentiator_config_valid => differentiator_config_valid(c),
-    differentiator_config_ready => differentiator_config_ready(c),
-    differentiator_reload_data => differentiator_reload_data(c),
-    differentiator_reload_valid => differentiator_reload_valid(c),
-    differentiator_reload_ready => differentiator_reload_ready(c),
-    differentiator_reload_last => differentiator_reload_last(c),
-    differentiator_reload_last_missing => differentiator_reload_last_missing(c),
-    differentiator_reload_last_unexpected 
-    	=> differentiator_reload_last_unexpected(c),
+    filter_reload_data => filter_data(c),
+    filter_reload_valid => filter_valid(c),
+    filter_reload_ready => filter_ready(c),
+    filter_reload_last => filter_last(c),
+    filter_reload_last_missing => filter_last_missing(c),
+    filter_reload_last_unexpected => filter_last_unexpected(c),
+    differentiator_config_data => dif_config_data(c),
+    differentiator_config_valid => dif_config_valid(c),
+    differentiator_config_ready => dif_config_ready(c),
+    differentiator_reload_data => dif_data(c),
+    differentiator_reload_valid => dif_valid(c),
+    differentiator_reload_ready => dif_ready(c),
+    differentiator_reload_last => dif_last(c),
+    differentiator_reload_last_missing => dif_last_missing(c),
+    differentiator_reload_last_unexpected => dif_last_unexpected(c),
     measurements => measurements(c),
     mca_value_select => value_select,
     mca_trigger_select => trigger_select,
@@ -754,7 +752,7 @@ signalChanGen:for c in DSP_CHANNELS-1 downto 0 generate
     valid => eventstreams_valid(c),
     ready => eventstreams_ready(c)
   );
-end generate signalChanGen;
+end generate tesChannel;
 --------------------------------------------------------------------------------
 
 mux:entity tes.eventstream_mux
@@ -865,7 +863,7 @@ port map(
   ethernetstream_ready => ethernetstream_ready
 );
 
-cdc:entity tes.CDC_bytestream_adapter
+enetCdc:entity tes.CDC_bytestream_adapter
 port map(
   s_clk => signal_clk,
   s_reset => reset0,
@@ -880,7 +878,7 @@ port map(
   bytestream_last => bytestream_last
 );
 
-TEMAC:entity work.v6_emac_v2_3
+emac:entity work.v6_emac_v2_3
 port map(
   global_reset_IO_clk => global_reset_IO_clk,
   IO_clk => io_clk,
@@ -916,21 +914,28 @@ port map(
   frame_errorn => frame_errorn
 );
 
-globalReg:entity tes.global_registers
+registers:entity tes.global_registers
 generic map(
   HDL_VERSION => VERSION
 )
 port map(
-  reg_clk => io_clk,
+  reg_clk => signal_clk,
   reg_reset => reset0,
-  data => global_data,
-  address => global_address,
+  data => reg_data,
+  address => reg_address,
   value => global_value,
   write => global_write,
   registers => global
 );
 
-mainCpu:entity tes.io_controller
+regWriteSync:entity tes.boolean_sync_2FF
+port map(
+  out_clk => signal_clk,
+  input => reg_write,
+  output => global_write
+);
+
+cpu:entity tes.main_controller
 generic map(
   TES_CHANNEL_BITS => CHANNEL_BITS,
   ADC_CHIPS => ADC_CHIPS
@@ -942,10 +947,10 @@ port map(
   FMC_power_good => FMC_power_good,
   FMC_present => FMC_present,
   FMC_AD9510_status => FMC_AD9510_status,
-  pipeline_mmcm_locked => fmc108_mmcm_locked,
+  fmc_mmcm_locked => fmc108_mmcm_locked,
+  iodelay_ready => idelayctrl_rdy,
   reset0 => reset0,
   reset1 => reset1,
-  -- reset for signal path goes high while adc_enables changes
   reset2 => reset2,
   interrupt => FALSE,
   interrupt_ack => open,
@@ -957,10 +962,15 @@ port map(
   spi_ce_n => spi_ce_n,
   spi_miso => spi_miso,
   spi_mosi => spi_mosi,
-  address => global_address,
-  data_out => global_data,
-  data_in => global_value,
-  write => global_write
+  address => reg_address,
+  data => reg_data,
+  select_axi => open,
+  value => global_value,
+  axi_resp => "00",
+  axi_resp_valid => FALSE,
+  reg_write => reg_write,
+  axi_read => open,
+  axi_write => open
 );
 
 end architecture RTL;

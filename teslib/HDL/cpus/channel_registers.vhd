@@ -56,49 +56,49 @@ entity channel_registers is
 generic(
 	CHANNEL:integer:=0;
 	CONFIG_BITS:integer:=8;
-	CONFIG_STREAM_WIDTH:integer:=8;
-	COEF_BITS:integer:=25;
-	COEF_STREAM_WIDTH:integer:=32
+	CONFIG_WIDTH:integer:=8;
+	--bits in a filter coefficient
+	COEF_BITS:integer:=25; 
+	--width in the filter reload axi-stream
+	COEF_WIDTH:integer:=32
 );
 port (
 	-- reg_clk domain
-  reg_clk:in std_logic;
-  reg_reset:in std_logic;
+  clk:in std_logic;
+  reset:in std_logic;
   --!* register signals from/to channel CPU
   data:in register_data_t;
   address:in register_address_t;
-  write:in boolean; --Strobe
+  write:in std_logic; --Strobe
   value:out register_data_t;
   
-  axis_ready:out boolean;
-  axis_done:out boolean;
-  axis_error:out boolean;
-  
-  --sclk domain
-  stream_clk:in std_logic;
-  stream_reset:in std_logic;
+  axis_done:out std_logic;
+  axis_error:out std_logic;
   
 	registers:out channel_registers_t;
 
-  filter_config_data:out std_logic_vector(CONFIG_STREAM_WIDTH-1 downto 0);
-  filter_config_valid:out boolean;
-  filter_config_ready:in boolean;
+  filter_config_data:out std_logic_vector(CONFIG_WIDTH-1 downto 0);
+  filter_config_valid:out std_logic;
+  filter_config_ready:in std_logic;
   -- coefficients are 25 bits all fractional 
   -- the register uses bit 31 as AXI stream last
-  filter_reload_data:out std_logic_vector(COEF_STREAM_WIDTH-1 downto 0); 
-  filter_reload_valid:out boolean;
-  filter_reload_ready:in boolean;
-  filter_reload_last:out boolean;
-  filter_reload_last_error:in boolean;
+  filter_data:out std_logic_vector(COEF_WIDTH-1 downto 0); 
+  filter_valid:out std_logic;
+  filter_ready:in std_logic;
+  filter_last:out std_logic;
+  filter_last_missing:in std_logic;
+  filter_last_unexpected:in std_logic;
   
-  differentiator_config_data:out std_logic_vector(CONFIG_STREAM_WIDTH-1 downto 0);
-  differentiator_config_valid:out boolean;
-  differentiator_config_ready:in boolean;
-  differentiator_reload_data:out std_logic_vector(COEF_STREAM_WIDTH-1 downto 0);
-  differentiator_reload_valid:out boolean;
-  differentiator_reload_ready:in boolean;
-  differentiator_reload_last:out boolean;
-  differentiator_reload_last_error:in boolean
+  dif_config_data:out std_logic_vector(CONFIG_WIDTH-1 downto 0);
+  dif_config_valid:out std_logic;
+  dif_config_ready:in std_logic;
+  
+  dif_data:out std_logic_vector(COEF_WIDTH-1 downto 0);
+  dif_valid:out std_logic;
+  dif_ready:in std_logic;
+  dif_last:out std_logic;
+  dif_last_missing:in std_logic;
+  dif_last_unexpected:in std_logic
 );
 end entity channel_registers;
 --
@@ -109,46 +109,30 @@ signal reg:channel_registers_t;
 signal reg_data:AXI_data_array(11 downto 0);
 type bit_array is array (natural range <>) of std_logic_vector(11 downto 0);
 signal reg_bits:bit_array(AXI_DATA_BITS-1 downto 0);
-signal filter_reload,differentiator_reload:boolean;
-signal filter_config,differentiator_config:boolean;
-signal filter_reload_axis_done:boolean;
-signal filter_reload_axis_error:boolean;
-signal filter_reload_axis_ready:boolean;
-signal filter_config_axis_done:boolean;
-signal filter_config_axis_ready:boolean;
-signal differentiator_reload_axis_done:boolean;
-signal differentiator_reload_axis_error:boolean;
-signal differentiator_reload_axis_ready:boolean;
-signal differentiator_config_axis_done:boolean;
-signal differentiator_config_axis_ready:boolean;
-signal filter_config_data_int:std_logic_vector(CONFIG_BITS-1 downto 0);
-signal filter_reload_data_int:std_logic_vector(COEF_BITS-1 downto 0);
-signal differentiator_reload_data_int:std_logic_vector(COEF_BITS-1 downto 0);
-signal differentiator_config_data_int:std_logic_vector(CONFIG_BITS-1 downto 0);
+
+signal filter_data_int:std_logic_vector(COEF_BITS downto 0);
+signal differentiator_data_int:std_logic_vector(COEF_BITS downto 0);
+signal filter_error_reg:std_logic;
+signal differentiator_error_reg:std_logic;
+signal filter_go,differentiator_go:std_logic;
+signal filter_config_go,differentiator_config_go:std_logic;
+signal filter_done,differentiator_done:std_logic;
+signal resetn:std_logic;
+signal filter_config_done,differentiator_config_done:std_logic;
+signal value_int:register_data_t;
 
 --NOTE bits 16 to 19 are used as the bit address when the iodelay is read
 -- FIXME huh???
 begin 
+-- value is read by the cpu in the io_clk domain
+	
+	
 registers <= reg;
-filter_reload_data(COEF_BITS-1 downto 0) <= filter_reload_data_int;
-filter_reload_data(COEF_STREAM_WIDTH-1 downto COEF_BITS) <= (others => '0');
-filter_config_data(CONFIG_BITS-1 downto 0) <= filter_config_data_int;
-filter_config_data(CONFIG_STREAM_WIDTH-1 downto CONFIG_BITS) <= (others => '0');
 
-differentiator_reload_data(COEF_BITS-1 downto 0) 
-	<= differentiator_reload_data_int;
-differentiator_reload_data(COEF_STREAM_WIDTH-1 downto COEF_BITS) 
-	<= (others => '0');
-differentiator_config_data(CONFIG_BITS-1 downto 0) 
-	<= differentiator_config_data_int;
-differentiator_config_data(CONFIG_STREAM_WIDTH-1 downto CONFIG_BITS) 
-	<= (others => '0');
-
---FIXME clk this with stream_clk
-regWrite:process(reg_clk) 
+regWrite:process(clk) 
 begin
-if rising_edge(reg_clk) then
-	if reg_reset='1' then
+if rising_edge(clk) then
+	if reset='1' then
 		reg.baseline.offset <= DEFAULT_BL_OFFSET;
 		reg.baseline.subtraction <= DEFAULT_BL_SUBTRACTION;
 		reg.baseline.timeconstant <= DEFAULT_BL_TIMECONSTANT;
@@ -171,14 +155,13 @@ if rising_edge(reg_clk) then
 		reg.capture.trace1 <= DEFAULT_TRACE1;
 		reg.capture.delay <= DEFAULT_DELAY;
 		reg.capture.input_sel <= (CHANNEL => '1',others => '0');
-		--FIXME This needs to be implemented
-		reg.capture.full_trace <= FALSE;
   else
-    if write then
+    if write='1' then
       if address(DELAY_ADDR_BIT)='1' then
         reg.capture.delay <= unsigned(data(DELAY_BITS-1 downto 0)); 
       end if;
       if address(CAPTURE_ADDR_BIT)='1' then
+      	--FIXME make this a function
       	reg.capture.detection <= to_detection_d(data(1 downto 0));
       	reg.capture.timing <= to_timing_d(data(3 downto 2));
       	reg.capture.max_peaks <= unsigned(data(7 downto 4));
@@ -240,140 +223,15 @@ if rising_edge(reg_clk) then
 end if;
 end process regWrite;
 
-outputmux:process(address,filter_reload_axis_done,filter_reload_axis_error,
-									filter_reload_axis_ready,differentiator_config_axis_done, 
-									differentiator_config_axis_ready,
-									differentiator_reload_axis_done, 
-									differentiator_reload_axis_error, 
-									differentiator_reload_axis_ready,filter_config_axis_done,
-									filter_config_axis_ready)
-begin
-	if address(FILTER_RELOAD_ADDR_BIT)='1' then
-		axis_done <= filter_reload_axis_done;
-		axis_error <= filter_reload_axis_error;
-		axis_ready <= filter_reload_axis_ready;
-	elsif address(FILTER_CONFIG_ADDR_BIT)='1' then
-		axis_done <= filter_config_axis_done;
-		axis_error <= FALSE;
-		axis_ready <= filter_config_axis_ready;
-	elsif address(DIFFERENTIATOR_RELOAD_ADDR_BIT)='1' then
-		axis_done <= differentiator_reload_axis_done;
-		axis_error <= differentiator_reload_axis_error;
-		axis_ready <= differentiator_reload_axis_ready;
-	elsif address(DIFFERENTIATOR_CONFIG_ADDR_BIT)='1' then
-		axis_done <= differentiator_config_axis_done;
-		axis_error <= FALSE;
-		axis_ready <= differentiator_config_axis_ready;
-	else
-		axis_done <= FALSE;
-		axis_error <= FALSE;
-		axis_ready <= FALSE;
-	end if;	
-end process outputmux;
-
-filter_reload <= write and address(FILTER_RELOAD_ADDR_BIT)='1';
-filterReload:entity work.register_axistream
-generic map(
-  DATA_BITS => COEF_BITS
-)
-port map(
-  reg_clk => reg_clk,
-  reg_reset => reg_reset,
-  data => data(COEF_BITS-1 downto 0),
-  write => filter_reload,
-  reg_last => to_boolean(data(AXI_DATA_BITS-1)),
-  axis_done => filter_reload_axis_done,
-  axis_error => filter_reload_axis_error,
-  axis_ready => filter_reload_axis_ready,
-  stream_clk => stream_clk,
-  stream_reset => stream_reset,
-  last_error => filter_reload_last_error,
-  stream => filter_reload_data_int,
-  valid => filter_reload_valid,
-  ready => filter_reload_ready,
-  last => filter_reload_last
-);
-
-filter_config <= write and address(FILTER_CONFIG_ADDR_BIT)='1';
-filterConfig:entity work.register_axistream
-generic map(
-  DATA_BITS => CONFIG_BITS
-)
-port map(
-  reg_clk => reg_clk,
-  reg_reset => reg_reset,
-  data => data(CONFIG_BITS-1 downto 0),
-  write => filter_config,
-  reg_last => to_boolean(data(AXI_DATA_BITS-1)),
-  axis_done => filter_config_axis_done,
-  axis_error => open,
-  axis_ready => filter_config_axis_ready,
-  stream_clk => stream_clk,
-  stream_reset => stream_reset,
-  last_error => FALSE,
-  stream => filter_config_data_int,
-  valid => filter_config_valid,
-  ready => filter_config_ready,
-  last => open
-);
-
-differentiator_reload <= write and address(DIFFERENTIATOR_RELOAD_ADDR_BIT)='1';
-differetiatorReload:entity work.register_axistream
-generic map(
-  DATA_BITS => COEF_BITS
-)
-port map(
-  reg_clk => reg_clk,
-  reg_reset => reg_reset,
-  data => data(COEF_BITS-1 downto 0),
-  write => differentiator_reload,
-  reg_last => to_boolean(data(AXI_DATA_BITS-1)),
-  axis_done => differentiator_reload_axis_done,
-  axis_error => differentiator_reload_axis_error,
-  axis_ready => differentiator_reload_axis_ready,
-  stream_clk => stream_clk,
-  stream_reset => stream_reset,
-  last_error => differentiator_reload_last_error,
-  stream => differentiator_reload_data_int,
-  valid => differentiator_reload_valid,
-  ready => differentiator_reload_ready,
-  last => differentiator_reload_last
-);
-
-differentiator_config <= write and address(DIFFERENTIATOR_CONFIG_ADDR_BIT)='1';
-differntiatorConfig:entity work.register_axistream
-generic map(
-  DATA_BITS => CONFIG_BITS
-)
-port map(
-  reg_clk => reg_clk,
-  reg_reset => reg_reset,
-  data => data(CONFIG_BITS-1 downto 0),
-  write => differentiator_config,
-  reg_last => FALSE,
-  axis_done => differentiator_config_axis_done,
-  axis_error => open,
-  axis_ready => differentiator_config_axis_ready,
-  stream_clk => stream_clk,
-  stream_reset => stream_reset,
-  last_error => FALSE,
-  stream => differentiator_config_data_int,
-  valid => differentiator_config_valid,
-  ready => differentiator_config_ready,
-  last => open
-);
-
 -- register read
 -- create register array for selector
-reg_data(CAPTURE_ADDR_BIT) <= capture_register(reg);
+reg_data(CAPTURE_ADDR_BIT) <= capture_register(reg.capture);
 reg_data(PULSE_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.capture.pulse_threshold,AXI_DATA_BITS));
 reg_data(SLOPE_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.capture.slope_threshold,AXI_DATA_BITS));
 reg_data(CONSTANT_FRACTION_ADDR_BIT)
    <= to_std_logic(resize(reg.capture.constant_fraction,AXI_DATA_BITS));
-reg_data(AREA_THRESHOLD_ADDR_BIT)
-   <= to_std_logic(resize(reg.capture.area_threshold,AXI_DATA_BITS));
 reg_data(AREA_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.capture.area_threshold,AXI_DATA_BITS));
 reg_data(DELAY_ADDR_BIT)
@@ -386,25 +244,134 @@ reg_data(BL_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.baseline.threshold,AXI_DATA_BITS));
 reg_data(BL_COUNT_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.baseline.count_threshold,AXI_DATA_BITS));
-reg_data(BL_FLAGS_ADDR_BIT) <= baseline_flags(reg);
+reg_data(BL_FLAGS_ADDR_BIT) <= baseline_flags(reg.baseline);
 reg_data(INPUT_SEL_ADDR_BIT) <= resize(to_std_logic(reg.capture.invert) & 
 			 														reg.capture.input_sel,AXI_DATA_BITS
 		 														);
 
-selectorGen:for b in 0 to AXI_DATA_BITS-1 generate
+selGen:for b in AXI_DATA_BITS-1 downto 0 generate
 begin
-	
-	bitGen:for reg in 0 to 11 generate
+	bitGen:for reg in 11 downto 0 generate
 	begin
 		reg_bits(b)(reg) <= reg_data(reg)(b);
 	end generate;
-				  
 	selector:entity work.select_1of12
   port map(
     input => reg_bits(b),
     sel => address(11 downto 0),
-    output => value(b)
+    output => value_int(b)
   );
 end generate;
 
+valueReg:process (clk) is
+begin
+	if rising_edge(clk) then
+		value <= value_int;
+	end if;
+end process valueReg;
+
+resetn <= not reset;
+erroReg:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			filter_error_reg <= '0';
+			differentiator_error_reg <= '0';
+		else
+			if filter_go='1' then
+				filter_error_reg <= '0';
+			elsif filter_last_missing='1' or filter_last_unexpected='1' then
+				filter_error_reg <= '1';
+			end if; 
+			if differentiator_go='1' then
+				differentiator_error_reg <= '0';
+			elsif dif_last_missing='1' or dif_last_unexpected='1' then
+				differentiator_error_reg <= '1';
+			end if;
+		end if;
+	end if;
+end process erroReg;
+
+outputMux:process(address,differentiator_done,differentiator_error_reg,
+	filter_done,filter_error_reg,differentiator_config_done,filter_config_done
+)
+begin
+	if address(FILTER_RELOAD_ADDR_BIT)='1' then
+		axis_error <= filter_error_reg;
+		axis_done <= filter_done;
+	elsif address(DIFFERENTIATOR_RELOAD_ADDR_BIT)='1' then
+		axis_error <= differentiator_error_reg;
+		axis_done <= differentiator_done;
+	elsif address(FILTER_CONFIG_ADDR_BIT)='1' then
+		axis_error <= '0';
+		axis_done <= filter_config_done;
+	elsif address(DIFFERENTIATOR_CONFIG_ADDR_BIT)='1' then
+		axis_error <= '0';
+		axis_done <= differentiator_config_done;
+	else
+		axis_error <= '0';
+		axis_done <= '0';
+	end if;
+end process outputMux;
+
+filter_go <= write and address(FILTER_RELOAD_ADDR_BIT);
+filterReload:entity work.axi_wr_chan
+generic map(WIDTH => COEF_BITS+1)
+port map(
+  clk => clk,
+  resetn => resetn,
+  reg_value => data(COEF_BITS downto 0),
+  go => filter_go,
+  done => filter_done,
+  axi_data => filter_data_int,
+  axi_valid => filter_valid,
+  axi_ready => filter_ready
+);
+filter_data <= resize(filter_data_int(COEF_BITS-1 downto 0), COEF_WIDTH);
+filter_last <= filter_data_int(COEF_BITS);
+
+filter_config_go <= write and address(FILTER_CONFIG_ADDR_BIT);
+filterConfig:entity work.axi_wr_chan
+generic map(WIDTH => CONFIG_BITS)
+port map(
+  clk => clk,
+  resetn => resetn,
+  reg_value => data(CONFIG_BITS-1 downto 0),
+  go => filter_config_go,
+  done => filter_config_done,
+  axi_data => filter_config_data,
+  axi_valid => filter_config_valid,
+  axi_ready => filter_config_ready
+);
+
+differentiator_go <= write and address(DIFFERENTIATOR_RELOAD_ADDR_BIT);
+diffReload:entity work.axi_wr_chan
+generic map(WIDTH => COEF_BITS+1)
+port map(
+  clk => clk,
+  resetn => resetn,
+  reg_value => data(COEF_BITS downto 0),
+  go => differentiator_go,
+  done => differentiator_done,
+  axi_data => differentiator_data_int,
+  axi_valid => dif_valid,
+  axi_ready => dif_ready
+);
+dif_data 
+	<= resize(differentiator_data_int(COEF_BITS-1 downto 0), COEF_WIDTH);
+dif_last <= differentiator_data_int(COEF_BITS);
+
+differentiator_config_go <= write and address(DIFFERENTIATOR_RELOAD_ADDR_BIT);
+diffConfig:entity work.axi_wr_chan
+generic map(WIDTH => CONFIG_BITS)
+port map(
+  clk => clk,
+  resetn => resetn,
+  reg_value => data(CONFIG_BITS-1 downto 0),
+  go => differentiator_config_go,
+  done => differentiator_config_done,
+  axi_data => dif_config_data,
+  axi_valid => dif_config_valid,
+  axi_ready => dif_config_ready
+);
 end architecture RTL;

@@ -50,15 +50,22 @@ constant STATUS_FMC_PRESENT_BIT:integer:=3;
 constant STATUS_FMC_POWER_BIT:integer:=4;
 constant STATUS_FMC_AD9510_BIT:integer:=5;
 constant STATUS_PIPELINE_LOCK_BIT:integer:=6;
+constant STATUS_IODELAY_READY_BIT:integer:=7;
 -- channel_controller status bits
-constant STATUS_AXIS_READY_BIT:integer:=3;
-constant STATUS_AXIS_DONE_BIT:integer:=4;
-constant STATUS_AXIS_ERROR_BIT:integer:=5;
+--constant STATUS_AXIS_READY_BIT:integer:=3; --FIXME move these to resp
+
+-- resp port bits
+constant RESP_VALID_BIT:integer:=0;
+constant RESP_LOWER_BIT:integer:=2;
+constant RESP_UPPER_BIT:integer:=3;
+constant RESP_AXIS_DONE_BIT:integer:=4;
+constant RESP_AXIS_ERROR_BIT:integer:=5;
 
 -- IO selection
 constant IO_SEL_COO_PORTID_BIT:integer:=0;
 constant SEL_ADDRESS_BIT:integer:=0;
 constant SEL_DATA_BIT:integer:=1;
+constant SEL_AXI_BIT:integer:=2;
 -- note the UART selects are independent of the others 
 constant SEL_MAIN_UART_BIT:integer:=5;
 constant SEL_CHAN_UART_BIT:integer:=6;
@@ -70,7 +77,9 @@ constant CONTROL_RESET_UART_TX_BIT:integer:=0;
 constant CONTROL_RESET_UART_RX_BIT:integer:=1;
 constant CONTROL_RESET_SYSTEM_BIT:integer:=2;
 constant CONTROL_REG_WRITE_BIT:integer:=3;
-constant CONTROL_TEST_BIT:integer:=4;
+constant CONTROL_TEST_BIT:integer:=4; --FIXME remove
+constant CONTROL_AXI_READ_BIT:integer:=6; 
+constant CONTROL_AXI_WRITE_BIT:integer:=7; 
 --
 constant RESET_COO_PORTID_BIT:integer:=2;
 constant RESET_SYSTEM_BIT:integer:=0;

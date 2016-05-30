@@ -7,10 +7,10 @@
 # ML605 general IO pads
 ################################################################################
 
-#  UART used for serial register IO
-PIN "main_rx" LOC = J24 | IOSTANDARD = LVCMOS25 | TIG;
-PIN "main_tx" LOC = J25 | IOSTANDARD = LVCMOS25 | DRIVE = 4 | SLEW = SLOW;
-NET "main_rx" TIG;
+# UART used for serial register IO
+NET "main_rx" LOC = J24 | IOSTANDARD = LVCMOS25;
+NET "main_tx" LOC = J25 | IOSTANDARD = LVCMOS25 | DRIVE = 4 | SLEW = SLOW;
+NET "main_?x" TIG;
 
 NET "global_reset" LOC = H10 | TIG;
 
@@ -41,7 +41,7 @@ NET "LEDs[?]" TIG;
 #-------------------------------------------------------------------------------
 PIN "ADC_spi_ce_n[0]" LOC = V33;
 PIN "ADC_spi_ce_n[1]" LOC = U31;
-PIN "ADC_spi_ce_n[2]" LOC = U30; on the FMC108
+PIN "ADC_spi_ce_n[2]" LOC = U30; 
 PIN "ADC_spi_ce_n[3]" LOC = U28;
 PIN "ADC_spi_miso[0]" LOC = AE33;
 PIN "ADC_spi_miso[1]" LOC = AF33;
@@ -53,7 +53,7 @@ PIN "AD9510_spi_ce_n" LOC = AH23;
 PIN "AD9510_spi_miso" LOC = T33;
 PIN "AD9510_spi_mosi" LOC = AG26;
 PIN "AD9510_spi_clk" LOC = AG25;
-NET "*_spi_" TIG;
+NET "*_spi_*" TIG;
 
 #-------------------------------------------------------------------------------
 # FMC108 control/status
@@ -252,7 +252,7 @@ NET "phy_resetn" LOC = AH13 | IOSTANDARD = LVCMOS25 | TIG;
 NET "mdc" LOC = AP14 | IOSTANDARD = LVCMOS25;
 NET "mdio" LOC = AN14 | IOSTANDARD = LVCMOS25;
 
-NET "gmii_rxd[?] IOSTANDARD = LVCMOS25;
+NET "gmii_rxd[?]" IOSTANDARD = LVCMOS25;
 NET "gmii_rxd[7]" LOC = AC13;
 NET "gmii_rxd[6]" LOC = AC12;
 NET "gmii_rxd[5]" LOC = AD11;

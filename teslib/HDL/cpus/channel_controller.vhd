@@ -25,23 +25,17 @@ entity channel_controller is
 port(
   clk:in std_logic;
   reset:in std_logic;
-  
-  --!* UART connection to main CPU
+  -- UART connection to main CPU
   uart_tx:out std_logic;
   uart_rx:in std_logic;
-  ------------------------------------------------------------------------------
   -- Register IO
-  -- all signals in the IO_clk domain
-  ------------------------------------------------------------------------------
-  address:out register_address_t;
-  data_out:out register_data_t;
-  data_in:in register_data_t;
-  write:out boolean; -- strobe
-  
-  --TODO implement
-  axis_ready:in boolean;
-  axis_done:in boolean;
-  axis_error:in boolean
+  reg_address:out register_address_t;
+  reg_data:out register_data_t;
+  reg_value:in register_data_t;
+  reg_write:out std_logic; -- strobe
+  --axi stream signals;
+  axis_done:in std_logic;
+  axis_error:in std_logic
 );
 end entity channel_controller;
 --
@@ -86,7 +80,7 @@ signal write_byte_to_data:boolean;
 begin
 uart_tx <= serial_out_reg;
 --
-CPU:entity work.kcpsm6
+picoblaze:entity work.kcpsm6
 generic map(
   hwbuild => X"42",
   interrupt_vector => X"7FF",
@@ -110,7 +104,7 @@ port map(
 interrupt <= '0';
 sleep <= '0';
 --
-programROM:entity work.channel_program
+rom:entity work.channel_program
 port map(
 	address => program_counter,
   instruction => instruction,
@@ -176,12 +170,23 @@ uart_reset_tx <= k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
                  out_port(CONTROL_RESET_UART_TX_BIT);
 uart_reset_rx <= k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
                  out_port(CONTROL_RESET_UART_RX_BIT);
-write <= to_boolean(k_write_strobe) and port_id(CONTROL_COO_PORTID_BIT)='1' and
-                                        out_port(CONTROL_REG_WRITE_BIT)='1';
+
+writeReg:process (clk) is
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			reg_write <= '0';
+		else
+      reg_write <= k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
+               out_port(CONTROL_REG_WRITE_BIT);
+		end if;
+	end if;
+end process writeReg;
+
 --------------------------------------------------------------------------------
 -- CPU IO ports 
 --------------------------------------------------------------------------------
-IOselect:process(clk)
+ioSel:process(clk)
 begin
 if rising_edge(clk) then
   if reset='1' then
@@ -192,7 +197,7 @@ if rising_edge(clk) then
     end if;
   end if;
 end if;
-end process IOselect;
+end process ioSel;
 
 -- CPU input port mux
 byte_sel <= port_id(BYTE3_IO_PORTID_BIT downto BYTE0_IO_PORTID_BIT);
@@ -202,11 +207,15 @@ in_port <= uart_rx_byte when port_id(UART_IO_PORTID_BIT)='1'
                         else (STATUS_TX_NOTEMPTY_BIT => tx_not_empty,
                               STATUS_TX_FULL_BIT => tx_full,
                               STATUS_RX_NOTEMPTY_BIT => rx_not_empty,
-                              STATUS_AXIS_READY_BIT => to_std_logic(axis_ready),
-                              STATUS_AXIS_DONE_BIT => to_std_logic(axis_done),
-                              STATUS_AXIS_ERROR_BIT => to_std_logic(axis_error),
+                              --STATUS_AXIS_READY_BIT => to_std_logic(axis_ready),
+                              --STATUS_AXIS_DONE_BIT => to_std_logic(axis_done),
+                              --STATUS_AXIS_ERROR_BIT => to_std_logic(axis_error),
                               others => '-') 
-                        when port_id(STATUS_IN_PORTID_BIT)='1' 
+                        when port_id(STATUS_IN_PORTID_BIT)='1'
+                        else (RESP_AXIS_DONE_BIT => axis_done,
+                        			RESP_AXIS_ERROR_BIT => axis_error,
+                        			others => '-') 
+                        when port_id(RESP_IN_PORTID_BIT) = '1'
                         else (others => '-');
                         	
 byte_sel <= port_id(BYTE3_IO_PORTID_BIT downto BYTE0_IO_PORTID_BIT);
@@ -216,7 +225,7 @@ write_byte_to_data <= write_strobe='1' and
                       byte_sel/="0000" and IO_sel(SEL_DATA_BIT)='1';
                       
 -- Register IO
-regIOblock:entity work.register_IO_block
+io:entity work.register_IO_block
 port map(
   clk => clk,
   byte_in => out_port,
@@ -224,9 +233,9 @@ port map(
   byte_select => byte_sel,
   address_wr => write_byte_to_address,
   data_wr => write_byte_to_data,
-  address => address,
-  data => data_out,
-  read_data => data_in
+  address => reg_address,
+  data => reg_data,
+  read_data => reg_value
 );
 --
 end architecture picoblaze;

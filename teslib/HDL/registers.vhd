@@ -300,8 +300,8 @@ constant DEFAULT_BL_COUNT_THRESHOLD:unsigned(BASELINE_COUNTER_BITS-1 downto 0)
 				 :=to_unsigned(150,BASELINE_COUNTER_BITS);
 constant DEFAULT_BL_AVERAGE_ORDER:integer:=4;
 
-function capture_register(r:channel_registers_t) return std_logic_vector;
-function baseline_flags(r:channel_registers_t) return std_logic_vector;
+function capture_register(r:capture_registers_t) return std_logic_vector;
+function baseline_flags(r:baseline_registers_t) return std_logic_vector;
 
 --------------------------------------------------------------------------------
 -- Global registers
@@ -579,26 +579,26 @@ end function;
 -- MCA register functions 
 --------------------------------------------------------------------------------
 
-function capture_register(r:channel_registers_t) return std_logic_vector is
+function capture_register(r:capture_registers_t) return std_logic_vector is
 	variable s:std_logic_vector(AXI_DATA_BITS-1 downto 0):=(others => '0');
 begin
-	s(1 downto 0):=to_std_logic(r.capture.detection,2);
-	s(3 downto 2):=to_std_logic(r.capture.timing,2);
-	s(7 downto 4):=to_std_logic(r.capture.max_peaks);
-	s(9 downto 8):=to_std_logic(r.capture.height,2);
-	s(11 downto 10):=to_std_logic(r.capture.trace0,2);
-	s(13 downto 12):=to_std_logic(r.capture.trace1,2);
-	s(14):=to_std_logic(r.capture.cfd_rel2min);
-	s(15):=to_std_logic(r.capture.height_rel2min);
-	s(16):=to_std_logic(r.capture.threshold_rel2min);
+	s(1 downto 0):=to_std_logic(r.detection,2);
+	s(3 downto 2):=to_std_logic(r.timing,2);
+	s(7 downto 4):=to_std_logic(r.max_peaks);
+	s(9 downto 8):=to_std_logic(r.height,2);
+	s(11 downto 10):=to_std_logic(r.trace0,2);
+	s(13 downto 12):=to_std_logic(r.trace1,2);
+	s(14):=to_std_logic(r.cfd_rel2min);
+	s(15):=to_std_logic(r.height_rel2min);
+	s(16):=to_std_logic(r.threshold_rel2min);
 	return s;
 end function; 
 
-function baseline_flags(r:channel_registers_t) return std_logic_vector is
+function baseline_flags(r:baseline_registers_t) return std_logic_vector is
 	variable s:std_logic_vector(AXI_DATA_BITS-1 downto 0):=(others => '0');
 begin
-	s(2 downto 0) := to_std_logic(r.baseline.average_order,3);
-	s(4) := to_std_logic(r.baseline.subtraction);
+	s(2 downto 0) := to_std_logic(r.average_order,3);
+	s(4) := to_std_logic(r.subtraction);
 	return s;
 end function;
 
