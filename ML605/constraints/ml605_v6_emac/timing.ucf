@@ -2,23 +2,48 @@
 # ML605 development board TES digitiser design
 # Geoff Gillett
 ################################################################################
-NET "global_reset" TIG;
 NET "cpu/reset*" TIG;
 ################################################################################
 # Register CDC
 ################################################################################
-NET "tesChannel[?].registers/value[?]" MAXDELAY = 8 ns;
-NET "tesChannel[?].registers/axis_done" MAXDELAY = 8 ns;
-NET "tesChannel[?].registers/axis_error" MAXDELAY = 8 ns;
-NET "registers/value[?]" MAXDELAY = 8 ns;
+# FROM channel registers TO channel CPU
 
-NET "tesChannel[?].cpu/channel_data[?]" MAXDELAY = 8 ns;
-NET "tesChannel[?].cpu/channel_address[?]" MAXDELAY = 8 ns;
-NET "tesChannel[?].cpu/channel_reg_write_io_clk" MAXDELAY = 8 ns;
+#INST "tesChannel[?].registers" TNM_NET = "chan_reg";
+#INST "tesChannel[?].cpu" TNM_NET = "chan_cpu";
+#TIMESPEC TS_chan_reg2cpu = FROM "chan_reg" TO "chan_cpu" 12 ns;
+#TIMESPEC TS_chan_cpu2reg = FROM "chan_cpu" TO "chan_reg" 12 ns;
+#NET "tesChannel[?].cpu/reg_write" TNM_NET = "chan_write";
+#TIMESPEC TS_chan_write = FROM "chan_write" 8 ns;
 
-NET "cpu/reg_data[?]" MAXDELAY = 8 ns;
-NET "cpu/reg_address[?]" MAXDELAY = 8 ns;
-NET "cpu/reg_write" MAXDELAY = 8 ns;
+#INST cpu TNM_NET = "main_cpu";
+#INST registers TNM_NET = "main_reg";
+#TIMESPEC TS_main_reg2cpu = FROM "main_reg" TO "main_cpu" 16 ns;
+#TIMESPEC TS_main_cpu2reg = FROM "main_cpu" TO "main_reg" 16 ns;
+#NET "cpu/reg_write" TNM_NET = "main_write";
+#TIMESPEC TS_main_write = FROM "main_write" 8 ns;
+
+# FROM chan reg to CPU
+NET "tesChannel[?].cpu/value[?]" TNM_NET = "chan_value";
+NET "tesChannel[?].cpu/axis_*" TNM_NET = "chan_axis";
+# FROM channel CPU to channel registers
+NET "tesChannel[?].registers/data[?]" TNM_NET = "chan_data";
+NET "tesChannel[?].registers/address[?]" TNM_NET = "chan_address";
+NET "tesChannel[?].cpu/reg_write" TNM_NET = "chan_write";
+
+# FROM main global registers to CPU
+NET "cpu/value[?]" TNM_NET = "main_value";
+# FROM CPU to global registers
+NET "registers/data[?]" TNM_NET = "main_data";
+NET "registers/address[?]" TNM_NET = "main_address;
+NET "cpu/reg_write" TNM_NET = "main_write";
+
+TIMEGRP "chan_reg_cdc" = "chan_value" "chan_axis" "chan_data" "chan_address" "chan_write";
+TIMESPEC TS_chan_reg_cdc = TO "chan_reg_cdc" 8 ns;
+
+TIMEGRP "main_reg_cdc" = "main_value" "main_data" "main_address" "main_write"
+TIMESPEC TS_main_reg_cdc = TO "main_reg_cdc" 8 ns;
+
+
 ################################################################################
 # ADC input FIFO cdc constraint the ISE tools bawk at my clocking arrangement
 ################################################################################
