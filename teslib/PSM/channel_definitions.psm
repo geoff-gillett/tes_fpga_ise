@@ -13,12 +13,17 @@
                     ; Changes to definitions.psm
                     ;-----------------------------------------------------------
                     ; STATUS_IN_PORT
-                    CONSTANT STATUS_RESPONSE_VALID,    01000000'b
+                    CONSTANT STATUS_RESPONSE_VALID,    	01000000'b
                     ; IO_SEL_CO_PORT
-                    CONSTANT SEL_VALUE,                00000001'b
-                    CONSTANT SEL_ADDRESS,              00000010'b
+                    CONSTANT SEL_VALUE,                	00000001'b
+                    CONSTANT SEL_ADDRESS,              	00000010'b
                     ; CONTROL_CO_PORT
-                    CONSTANT CONTROL_DO_READ,          00100000'b
-                    CONSTANT CONTROL_DO_WRITE,         10000000'b
-                    
-                    
+                    CONSTANT CONTROL_DO_READ,          	00100000'b
+                    CONSTANT CONTROL_DO_WRITE,         	10000000'b
+                    ; AXI FIR coefficient reload
+                    ; MSB of address (address3 bit)
+                    CONSTANT DIF_RELOAD_ADDR3_BIT,  	 	10000000'b
+                    CONSTANT DIF_CONFIG_ADDR3_BIT,  		01000000'b
+                    CONSTANT FILTER_RELOAD_ADDR3_BIT,  	00100000'b
+                    CONSTANT FILTER_CONFIG_ADDR3_BIT,  	00010000'b
+                    CONSTANT FIR_ADDR3_MASK,						11110000'b

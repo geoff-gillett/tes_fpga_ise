@@ -152,6 +152,8 @@ signal interrupt_ack_int:std_logic;
 --
 begin
 interrupt_ack <= to_boolean(interrupt_ack_int);
+--interrupt <= to_boolean(interrupt_ack_int);
+
 reset0 <= reset0_int;
 reset1 <= reset1_int;
 reset2 <= reset2_int;
@@ -162,29 +164,10 @@ spi_mosi <= spi_mosi_int;
 --LEDs(SPI_CHANNELS-1 downto 0) <= not spi_ce_n_int;
 LEDs <= (others => '0');
 --
-debug:process(clk) --FIXME remove
-begin
-if rising_edge(clk) then
-  if k_write_strobe='1' and port_id(CONTROL_COO_PORTID_BIT)='1' and 
-     out_port(CONTROL_TEST_BIT)='1' 
-  then
-    test_regs(1) <= not test_regs(1);
-  end if;
-  if uart_wr_en='1' then
-    test_regs(2) <= not test_regs(2);
-  end if;
-  if serial_out_reg='0' then
-    test_regs(7) <=  '1';
-  end if;
-  if serial_in_reg='0' then
-    test_regs(6) <= '1';
-  end if;
-end if;
-end process debug;
 --------------------------------------------------------------------------------
 -- reset sequencer
 --------------------------------------------------------------------------------
-resetSequencer:process(clk)
+resetSeqReg:process(clk)
 begin
 if rising_edge(clk) then
   if global_reset='1' then
@@ -202,7 +185,7 @@ if rising_edge(clk) then
     end if;
   end if;
 end if;
-end process resetSequencer;
+end process resetSeqReg;
 --------------------------------------------------------------------------------
 --Picoblaze CPU and UARTs
 --------------------------------------------------------------------------------
@@ -224,7 +207,7 @@ port map(
   out_port => out_port,
   read_strobe => read_strobe,
   in_port => in_port,
-  interrupt => interrupt_ack_int,
+  interrupt => to_std_logic(interrupt),
   interrupt_ack => interrupt_ack_int,
   sleep => kcpsm6_sleep,
   reset => cpu_reset,
@@ -442,17 +425,30 @@ uart_reset_tx <= k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
                  out_port(CONTROL_RESET_UART_TX_BIT);
 uart_reset_rx <= k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
                  out_port(CONTROL_RESET_UART_RX_BIT);
-reg_write <= to_boolean(
-           k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
-           out_port(CONTROL_REG_WRITE_BIT)
-         );
-axi_write <= to_boolean(
-           k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
-           out_port(CONTROL_AXI_WRITE_BIT)
-         );
-axi_read <= to_boolean(
-           k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
-           out_port(CONTROL_AXI_READ_BIT)
-         );
+                 
+toRegisters:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset0_int = '1' then
+			reg_write <= FALSE;
+			axi_write <= FALSE;
+			axi_read <= FALSE;
+		else
+      reg_write <= to_boolean(
+                 k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
+                 out_port(CONTROL_REG_WRITE_BIT)
+               );
+      axi_write <= to_boolean(
+                 k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
+                 out_port(CONTROL_AXI_WRITE_BIT)
+               );
+      axi_read <= to_boolean(
+                 k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
+                 out_port(CONTROL_AXI_READ_BIT)
+               );
+		end if;
+	end if;
+end process toRegisters;
+
 --
 end architecture picoblaze;

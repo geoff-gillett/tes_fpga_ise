@@ -111,22 +111,21 @@ type bit_array is array (natural range <>) of std_logic_vector(11 downto 0);
 signal reg_bits:bit_array(AXI_DATA_BITS-1 downto 0);
 
 signal filter_data_int:std_logic_vector(COEF_BITS downto 0);
-signal differentiator_data_int:std_logic_vector(COEF_BITS downto 0);
+signal dif_data_int:std_logic_vector(COEF_BITS downto 0);
 signal filter_error_reg:std_logic;
-signal differentiator_error_reg:std_logic;
-signal filter_go,differentiator_go:std_logic;
-signal filter_config_go,differentiator_config_go:std_logic;
-signal filter_done,differentiator_done:std_logic;
+signal dif_error_reg:std_logic;
+signal filter_go,dif_go:std_logic;
+signal filter_config_go,dif_config_go:std_logic;
+signal filter_done,dif_done:std_logic;
 signal resetn:std_logic;
-signal filter_config_done,differentiator_config_done:std_logic;
+signal filter_config_done,dif_config_done:std_logic;
 signal value_int:register_data_t;
 
 --NOTE bits 16 to 19 are used as the bit address when the iodelay is read
 -- FIXME huh???
 begin 
 -- value is read by the cpu in the io_clk domain
-	
-	
+
 registers <= reg;
 
 regWrite:process(clk) 
@@ -276,41 +275,41 @@ begin
 	if rising_edge(clk) then
 		if reset = '1' then
 			filter_error_reg <= '0';
-			differentiator_error_reg <= '0';
+			dif_error_reg <= '0';
 		else
 			if filter_go='1' then
 				filter_error_reg <= '0';
 			elsif filter_last_missing='1' or filter_last_unexpected='1' then
 				filter_error_reg <= '1';
 			end if; 
-			if differentiator_go='1' then
-				differentiator_error_reg <= '0';
+			if dif_go='1' then
+				dif_error_reg <= '0';
 			elsif dif_last_missing='1' or dif_last_unexpected='1' then
-				differentiator_error_reg <= '1';
+				dif_error_reg <= '1';
 			end if;
 		end if;
 	end if;
 end process erroReg;
 
-outputMux:process(address,differentiator_done,differentiator_error_reg,
-	filter_done,filter_error_reg,differentiator_config_done,filter_config_done
-)
+outputMux:process(clk)
 begin
-	if address(FILTER_RELOAD_ADDR_BIT)='1' then
-		axis_error <= filter_error_reg;
-		axis_done <= filter_done;
-	elsif address(DIFFERENTIATOR_RELOAD_ADDR_BIT)='1' then
-		axis_error <= differentiator_error_reg;
-		axis_done <= differentiator_done;
-	elsif address(FILTER_CONFIG_ADDR_BIT)='1' then
-		axis_error <= '0';
-		axis_done <= filter_config_done;
-	elsif address(DIFFERENTIATOR_CONFIG_ADDR_BIT)='1' then
-		axis_error <= '0';
-		axis_done <= differentiator_config_done;
-	else
-		axis_error <= '0';
-		axis_done <= '0';
+	if rising_edge(clk) then
+    if address(FILTER_RELOAD_ADDR_BIT)='1' then
+      axis_error <= filter_error_reg;
+      axis_done <= filter_done;
+    elsif address(DIFFERENTIATOR_RELOAD_ADDR_BIT)='1' then
+      axis_error <= dif_error_reg;
+      axis_done <= dif_done;
+    elsif address(FILTER_CONFIG_ADDR_BIT)='1' then
+      axis_error <= '0';
+      axis_done <= filter_config_done;
+    elsif address(DIFFERENTIATOR_CONFIG_ADDR_BIT)='1' then
+      axis_error <= '0';
+      axis_done <= dif_config_done;
+    else
+      axis_error <= '0';
+      axis_done <= '0';
+    end if;
 	end if;
 end process outputMux;
 
@@ -344,32 +343,32 @@ port map(
   axi_ready => filter_config_ready
 );
 
-differentiator_go <= write and address(DIFFERENTIATOR_RELOAD_ADDR_BIT);
-diffReload:entity work.axi_wr_chan
+dif_go <= write and address(DIFFERENTIATOR_RELOAD_ADDR_BIT);
+difReload:entity work.axi_wr_chan
 generic map(WIDTH => COEF_BITS+1)
 port map(
   clk => clk,
   resetn => resetn,
   reg_value => data(COEF_BITS downto 0),
-  go => differentiator_go,
-  done => differentiator_done,
-  axi_data => differentiator_data_int,
+  go => dif_go,
+  done => dif_done,
+  axi_data => dif_data_int,
   axi_valid => dif_valid,
   axi_ready => dif_ready
 );
 dif_data 
-	<= resize(differentiator_data_int(COEF_BITS-1 downto 0), COEF_WIDTH);
-dif_last <= differentiator_data_int(COEF_BITS);
+	<= resize(dif_data_int(COEF_BITS-1 downto 0), COEF_WIDTH);
+dif_last <= dif_data_int(COEF_BITS);
 
-differentiator_config_go <= write and address(DIFFERENTIATOR_RELOAD_ADDR_BIT);
-diffConfig:entity work.axi_wr_chan
+dif_config_go <= write and address(DIFFERENTIATOR_CONFIG_ADDR_BIT);
+difConfig:entity work.axi_wr_chan
 generic map(WIDTH => CONFIG_BITS)
 port map(
   clk => clk,
   resetn => resetn,
   reg_value => data(CONFIG_BITS-1 downto 0),
-  go => differentiator_config_go,
-  done => differentiator_config_done,
+  go => dif_config_go,
+  done => dif_config_done,
   axi_data => dif_config_data,
   axi_valid => dif_config_valid,
   axi_ready => dif_config_ready

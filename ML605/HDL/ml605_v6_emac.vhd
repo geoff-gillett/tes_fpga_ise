@@ -19,6 +19,7 @@ use unisim.vcomponents.bufr;
 use unisim.vcomponents.idelayctrl;
 use unisim.vcomponents.iodelaye1;
 use unisim.vcomponents.iddr;
+use unisim.vcomponents.mmcm_adv;
  
 library extensions;
 use extensions.boolean_vector.all;
@@ -131,15 +132,27 @@ constant SPI_CHANNELS:integer:=ADC_CHIPS+1; -- +1 for AD9510
 --------------------------------------------------------------------------------
 -- Components
 --------------------------------------------------------------------------------
-component fmc108_clk_tree
+component fmc_mmcm
 port
-(
-  adc_chip0_clk:in std_logic;
-  signal_clk:out std_logic;
-  io_clk:out std_logic;
+ (-- clock in ports
+  clk_in1:in std_logic;
+  -- clock out ports
+  clk_out1:out std_logic;
+  clk_out2:out std_logic;
+  -- status and control signals
   locked:out std_logic
-);
+ );
 end component;
+
+--component fmc108_clk_tree
+--port
+--(
+--  adc_chip0_clk:in std_logic;
+--  signal_clk:out std_logic;
+--  io_clk:out std_logic;
+--  locked:out std_logic
+--);
+--end component;
 
 component onboard_clk_tree
 port
@@ -177,25 +190,25 @@ signal refclk : std_logic;
 signal onboard_mmcm_locked:std_logic;
 signal idelayctrl_rdy:std_ulogic;
 signal reset_enable:std_logic;
-signal iodelay_inc:ddr_sample_array(ADC_CHANNELS-1 downto 0);
-signal iodelay_ce:ddr_sample_array(ADC_CHANNELS-1 downto 0);
-signal iodelay_clk_inc:std_logic_vector(ADC_CHIPS-1 downto 0);
-signal iodelay_clk_ce:std_logic_vector(ADC_CHIPS-1 downto 0);
+--signal iodelay_inc:ddr_sample_array(ADC_CHANNELS-1 downto 0);
+--signal iodelay_ce:ddr_sample_array(ADC_CHANNELS-1 downto 0);
+--signal iodelay_clk_inc:std_logic_vector(ADC_CHIPS-1 downto 0);
+--signal iodelay_clk_ce:std_logic_vector(ADC_CHIPS-1 downto 0);
 
 signal adc_clk,adc_clk_bufds:std_logic_vector(ADC_CHIPS-1 downto 0);
 signal adc_clk_delayed:std_logic_vector(ADC_CHIPS-1 downto 0);
 
-attribute keep:string;
-attribute keep of reset0:signal is "true";
-attribute keep of reset1:signal is "true";
-attribute keep of reset2:signal is "true";
+--attribute keep:string;
+--attribute keep of reset0:signal is "true";
+--attribute keep of reset1:signal is "true";
+--attribute keep of reset2:signal is "true";
 
 --------------------------------------------------------------------------------
 -- FMC108 signals
 --------------------------------------------------------------------------------
 -- ADC signals
 signal adc_ddr,adc_ddr_delay:ddr_sample_array(ADC_CHANNELS-1 downto 0);
-signal adc_sdr:adc_sample_array(ADC_CHANNELS-1 downto 0);
+signal adc_sdr,adc_reg:adc_sample_array(ADC_CHANNELS-1 downto 0);
 
 signal fifo_reset:std_logic;
 signal fifo_reset_chipclk:std_logic_vector(ADC_CHANNELS-1 downto 0);
@@ -203,6 +216,11 @@ signal fifo_reset_chipclk:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal fifo_valid:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal fifo_rd_en:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal enables_reg:std_logic_vector(ADC_CHANNELS-1 downto 0);
+
+constant ADC_PIPE_DEPTH:integer:=2; 
+type adc_pipeline is array (ADC_PIPE_DEPTH-1 downto 0) 
+	of adc_sample_array(ADC_CHANNELS-1 downto 0);
+signal adc_pipe:adc_pipeline;
 
 signal adc_samples,fifo_dout:adc_sample_array(ADC_CHANNElS-1 downto 0);
 
@@ -366,15 +384,25 @@ end process FMCfunction;
 -- FIXME there could be an issue here whit the FMC not coming up and having no 
 -- IO_clk, io_clk could be derived by the onboard clock but this would have
 -- undefined phase relative to sample_clk, does this break the ethernet cdc?
-
-fmc108mmcm:fmc108_clk_tree
+fmc108mmcm:fmc_mmcm
 port map
-(
-  adc_chip0_clk => adc_clk(0),
-  signal_clk => signal_clk,
-  io_clk => io_clk, --open,
+ (-- Clock in ports
+  clk_in1 => adc_clk(0),
+  -- clock out ports
+  clk_out1 => signal_clk,
+  clk_out2 => io_clk,
+  -- status and control signals
   locked => fmc108_mmcm_locked
 );
+
+--fmc108mmcm:fmc108_clk_tree
+--port map
+--(
+--  adc_chip0_clk => adc_clk(0),
+--  signal_clk => signal_clk,
+--  io_clk => io_clk, --open,
+--  locked => fmc108_mmcm_locked
+--);
     
 onboardmmcm:onboard_clk_tree
 port map
@@ -415,36 +443,36 @@ begin
 end process fmcPres;
 
 -- map iodelay control bits ce and inc
-iodelayControl:process(signal_clk)
-	variable ce:std_logic_vector(ADC_BITS/2-1 downto 0);
-	variable inc:std_logic_vector(ADC_BITS/2-1 downto 0);
-	variable channel_sel:std_logic_vector(ADC_CHANNELS-1 downto 0);
-begin
-	if rising_edge(signal_clk) then
-		
-    ce:=global.iodelay_control(ADC_BITS/2-1 downto 0);
-    inc:=global.iodelay_control(ADC_BITS-1 downto ADC_BITS/2);
-    channel_sel
-    	:=global.iodelay_control(ADC_CHANNELS+ADC_BITS-1 downto ADC_BITS);
-    iodelay_clk_ce <= global.iodelay_control(
-    		ADC_CHIPS+ADC_CHANNELS+ADC_BITS-1 downto
-    		ADC_CHANNELS+ADC_BITS);
-    iodelay_clk_inc <= global.iodelay_control(
-    		2*ADC_CHIPS+ADC_CHANNELS+ADC_BITS-1 downto
-    		ADC_CHIPS+ADC_CHANNELS+ADC_BITS);
-    		
-		for c in ADC_CHANNELS-1 downto 0 loop
-			if channel_sel(c)='1' then
-				iodelay_ce(c) <= ce;
-				iodelay_inc(c) <= inc;
-			else
-				iodelay_ce(c) <= (others => '0');
-				iodelay_inc(c) <= (others  => '0');
-			end if;
-		end loop;
-		--TODO add pipeline here if needed
-	end if;
-end process iodelayControl;
+-- 
+--iodelayControl:process(signal_clk)
+--	variable ce:std_logic_vector(ADC_BITS/2-1 downto 0);
+--	variable inc:std_logic_vector(ADC_BITS/2-1 downto 0);
+--	variable channel_sel:std_logic_vector(ADC_CHANNELS-1 downto 0);
+--begin
+--	if rising_edge(signal_clk) then
+--    ce:=global.iodelay_control(ADC_BITS/2-1 downto 0);
+--    inc:=global.iodelay_control(ADC_BITS-1 downto ADC_BITS/2);
+--    channel_sel
+--    	:=global.iodelay_control(ADC_CHANNELS+ADC_BITS-1 downto ADC_BITS);
+--    iodelay_clk_ce <= global.iodelay_control(
+--    		ADC_CHIPS+ADC_CHANNELS+ADC_BITS-1 downto
+--    		ADC_CHANNELS+ADC_BITS);
+--    iodelay_clk_inc <= global.iodelay_control(
+--    		2*ADC_CHIPS+ADC_CHANNELS+ADC_BITS-1 downto
+--    		ADC_CHIPS+ADC_CHANNELS+ADC_BITS);
+--    		
+--		for c in ADC_CHANNELS-1 downto 0 loop
+--			if channel_sel(c)='1' then
+--				iodelay_ce(c) <= ce;
+--				iodelay_inc(c) <= inc;
+--			else
+--				iodelay_ce(c) <= (others => '0');
+--				iodelay_inc(c) <= (others  => '0');
+--			end if;
+--		end loop;
+--		--TODO add pipeline here if needed
+--	end if;
+--end process iodelayControl;
 
 -- input buffers and iodelays for the ADC chip clocks
 -- TODO should there be an iodelay for adc_chip_clk(0)? it drives the MMCM
@@ -472,13 +500,13 @@ begin
     cntvalueout => open,
     dataout => adc_clk_delayed(chip),
     c => signal_clk,
-    ce => iodelay_clk_ce(chip),
+    ce => '0',--iodelay_clk_ce(chip),
     cinvctrl => '0',
     clkin => '0',
     cntvaluein => to_std_logic(to_unsigned(DEFAULT_IODELAY_VALUE,5)),
     datain => '0',
     idatain => adc_clk_bufds(chip),
-    inc => iodelay_clk_inc(chip),
+    inc => '0',--iodelay_clk_inc(chip),
     odatain => '0',
     rst => '0',
     t => '1'
@@ -536,13 +564,13 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
         cntvalueout => open,
         dataout => adc_ddr_delay(chip*ADC_CHIP_CHANNELS+chan)(bit),
         c => signal_clk,
-        ce => iodelay_ce(chip*ADC_CHIP_CHANNELS+chan)(bit),
+        ce => '0', --iodelay_ce(chip*ADC_CHIP_CHANNELS+chan)(bit),
         cinvctrl => '0',
         clkin => '0',
         cntvaluein => to_std_logic(to_unsigned(DEFAULT_IODELAY_VALUE,5)),
         datain => '0',
         idatain => adc_ddr(chip*ADC_CHIP_CHANNELS+chan)(bit),
-        inc => iodelay_inc(chip*ADC_CHIP_CHANNELS+chan)(bit),
+        inc => '0',--iodelay_inc(chip*ADC_CHIP_CHANNELS+chan)(bit),
         odatain => '0',
         rst => '0',
         t => '1'
@@ -560,7 +588,6 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
           r => '0',
           s => '0'
         );
-        
     end generate ddrBit;
     
     -- this fifo crosses from the individual chip clk domains the the common 
@@ -570,7 +597,7 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
       wr_clk => adc_clk(chip),
       rst => fifo_reset_chipclk(chip),
       rd_clk => signal_clk,
-      din => adc_sdr(chip*ADC_CHIP_CHANNELS+chan),
+      din => adc_reg(chip*ADC_CHIP_CHANNELS+chan),
       wr_en => '1',
       rd_en => fifo_rd_en(chip*ADC_CHIP_CHANNELS+chan),
       dout => fifo_dout(chip*ADC_CHIP_CHANNELS+chan),
@@ -581,14 +608,28 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
     -- register the fifo douts and fifo_valid (not empty)
     cdcfifoReg:process(signal_clk)
     begin
-      if rising_edge(signal_clk) then
-        adc_samples(chip*ADC_CHIP_CHANNELS+chan) 
-        	<= fifo_dout(chip*ADC_CHIP_CHANNELS+chan);
+    	if rising_edge(signal_clk) then
+        adc_reg(chip*ADC_CHIP_CHANNELS+chan) 
+        	<= adc_sdr(chip*ADC_CHIP_CHANNELS+chan);
         fifo_valid <= not fifo_empty;
       end if;
     end process cdcfifoReg;
     
   end generate chan;
+  
+  adcPipe:process(signal_clk)
+  begin
+  	if rising_edge(signal_clk) then
+  		if reset0 = '1' then
+  			adc_pipe <= (others => (others => (others => '0')));
+  		else
+  			adc_pipe(0) <= fifo_dout;
+  			adc_pipe(ADC_PIPE_DEPTH-1 downto 1) 
+  				<= adc_pipe(ADC_PIPE_DEPTH-2 downto 0);
+  		end if;
+  	end if;
+  end process adcPipe;
+  adc_samples <= adc_pipe(ADC_PIPE_DEPTH-1);
   
  	resetSync:entity tes.sync_2FF
   generic map(
@@ -619,7 +660,9 @@ begin
       else
         fifo_reset <= '0';
         if fifo_valid=enables_reg then 
-            fifo_rd_en <= enables_reg;
+        	fifo_rd_en <= enables_reg;
+        else
+        	fifo_rd_en <= (others  => '0'); 
         end if;
       end if;
     end if;
