@@ -54,9 +54,10 @@ type frame_buffer is array (0 to 2**ADDRESS_BITS-1) of streamvector_t;
 shared variable frame_ram:frame_buffer:=(others => (others => '0'));
 signal input_word,ram_dout,ram_data,stream_vector:streamvector_t;
 signal we:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal rd_ptr,wr_addr,wr_ptr:unsigned(ADDRESS_BITS-1 downto 0);
+signal rd_ptr,wr_addr,wr_ptr,wr_ptr_1:unsigned(ADDRESS_BITS-1 downto 0);
 signal free_ram:unsigned(ADDRESS_BITS-1 downto 0);
 signal read_ram,read_en:boolean;
+signal empty:boolean;
 --signal wr_valid_int:boolean;
 begin
 free <= free_ram;
@@ -99,17 +100,17 @@ end if;
 end process framePortB;
 
 ramPointers:process(clk)
-variable empty:boolean;
+--variable empty:boolean;
 begin
 if rising_edge(clk) then
   if reset = '1' then
     wr_addr <= (others => '-');
     rd_ptr <= (others => '0');
     wr_ptr <= (others => '0');
+    wr_ptr_1 <= (others => '1');
     free_ram <= (others => '1');
   else
   	
-  	empty:=rd_ptr=wr_ptr;	
     if to_0ifX(free_ram) > ('0' & to_0IfX(address)) then
       we <= chunk_we;
     else
@@ -121,12 +122,16 @@ if rising_edge(clk) then
     if commit then 
       if ('0' & to_0IfX(length)) <= to_0IfX(free_ram) then
       	wr_ptr <= wr_ptr + length;
+      	wr_ptr_1 <= wr_ptr_1 + length;
       	--free_ram <= free_ram - length + to_unsigned(read_en and read_ram);
       end if;
     end if;
     
-    if not empty and read_en and read_ram then
-      rd_ptr <= rd_ptr + 1;
+    if not empty and read_ram then
+    	empty <= rd_ptr = wr_ptr_1;
+    	rd_ptr <= rd_ptr + 1;
+    else
+    	empty <= rd_ptr = wr_ptr;
     end if;
   end if;
 end if;
@@ -135,7 +140,7 @@ end process ramPointers;
 --------------------------------------------------------------------------------
 -- Streaming interface 
 --------------------------------------------------------------------------------
-read_en <= rd_ptr /= wr_ptr;
+read_en <= not empty;
 serialiser:entity work.serialiser
 generic map(
   LATENCY => LATENCY,
