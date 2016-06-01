@@ -186,7 +186,7 @@ end component adc_fifo;
 signal global_reset_IO_clk,IO_clk,signal_clk,axi_clk:std_logic;
 signal reset0,reset1,reset2,fmc108_MMCM_locked:std_logic;
 
-signal refclk : std_logic;
+signal refclk:std_logic;
 signal onboard_mmcm_locked:std_logic;
 signal idelayctrl_rdy:std_ulogic;
 signal reset_enable:std_logic;
@@ -197,11 +197,6 @@ signal reset_enable:std_logic;
 
 signal adc_clk,adc_clk_bufds:std_logic_vector(ADC_CHIPS-1 downto 0);
 signal adc_clk_delayed:std_logic_vector(ADC_CHIPS-1 downto 0);
-
---attribute keep:string;
---attribute keep of reset0:signal is "true";
---attribute keep of reset1:signal is "true";
---attribute keep of reset2:signal is "true";
 
 --------------------------------------------------------------------------------
 -- FMC108 signals
@@ -217,13 +212,17 @@ signal fifo_valid:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal fifo_rd_en:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal enables_reg:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
-constant ADC_PIPE_DEPTH:integer:=2; 
+constant ADC_PIPE_DEPTH:integer:=3; 
 type adc_pipeline is array (ADC_PIPE_DEPTH-1 downto 0) 
 	of adc_sample_array(ADC_CHANNELS-1 downto 0);
-signal adc_pipe:adc_pipeline;
+signal adc_dout_pipe,adc_pipe:adc_pipeline;
 
 signal adc_samples,fifo_dout:adc_sample_array(ADC_CHANNElS-1 downto 0);
 
+type input_sel_array is array (DSP_CHANNELS-1 downto 0) of
+	boolean_vector(ADC_CHANNELS-1 downto 0);
+signal input_selects:input_sel_array;
+	
 signal fifo_empty:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
 signal FMC_present:std_logic;
@@ -597,7 +596,7 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
       wr_clk => adc_clk(chip),
       rst => fifo_reset_chipclk(chip),
       rd_clk => signal_clk,
-      din => adc_reg(chip*ADC_CHIP_CHANNELS+chan),
+      din => adc_pipe(ADC_PIPE_DEPTH-1)(chip*ADC_CHIP_CHANNELS+chan),
       wr_en => '1',
       rd_en => fifo_rd_en(chip*ADC_CHIP_CHANNELS+chan),
       dout => fifo_dout(chip*ADC_CHIP_CHANNELS+chan),
@@ -605,31 +604,28 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
       empty => fifo_empty(chip*ADC_CHIP_CHANNELS+chan)
     );
     
-    -- register the fifo douts and fifo_valid (not empty)
-    cdcfifoReg:process(signal_clk)
-    begin
-    	if rising_edge(signal_clk) then
-        adc_reg(chip*ADC_CHIP_CHANNELS+chan) 
-        	<= adc_sdr(chip*ADC_CHIP_CHANNELS+chan);
-        fifo_valid <= not fifo_empty;
-      end if;
-    end process cdcfifoReg;
-    
   end generate chan;
   
-  adcPipe:process(signal_clk)
+  adcPipelining:process(signal_clk)
   begin
   	if rising_edge(signal_clk) then
   		if reset0 = '1' then
+  			-- pipe on output side of FIFO
+  			adc_dout_pipe <= (others => (others => (others => '0')));
+  			-- pipe on input side of FIFO
   			adc_pipe <= (others => (others => (others => '0')));
   		else
-  			adc_pipe(0) <= fifo_dout;
+        fifo_valid <= not fifo_empty;
+  			adc_dout_pipe(0) <= fifo_dout;
+  			adc_dout_pipe(ADC_PIPE_DEPTH-1 downto 1) 
+  				<= adc_dout_pipe(ADC_PIPE_DEPTH-2 downto 0);
+  			adc_pipe(0) <= adc_sdr;
   			adc_pipe(ADC_PIPE_DEPTH-1 downto 1) 
   				<= adc_pipe(ADC_PIPE_DEPTH-2 downto 0);
   		end if;
   	end if;
-  end process adcPipe;
-  adc_samples <= adc_pipe(ADC_PIPE_DEPTH-1);
+  end process adcPipelining;
+  adc_samples <= adc_dout_pipe(ADC_PIPE_DEPTH-1);
   
  	resetSync:entity tes.sync_2FF
   generic map(
@@ -673,6 +669,7 @@ end process adcEnable;
 -- processing channels
 --------------------------------------------------------------------------------
 tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
+
 
 	registers:entity tes.channel_registers
   generic map(
@@ -745,6 +742,19 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     delay => to_integer(channel_registers(c).capture.delay),
     delayed => adc_delayed(c)
   );
+
+--  inputSel:entity tes.input_sel
+--  generic map(
+--    CHANNELS => CHANNELS,
+--    PIPE_DEPTH => 2
+--  )
+--  port map(
+--    clk => signal_clk,
+--    reset => reset0,
+--    inputs => fifo_dout,
+--    sel => channel_registers(c).capture.adc_select,
+--    output => adc_samples(c)
+--  );
 
 	measurement:entity tes.measurement_unit
   generic map(

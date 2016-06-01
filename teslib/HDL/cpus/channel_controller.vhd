@@ -82,9 +82,9 @@ uart_tx <= serial_out_reg;
 --
 picoblaze:entity work.kcpsm6
 generic map(
-  hwbuild => X"42",
-  interrupt_vector => X"7FF",
-  scratch_pad_memory_size => 64)
+  HWBUILD => X"42",
+  INTERRUPT_VECTOR => X"7FF",
+  SCRATCH_PAD_MEMORY_SIZE => 64)
 port map(
   address => program_counter,
   instruction => instruction,
@@ -207,9 +207,6 @@ in_port <= uart_rx_byte when port_id(UART_IO_PORTID_BIT)='1'
                         else (STATUS_TX_NOTEMPTY_BIT => tx_not_empty,
                               STATUS_TX_FULL_BIT => tx_full,
                               STATUS_RX_NOTEMPTY_BIT => rx_not_empty,
-                              --STATUS_AXIS_READY_BIT => to_std_logic(axis_ready),
-                              --STATUS_AXIS_DONE_BIT => to_std_logic(axis_done),
-                              --STATUS_AXIS_ERROR_BIT => to_std_logic(axis_error),
                               others => '-') 
                         when port_id(STATUS_IN_PORTID_BIT)='1'
                         else (RESP_AXIS_DONE_BIT => axis_done,

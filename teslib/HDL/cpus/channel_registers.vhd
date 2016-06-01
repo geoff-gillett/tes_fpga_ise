@@ -153,7 +153,7 @@ if rising_edge(clk) then
 		reg.capture.trace0 <= DEFAULT_TRACE0;
 		reg.capture.trace1 <= DEFAULT_TRACE1;
 		reg.capture.delay <= DEFAULT_DELAY;
-		reg.capture.input_sel <= (CHANNEL => '1',others => '0');
+		reg.capture.adc_select <= (CHANNEL => '1',others => '0');
   else
     if write='1' then
       if address(DELAY_ADDR_BIT)='1' then
@@ -211,7 +211,7 @@ if rising_edge(clk) then
         reg.baseline.subtraction <= to_boolean(data(4));
       end if;
       if address(INPUT_SEL_ADDR_BIT)='1' then
-      	reg.capture.input_sel <= data(CHANNELS-1 downto 0);
+      	reg.capture.adc_select <= data(CHANNELS-1 downto 0);
       	reg.capture.invert <= data(CHANNELS)='1';
       end if;
       if address(FILTER_CONFIG_ADDR_BIT)='1' then
@@ -245,7 +245,7 @@ reg_data(BL_COUNT_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.baseline.count_threshold,AXI_DATA_BITS));
 reg_data(BL_FLAGS_ADDR_BIT) <= baseline_flags(reg.baseline);
 reg_data(INPUT_SEL_ADDR_BIT) <= resize(to_std_logic(reg.capture.invert) & 
-			 														reg.capture.input_sel,AXI_DATA_BITS
+			 														reg.capture.adc_select,AXI_DATA_BITS
 		 														);
 
 selGen:for b in AXI_DATA_BITS-1 downto 0 generate

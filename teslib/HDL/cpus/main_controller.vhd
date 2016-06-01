@@ -138,7 +138,6 @@ signal serial_in_reg:std_logic;
 signal uart_reset_tx:std_logic;
 signal uart_reset_rx:std_logic;
 --
-signal test_regs:std_logic_vector(7 downto 0):=(others => '0');
 signal spi_ce_n_int:std_logic_vector(SPI_CHANNELS-1 downto 0):=(others => '1');
 signal spi_clk_int:std_logic;
 signal uart_reset_tx_int:std_logic;

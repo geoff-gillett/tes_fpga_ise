@@ -195,7 +195,7 @@ type capture_registers_t is record
 	trace0:trace_d;
 	trace1:trace_d;
 	delay:unsigned(DELAY_BITS-1 downto 0);
-	input_sel:std_logic_vector(CHANNELS-1 downto 0);
+	adc_select:std_logic_vector(CHANNELS-1 downto 0);
 	invert:boolean;
 end record;
 

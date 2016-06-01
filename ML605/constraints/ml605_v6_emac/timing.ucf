@@ -17,17 +17,17 @@ NET "cpu/reset*" TIG;
 
 INST tesChannel[?].cpu TNM = "channel_cpu";
 INST tesChannel[?].registers TNM = "channel_reg";
-TIMESPEC TS_channel_reg2cpu = FROM "channel_reg" TO "channel_cpu" 8 ns;
-TIMESPEC TS_channel_cpu2reg = FROM "channel_cpu" TO "channel_reg" 8 ns;
-PIN "tesChannel[?].cpu/reg_write" TNM = "channel_write";
-TIMESPEC TS_channel_write = FROM "channel_write" 8 ns;
+TIMESPEC TS_channel_reg2cpu = FROM "channel_reg" TO "channel_cpu" 12 ns;
+TIMESPEC TS_channel_cpu2reg = FROM "channel_cpu" TO "channel_reg" 12 ns;
+NET "tesChannel[?].cpu/reg_write" TNM = "channel_write";
+TIMESPEC TS_channel_write = FROM "channel_write" 12 ns;
 
 INST cpu TNM = "main_cpu";
 INST registers TNM = "main_reg";
-TIMESPEC TS_main_reg2cpu = FROM "main_reg" TO "main_cpu" 8 ns;
-TIMESPEC TS_main_cpu2reg = FROM "main_cpu" TO "main_reg" 8 ns;
+TIMESPEC TS_main_reg2cpu = FROM "main_reg" TO "main_cpu" 16 ns;
+TIMESPEC TS_main_cpu2reg = FROM "main_cpu" TO "main_reg" 16 ns;
 PIN "cpu/reg_write" TNM = "main_write";
-TIMESPEC TS_main_write = FROM "main_write" 8 ns;
+TIMESPEC TS_main_write = FROM "main_write" 12 ns;
 
 # FROM chan reg to CPU
 #NET "tesChannel[?].cpu/reg_value[?]" TNM_NET = "chan_value";
@@ -44,8 +44,8 @@ TIMESPEC TS_main_write = FROM "main_write" 8 ns;
 #NET "registers/address[?]" TNM_NET = "main_address";
 #NET "regWriteSync/input" TNM_NET = "main_write";
 
-TIMEGRP "chan_reg_cdc" = "chan_value" "chan_axis" "chan_data" "chan_address" "chan_write";
-TIMESPEC TS_chan_reg_cdc = TO "chan_reg_cdc" 12 ns;
+#TIMEGRP "chan_reg_cdc" = "chan_value" "chan_axis" "chan_data" "chan_address" "chan_write";
+#TIMESPEC TS_chan_reg_cdc = TO "chan_reg_cdc" 12 ns;
 
 #TIMEGRP "main_reg_cdc" = "main_value" "main_data" "main_address" "main_write";
 #TIMESPEC TS_main_reg_cdc = TO "main_reg_cdc" 12 ns;

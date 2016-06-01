@@ -15,6 +15,7 @@ use ieee.numeric_std.all;
 
 library extensions;
 use extensions.boolean_vector.all;
+use extensions.logic.all;
 
 --use work.protocol.all;
 use work.registers.all;
@@ -43,7 +44,6 @@ constant CHANNELS:integer:= 2**CHANNEL_BITS;
 type input_array is array (natural range <>) 
 										of std_logic_vector(CHANNELS-1 downto 0);
 signal inputs:input_array(MCA_VALUE_BITS-1 downto 0);
-signal unused:std_logic_vector(12-CHANNELS-1 downto 0):=(others => '0');
 signal valid_int:std_logic;
 signal value_int:signed(VALUE_BITS-1 downto 0);
 
@@ -57,16 +57,16 @@ begin
 	end generate;
 	selector:entity work.select_1of12
 		port map(
-			input => unused & inputs(b),
-			sel => unused & channel_select,
+			input => resize(inputs(b), 12),
+			sel => resize(channel_select, 12),
 			output => value_int(b)
 		);
 end generate;
 
 validSelector:entity work.select_1of12
 port map(
-  input => unused & to_std_logic(valids),
-  sel => unused & channel_select,
+  input => resize(to_std_logic(valids), 12),
+  sel => resize(channel_select, 12),
   output => valid_int
 );
 
