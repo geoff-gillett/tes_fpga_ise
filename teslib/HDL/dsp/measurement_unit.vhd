@@ -728,13 +728,13 @@ port map(
 
 rawCDFdelay:entity work.RAM_delay
 generic map(
-  DEPTH     => CFD_DELAY_DEPTH,
+  DEPTH => CFD_DELAY_DEPTH,
   DATA_BITS => WIDTH
 )
 port map(
-  clk     => clk,
+  clk => clk,
   data_in => to_std_logic(stage1_input),
-  delay   => CFD_DELAY+FIR_DELAY,
+  delay => CFD_DELAY+FIR_DELAY,
   delayed => raw_cfd_delay
 );
 
@@ -1624,140 +1624,147 @@ end process traceEventFSMtransition;
 --------------------------------------------------------------------------------
 framer_overflow <= frame_overflow;
 
-framerCtlMux:process(capture_cfd,trace_state,pulse_state,area_event_we,
-	commit_area_event,commit_peak_event,header_valid,peak_event_we,pulse_header,
-	pulse_peak_clear_addr,pulse_peak_bus_mux,pulse_peak_we_mux,trace_address,
-	trace_done,trace_header,trace_peak_clear_addr,trace_peak_bus_mux,
-	trace_peak_we_mux,trace_reg,pulse_peak_last,area_event,peak_event,
-	pulse_peak_addr,trace_peak_addr,peaks_full,last_pulse_peak_addr
-)
+--FIXME this needs to be registered
+
+framerCtlMux:process(clk)
 begin
-	case capture_cfd.detection is
-	when PEAK_DETECTION_D =>
-		commit_frame <= commit_peak_event;
-		frame_word <= to_streambus(peak_event,ENDIANNESS);
-		frame_address <= (others => '0');
-		frame_length <= (0 => '1', others => '0');
-		frame_we <= peak_event_we;
-		
-	when AREA_DETECTION_D =>
-		commit_frame <= commit_area_event;
-		frame_word <= to_streambus(area_event,ENDIANNESS);
-		frame_address <= (others => '0');
-		frame_length <= (0 => '1', others => '0');
-		frame_we <= area_event_we;
-		
-	when PULSE_DETECTION_D =>
-		case pulse_state is
-		when IDLE =>
-      commit_frame <= FALSE;
-      frame_word.data <= (others => '-');
-      frame_word.discard <= (others => FALSE);
-      frame_word.last <= (others => FALSE);
-      frame_address <= (others => '-');
-      frame_length <= (others => '-');
-      frame_we <= (others => FALSE);
-      
-		when PEAKS =>
-      commit_frame <= FALSE;
-      frame_word <= pulse_peak_bus_mux; 
-      frame_address <= pulse_peak_addr;
-      if peaks_full then
-      	frame_we <= (others => FALSE);
-      else
-      	frame_we <= pulse_peak_we_mux;
-      end if;
-      frame_length <= (others => '-');
-			
-		when HEADER0 =>
-      commit_frame <= FALSE;
-      frame_word <= to_streambus(pulse_header,0,ENDIANNESS);
-      frame_address <= (others => '0');
-      frame_we <= (others => header_valid);
-      frame_length <= (others => '-');
-      
-		when HEADER1 =>
-      commit_frame <= TRUE;
-      frame_word <= to_streambus(pulse_header,1,ENDIANNESS);
-      frame_address <= (0 => '1', others => '0');
-      frame_we <= (others => TRUE);
-      frame_length <= last_pulse_peak_addr + 1;
-      
-		when CLEAR =>
-      commit_frame <= FALSE;
-      frame_word.data <= (others => '-');
-      frame_word.discard <= (others => FALSE);
-      frame_word.last <= (0 => pulse_peak_last, others => FALSE);
-      frame_address <= pulse_peak_clear_addr;
-      frame_we <= (others => TRUE);
-      frame_length <= (others => '-');
-		end case;	
-		
-	when TRACE_DETECTION_D =>
-		case trace_state is
-		when IDLE =>
-      commit_frame <= FALSE;
-      frame_word.data <= (others => '-');
-      frame_word.discard <= (others => FALSE);
-      frame_word.last <= (others => FALSE);
-      frame_address <= (others => '-');
-      frame_length <= (others => '-');
-      frame_we <= (others => FALSE);
-			
-		when HEADER0 =>
-      commit_frame <= FALSE;
-      frame_word <= to_streambus(trace_header,0,ENDIANNESS);
-      frame_address <= (others => '0');
-      frame_we <= (others => header_valid);
-      frame_length <= (others => '-');
-      
-		when HEADER1 =>
-      commit_frame <= FALSE;
-      frame_word <= to_streambus(trace_header,1,ENDIANNESS);
-      frame_address <= (0 => '1',others => '0');
-      frame_we <= (others => TRUE);
-      frame_length <= (others => '-');
-      
-		when HEADER2 =>
-      commit_frame <= TRUE;
-      frame_word <= to_streambus(trace_header,2,ENDIANNESS);
-      frame_address <= (1 => '1',others => '0');
-      frame_we <= (others => TRUE);
-      frame_length <= trace_address;
-      
-		when PEAKS =>
-      commit_frame <= FALSE;
-      frame_word <= trace_peak_bus_mux; 
-      frame_address <= trace_peak_addr;
-      if peaks_full then
-      	frame_we <= (others => FALSE);
-      else
-      	frame_we <= trace_peak_we_mux;
-      end if;
-      frame_length <= (others => '-');
-      
-		when TRACE =>
+	if rising_edge(clk) then
+		if reset='1' then
 			commit_frame <= FALSE;
-      frame_word <= to_streambus(trace_reg,
-      	(others => FALSE), 
-        (0 => trace_done, others => FALSE)
-      ); 
-      frame_address <= trace_address;
-      frame_we <= (others => TRUE);
-      frame_length <= (others => '-');
-      
-		when CLEAR =>
-      commit_frame <= FALSE;
-      frame_word.data <= (others => '-');
-      frame_word.discard <= (others => FALSE);
-      frame_word.last <= (others => FALSE);
-      frame_address <= trace_peak_clear_addr;
-      frame_we <= (others => TRUE);
-      frame_length <= (others => '-');
-      
-		end case;
-	end case;
-	
+			frame_word.data <= (others => '-');
+			frame_word.last <= (others => FALSE);
+			frame_word.discard <= (others => FALSE);
+			frame_address <= (others => '-');
+			frame_length <= (others => '-');
+			frame_we <= (others => FALSE);
+		else
+      case capture_cfd.detection is
+      when PEAK_DETECTION_D =>
+        commit_frame <= commit_peak_event;
+        frame_word <= to_streambus(peak_event,ENDIANNESS);
+        frame_address <= (others => '0');
+        frame_length <= (0 => '1', others => '0');
+        frame_we <= peak_event_we;
+        
+      when AREA_DETECTION_D =>
+        commit_frame <= commit_area_event;
+        frame_word <= to_streambus(area_event,ENDIANNESS);
+        frame_address <= (others => '0');
+        frame_length <= (0 => '1', others => '0');
+        frame_we <= area_event_we;
+        
+      when PULSE_DETECTION_D =>
+        case pulse_state is
+        when IDLE =>
+          commit_frame <= FALSE;
+          frame_word.data <= (others => '-');
+          frame_word.discard <= (others => FALSE);
+          frame_word.last <= (others => FALSE);
+          frame_address <= (others => '-');
+          frame_length <= (others => '-');
+          frame_we <= (others => FALSE);
+          
+        when PEAKS =>
+          commit_frame <= FALSE;
+          frame_word <= pulse_peak_bus_mux; 
+          frame_address <= pulse_peak_addr;
+          if peaks_full then
+            frame_we <= (others => FALSE);
+          else
+            frame_we <= pulse_peak_we_mux;
+          end if;
+          frame_length <= (others => '-');
+          
+        when HEADER0 =>
+          commit_frame <= FALSE;
+          frame_word <= to_streambus(pulse_header,0,ENDIANNESS);
+          frame_address <= (others => '0');
+          frame_we <= (others => header_valid);
+          frame_length <= (others => '-');
+          
+        when HEADER1 =>
+          commit_frame <= TRUE;
+          frame_word <= to_streambus(pulse_header,1,ENDIANNESS);
+          frame_address <= (0 => '1', others => '0');
+          frame_we <= (others => TRUE);
+          frame_length <= last_pulse_peak_addr + 1;
+          
+        when CLEAR =>
+          commit_frame <= FALSE;
+          frame_word.data <= (others => '-');
+          frame_word.discard <= (others => FALSE);
+          frame_word.last <= (0 => pulse_peak_last, others => FALSE);
+          frame_address <= pulse_peak_clear_addr;
+          frame_we <= (others => TRUE);
+          frame_length <= (others => '-');
+        end case;	
+        
+      when TRACE_DETECTION_D =>
+        case trace_state is
+        when IDLE =>
+          commit_frame <= FALSE;
+          frame_word.data <= (others => '-');
+          frame_word.discard <= (others => FALSE);
+          frame_word.last <= (others => FALSE);
+          frame_address <= (others => '-');
+          frame_length <= (others => '-');
+          frame_we <= (others => FALSE);
+          
+        when HEADER0 =>
+          commit_frame <= FALSE;
+          frame_word <= to_streambus(trace_header,0,ENDIANNESS);
+          frame_address <= (others => '0');
+          frame_we <= (others => header_valid);
+          frame_length <= (others => '-');
+          
+        when HEADER1 =>
+          commit_frame <= FALSE;
+          frame_word <= to_streambus(trace_header,1,ENDIANNESS);
+          frame_address <= (0 => '1',others => '0');
+          frame_we <= (others => TRUE);
+          frame_length <= (others => '-');
+          
+        when HEADER2 =>
+          commit_frame <= TRUE;
+          frame_word <= to_streambus(trace_header,2,ENDIANNESS);
+          frame_address <= (1 => '1',others => '0');
+          frame_we <= (others => TRUE);
+          frame_length <= trace_address;
+          
+        when PEAKS =>
+          commit_frame <= FALSE;
+          frame_word <= trace_peak_bus_mux; 
+          frame_address <= trace_peak_addr;
+          if peaks_full then
+            frame_we <= (others => FALSE);
+          else
+            frame_we <= trace_peak_we_mux;
+          end if;
+          frame_length <= (others => '-');
+          
+        when TRACE =>
+          commit_frame <= FALSE;
+          frame_word <= to_streambus(trace_reg,
+            (others => FALSE), 
+            (0 => trace_done, others => FALSE)
+          ); 
+          frame_address <= trace_address;
+          frame_we <= (others => TRUE);
+          frame_length <= (others => '-');
+          
+        when CLEAR =>
+          commit_frame <= FALSE;
+          frame_word.data <= (others => '-');
+          frame_word.discard <= (others => FALSE);
+          frame_word.last <= (others => FALSE);
+          frame_address <= trace_peak_clear_addr;
+          frame_we <= (others => TRUE);
+          frame_length <= (others => '-');
+          
+        end case;
+      end case;
+    end if;
+  end if;
 end process framerCtlMux;
 
 dump_int <= frame_overflow or area_dump or cfd_error_int;

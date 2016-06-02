@@ -423,91 +423,61 @@ begin
 	end case;
 end process arbiterFSMtransition;
 
-event_frame_full <= frame_free < frame_size;
+--FIXME need registered output
+event_frame_full <= frame_free < to_0ifX(frame_size);
 frameFSMtransition:process(frame_state,arbiter_nextstate,arbiter_state,
 													 framer_ready,mca_s_valid,flush_events,
 												   event_s_valid,frame_free,event_frame_full,
 												   mca_s.last(0),event_s.last(0),event_head,
 												   event_s_type,event_s_size,frame_size,
-												   header.frame_type,frame_address,header,mca_s.data,
-												   mca_s.last,last_frame_address,last_frame_word,
-												   event_s.data)
+												   header.frame_type,header,mca_s.last)
 begin
-	frame_nextstate <= frame_state;
-  framer_address <= frame_address; 
-  framer_word.data <= (others => '-');
-  framer_word.last <= (others => FALSE);
-  framer_word.discard <= (others => FALSE);
-  framer_we <= (others => FALSE); 
-  inc_address <= FALSE;
 	case frame_state is 
 	when IDLE =>
 		if arbiter_nextstate /= IDLE then
 			frame_nextstate <= HEADER0;
 		end if;	
 	when HEADER0 =>
-		framer_word <= to_streambus(header,0,ENDIANNESS);
-		framer_we <= (others => framer_ready);
-		inc_address <= framer_ready;
 		if framer_ready then
 			frame_nextstate <= HEADER1;
 		end if;
 	when HEADER1 =>
-		framer_word <= to_streambus(header,1,ENDIANNESS);
-		framer_we <= (others => framer_ready);
-		inc_address <= framer_ready;
 		if framer_ready then
 			frame_nextstate <= HEADER2;
 		end if;
 	when HEADER2 =>
-		framer_word <= to_streambus(header,2,ENDIANNESS);
-		framer_we <= (others => framer_ready);
-		inc_address <= framer_ready;
 		if framer_ready then
 			frame_nextstate <= PAYLOAD;
 		end if;
 	when PAYLOAD =>
 		if arbiter_state=MCA then
-			
-      framer_word.data <= mca_s.data;
-      framer_we <= (others => mca_s_valid and framer_ready);
-      inc_address <= mca_s_valid and framer_ready;
     	if mca_s_valid and framer_ready then 
         if frame_free=0 or flush_events or mca_s.last(0) then
         	frame_nextstate <= LENGTH;
-        	framer_word.last(0) <= TRUE;
         end if;
       end if;
       
     else -- must be event
     	
-	    framer_word.data <= event_s.data;
       if event_head and 
-      		(event_s_type/=header.frame_type or event_s_size/=frame_size) then
+      		(event_s_type/=header.frame_type or 
+      			event_s_size/=to_0ifX(frame_size)
+      		) then
       	-- Want to keep one type and size in a frame so when it arrives at the 
       	-- the buffer can be addressed as a array
         frame_nextstate <= TERMINATE;
       elsif event_s_valid then 
       	if event_frame_full then
       		if event_s.last(0) then
-      			framer_word.last(0) <= TRUE;
-      			framer_we <= (others => framer_ready);
-      			inc_address <= framer_ready;
 						if framer_ready then
 							frame_nextstate <= LENGTH;
 						end if;
 					elsif event_head then
 						frame_nextstate <= TERMINATE;	
-					else
-						framer_we <= (others => framer_ready);
-						inc_address <= framer_ready;
 					end if;
 				else
-          framer_we <= (others => framer_ready);
-          inc_address <= framer_ready;
 					if header.frame_type.detection=TRACE_DETECTION_D or 
 							header.frame_type.tick then
-						framer_word.last(0) <= event_s.last(0);
 						if event_s.last(0) and framer_ready then
 							frame_nextstate <= LENGTH;
 						end if;
@@ -520,23 +490,94 @@ begin
       end if;
     end if;
 	when TERMINATE =>  -- write last
-		framer_word <= last_frame_word;
-		framer_address <= last_frame_address;
-		framer_we <= (others => TRUE);
     frame_nextstate <= LENGTH;
 	when LENGTH => -- commit frame
-		framer_address <= (0 => '1', others => '0');
-		framer_word.data(CHUNK_DATABITS-1 downto 0) 
-			<= set_endianness(
-				shift_left(resize(frame_address, CHUNK_DATABITS),3),
-				ENDIANNESS
-			);
-		framer_word.discard <= (others => FALSE);
-		framer_word.last <= (others => FALSE);
-		framer_we <= (0 => TRUE, others => FALSE);
     frame_nextstate <= IDLE;
 	end case;
 end process frameFSMtransition;
+
+frameFSMoutput:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset='1' then
+      framer_word.data <= (others => '-');
+      framer_word.last <= (others => FALSE);
+      framer_word.discard <= (others => FALSE);
+      framer_we <= (others => FALSE); 
+      inc_address <= FALSE;
+		else
+      case frame_state is 
+      when IDLE =>
+      	null;
+      when HEADER0 =>
+        framer_word <= to_streambus(header,0,ENDIANNESS);
+        framer_we <= (others => framer_ready);
+        inc_address <= framer_ready;
+      when HEADER1 =>
+        framer_word <= to_streambus(header,1,ENDIANNESS);
+        framer_we <= (others => framer_ready);
+        inc_address <= framer_ready;
+      when HEADER2 =>
+        framer_word <= to_streambus(header,2,ENDIANNESS);
+        framer_we <= (others => framer_ready);
+        inc_address <= framer_ready;
+      when PAYLOAD =>
+        if arbiter_state=MCA then
+          
+          framer_word.data <= mca_s.data;
+          framer_we <= (others => mca_s_valid and framer_ready);
+          inc_address <= mca_s_valid and framer_ready;
+          if mca_s_valid and framer_ready then 
+            if frame_free=0 or flush_events or mca_s.last(0) then
+              framer_word.last(0) <= TRUE;
+            end if;
+          end if;
+          
+        else -- must be event
+          
+          if event_head and 
+          	(event_s_type/=header.frame_type or 
+          		event_s_size/=to_0ifX(frame_size)
+          	) then
+          	null;
+          elsif event_s_valid then 
+            if event_frame_full then
+              if event_s.last(0) then
+                framer_word.last(0) <= TRUE;
+                framer_we <= (others => framer_ready);
+                inc_address <= framer_ready;
+              elsif event_head then
+              else
+                framer_we <= (others => framer_ready);
+                inc_address <= framer_ready;
+              end if;
+            else
+              framer_we <= (others => framer_ready);
+              inc_address <= framer_ready;
+              if header.frame_type.detection=TRACE_DETECTION_D or 
+                  header.frame_type.tick then
+                framer_word.last(0) <= event_s.last(0);
+              end if;
+            end if;
+          else
+          end if;
+        end if;
+      when TERMINATE =>  -- write last
+        framer_word <= last_frame_word;
+        framer_address <= last_frame_address;
+        framer_we <= (others => TRUE);
+      when LENGTH => -- commit frame
+        framer_address <= (0 => '1', others => '0');
+        framer_word.data(CHUNK_DATABITS-1 downto 0) 
+          <= set_endianness(
+            shift_left(resize(frame_address, CHUNK_DATABITS),3),
+            ENDIANNESS
+          );
+        framer_we <= (0 => TRUE, others => FALSE);
+      end case;
+    end if;
+  end if;
+end process frameFSMoutput;
 
 payloadAddress:process(clk)
 begin
@@ -544,6 +585,7 @@ begin
 		if reset = '1' then
 			frame_address <= (others => '0');
 			last_frame_address <= (others => '0');
+			--FIXME is the -1 correct for frame free?
 			frame_free 
 				<= to_unsigned(to_integer(DEFAULT_MTU/8-1),FRAMER_ADDRESS_BITS+1);
 		else
@@ -575,7 +617,6 @@ port map(
   data => framer_word,
   address => framer_address,
   chunk_we => framer_we,
-  --success => open,
   length => frame_address, --TODO check this
   commit => commit_frame,
   free => framer_free,

@@ -30,7 +30,7 @@ use work.functions.all;
 
 entity mca_unit is
 generic(
-  CHANNEL_BITS:integer:=3;
+  CHANNELS:integer:=8;
   ADDRESS_BITS:integer:=14;
   COUNTER_BITS:integer:=32;
   VALUE_BITS:integer:=32;
@@ -59,7 +59,7 @@ port(
   ------------------------------------------------------------------------------
   --! selects out to muxs
   ------------------------------------------------------------------------------
-  channel_select:out std_logic_vector(2**CHANNEL_BITS-1 downto 0);
+  channel_select:out std_logic_vector(CHANNELS-1 downto 0);
   value_select:out std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
   trigger_select:out std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
   ------------------------------------------------------------------------------
@@ -78,7 +78,6 @@ end entity mca_unit;
 --
 architecture RTL of mca_unit is
 
-constant CHANNELS:integer:=2**CHANNEL_BITS;
 -- control registers -----------------------------------------------------------
 signal tick_count:unsigned(TICKCOUNT_BITS-1 downto 0);
 signal enabled:boolean;

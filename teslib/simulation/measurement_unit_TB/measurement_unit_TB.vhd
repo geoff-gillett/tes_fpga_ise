@@ -61,6 +61,7 @@ signal mca_trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
 signal mca_value:signed(MCA_VALUE_BITS-1 downto 0);
 signal baseline_error:boolean;
 signal framer_overflow:boolean;
+signal mux_full:boolean;
 
 begin
 	
@@ -76,24 +77,25 @@ generic map(
   ENDIANNESS => ENDIANNESS
 )
 port map(
+  mux_full => mux_full,
   clk => clk,
   reset => reset,
   adc_sample => adc_sample,
   registers => registers,
   filter_config_data => (others => '0'),
-  filter_config_valid => FALSE,
+  filter_config_valid => '0',
   filter_config_ready => open,
   filter_reload_data => (others => '0'),
-  filter_reload_valid => FALSE,
+  filter_reload_valid => '0',
   filter_reload_ready => open,
-  filter_reload_last => FALSE,
+  filter_reload_last => '0',
   dif_config_data => (others => '0'),
-  dif_config_valid => FALSE,
+  dif_config_valid => '0',
   dif_config_ready => open,
   dif_reload_data => (others => '0'),
-  dif_reload_valid => FALSE,
+  dif_reload_valid => '0',
   dif_reload_ready => open,
-  dif_reload_last => FALSE,
+  dif_reload_last => '0',
   measurements => measurements,
   mca_value_select => mca_value_select,
   mca_trigger_select => mca_trigger_select,

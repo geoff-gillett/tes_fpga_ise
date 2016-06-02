@@ -25,7 +25,7 @@ use work.KCPSM6_AXI.all;
 --! interface.
 entity main_controller is
 generic(
-  TES_CHANNEL_BITS:integer:=3;
+  CHANNELS:integer:=3;
   ADC_CHIPS:integer:=4
   --SPI_CHANNELS:integer:=4
 );
@@ -60,8 +60,8 @@ port(
   ------------------------------------------------------------------------------
   main_rx:in std_logic;
   main_tx:out std_logic;
-  channel_rx:in std_logic_vector(2**TES_CHANNEL_BITS-1 downto 0);
-  channel_tx:out std_logic_vector(2**TES_CHANNEL_BITS-1 downto 0);
+  channel_rx:in std_logic_vector(CHANNELS-1 downto 0);
+  channel_tx:out std_logic_vector(CHANNELS-1 downto 0);
   ------------------------------------------------------------------------------
   --!* SPI communication 
   ------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ end entity main_controller;
 --
 architecture picoblaze of main_controller is
   
-constant TES_CHANNELS:integer:=2**TES_CHANNEL_BITS;
+constant TES_CHANNELS:integer:=CHANNELS;
 constant SPI_CHANNELS:integer:=ADC_CHIPS+1;
 --
 --------------------------------------------------------------------------------
@@ -116,8 +116,8 @@ signal main_uart_sel:boolean; --true io through main uart otherwise the chan
 --------------------------------------------------------------------------------
 --Channel UART signals
 --------------------------------------------------------------------------------
-signal channel_sel:std_logic_vector(TES_CHANNELS-1 downto 0):=(others => '0');
-signal channel_tx_int:std_logic_vector(TES_CHANNELS-1 downto 0);
+signal channel_sel:std_logic_vector(CHANNELS-1 downto 0):=(others => '0');
+signal channel_tx_int:std_logic_vector(CHANNELS-1 downto 0);
 --Signals used to define baud rate
 signal baud_count:integer range 0 to 67:=0;
 signal en_16_x_baud:std_logic:= '0';
@@ -191,7 +191,8 @@ end process resetSeqReg;
 CPU:entity work.kcpsm6
 generic map(
   HWBUILD => to_std_logic(to_unsigned(ADC_CHIPS,4) & 
-               to_unsigned(TES_CHANNEL_BITS,4)
+							 --FIXME check this works was CHANNEL_BITS
+               to_unsigned(ceilLog2(CHANNELS),4) 
              ), 
   INTERRUPT_VECTOR => X"7F0",
   SCRATCH_PAD_MEMORY_SIZE => 64

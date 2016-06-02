@@ -9,7 +9,7 @@ set channels [getsig CHANNELS unsigned]
 
 # input signal text file has 2 byte ascii hex value per line 
 # TODO make inputs binary files
-set input [open "../input_signals/long" r]
+set input [open "../input_signals/double_peak" r]
 fconfigure $input -buffering line
 
 # open data files for binary writing
@@ -79,7 +79,7 @@ restart
 
 # set up wave database
 wave add /measurement_subsystem_TB
-#wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator
+wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
 #wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator/mostFrequent
 #wave add /measurement_subsystem_TB/mux
 #wave add /measurement_subsystem_TB/mux/buffers

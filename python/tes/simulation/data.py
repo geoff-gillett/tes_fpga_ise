@@ -8,13 +8,24 @@ from datetime import datetime
 DEFAULT_REPO_PATH = 'c:\\TES_project\\fpga_ise\\'
 File = namedtuple('File', ['filename', 'dtype', 'is_list', 'is_sliceable'])
 
-tick_dt = np.dtype([('period', np.uint32), ('flags', np.uint8, (2,1)), ('time', np.uint16),
-                    ('timestamp', np.uint64),
-                    ('framer_ovf', np.uint8),
-                    ('mux_ovf', np.uint8), ('measurement_ovf', np.uint8), ('cfd_error', np.uint8),
-                    ('peak_ovf', np.uint8), ('time_ovf', np.uint8), ('baseline_unf', np.uint8), ('reserved', np.uint8)])
+tick_dt = np.dtype(
+    [('period', np.uint32),
+     ('flags', np.uint8, (2, 1)),
+     ('time', np.uint16),
+     ('timestamp', np.uint64),
+     ('framer_ovf', np.uint8),
+     ('mux_ovf', np.uint8),
+     ('measurement_ovf', np.uint8),
+     ('cfd_error', np.uint8),
+     ('peak_ovf', np.uint8),
+     ('time_ovf', np.uint8),
+     ('baseline_unf', np.uint8),
+     ('reserved', np.uint8)]
+)
 
-area_dt = np.dtype([('area', np.uint32), ('flags', np.uint8, (2,)), ('time', np.uint16)])
+area_dt = np.dtype(
+    [('area', np.uint32), ('flags', np.uint8, (2,)), ('time', np.uint16)]
+)
 
 
 # TODO import from tes_interface.registers
@@ -81,7 +92,6 @@ class PayloadType(Enum):
 
 
 class McaValueType(Enum):
-
     @staticmethod
     def from_int(value):
         if value == 0:
@@ -109,7 +119,8 @@ class McaValueType(Enum):
         elif value == 11:
             return McaValueType.raw_extrema
         else:
-            raise AttributeError('{:d} cannot be converted to McaValueType'.format(value))
+            raise AttributeError(
+                '{:d} cannot be converted to McaValueType'.format(value))
 
     # @property
     # def trace(self):
@@ -190,15 +201,15 @@ class McaTriggerType(Enum):
 
 
 class EventStream:
-
     # NOTE copies stream64 to bytestream.
     # Expects stream64 to contain only one PayloadType
     def __init__(self, stream64):
-        self.last = (stream64['last'].nonzero()[0]+1)*8
+        self.last = (stream64['last'].nonzero()[0] + 1) * 8
         self.bytestream = np.copy(stream64['data']).view(np.uint8)
 
         tick = np.bitwise_and(self.bytestream[5], 0x02) != 0
-        payload = PayloadType.from_int(np.right_shift(np.bitwise_and(self.bytestream[5], 0x000C), 2))
+        payload = PayloadType.from_int(
+            np.right_shift(np.bitwise_and(self.bytestream[5], 0x000C), 2))
         event_size = self.bytestream[0:2].view(np.uint16)
 
         if tick:
@@ -208,18 +219,22 @@ class EventStream:
 
         if self.type == PayloadType.pulse:
             pulse_peak_dt = np.dtype(
-                ([('height', np.uint16), ('minima', np.int16), ('rise_time', np.uint16), ('time', np.uint16)])
+                ([('height', np.uint16), ('minima', np.int16),
+                  ('rise_time', np.uint16), ('time', np.uint16)])
             )
             pulse_dt = np.dtype(
-                ([('size', np.uint16), ('length', np.uint16), ('flags', np.uint8, (2,)), ('time', np.uint16),
-                  ('area', np.int32), ('pulse_threshold', np.uint16), ('slope_threshold', np.uint16),
-                  ('peaks', pulse_peak_dt, (event_size-2,))])
+                ([('size', np.uint16), ('length', np.uint16),
+                  ('flags', np.uint8, (2,)), ('time', np.uint16),
+                  ('area', np.int32), ('pulse_threshold', np.uint16),
+                  ('slope_threshold', np.uint16),
+                  ('peaks', pulse_peak_dt, (event_size - 2,))])
             )
             self._event_dt = pulse_dt
 
         else:
             self._event_dt = None
-            NotImplementedError('{:} needs implementation in EventStream'.format(self.type))
+            NotImplementedError(
+                '{:} needs implementation in EventStream'.format(self.type))
 
     @property
     def events(self):
@@ -233,22 +248,26 @@ class EventStream:
             self.peak_count = np.right_shift(np.bitwise_and(flags[0], 0xF0), 4)
             self.height_rel2min = np.bitwise_and(flags[0], 0x08) != 0
             self.channel = np.bitwise_and(flags[0], 0x07)
-            self.timing = TriggerType.from_int(np.right_shift(np.bitwise_and(flags[1], 0xC0), 6))
-            self.height = HeightType.from_int(np.right_shift(np.bitwise_and(flags[1], 0x30), 4))
-            self.type = PayloadType.from_int(np.right_shift(np.bitwise_and(flags[1], 0x000C), 2))
+            self.timing = TriggerType.from_int(
+                np.right_shift(np.bitwise_and(flags[1], 0xC0), 6))
+            self.height = HeightType.from_int(
+                np.right_shift(np.bitwise_and(flags[1], 0x30), 4))
+            self.type = PayloadType.from_int(
+                np.right_shift(np.bitwise_and(flags[1], 0x000C), 2))
             self.tick = np.bitwise_and(flags[1], 0x02) != 0
             self.new_window = np.bitwise_and(flags[1], 0x01) != 0
 
         def __repr__(self):
             return 'peak count:{:d}\nheight_rel2min:{:}\n{:}\n{:}\nchannel:{:d}\n{:}\ntick:{:}\nnew_window:{:}'.format(
-                        self.peak_count, self.height_rel2min, self.height, self.timing, self.channel, self.type,
-                        self.tick, self.new_window
-                   )
+                self.peak_count, self.height_rel2min, self.height, self.timing,
+                self.channel, self.type,
+                self.tick, self.new_window
+            )
 
 
 class Data:
-
-    def __init__(self, fileset, channels, project, testbench, tool='PlanAhead', repo=DEFAULT_REPO_PATH):
+    def __init__(self, fileset, channels, project, testbench, tool='PlanAhead',
+                 repo=DEFAULT_REPO_PATH):
         self._fileset = fileset
         self.channels = channels
         self.project = project
@@ -269,12 +288,14 @@ class Data:
                         )
                     )
             else:
-                data = self.fromfile(fileinfo.filename, fileinfo.dtype, project, testbench, tool, repo)
+                data = self.fromfile(fileinfo.filename, fileinfo.dtype, project,
+                                     testbench, tool, repo)
 
             setattr(self, file, data)
 
     @staticmethod
-    def fromfile(file, dt, project, testbench, tool='PlanAhead', repo=DEFAULT_REPO_PATH):
+    def fromfile(file, dt, project, testbench, tool='PlanAhead',
+                 repo=DEFAULT_REPO_PATH):
         path = repo + project + '\\' + tool + '\\' + project + '.sim\\' + testbench + '\\'
         # print(path + file)
         if ospath.isfile(path + file):
@@ -330,7 +351,8 @@ class Data:
 
     def save(self, filename=None):
         if filename is None:
-            filename = '{:s}-{:}.pickle'.format(self.testbench, datetime.now().date())
+            filename = '{:s}-{:}.pickle'.format(self.testbench,
+                                                datetime.now().date())
         fp = open(filename, 'wb')
         pickler = Pickler(fp, protocol=-1)
         pickler.dump(self)
@@ -368,7 +390,8 @@ class Data:
 
             data = getattr(self._data, attr)  # get array from Data instance
 
-            if self._bounds == 'all' or not self._data._fileset[attr].is_sliceable:
+            if self._bounds == 'all' or not self._data._fileset[
+                attr].is_sliceable:
                 return data
             else:
                 if self._data._fileset[attr].is_list:
@@ -418,7 +441,8 @@ class Packet:
             if np.bitwise_and(self.bytes[20], 0x02):
                 self.payload_type = PayloadType.tick
             else:
-                self.payload_type = PayloadType.from_int(np.right_shift(np.bitwise_and(self.bytes[20], 0x0C), 2))
+                self.payload_type = PayloadType.from_int(
+                    np.right_shift(np.bitwise_and(self.bytes[20], 0x0C), 2))
         elif self.ethertype == 0x88B6:
             self.payload_type = PayloadType.mca
         else:
@@ -434,7 +458,8 @@ class Packet:
         else:
             pname = self.payload_type.name
         return 'ethertype:{:04X} length:{:d} Payload:{:s} frame:{:d} protocol:{:d}'.format(
-            self.ethertype, self.length, pname, self.frame_sequence, self.protocol_sequence)
+            self.ethertype, self.length, pname, self.frame_sequence,
+            self.protocol_sequence)
 
     @property
     def events(self):
@@ -448,6 +473,7 @@ class Packet:
     @staticmethod
     def channel(events):
         return np.bitwise_and(events['flags'][:, 0], 0x07)
+
 
 # class Events:
 #     def __init__(self, packet):
@@ -478,7 +504,8 @@ class PacketStream:
         self.packets = [Packet(self.byte_stream[0:end])]
 
         for last in lasts[1:]:
-            self.byte_stream = np.append(self.byte_stream, np.copy(stream['data'][prev:last]).view(np.uint8))
+            self.byte_stream = np.append(self.byte_stream, np.copy(
+                stream['data'][prev:last]).view(np.uint8))
             prev = last
             start = end
             end = len(self.byte_stream)
@@ -495,10 +522,12 @@ class PacketStream:
             if packet.payload_type == PayloadType.mca:
                 if last_seq is None:
                     if packet.protocol_sequence != 0:
-                        print('Error first MCA frame does not have a 0 protocol sequence number')
+                        print(
+                            'Error first MCA frame does not have a 0 protocol sequence number')
                 else:
                     if packet.protocol_sequence != 0 and packet.protocol_sequence != last_seq + 1:
-                        print('MCA sequence number:{:d} missing'.format(last_seq + 1))
+                        print('MCA sequence number:{:d} missing'.format(
+                            last_seq + 1))
 
                 last_seq = packet.protocol_sequence
                 if last_seq == 0:
@@ -506,7 +535,9 @@ class PacketStream:
                         if d.last_bin + 1 == d._total_bins:
                             distributions.append(d)
                         else:
-                            print("incomplete distribution dropped starting frame:{:d}".format(d._frame_sequence))
+                            print(
+                                "incomplete distribution dropped starting frame:{:d}".format(
+                                    d._frame_sequence))
                     d = Distribution(packet)
 
                 else:
@@ -521,15 +552,18 @@ class PacketStream:
                 if last_seq is None:
                     last_seq = packet.protocol_sequence
                 else:
-                    if packet.protocol_sequence != 0 and packet.protocol_sequence != last_seq + 1:
-                        print('Event sequence number:{:d} missing'.format(last_seq + 1))
+                    if packet.protocol_sequence != 0 and \
+                                    packet.protocol_sequence != last_seq + 1:
+                        print('Event sequence number:{:d} missing'.format(
+                            last_seq + 1))
 
 
 class Distribution:
     def __init__(self, header_packet):
         flags = header_packet.payload[8:10]
         self._frame_sequence = header_packet.frame_sequence
-        self.value = McaValueType.from_int(np.right_shift(np.bitwise_and(flags[0], 0xF0), 4))
+        self.value = McaValueType.from_int(
+            np.right_shift(np.bitwise_and(flags[0], 0xF0), 4))
         self.trigger = McaTriggerType.from_int(np.bitwise_and(flags[0], 0x0F))
         self.bin_n = np.right_shift(np.bitwise_and(flags[1], 0xF0), 4)
         self.bin_width = np.power(2, self.bin_n)
@@ -544,13 +578,15 @@ class Distribution:
 
         packet_bins = np.uint32((header_packet.length - 40 - 24) / 4)
         # print(packet_bins)
-        self.counts[0:packet_bins] = np.copy(header_packet.payload[40:].view(np.uint32))
+        self.counts[0:packet_bins] = np.copy(
+            header_packet.payload[40:].view(np.uint32))
         self._total_bins = packet_bins
 
     def add(self, packet):
         packet_bins = np.uint32((packet.length - 24) / 4)
         # print(packet_bins)
-        self.counts[self._total_bins:self._total_bins + packet_bins] = np.copy(packet.payload.view(np.uint32))
+        self.counts[self._total_bins:self._total_bins + packet_bins] = np.copy(
+            packet.payload.view(np.uint32))
         self._total_bins += packet_bins
 
     def data_counts(self, data):
@@ -561,14 +597,18 @@ class Distribution:
         if value[1] == 'signal':
             values = s.trace[self.channel][value[0]]
         else:
-            return NotImplementedError('.checking distribution with {:} to be implemented'.format(self.value))
+            return NotImplementedError(
+                '.checking distribution with {:} to be implemented'.format(
+                    self.value))
 
         if self.trigger is McaTriggerType.clock:
             pass
         elif self.trigger is McaTriggerType.maxima:
             values = values[s.peak[self.channel]['index']]
         else:
-            return NotImplementedError('checking distributions with {:} to be implemented'.format(self.trigger))
+            return NotImplementedError(
+                'checking distributions with {:} to be implemented'.format(
+                    self.trigger))
 
         binned = np.right_shift(values - self.lowest_value, self.bin_n)
         binned[binned < 0] = 0
@@ -580,7 +620,3 @@ class Distribution:
     def __repr__(self):
         return 'Distribution: {:s} {:s} start:{:d} stop:{:d}'.format(
             self.value, self.trigger, self.start_time, self.stop_time)
-
-
-
-

@@ -74,17 +74,18 @@ fconfigure $heights -translation binary
 
 restart
 
-#if {$is_isim} {
-#	wave add /measurement_unit_TB
-#	wave add /measurement_unit_TB/UUT
+if {$is_isim} {
+	wave add /measurement_unit_TB
+	wave add /measurement_unit_TB/UUT
+	wave add /measurement_unit_TB/UUT/framer
 #	wave add /measurement_unit_TB/UUT/baselineEstimator
 #	wave add /measurement_unit_TB/UUT/baselineEstimator/mostFrequent
-#} {
+} {
 #	log_wave /measurement_unit_TB
 #	log_wave /measurement_unit_TB/UUT
 #	log_wave /measurement_unit_TB/UUT/baselineEstimator
 #	log_wave /measurement_unit_TB/UUT/baselineEstimator/mostFrequent
-#}
+}
 
 set period [getsig CLK_PERIOD]
 run [lindex $period 0] [lindex $period 1]

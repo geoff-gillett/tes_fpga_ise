@@ -28,7 +28,7 @@ use work.dsptypes.all; --TODO move to types
 
 entity measurement_subsystem_TB is
 generic(
-	CHANNEL_BITS:integer:=3;
+	CHANNELS:integer:=8;
 	FRAMER_ADDRESS_BITS:integer:=14;
 	ENDIANNESS:string:="LITTLE";
   MIN_TICK_PERIOD:integer:=2**16;
@@ -38,7 +38,7 @@ end entity measurement_subsystem_TB;
 
 architecture testbench of measurement_subsystem_TB is
 
-constant CHANNELS:integer:=2**CHANNEL_BITS;
+--constant CHANNELS:integer:=2**CHANNEL_BITS;
 
 signal sample_clk:std_logic:='1';	
 signal IO_clk:std_logic:='1';	
@@ -72,7 +72,7 @@ signal mux_overflows:boolean_vector(CHANNELS-1 downto 0);
 signal mux_overflows_u:unsigned(CHANNELS-1 downto 0);
 signal framer_overflows:boolean_vector(CHANNELS-1 downto 0);
 signal framer_overflows_u:unsigned(CHANNELS-1 downto 0);
-signal measurement_overflows:boolean_vector(2**CHANNEL_BITS-1 downto 0);
+signal measurement_overflows:boolean_vector(CHANNELS-1 downto 0);
 signal measurement_overflows_u:unsigned(CHANNELS-1 downto 0);
 signal mux_full:boolean;
 signal time_overflows,cfd_errors:boolean_vector(CHANNELS-1 downto 0);
@@ -155,19 +155,19 @@ begin
     adc_sample => adc_delayed(c),
     registers => registers(c),
     filter_config_data => (others => '0'),
-    filter_config_valid => FALSE,
+    filter_config_valid => '0',
     filter_config_ready => open,
     filter_reload_data => (others => '0'),
-    filter_reload_valid => FALSE,
+    filter_reload_valid => '0',
     filter_reload_ready => open,
-    filter_reload_last => FALSE,
+    filter_reload_last => '0',
     dif_config_data => (others => '0'),
-    dif_config_valid => FALSE,
+    dif_config_valid => '0',
     dif_config_ready => open,
     dif_reload_data => (others => '0'),
-    dif_reload_valid => FALSE,
+    dif_reload_valid => '0',
     dif_reload_ready => open,
-    dif_reload_last => FALSE,
+    dif_reload_last => '0',
     measurements => measurements(c),
     mca_value_select => value_select,
     mca_trigger_select => trigger_select,
@@ -210,7 +210,7 @@ measurement_overflows_u <= to_unsigned(measurement_overflows);
 
 mux:entity work.eventstream_mux
 generic map(
-  CHANNEL_BITS => CHANNEL_BITS,
+  CHANNELS => CHANNELS,
   TIME_BITS => TIME_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
   TICKPERIOD_BITS => TICK_PERIOD_BITS,
@@ -244,7 +244,7 @@ port map(
 
 mcaChanSel:entity work.mca_channel_selector
 generic map(
-  CHANNEL_BITS => CHANNEL_BITS,
+  CHANNELS => CHANNELS,
   VALUE_BITS   => MCA_VALUE_BITS
 )
 port map(
@@ -259,7 +259,7 @@ port map(
 
 mca:entity work.mca_unit
 generic map(
-  CHANNEL_BITS => CHANNEL_BITS,
+  CHANNELS => CHANNELS,
   ADDRESS_BITS => MCA_ADDRESS_BITS,
   COUNTER_BITS => MCA_COUNTER_BITS,
   VALUE_BITS => MCA_VALUE_BITS,
@@ -331,7 +331,7 @@ port map(
 -- all channels see same register settings
 stimulus:process is
 begin
-mtu <= to_unsigned(1500,MTU_BITS);
+mtu <= to_unsigned(64,MTU_BITS);
 tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
 window <= to_unsigned(2,TIME_BITS);
 tick_latency <= to_unsigned(2**16,TICK_PERIOD_BITS);
@@ -367,17 +367,17 @@ for c in CHANNELS-1 downto 0 loop
   registers(c).capture.trace1 <= NO_TRACE_D;
 end loop;
 
-registers(1).capture.detection <= PULSE_DETECTION_D;
-registers(2).capture.detection <= PULSE_DETECTION_D;
-registers(2).capture.max_peaks <= (0 => '1', others => '0');
-registers(3).capture.detection <= TRACE_DETECTION_D;
-registers(3).capture.trace0 <= FILTERED_TRACE_D;
-registers(3).capture.trace1 <= RAW_TRACE_D;
-registers(4).capture.detection <= TRACE_DETECTION_D;
-registers(4).capture.trace0 <= FILTERED_TRACE_D;
-registers(4).capture.trace1 <= SLOPE_TRACE_D;
-registers(4).capture.full_trace <= FALSE;
-registers(7).capture.detection <= AREA_DETECTION_D;
+--registers(1).capture.detection <= PULSE_DETECTION_D;
+--registers(2).capture.detection <= PULSE_DETECTION_D;
+--registers(2).capture.max_peaks <= (0 => '1', others => '0');
+--registers(3).capture.detection <= TRACE_DETECTION_D;
+--registers(3).capture.trace0 <= FILTERED_TRACE_D;
+--registers(3).capture.trace1 <= RAW_TRACE_D;
+--registers(4).capture.detection <= TRACE_DETECTION_D;
+--registers(4).capture.trace0 <= FILTERED_TRACE_D;
+--registers(4).capture.trace1 <= SLOPE_TRACE_D;
+--registers(4).capture.full_trace <= FALSE;
+--registers(7).capture.detection <= AREA_DETECTION_D;
 
 mca_registers.channel <= (others => '0');
 mca_registers.bin_n <= (others => '0');

@@ -140,6 +140,7 @@ fifoInReg:process(clk)
 begin
 	if rising_edge(clk) then
 		if reset='1' then
+			time_wr_en <= '0';
 		else
       time_wr_en <= to_std_logic(unaryOR(start) or tick);
       time_in(TIMEFIFO_BITS-1 downto TIMETAG_BITS+CHANNELS+1) 

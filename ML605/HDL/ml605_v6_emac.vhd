@@ -44,7 +44,7 @@ generic(
   ADC_CHIPS:integer:=4;
   ADC_CHIP_CHANNELS:integer:=2;
   ADC_BITS:integer:=14;
-  DSP_CHANNELS:integer:=8;
+  DSP_CHANNELS:integer:=4;
   EVENT_FRAMER_ADDRESS_BITS:integer:=11;
   MIN_TICKPERIOD:integer:=2**TIME_BITS
 );
@@ -219,9 +219,9 @@ signal adc_dout_pipe,adc_pipe:adc_pipeline;
 
 signal adc_samples,fifo_dout:adc_sample_array(ADC_CHANNElS-1 downto 0);
 
-type input_sel_array is array (DSP_CHANNELS-1 downto 0) of
-	boolean_vector(ADC_CHANNELS-1 downto 0);
-signal input_selects:input_sel_array;
+--type input_sel_array is array (DSP_CHANNELS-1 downto 0) of
+--	boolean_vector(ADC_CHANNELS-1 downto 0);
+--signal input_selects:input_sel_array;
 	
 signal fifo_empty:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
@@ -243,8 +243,8 @@ signal reg_write:boolean;
 --------------------------------------------------------------------------------
 -- Channel CPU signals
 --------------------------------------------------------------------------------
-signal channel_rx:std_logic_vector(2**CHANNEL_BITS-1 downto 0);
-signal channel_tx:std_logic_vector(2**CHANNEL_BITS-1 downto 0);
+signal channel_rx:std_logic_vector(DSP_CHANNELS-1 downto 0);
+signal channel_tx:std_logic_vector(DSP_CHANNELS-1 downto 0);
 
 signal channel_address:registeraddress_array(DSP_CHANNELS-1 downto 0);
 signal channel_data,channel_value:registerdata_array(DSP_CHANNELS-1 downto 0);
@@ -302,7 +302,7 @@ signal cfd_errors:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal time_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal peak_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal framer_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal channel_select:std_logic_vector(2**CHANNEL_BITS-1 downto 0);
+signal channel_select:std_logic_vector(DSP_CHANNELS-1 downto 0);
 signal mca_value:signed(MCA_VALUE_BITS-1 downto 0);
 signal mca_value_valid:boolean;
 
@@ -325,8 +325,8 @@ signal muxstream_valid:boolean;
 signal muxstream_ready:boolean;
 
 signal mux_full:boolean;
-signal mux_overflows:boolean_vector(2**CHANNEL_BITS-1 downto 0);
-signal measurement_overflows:boolean_vector(2**CHANNEL_BITS-1 downto 0);
+signal mux_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal measurement_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 -- stop the eventstreams being optimised out
 --attribute S:string;
 --attribute S of muxstream:signal is "TRUE";
@@ -347,10 +347,10 @@ attribute S of bytestream:signal is "TRUE";
 attribute S of bytestream_valid:signal is "TRUE";
 attribute S of bytestream_ready:signal is "TRUE";
 --------------------------------------------------------------------------------
-signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
+--signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
 begin
-LEDs <= overflow_LEDs;
+LEDs <= (others => '0');
 
 ADC_spi_ce_n <= spi_ce_n(ADC_CHIPS-1 downto 0); 
 AD9510_spi_ce_n  <= spi_ce_n(ADC_CHIPS); 
@@ -845,7 +845,7 @@ port map(
 
 mcaChanSel:entity tes.mca_channel_selector
 generic map(
-  CHANNEL_BITS => CHANNEL_BITS,
+  CHANNELS => DSP_CHANNELS,
   VALUE_BITS   => MCA_VALUE_BITS
 )
 port map(
@@ -860,7 +860,7 @@ port map(
 
 mca:entity tes.mca_unit
 generic map(
-  CHANNEL_BITS => CHANNEL_BITS,
+  CHANNELS => DSP_CHANNELS,
   ADDRESS_BITS => MCA_ADDRESS_BITS,
   COUNTER_BITS => MCA_COUNTER_BITS,
   VALUE_BITS => MCA_VALUE_BITS,
@@ -991,7 +991,7 @@ port map(
 
 cpu:entity tes.main_controller
 generic map(
-  TES_CHANNEL_BITS => CHANNEL_BITS,
+  CHANNELS => DSP_CHANNELS,
   ADC_CHIPS => ADC_CHIPS
 )
 port map(

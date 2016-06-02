@@ -25,22 +25,21 @@ use work.functions.all;
 
 entity mca_channel_selector is
 generic (
-	CHANNEL_BITS:integer:=3;
+	CHANNELS:integer:=8;
 	VALUE_BITS:integer:=MCA_VALUE_BITS
 );
 port (
   clk:in std_logic;
   reset:in std_logic;
-	channel_select:in std_logic_vector(2**CHANNEL_BITS-1 downto 0);
-	values:in mca_value_array(2**CHANNEL_BITS-1 downto 0);
-	valids:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+	channel_select:in std_logic_vector(CHANNELS-1 downto 0);
+	values:in mca_value_array(CHANNELS-1 downto 0);
+	valids:in boolean_vector(CHANNELS-1 downto 0);
 	value:out signed(VALUE_BITS-1 downto 0);
 	valid:out boolean
 );
 end entity mca_channel_selector;
 
 architecture RTL of mca_channel_selector is
-constant CHANNELS:integer:= 2**CHANNEL_BITS;	
 type input_array is array (natural range <>) 
 										of std_logic_vector(CHANNELS-1 downto 0);
 signal inputs:input_array(MCA_VALUE_BITS-1 downto 0);
