@@ -25,8 +25,9 @@ use work.events.all;
 -- merges instreams keeping temporal order and incorporates tickstream
 entity eventstream_mux is
 generic(
-  CHANNEL_BITS:integer:=3;
-  RELTIME_BITS:integer:=16;
+  --CHANNEL_BITS:integer:=3;
+  CHANNELS:integer:=8;
+  TIME_BITS:integer:=16;
   TIMESTAMP_BITS:integer:=64;
   TICKPERIOD_BITS:integer:=32;
   MIN_TICKPERIOD:integer:=2**16;
@@ -37,26 +38,26 @@ port(
   clk:in std_logic;
   reset:in std_logic;
   -- from channel captures
-  start:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  commit:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  dump:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  start:in boolean_vector(CHANNELS-1 downto 0);
+  commit:in boolean_vector(CHANNELS-1 downto 0);
+  dump:in boolean_vector(CHANNELS-1 downto 0);
   --
-  instreams:in streambus_array(2**CHANNEL_BITS-1 downto 0);
+  instreams:in streambus_array(CHANNELS-1 downto 0);
   --pulsestream_lasts:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  instream_valids:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  instream_readys:out boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  instream_valids:in boolean_vector(CHANNELS-1 downto 0);
+  instream_readys:out boolean_vector(CHANNELS-1 downto 0);
   full:out boolean;
   
   tick_period:in unsigned(TICKPERIOD_BITS-1 downto 0);
-  cfd_errors:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  framer_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  mux_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  measurement_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  peak_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  time_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  baseline_underflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  cfd_errors:in boolean_vector(CHANNELS-1 downto 0);
+  framer_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  mux_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  measurement_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  peak_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  time_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  baseline_underflows:in boolean_vector(CHANNELS-1 downto 0);
 	
-  window:in unsigned(RELTIME_BITS-1 downto 0);
+  window:in unsigned(TIME_BITS-1 downto 0);
   
   muxstream:out streambus_t;
   valid:out boolean;
@@ -66,7 +67,7 @@ end entity eventstream_mux;
 --
 architecture RTL of eventstream_mux is
 	
-constant CHANNELS:integer:=2**CHANNEL_BITS;
+--constant CHANNELS:integer:=2**CHANNEL_BITS;
 
 signal timestamp,eventtime:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal reltime:unsigned(CHUNK_DATABITS-1 downto 0);
@@ -103,7 +104,8 @@ begin
 
 tickstreamer:entity work.tickstream
 generic map(
-  CHANNEL_BITS => CHANNEL_BITS,
+  --CHANNEL_BITS => CHANNEL_BITS,
+  CHANNELS => CHANNELS,
   TICKPERIOD_BITS => TICKPERIOD_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
   MINIMUM_PERIOD => MIN_TICKPERIOD,
@@ -129,8 +131,9 @@ port map(
 
 buffers:entity work.timing_buffer
 generic map(
-  CHANNEL_BITS => CHANNEL_BITS,
-  RELTIME_BITS => RELTIME_BITS,
+  --CHANNEL_BITS => CHANNEL_BITS,
+  CHANNELS => CHANNELS,
+  TIME_BITS => TIME_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS
 )
 port map(

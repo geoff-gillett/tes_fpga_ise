@@ -706,7 +706,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     dif_ready => dif_ready(c),
     dif_last => dif_last(c),
     dif_last_missing => dif_last_missing(c),
-    dif_last_unexpected => dif_last_missing(c)
+    dif_last_unexpected => dif_last_unexpected(c)
   );
   
   regWriteSync:entity tes.sync_2FF
@@ -776,15 +776,15 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     filter_reload_last => filter_last(c),
     filter_reload_last_missing => filter_last_missing(c),
     filter_reload_last_unexpected => filter_last_unexpected(c),
-    differentiator_config_data => dif_config_data(c),
-    differentiator_config_valid => dif_config_valid(c),
-    differentiator_config_ready => dif_config_ready(c),
-    differentiator_reload_data => dif_data(c),
-    differentiator_reload_valid => dif_valid(c),
-    differentiator_reload_ready => dif_ready(c),
-    differentiator_reload_last => dif_last(c),
-    differentiator_reload_last_missing => dif_last_missing(c),
-    differentiator_reload_last_unexpected => dif_last_unexpected(c),
+    dif_config_data => dif_config_data(c),
+    dif_config_valid => dif_config_valid(c),
+    dif_config_ready => dif_config_ready(c),
+    dif_reload_data => dif_data(c),
+    dif_reload_valid => dif_valid(c),
+    dif_reload_ready => dif_ready(c),
+    dif_reload_last => dif_last(c),
+    dif_reload_last_missing => dif_last_missing(c),
+    dif_reload_last_unexpected => dif_last_unexpected(c),
     measurements => measurements(c),
     mca_value_select => value_select,
     mca_trigger_select => trigger_select,
@@ -810,8 +810,9 @@ end generate tesChannel;
 
 mux:entity tes.eventstream_mux
 generic map(
-  CHANNEL_BITS => CHANNEL_BITS,
-  RELTIME_BITS => TIME_BITS,
+  --CHANNEL_BITS => CHANNEL_BITS,
+  CHANNELS => DSP_CHANNELS,
+  TIME_BITS => TIME_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
   TICKPERIOD_BITS => TICK_PERIOD_BITS,
   MIN_TICKPERIOD => MIN_TICKPERIOD,

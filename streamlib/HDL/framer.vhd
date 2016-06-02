@@ -45,13 +45,13 @@ port(
   --last:out boolean -- true if any lasts set 
 );
 end entity framer;
-architecture TDP of framer is
+architecture SDP of framer is
 --
 --RAM read_latency is 2 but the address increments 1clk after read_ram asserted
 constant LATENCY:integer:=2; -- LATENCY for serialiser
 --
 type frame_buffer is array (0 to 2**ADDRESS_BITS-1) of streamvector_t;
-shared variable frame_ram:frame_buffer:=(others => (others => '0'));
+signal frame_ram:frame_buffer:=(others => (others => '0'));
 signal input_word,ram_dout,ram_data,stream_vector:streamvector_t;
 signal we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal rd_ptr,wr_addr,wr_ptr,wr_ptr_1:unsigned(ADDRESS_BITS-1 downto 0);
@@ -82,22 +82,24 @@ if rising_edge(clk) then
     if we(i) then
       frame_ram(to_integer(to_0IfX(wr_addr))) 
       		((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS)
-        :=input_word((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS);
+         <= input_word((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS);
     end if;
   end loop;
+	ram_dout <= frame_ram(to_integer(to_0IfX(rd_ptr)));
+  ram_data <= ram_dout; -- register output
 end if;
 end process framePortA;
 
-framePortB:process(clk)
-begin
-if rising_edge(clk) then
-	ram_dout <= frame_ram(to_integer(to_0IfX(rd_ptr)));
-	if read_en and read_ram then
-		frame_ram(to_integer(to_0Ifx(rd_ptr))):=(others => '0');
-	end if;
-  ram_data <= ram_dout; -- register output
-end if;
-end process framePortB;
+--framePortB:process(clk)
+--begin
+--if rising_edge(clk) then
+--	ram_dout <= frame_ram(to_integer(to_0IfX(rd_ptr)));
+--	if read_en and read_ram then
+--		frame_ram(to_integer(to_0Ifx(rd_ptr))):=(others => '0');
+--	end if;
+--  ram_data <= ram_dout; -- register output
+--end if;
+--end process framePortB;
 
 ramPointers:process(clk)
 --variable empty:boolean;
@@ -127,12 +129,14 @@ if rising_edge(clk) then
       end if;
     end if;
     
-    if not empty and read_ram then
-    	empty <= rd_ptr = wr_ptr_1;
-    	rd_ptr <= rd_ptr + 1;
-    else
-    	empty <= rd_ptr = wr_ptr;
-    end if;
+    if not empty then
+    	if read_ram then
+        empty <= rd_ptr = wr_ptr_1;
+        rd_ptr <= rd_ptr + 1;
+      else
+        empty <= rd_ptr = wr_ptr; -- FIXME is this right?
+      end if;
+  	end if;
   end if;
 end if;
 end process ramPointers;
@@ -159,4 +163,4 @@ port map(
   last => open
 );
 stream <= to_streambus(stream_vector);
-end architecture TDP;
+end architecture SDP;

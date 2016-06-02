@@ -25,7 +25,8 @@ use work.types.all;
 
 entity tickstream is
 generic(
-  CHANNEL_BITS:integer:=3;
+  --CHANNEL_BITS:integer:=3;
+  CHANNELS:integer:=8;
   TICKPERIOD_BITS:integer:=32;
   MINIMUM_PERIOD:integer:=2**TIME_BITS;
   TIMESTAMP_BITS:integer:=64;
@@ -40,13 +41,13 @@ port (
   timestamp:out unsigned(TIMESTAMP_BITS-1 downto 0);
   tick_period:in unsigned(TICKPERIOD_BITS-1 downto 0);
  
-  mux_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  cfd_errors:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  framer_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  measurement_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  peak_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  time_overflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
-  baseline_underflows:in boolean_vector(2**CHANNEL_BITS-1 downto 0);
+  mux_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  cfd_errors:in boolean_vector(CHANNELS-1 downto 0);
+  framer_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  measurement_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  peak_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  time_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  baseline_underflows:in boolean_vector(CHANNELS-1 downto 0);
  
   tickstream:out streambus_t;
   valid:out boolean;
@@ -56,10 +57,10 @@ end entity tickstream;
 
 architecture aligned of tickstream is
 --
-constant CHANNELS:integer:=2**CHANNEL_BITS;
+--constant CHANNELS:integer:=2**CHANNEL_BITS;
 constant ADDRESS_BITS:integer:=9;
 --
-signal events_lost_reg:boolean_vector(CHANNELS-1 downto 0);
+signal events_lost_reg,events_lost:boolean_vector(CHANNELS-1 downto 0);
 signal framer_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
 signal baseline_underflow_reg:boolean_vector(CHANNELS-1 downto 0);
 signal peak_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
@@ -108,6 +109,9 @@ port map(
 );
 full <= free < to_unsigned(TICK_BUSWORDS,ADDRESS_BITS+1);
 
+
+events_lost  <= framer_overflows or cfd_errors or measurement_overflows or
+								mux_overflows;
 Reg:process(clk)
 begin
   if rising_edge(clk) then
@@ -119,11 +123,7 @@ begin
     else
     	if tick_int then
     		
-        tick_event.events_lost  
-        	<= resize(
-        			events_lost_reg or framer_overflows or 
-        		 	cfd_errors or measurement_overflows or mux_overflows,8
-        		);
+        tick_event.events_lost <= resize(events_lost_reg or events_lost, 8);
         events_lost_reg <= (others => FALSE);
         
     		tick_event.mux_overflows <= resize(mux_overflow_reg or mux_overflows,8);
@@ -157,7 +157,8 @@ begin
     		tick_event.full_timestamp <= time_stamp;
     		
       else 
-      	events_lost_reg <= events_lost_reg or framer_overflows or cfd_errors;
+      	events_lost_reg <= events_lost_reg or framer_overflows or cfd_errors or 
+      										 measurement_overflows or mux_overflows;
       	framer_overflow_reg <= framer_overflow_reg or framer_overflows;
       	mux_overflow_reg <= mux_overflow_reg or mux_overflows;
       	measurement_overflow_reg 

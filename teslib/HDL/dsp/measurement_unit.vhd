@@ -64,15 +64,15 @@ port(
   filter_reload_last:in std_logic;
   filter_reload_last_missing:out std_logic;
   filter_reload_last_unexpected:out std_logic;
-  differentiator_config_data:in std_logic_vector(7 downto 0);
-  differentiator_config_valid:in std_logic;
-  differentiator_config_ready:out std_logic;
-  differentiator_reload_data:in std_logic_vector(31 downto 0);
-  differentiator_reload_valid:in std_logic;
-  differentiator_reload_ready:out std_logic;
-  differentiator_reload_last:in std_logic;
-  differentiator_reload_last_missing:out std_logic;
-  differentiator_reload_last_unexpected:out std_logic;
+  dif_config_data:in std_logic_vector(7 downto 0);
+  dif_config_valid:in std_logic;
+  dif_config_ready:out std_logic;
+  dif_reload_data:in std_logic_vector(31 downto 0);
+  dif_reload_valid:in std_logic;
+  dif_reload_ready:out std_logic;
+  dif_reload_last:in std_logic;
+  dif_reload_last_missing:out std_logic;
+  dif_reload_last_unexpected:out std_logic;
 
   measurements:out measurement_t;
   
@@ -441,15 +441,15 @@ port map(
   stage1_reload_last => filter_reload_last,
   stage1_reload_last_missing => filter_reload_last_missing,
   stage1_reload_last_unexpected => filter_reload_last_unexpected,
-  stage2_config_data => differentiator_config_data,
-  stage2_config_valid => differentiator_config_valid,
-  stage2_config_ready => differentiator_config_ready,
-  stage2_reload_data => differentiator_reload_data,
-  stage2_reload_valid => differentiator_reload_valid,
-  stage2_reload_ready => differentiator_reload_ready,
-  stage2_reload_last => differentiator_reload_last,
-  stage2_reload_last_missing => differentiator_reload_last_missing,
-  stage2_reload_last_unexpected => differentiator_reload_last_unexpected,
+  stage2_config_data => dif_config_data,
+  stage2_config_valid => dif_config_valid,
+  stage2_config_ready => dif_config_ready,
+  stage2_reload_data => dif_reload_data,
+  stage2_reload_valid => dif_reload_valid,
+  stage2_reload_ready => dif_reload_ready,
+  stage2_reload_last => dif_reload_last,
+  stage2_reload_last_missing => dif_reload_last_missing,
+  stage2_reload_last_unexpected => dif_reload_last_unexpected,
   --w=18 f=3
   stage1 => filtered_FIR,
   --w=18 f=8

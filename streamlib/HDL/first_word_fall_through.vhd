@@ -20,7 +20,7 @@ use extensions.logic.all;
 use work.types.all;
 
 --! buffer from RAM to stream interface, handling ram read latency
-entity serialiser is
+entity first_word_fall_through is
 generic(
   LATENCY:integer:=2;
   DATA_BITS:integer:=8
@@ -41,12 +41,12 @@ port(
   valid:out boolean;
   last:out boolean
 );
-end entity serialiser;
+end entity first_word_fall_through;
 --
-architecture dynamic_shift_register of serialiser is
+architecture FSM of first_word_fall_through is
 --
 subtype ramword is std_logic_vector(DATA_BITS-1 downto 0);
-type pipe is array (natural range <>) of ramword; -- inferring RAM?
+type pipe is array (natural range <>) of ramword;
 signal data_shifter:pipe(1 to LATENCY);
 attribute shreg_extract:string;
 attribute shreg_extract of data_shifter:signal is "NO";
@@ -107,7 +107,7 @@ if rising_edge(clk) then
         last_int <= last_shifter(shift_addr);
       end if;
     end if;
-    data_valid <= valid_read_pipe(LATENCY-1);--FIXME assignment not used
+    data_valid <= valid_read_pipe(LATENCY-1);
     if valid_read_pipe(LATENCY) then
       data_shifter <= data & data_shifter(1 to LATENCY-1);
       last_shifter <= last_read_pipe(LATENCY) & last_shifter(1 to LATENCY-1);
@@ -115,4 +115,4 @@ if rising_edge(clk) then
   end if;
 end if;
 end process streamRegisters;
-end architecture dynamic_shift_register;
+end architecture FSM;

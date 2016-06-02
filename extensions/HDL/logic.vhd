@@ -190,11 +190,22 @@ function resize(slv:std_logic_vector;w:natural) return std_logic_vector is
 variable o:std_logic_vector(w-1 downto 0) := (others => '0');
 begin
 	if slv'length >= w then
-		o := slv(w-1 downto 0);
+		o := slv(w-1 downto 0); --FIXME this fails, why?
 	else
 		o(slv'length-1 downto 0) := slv;
 	end if;
 	return o;
 end function;
+
+--function resize(slv:std_logic_vector;w:natural) return std_logic_vector is
+--variable o:std_logic_vector(w-1 downto 0) := (others => '0');
+--begin
+--	if slv'length >= w then
+--		o := slv(w-1 downto 0);
+--	else
+--		o(slv'length-1 downto 0) := slv;
+--	end if;
+--	return o;
+--end function;
 	
 end package body logic;
