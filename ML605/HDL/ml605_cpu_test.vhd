@@ -37,7 +37,7 @@ use tes.registers.all;
 use tes.adc.all;
 use tes.measurements.all;
 
-entity ml605_v6_emac is
+entity ml605_cpu_test is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=12;
@@ -56,7 +56,7 @@ port(
   sys_clk_n:in std_logic;
   global_reset:in std_logic;
   
-  LEDs:out std_logic_vector(7 downto 0);
+  --LEDs:out std_logic_vector(7 downto 0);
   ------------------------------------------------------------------------------
   -- USB-UART bridge
   ------------------------------------------------------------------------------
@@ -87,41 +87,41 @@ port(
   adc_clk_n:in std_logic_vector(ADC_CHIPS-1 downto 0);
   -- ADS62P49 LVDS samples
   adc_data_p:in ddr_sample_array(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
-  adc_data_n:in ddr_sample_array(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
+  adc_data_n:in ddr_sample_array(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0)
 
-  phy_resetn:out std_logic;
-  gmii_txd:out std_logic_vector(7 downto 0);
-  gmii_tx_en:out std_logic;
-  gmii_tx_er:out std_logic;
-  gmii_tx_clk:out std_logic;
-  gmii_rxd:in std_logic_vector(7 downto 0);
-  gmii_rx_dv:in std_logic;
-  gmii_rx_er:in std_logic;
-  gmii_rx_clk:in std_logic;
-  gmii_col:in std_logic;
-  gmii_crs:in std_logic;
-  mii_tx_clk:in std_logic;
+  --phy_resetn:out std_logic;
+  --gmii_txd:out std_logic_vector(7 downto 0);
+  --gmii_tx_en:out std_logic;
+--  gmii_tx_er:out std_logic;
+--  gmii_tx_clk:out std_logic;
+--  gmii_rxd:in std_logic_vector(7 downto 0);
+--  gmii_rx_dv:in std_logic;
+--  gmii_rx_er:in std_logic;
+--  gmii_rx_clk:in std_logic;
+--  gmii_col:in std_logic;
+--  gmii_crs:in std_logic;
+--  mii_tx_clk:in std_logic;
   --
-  mdio:inout std_logic;
-  mdc:out std_logic;
+--  mdio:inout std_logic;
+--  mdc:out std_logic;
   --
-  tx_statistics_s:out std_logic;
-  rx_statistics_s:out std_logic;
+--  tx_statistics_s:out std_logic;
+--  rx_statistics_s:out std_logic;
   --
-  pause_req_s:in std_logic;
+--  pause_req_s:in std_logic;
   --
-  mac_speed:in std_logic_vector(1 downto 0);
-  update_speed:in std_logic;
-  serial_command:in std_logic;
-  serial_response:out std_logic;
+--  mac_speed:in std_logic_vector(1 downto 0);
+--  update_speed:in std_logic;
+--  serial_command:in std_logic;
+--  serial_response:out std_logic;
   --
-  reset_error:in std_logic;
-  frame_error:out std_logic;
-  frame_errorn:out std_logic
+--  reset_error:in std_logic;
+--  frame_error:out std_logic;
+--  frame_errorn:out std_logic
 );
-end entity ml605_v6_emac;
+end entity ml605_cpu_test;
 
-architecture RTL of ml605_v6_emac is
+architecture RTL of ml605_cpu_test is
 	
 --------------------------------------------------------------------------------
 -- Constants
@@ -132,17 +132,17 @@ constant SPI_CHANNELS:integer:=ADC_CHIPS+1; -- +1 for AD9510
 --------------------------------------------------------------------------------
 -- Components
 --------------------------------------------------------------------------------
---component fmc_mmcm
---port
--- (-- clock in ports
---  clk_in1:in std_logic;
---  -- clock out ports
---  clk_out1:out std_logic;
---  clk_out2:out std_logic;
---  -- status and control signals
---  locked:out std_logic
--- );
---end component;
+component fmc_mmcm
+port
+ (-- clock in ports
+  clk_in1:in std_logic;
+  -- clock out ports
+  clk_out1:out std_logic;
+  clk_out2:out std_logic;
+  -- status and control signals
+  locked:out std_logic
+ );
+end component;
 
 component fmc108_clk_tree
 port
@@ -181,10 +181,11 @@ port (
 );
 end component adc_fifo;
 
+attribute S:string;
 --------------------------------------------------------------------------------
 -- Clock and reset signals
 --------------------------------------------------------------------------------
-signal global_reset_IO_clk,IO_clk,signal_clk,axi_clk:std_logic;
+signal global_reset_init_clk,IO_clk,signal_clk,axi_clk,init_clk:std_logic;
 signal reset0,reset1,reset2,fmc108_MMCM_locked:std_logic;
 
 signal refclk:std_logic;
@@ -219,6 +220,7 @@ type adc_pipeline is array (ADC_PIPE_DEPTH-1 downto 0)
 signal adc_dout_pipe,adc_pipe:adc_pipeline;
 
 signal adc_samples,fifo_dout:adc_sample_array(ADC_CHANNElS-1 downto 0);
+attribute S of adc_samples:signal is "TRUE";
 
 --type input_sel_array is array (DSP_CHANNELS-1 downto 0) of
 --	boolean_vector(ADC_CHANNELS-1 downto 0);
@@ -235,6 +237,8 @@ signal spi_clk,spi_mosi:std_logic;
 signal spi_ce_n,spi_miso:std_logic_vector(SPI_CHANNELS-1 downto 0);
 
 signal global:global_registers_t;
+attribute S of global:signal is "TRUE"; -- KEEP the register outputs
+
 signal reg_address:register_address_t;
 signal reg_data:register_data_t;
 signal global_value:register_data_t;
@@ -255,7 +259,7 @@ signal axis_done:std_logic_vector(DSP_CHANNELS-1 downto 0);
 signal axis_error:std_logic_vector(DSP_CHANNELS-1 downto 0);
 
 signal channel_registers:channel_register_array(DSP_CHANNELS-1 downto 0);
-
+attribute S of channel_registers:signal is "TRUE";
 --------------------------------------------------------------------------------
 -- processing channel signals
 --------------------------------------------------------------------------------
@@ -349,12 +353,20 @@ signal bytestream_last:boolean;
 --attribute S of bytestream_ready:signal is "TRUE";
 
 --attribute use_clock_enable:string
-
+signal test_counter:unsigned(31 downto 0):=(others => '0');
+signal test_clk:std_logic;
 --------------------------------------------------------------------------------
 --signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
 begin
-LEDs <= (others => '0');
+--LEDs <= (others => '0');
+test:process (io_clk) is
+begin
+	if rising_edge(io_clk) then
+		test_counter <= test_counter+1;
+	end if;
+end process test;
+
 
 ADC_spi_ce_n <= spi_ce_n(ADC_CHIPS-1 downto 0); 
 AD9510_spi_ce_n  <= spi_ce_n(ADC_CHIPS); 
@@ -364,15 +376,16 @@ ADC_spi_clk <= spi_clk;
 AD9510_spi_clk <= spi_clk;
 ADC_spi_mosi <= spi_mosi;
 AD9510_spi_mosi <= spi_mosi;
-FMC_reset <= reset0;
-FMC_internal_clk_en <= to_std_logic(global.FMC108_internal_clk);
-FMC_VCO_power_en <= to_std_logic(global.VCO_power);
+FMC_reset <= '0';--reset0;
+FMC_internal_clk_en <= '1'; --to_std_logic(global.FMC108_internal_clk);
+FMC_VCO_power_en <= '1'; --to_std_logic(global.VCO_power);
 --
 
 -- FIXME what does this do?
-FMCfunction:process(IO_clk) is
+--FMC_AD9510_function <= '1';
+FMCfunction:process(init_clk) is
 begin
-if rising_edge(IO_clk) then
+if rising_edge(init_clk) then
   if reset0 = '1' then
     FMC_AD9510_function <= '0';
   else
@@ -384,7 +397,7 @@ end process FMCfunction;
 --------------------------------------------------------------------------------
 -- Clock and resets 
 --------------------------------------------------------------------------------
--- FIXME there could be an issue here whit the FMC not coming up and having no 
+-- FIXME there could be an issue here with the FMC not coming up and having no 
 -- IO_clk, io_clk could be derived by the onboard clock but this would have
 -- undefined phase relative to sample_clk, does this break the ethernet cdc?
 --fmc108mmcm:fmc_mmcm
@@ -403,17 +416,17 @@ port map
 (
   adc_chip0_clk => adc_clk(0),
   signal_clk => signal_clk,
-  io_clk => io_clk, --open,
+  io_clk => io_clk,
   locked => fmc108_mmcm_locked
 );
-    
+--io_clk <= test_clk;
 onboardmmcm:onboard_clk_tree
 port map
 (
   sys_clk_P => sys_clk_p,
   sys_clk_N => sys_clk_n,
   refclk => refclk,
-  io_clk => open, --io_clk,
+  io_clk => init_clk, --io_clk, --open,--io_clk,
   axi_clk => axi_clk,
   signal_clk => open, --signal_clk,
   locked => onboard_mmcm_locked
@@ -424,16 +437,16 @@ idelayctrl_inst:idelayctrl
 port map (
    rdy => idelayctrl_rdy,  
    refclk => refclk, 				
-   rst => reset0        				
+   rst => reset0       				
 );
 
-reset_enable <= onboard_mmcm_locked;    
+--reset_enable <= onboard_mmcm_locked;    
 glbl_reset_gen:entity tes.reset_sync
 port map(
-  clk => io_clk,
-  enable => reset_enable,
+  clk => init_clk,
+  enable => onboard_mmcm_locked,
   reset_in => global_reset,
-  reset_out => global_reset_IO_clk
+  reset_out => global_reset_init_clk
 );
 
 --------------------------------------------------------------------------------
@@ -614,7 +627,7 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
   adcPipelining:process(signal_clk)
   begin
   	if rising_edge(signal_clk) then
-  		if reset0 = '1' then
+  		if reset1 = '1' then
   			-- pipe on output side of FIFO
   			adc_dout_pipe <= (others => (others => (others => '0')));
   			-- pipe on input side of FIFO
@@ -649,7 +662,7 @@ end generate adcChip;
 adcEnable:process(signal_clk)
 begin
   if rising_edge(signal_clk) then
-    if reset0 = '1' then
+    if reset1 = '1' then
       enables_reg <= (others => '0');
       fifo_reset <= '1';
       fifo_rd_en <= (others => '0');
@@ -675,7 +688,6 @@ end process adcEnable;
 --------------------------------------------------------------------------------
 tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 
-
 	registers:entity tes.channel_registers
   generic map(
     CHANNEL => c,
@@ -686,7 +698,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   )
   port map(
     clk => signal_clk,
-    reset => reset0,
+    reset => reset1,
     data => channel_data(c),
     address => channel_address(c),
     write => channel_reg_write(c),
@@ -724,7 +736,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 	cpu:entity tes.channel_controller
 		port map(
 			clk => io_clk,
-			reset => reset0,
+			reset => reset1,
 			uart_tx => channel_rx(c),
 			uart_rx => channel_tx(c),
 			reg_address => channel_address(c),
@@ -736,17 +748,17 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 		);
 
 	--TODO add reset??
-  delay:entity tes.RAM_delay
-  generic map(
-    DEPTH => 2**DELAY_BITS,
-    DATA_BITS => ADC_BITS
-  )
-  port map(
-    clk => signal_clk,
-    data_in => adc_samples(c),
-    delay => to_integer(channel_registers(c).capture.delay),
-    delayed => adc_delayed(c)
-  );
+--  delay:entity tes.RAM_delay
+--  generic map(
+--    DEPTH => 2**DELAY_BITS,
+--    DATA_BITS => ADC_BITS
+--  )
+--  port map(
+--    clk => signal_clk,
+--    data_in => adc_samples(c),
+--    delay => to_integer(channel_registers(c).capture.delay),
+--    delayed => adc_delayed(c)
+--  );
 
 --  inputSel:entity tes.input_sel
 --  generic map(
@@ -761,217 +773,217 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 --    output => adc_samples(c)
 --  );
 
-	measurement:entity tes.measurement_unit
-  generic map(
-    FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
-    CHANNEL => c,
-    ENDIANNESS => ENDIANNESS
-  )
-  port map(
-    clk => signal_clk,
-    reset => reset2,
-    adc_sample => adc_delayed(c),
-    registers => channel_registers(c),
-    filter_config_data => filter_config_data(c),
-    filter_config_valid => filter_config_valid(c),
-    filter_config_ready => filter_config_ready(c),
-    filter_reload_data => filter_data(c),
-    filter_reload_valid => filter_valid(c),
-    filter_reload_ready => filter_ready(c),
-    filter_reload_last => filter_last(c),
-    filter_reload_last_missing => filter_last_missing(c),
-    filter_reload_last_unexpected => filter_last_unexpected(c),
-    dif_config_data => dif_config_data(c),
-    dif_config_valid => dif_config_valid(c),
-    dif_config_ready => dif_config_ready(c),
-    dif_reload_data => dif_data(c),
-    dif_reload_valid => dif_valid(c),
-    dif_reload_ready => dif_ready(c),
-    dif_reload_last => dif_last(c),
-    dif_reload_last_missing => dif_last_missing(c),
-    dif_reload_last_unexpected => dif_last_unexpected(c),
-    measurements => measurements(c),
-    mca_value_select => value_select,
-    mca_trigger_select => trigger_select,
-    mca_value => mca_values(c),
-    mca_value_valid => mca_value_valids(c),
-    mux_full => mux_full,
-    start => starts(c),
-    dump => dumps(c),
-    commit => commits(c),
-    cfd_error => cfd_errors(c),
-    time_overflow => time_overflows(c),
-    peak_overflow => peak_overflows(c),
-    framer_overflow => framer_overflows(c),
-    mux_overflow => mux_overflows(c),
-    measurement_overflow => measurement_overflows(c),
-    baseline_underflow => baseline_errors(c),
-    eventstream => eventstreams(c),
-    valid => eventstreams_valid(c),
-    ready => eventstreams_ready(c)
-  );
+--	measurement:entity tes.measurement_unit
+--  generic map(
+--    FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
+--    CHANNEL => c,
+--    ENDIANNESS => ENDIANNESS
+--  )
+--  port map(
+--    clk => signal_clk,
+--    reset => reset2,
+--    adc_sample => adc_delayed(c),
+--    registers => channel_registers(c),
+--    filter_config_data => filter_config_data(c),
+--    filter_config_valid => filter_config_valid(c),
+--    filter_config_ready => filter_config_ready(c),
+--    filter_reload_data => filter_data(c),
+--    filter_reload_valid => filter_valid(c),
+--    filter_reload_ready => filter_ready(c),
+--    filter_reload_last => filter_last(c),
+--    filter_reload_last_missing => filter_last_missing(c),
+--    filter_reload_last_unexpected => filter_last_unexpected(c),
+--    dif_config_data => dif_config_data(c),
+--    dif_config_valid => dif_config_valid(c),
+--    dif_config_ready => dif_config_ready(c),
+--    dif_reload_data => dif_data(c),
+--    dif_reload_valid => dif_valid(c),
+--    dif_reload_ready => dif_ready(c),
+--    dif_reload_last => dif_last(c),
+--    dif_reload_last_missing => dif_last_missing(c),
+--    dif_reload_last_unexpected => dif_last_unexpected(c),
+--    measurements => measurements(c),
+--    mca_value_select => value_select,
+--    mca_trigger_select => trigger_select,
+--    mca_value => mca_values(c),
+--    mca_value_valid => mca_value_valids(c),
+--    mux_full => mux_full,
+--    start => starts(c),
+--    dump => dumps(c),
+--    commit => commits(c),
+--    cfd_error => cfd_errors(c),
+--    time_overflow => time_overflows(c),
+--    peak_overflow => peak_overflows(c),
+--    framer_overflow => framer_overflows(c),
+--    mux_overflow => mux_overflows(c),
+--    measurement_overflow => measurement_overflows(c),
+--    baseline_underflow => baseline_errors(c),
+--    eventstream => eventstreams(c),
+--    valid => eventstreams_valid(c),
+--    ready => eventstreams_ready(c)
+--  );
 end generate tesChannel;
 --------------------------------------------------------------------------------
 
-mux:entity tes.eventstream_mux
-generic map(
-  --CHANNEL_BITS => CHANNEL_BITS,
-  CHANNELS => DSP_CHANNELS,
-  TIME_BITS => TIME_BITS,
-  TIMESTAMP_BITS => TIMESTAMP_BITS,
-  TICKPERIOD_BITS => TICK_PERIOD_BITS,
-  MIN_TICKPERIOD => MIN_TICKPERIOD,
-  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
-  ENDIANNESS => ENDIANNESS
-)
-port map(
-  clk => signal_clk,
-  reset => reset1,
-  start => starts,
-  commit => commits,
-  dump => dumps,
-  instreams => eventstreams,
-  instream_valids => eventstreams_valid,
-  instream_readys => eventstreams_ready,
-  full => mux_full,
-  tick_period => global.tick_period,
-  window => global.window,
-  cfd_errors => cfd_errors,
-  framer_overflows => framer_overflows,
-  mux_overflows => mux_overflows,
-  measurement_overflows => measurement_overflows,
-  peak_overflows => peak_overflows,
-  time_overflows => time_overflows,
-  baseline_underflows => baseline_errors,
-  muxstream => muxstream,
-  valid => muxstream_valid,
-  ready => muxstream_ready
-);
+--mux:entity tes.eventstream_mux
+--generic map(
+--  --CHANNEL_BITS => CHANNEL_BITS,
+--  CHANNELS => DSP_CHANNELS,
+--  TIME_BITS => TIME_BITS,
+--  TIMESTAMP_BITS => TIMESTAMP_BITS,
+--  TICKPERIOD_BITS => TICK_PERIOD_BITS,
+--  MIN_TICKPERIOD => MIN_TICKPERIOD,
+--  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
+--  ENDIANNESS => ENDIANNESS
+--)
+--port map(
+--  clk => signal_clk,
+--  reset => reset1,
+--  start => starts,
+--  commit => commits,
+--  dump => dumps,
+--  instreams => eventstreams,
+--  instream_valids => eventstreams_valid,
+--  instream_readys => eventstreams_ready,
+--  full => mux_full,
+--  tick_period => global.tick_period,
+--  window => global.window,
+--  cfd_errors => cfd_errors,
+--  framer_overflows => framer_overflows,
+--  mux_overflows => mux_overflows,
+--  measurement_overflows => measurement_overflows,
+--  peak_overflows => peak_overflows,
+--  time_overflows => time_overflows,
+--  baseline_underflows => baseline_errors,
+--  muxstream => muxstream,
+--  valid => muxstream_valid,
+--  ready => muxstream_ready
+--);
 
-mcaChanSel:entity tes.mca_channel_selector
-generic map(
-  CHANNELS => DSP_CHANNELS,
-  VALUE_BITS   => MCA_VALUE_BITS
-)
-port map(
-  clk => signal_clk,
-  reset => reset1,
-  channel_select => channel_select,
-  values => mca_values,
-  valids => mca_value_valids,
-  value => mca_value,
-  valid => mca_value_valid
-);
+--mcaChanSel:entity tes.mca_channel_selector
+--generic map(
+--  CHANNELS => DSP_CHANNELS,
+--  VALUE_BITS   => MCA_VALUE_BITS
+--)
+--port map(
+--  clk => signal_clk,
+--  reset => reset1,
+--  channel_select => channel_select,
+--  values => mca_values,
+--  valids => mca_value_valids,
+--  value => mca_value,
+--  valid => mca_value_valid
+--);
 
-mca:entity tes.mca_unit
-generic map(
-  CHANNELS => DSP_CHANNELS,
-  ADDRESS_BITS => MCA_ADDRESS_BITS,
-  COUNTER_BITS => MCA_COUNTER_BITS,
-  VALUE_BITS => MCA_VALUE_BITS,
-  TOTAL_BITS => MCA_TOTAL_BITS,
-  TICKCOUNT_BITS => MCA_TICKCOUNT_BITS,
-  TICKPERIOD_BITS => TICK_PERIOD_BITS,
-  MIN_TICK_PERIOD => MIN_TICK_PERIOD,
-  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
-  ENDIANNESS => ENDIANNESS
-)
-port map(
-  clk => signal_clk,
-  reset => reset1,
-  initialising => open,
-  --TODO remove redundant register port
-  update_asap => global.mca.update_asap,
-  --TODO remove redundant register port
-  update_on_completion => global.mca.update_on_completion,
-  updated => updated, --TODO implement CPU interupt
-  registers => global.mca,
-  --TODO remove redundant register port
-  tick_period => global.tick_period,
-  channel_select => channel_select,
-  value_select => value_select,
-  trigger_select => trigger_select,
-  value => mca_value,
-  value_valid => mca_value_valid,
-  stream => mcastream,
-  valid => mcastream_valid,
-  ready => mcastream_ready
-);
+--mca:entity tes.mca_unit
+--generic map(
+--  CHANNELS => DSP_CHANNELS,
+--  ADDRESS_BITS => MCA_ADDRESS_BITS,
+--  COUNTER_BITS => MCA_COUNTER_BITS,
+--  VALUE_BITS => MCA_VALUE_BITS,
+--  TOTAL_BITS => MCA_TOTAL_BITS,
+--  TICKCOUNT_BITS => MCA_TICKCOUNT_BITS,
+--  TICKPERIOD_BITS => TICK_PERIOD_BITS,
+--  MIN_TICK_PERIOD => MIN_TICK_PERIOD,
+--  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
+--  ENDIANNESS => ENDIANNESS
+--)
+--port map(
+--  clk => signal_clk,
+--  reset => reset1,
+--  initialising => open,
+--  --TODO remove redundant register port
+--  update_asap => global.mca.update_asap,
+--  --TODO remove redundant register port
+--  update_on_completion => global.mca.update_on_completion,
+--  updated => updated, --TODO implement CPU interupt
+--  registers => global.mca,
+--  --TODO remove redundant register port
+--  tick_period => global.tick_period,
+--  channel_select => channel_select,
+--  value_select => value_select,
+--  trigger_select => trigger_select,
+--  value => mca_value,
+--  value_valid => mca_value_valid,
+--  stream => mcastream,
+--  valid => mcastream_valid,
+--  ready => mcastream_ready
+--);
 
-enet:entity tes.ethernet_framer
-generic map(
-  MTU_BITS => MTU_BITS,
-  FRAMER_ADDRESS_BITS => ETHERNET_FRAMER_ADDRESS_BITS,
-  DEFAULT_MTU => DEFAULT_MTU,
-  DEFAULT_TICK_LATENCY => DEFAULT_TICK_LATENCY,
-  ENDIANNESS => ENDIANNESS
-)
-port map(
-  clk => signal_clk,
-  reset => reset0,
-  mtu => global.mtu,
-  tick_latency => global.tick_latency,
-  eventstream => muxstream,
-  eventstream_valid => muxstream_valid,
-  eventstream_ready => muxstream_ready,
-  mcastream => mcastream,
-  mcastream_valid => mcastream_valid,
-  mcastream_ready => mcastream_ready,
-  ethernetstream => ethernetstream,
-  ethernetstream_valid => ethernetstream_valid,
-  ethernetstream_ready => ethernetstream_ready
-);
+--enet:entity tes.ethernet_framer
+--generic map(
+--  MTU_BITS => MTU_BITS,
+--  FRAMER_ADDRESS_BITS => ETHERNET_FRAMER_ADDRESS_BITS,
+--  DEFAULT_MTU => DEFAULT_MTU,
+--  DEFAULT_TICK_LATENCY => DEFAULT_TICK_LATENCY,
+--  ENDIANNESS => ENDIANNESS
+--)
+--port map(
+--  clk => signal_clk,
+--  reset => reset0,
+--  mtu => global.mtu,
+--  tick_latency => global.tick_latency,
+--  eventstream => muxstream,
+--  eventstream_valid => muxstream_valid,
+--  eventstream_ready => muxstream_ready,
+--  mcastream => mcastream,
+--  mcastream_valid => mcastream_valid,
+--  mcastream_ready => mcastream_ready,
+--  ethernetstream => ethernetstream,
+--  ethernetstream_valid => ethernetstream_valid,
+--  ethernetstream_ready => ethernetstream_ready
+--);
 
-enetCdc:entity tes.CDC_bytestream_adapter
-port map(
-  s_clk => signal_clk,
-  s_reset => reset0,
-  streambus => ethernetstream,
-  streambus_valid => ethernetstream_valid,
-  streambus_ready => ethernetstream_ready,
-  b_clk => io_clk,
-  b_reset => reset0,
-  bytestream => bytestream,
-  bytestream_valid => bytestream_valid,
-  bytestream_ready => to_boolean(bytestream_ready),
-  bytestream_last => bytestream_last
-);
+--enetCdc:entity tes.CDC_bytestream_adapter
+--port map(
+--  s_clk => signal_clk,
+--  s_reset => reset0,
+--  streambus => ethernetstream,
+--  streambus_valid => ethernetstream_valid,
+--  streambus_ready => ethernetstream_ready,
+--  b_clk => io_clk,
+--  b_reset => reset0,
+--  bytestream => bytestream,
+--  bytestream_valid => bytestream_valid,
+--  bytestream_ready => to_boolean(bytestream_ready),
+--  bytestream_last => bytestream_last
+--);
 
-emac:entity work.v6_emac_v2_3
-port map(
-  global_reset_IO_clk => global_reset_IO_clk,
-  IO_clk => io_clk,
-  s_axi_aclk => axi_clk,
-  refclk_bufg => refclk,
-  tx_axis_fifo_tdata => bytestream,
-  tx_axis_fifo_tvalid => to_std_logic(bytestream_valid),
-  tx_axis_fifo_tready => bytestream_ready,
-  tx_axis_fifo_tlast => to_std_logic(bytestream_last),
-  phy_resetn => phy_resetn,
-  gmii_txd => gmii_txd,
-  gmii_tx_en => gmii_tx_en,
-  gmii_tx_er => gmii_tx_er,
-  gmii_tx_clk => gmii_tx_clk,
-  gmii_rxd => gmii_rxd,
-  gmii_rx_dv => gmii_rx_dv,
-  gmii_rx_er => gmii_rx_er,
-  gmii_rx_clk => gmii_rx_clk,
-  gmii_col => gmii_col,
-  gmii_crs => gmii_crs,
-  mii_tx_clk => mii_tx_clk,
-  mdio => mdio,
-  mdc => mdc,
-  tx_statistics_s => tx_statistics_s,
-  rx_statistics_s => rx_statistics_s,
-  pause_req_s => pause_req_s,
-  mac_speed => mac_speed,
-  update_speed => update_speed,
-  serial_command => serial_command,
-  serial_response => serial_response,
-  reset_error => reset_error,
-  frame_error => frame_error,
-  frame_errorn => frame_errorn
-);
+--emac:entity work.v6_emac_v2_3
+--port map(
+--  global_reset_IO_clk => global_reset_IO_clk,
+--  IO_clk => io_clk,
+--  s_axi_aclk => axi_clk,
+--  refclk_bufg => refclk,
+--  tx_axis_fifo_tdata => bytestream,
+--  tx_axis_fifo_tvalid => to_std_logic(bytestream_valid),
+--  tx_axis_fifo_tready => bytestream_ready,
+--  tx_axis_fifo_tlast => to_std_logic(bytestream_last),
+--  phy_resetn => phy_resetn,
+--  gmii_txd => gmii_txd,
+--  gmii_tx_en => gmii_tx_en,
+--  gmii_tx_er => gmii_tx_er,
+--  gmii_tx_clk => gmii_tx_clk,
+--  gmii_rxd => gmii_rxd,
+--  gmii_rx_dv => gmii_rx_dv,
+--  gmii_rx_er => gmii_rx_er,
+--  gmii_rx_clk => gmii_rx_clk,
+--  gmii_col => gmii_col,
+--  gmii_crs => gmii_crs,
+--  mii_tx_clk => mii_tx_clk,
+--  mdio => mdio,
+--  mdc => mdc,
+--  tx_statistics_s => tx_statistics_s,
+--  rx_statistics_s => rx_statistics_s,
+--  pause_req_s => pause_req_s,
+--  mac_speed => mac_speed,
+--  update_speed => update_speed,
+--  serial_command => serial_command,
+--  serial_response => serial_response,
+--  reset_error => reset_error,
+--  frame_error => frame_error,
+--  frame_errorn => frame_errorn
+--);
 
 registers:entity tes.global_registers
 generic map(
@@ -979,7 +991,8 @@ generic map(
 )
 port map(
   reg_clk => signal_clk,
-  reg_reset => reset0,
+  reg_reset => reset1,
+  mmcm_locked => fmc108_MMCM_locked,
   data => reg_data,
   address => reg_address,
   value => global_value,
@@ -994,6 +1007,7 @@ port map(
   output => global_write
 );
 
+--reset0 <= '0';
 cpu:entity tes.main_controller
 generic map(
   CHANNELS => DSP_CHANNELS,
@@ -1001,26 +1015,27 @@ generic map(
 )
 port map(
   clk => io_clk,
-  LEDs => LEDs,
-  reset => global_reset,
+  --LEDs => LEDs,
+  reset => reset1,
+  sys_reset => open,
   FMC_power_good => FMC_power_good,
   FMC_present => FMC_present,
   FMC_AD9510_status => FMC_AD9510_status,
-  fmc_mmcm_locked => onboard_mmcm_locked,
+  fmc_mmcm_locked => std_logic(test_counter(30)),
   iodelay_ready => idelayctrl_rdy,
-  reset0 => reset0,
-  reset1 => reset1,
-  reset2 => reset2,
+  --reset0 => open, --reset0,
+  --reset1 => open, --reset1,
+  --reset2 => open, --reset2,
   interrupt => FALSE,
   interrupt_ack => open,
   main_rx => main_Rx,
   main_tx => main_Tx,
   channel_rx => channel_rx,
   channel_tx => channel_tx,
-  spi_clk => spi_clk,
-  spi_ce_n => spi_ce_n,
-  spi_miso => spi_miso,
-  spi_mosi => spi_mosi,
+  spi_clk => open, --spi_clk,
+  spi_ce_n => open, --spi_ce_n,
+  spi_miso => (others => '0'), --spi_miso,
+  spi_mosi => open, --spi_mosi,
   address => reg_address,
   data => reg_data,
   select_axi => open,
@@ -1031,5 +1046,27 @@ port map(
   axi_read => open,
   axi_write => open
 );
+
+initCpu:entity tes.init_controller
+	generic map(
+		CHANNELS  => CHANNELS,
+		ADC_CHIPS => ADC_CHIPS
+	)
+	port map(
+		clk => init_clk,
+		global_reset => global_reset_init_clk,
+		FMC_power_good => FMC_power_good,
+		FMC_present => FMC_present,
+		FMC_AD9510_status => FMC_AD9510_status,
+		fmc_mmcm_locked => fmc108_mmcm_locked,
+		iodelay_ready => idelayctrl_rdy,
+		reset0 => reset0,
+		reset1 => reset1,
+		reset2 => reset2,
+		spi_clk => spi_clk,
+		spi_ce_n => spi_ce_n,
+		spi_miso => spi_miso,
+		spi_mosi => spi_mosi
+	);
 
 end architecture RTL;

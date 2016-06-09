@@ -130,8 +130,7 @@ begin
     if reset = '1' then
       rw_collision <= (others => FALSE);
     else
-      rw_collision <= (rd_addr=wr_addr and wr_en) & 
-                       rw_collision(1);
+      rw_collision <= (rd_addr=wr_addr and wr_en) & rw_collision(1);
       newcount_pipe <= newcount & newcount_pipe(1);
     end if;
   end if;
@@ -166,13 +165,14 @@ saturated <= incremented_count(COUNTER_BITS)='1'
 adderPipeline:process(clk)
 begin
 if rising_edge(clk) then
-  inc <= to_unsigned(1,INC_BITS)+unsigned(to_std_logic(collision(1 to 1)));
+  inc <= to_unsigned(collision(1 to 1))+to_unsigned(1,INC_BITS);
   if rw_collision(2) then
-    incremented_count <= to_0IfX(('0' & newcount_pipe(2)) + inc + 
-                         unsigned(to_std_logic(collision(2 to 2))));
+  	--FIXME me check this infers adder + carry
+    incremented_count <= '0' & (to_0IfX(newcount_pipe(2) + inc + 
+                         to_unsigned(collision(2 to 2))));
   else
-    incremented_count <= to_0IfX(('0' & old_count) + inc + 
-                         unsigned(to_std_logic(collision(2 to 2))));
+    incremented_count <= '0' & (to_0IfX(old_count + inc + 
+                         to_unsigned(collision(2 to 2))));
   end if;
   if clear or read_count then
     newcount <= (others => '0');

@@ -4,7 +4,7 @@ package provide xilinx 2015.4.2
 
 namespace eval sim {
 	namespace export write_signal gen_names open_binfiles close_files \
-	flush_files write_signal
+	flush_files write_signal getbool
 }
 
 proc ::sim::gen_names {base chans} {
@@ -33,6 +33,32 @@ proc ::sim::flush_files fp_list {
 	foreach fp $fp_list {
 		flush $fp
 	}
+}
+
+proc ::sim::getbool signal {
+	set val [getsig $signal dec]
+	if { [string equal $val TRUE] } {
+		set val 1
+  } 
+	if { [string equal $val FALSE] } {
+		set val 0
+  } 
+	if { [string equal $val x] } {
+		set val 0
+	}
+	if { [string equal $val X] } {
+		set val 0
+	}
+	if { [string equal $val u] } {
+		set val 0
+	}
+	if { [string equal $val U] } {
+		set val 0
+	}
+	if { [string equal $val ?] } {
+		set val 0
+	}
+	return $val
 }
 
 # write signal to file fp with binary format 

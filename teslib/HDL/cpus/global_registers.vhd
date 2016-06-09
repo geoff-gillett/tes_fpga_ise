@@ -30,7 +30,10 @@ generic(
 port (
   reg_clk:in std_logic;
   reg_reset:in std_logic;
-  --!* register signals from/to channel CPU
+  
+  mmcm_locked:std_logic;
+  
+  -- register signals from/to channel CPU
   data:in register_data_t;
   address:in register_address_t;
 	value:out register_data_t;
@@ -56,6 +59,7 @@ registers <= reg;
 regwrite:process(reg_clk)
 begin
 	if rising_edge(reg_clk) then
+		--FIXME replace reset with init values
 		if reg_reset = '1' then
 			reg.adc_enable <= (others => '0');
 			reg.channel_enable <= (others => '0');

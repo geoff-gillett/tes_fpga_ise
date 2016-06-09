@@ -1,0 +1,77 @@
+
+                    ;-----------------------------------------------------------
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: IO_controller
+                    ; Project Name: teslib
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE initialise_AD9510
+                    ; default values are in the TABLE AD9510_defaults
+                    ; USES s0,s1,s2,s3,s4,s5,s6
+                    ;-----------------------------------------------------------
+ initialise_AD9510: FETCH s6, AD9510_spi_ce_bit
+       							LOAD s5, AD9510_defaults'upper
+                    LOAD s4, AD9510_defaults'lower
+  next_AD9510_init: CALL@ (s5 ,s4)
+                    COMPARE s2, FF
+                    JUMP NZ, AD9510_instruction
+                    LOAD s0, 00
+                    CALL SPI_clk_pulse;
+                    RETURN
+AD9510_instruction: STORE s2, temp
+  									OUTPUT s6, SPI_SEL_O_PORT      ; select AD9510 SPI
+  									LOAD s2, 00 									 ; write instruction
+                    CALL SPI_byte_transact
+										FETCH s2, temp                 ; run out of regs FIXME
+                    CALL SPI_byte_transact
+                    ADD s4, 01
+                    ADDCY s5, 00
+										CALL@ (s5 ,s4)
+                    CALL SPI_byte_transact
+                    CALL SPI_disable
+                    ADD s4, 01
+                    ADDCY s5, 00
+                    JUMP next_AD9510_init
+                    ;
+                    ;-----------------------------------------------------------
+                    ; TABLE of AD9510 initialisation settings
+                    ; address, data, address, data, ...
+                    ; the addresses are also used to validate commands
+                    ; An address of FF terminates the table  
+                    ;-----------------------------------------------------------
+TABLE AD9510_init1#,[3C,0C, 3D,0C, 3E,0C, 3F,0C, 40,03, 41,02, 42,02, 43,03]
+TABLE AD9510_init2#,[48,21, 49,00, 4A,21, 4B,00, 4C,21, 4D,00, 4E,21, 4F,00]
+TABLE AD9510_init3#,[50,21, 51,00, 52,21, 53,00, 54,21, 55,00, 56,21, 57,00]
+TABLE AD9510_init4#,[04,05, 05,00, 06,0F, 08,6F, 09,70, 0A,10, 0B,00, 0C,0A]
+TABLE AD9510_init5#,[45,02, 5A,01, FF]
+   AD9510_defaults: LOAD&RETURN s2, AD9510_init1#  
+                    LOAD&RETURN s2, AD9510_init2#  
+                    LOAD&RETURN s2, AD9510_init3#  
+                    LOAD&RETURN s2, AD9510_init4#  
+                    LOAD&RETURN s2, AD9510_init5#  
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE initialise_ADCs
+                    ; default values are in the TABLE ADC_defaults
+                    ; USES s0,s1,s2,s3,s4,s5
+                    ;-----------------------------------------------------------
+   initialise_ADCs: FETCH s0, AD9510_spi_ce_bit
+   									SUB s0, 01										; SPI enable mask for ALL ADCs
+                    RETURN Z
+                    OUTPUT s0, SPI_SEL_O_PORT   	; select all ADCs
+                    CALL ADC_write_enable
+                    LOAD s5, ADC_defaults'upper
+                    LOAD s4, ADC_defaults'lower
+     next_ADC_init: CALL@ (s5 ,s4)
+                    COMPARE s2, FF
+                    RETURN Z
+                    CALL ADC_SPI_transact
+                    ADD s4, 01
+                    ADDCY s5, 00
+                    JUMP next_ADC_init
+                    ;

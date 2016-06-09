@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="ethernet_framer_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="adc" />
+            <top_module name="boolean_vector" />
+            <top_module name="dsptypes" />
+            <top_module name="ethernet_framer_tb" />
+            <top_module name="events" />
+            <top_module name="functions" />
+            <top_module name="logic" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="registers" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_unsigned" />
+            <top_module name="types" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group21" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/ethernet_framer_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/mtu" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mtu[15:0]</obj_property>
+         <obj_property name="ObjectShortName">mtu[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/tick_latency" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_latency[15:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_latency[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/eventstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream</obj_property>
+         <obj_property name="ObjectShortName">eventstream</obj_property>
+         <wvobject fp_name="/ethernet_framer_tb/eventstream.discard" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.discard</obj_property>
+            <obj_property name="ObjectShortName">eventstream.discard</obj_property>
+         </wvobject>
+         <wvobject fp_name="/ethernet_framer_tb/eventstream.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">eventstream.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/ethernet_framer_tb/eventstream.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">eventstream.data</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/eventstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream_valid</obj_property>
+         <obj_property name="ObjectShortName">eventstream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/eventstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream_ready</obj_property>
+         <obj_property name="ObjectShortName">eventstream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/mcastream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream</obj_property>
+         <obj_property name="ObjectShortName">mcastream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/mcastream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream_valid</obj_property>
+         <obj_property name="ObjectShortName">mcastream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/mcastream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream_ready</obj_property>
+         <obj_property name="ObjectShortName">mcastream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/ethernetstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/ethernetstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream_valid</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/ethernetstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream_ready</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/default_mtu" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">default_mtu[15:0]</obj_property>
+         <obj_property name="ObjectShortName">default_mtu[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/default_tick_latency" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">default_tick_latency[15:0]</obj_property>
+         <obj_property name="ObjectShortName">default_tick_latency[15:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group119" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mtu" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mtu[15:0]</obj_property>
+         <obj_property name="ObjectShortName">mtu[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/tick_latency" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_latency[15:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_latency[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mcastream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream</obj_property>
+         <obj_property name="ObjectShortName">mcastream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mcastream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream_valid</obj_property>
+         <obj_property name="ObjectShortName">mcastream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mcastream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream_ready</obj_property>
+         <obj_property name="ObjectShortName">mcastream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/ethernetstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/ethernetstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream_valid</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/ethernetstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernetstream_ready</obj_property>
+         <obj_property name="ObjectShortName">ethernetstream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/eventstream_ready_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream_ready_int</obj_property>
+         <obj_property name="ObjectShortName">eventstream_ready_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/buffer_full" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">buffer_full</obj_property>
+         <obj_property name="ObjectShortName">buffer_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/buffer_empty" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">buffer_empty</obj_property>
+         <obj_property name="ObjectShortName">buffer_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/flush_events" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">flush_events</obj_property>
+         <obj_property name="ObjectShortName">flush_events</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/eventstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream</obj_property>
+         <obj_property name="ObjectShortName">eventstream</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+         <wvobject fp_name="/ethernet_framer_tb/UUT/eventstream.discard" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.discard</obj_property>
+            <obj_property name="ObjectShortName">eventstream.discard</obj_property>
+         </wvobject>
+         <wvobject fp_name="/ethernet_framer_tb/UUT/eventstream.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">eventstream.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/ethernet_framer_tb/UUT/eventstream.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">eventstream.data</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/eventstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream_valid</obj_property>
+         <obj_property name="ObjectShortName">eventstream_valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/eventstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstream_ready</obj_property>
+         <obj_property name="ObjectShortName">eventstream_ready</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mca_s" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_s</obj_property>
+         <obj_property name="ObjectShortName">mca_s</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mca_s_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_s_ready</obj_property>
+         <obj_property name="ObjectShortName">mca_s_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mca_s_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_s_valid</obj_property>
+         <obj_property name="ObjectShortName">mca_s_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/event_s" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">event_s</obj_property>
+         <obj_property name="ObjectShortName">event_s</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         <wvobject fp_name="/ethernet_framer_tb/UUT/event_s.discard" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.discard</obj_property>
+            <obj_property name="ObjectShortName">event_s.discard</obj_property>
+         </wvobject>
+         <wvobject fp_name="/ethernet_framer_tb/UUT/event_s.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">event_s.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/ethernet_framer_tb/UUT/event_s.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">event_s.data</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/event_s_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_s_ready</obj_property>
+         <obj_property name="ObjectShortName">event_s_ready</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/event_s_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_s_valid</obj_property>
+         <obj_property name="ObjectShortName">event_s_valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/arbiter_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">arbiter_state</obj_property>
+         <obj_property name="ObjectShortName">arbiter_state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/frame_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_state</obj_property>
+         <obj_property name="ObjectShortName">frame_state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/frame_address" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_address[3:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_address[3:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ff00</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/framer_word" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_word</obj_property>
+         <obj_property name="ObjectShortName">framer_word</obj_property>
+         <wvobject fp_name="/ethernet_framer_tb/UUT/framer_word.discard" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.discard</obj_property>
+            <obj_property name="ObjectShortName">framer_word.discard</obj_property>
+         </wvobject>
+         <wvobject fp_name="/ethernet_framer_tb/UUT/framer_word.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">framer_word.last</obj_property>
+         </wvobject>
+         <wvobject fp_name="/ethernet_framer_tb/UUT/framer_word.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">framer_word.data</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/framer_address" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_address[3:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_address[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/framer_we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_we[3:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_we[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/commit_frame" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit_frame</obj_property>
+         <obj_property name="ObjectShortName">commit_frame</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/framer_free" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_free[4:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_free[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mtu_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mtu_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">mtu_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/tick_latency_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_latency_count[15:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_latency_count[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/tick_latency_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_latency_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_latency_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/wait_for_tick" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">wait_for_tick</obj_property>
+         <obj_property name="ObjectShortName">wait_for_tick</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/event_frame_full" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_frame_full</obj_property>
+         <obj_property name="ObjectShortName">event_frame_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/lookahead" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead</obj_property>
+         <obj_property name="ObjectShortName">lookahead</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/lookahead_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead_valid</obj_property>
+         <obj_property name="ObjectShortName">lookahead_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/frame_free" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_free[4:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_free[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/inc_address" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">inc_address</obj_property>
+         <obj_property name="ObjectShortName">inc_address</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/framer_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_ready</obj_property>
+         <obj_property name="ObjectShortName">framer_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/event_s_size" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">event_s_size[15:0]</obj_property>
+         <obj_property name="ObjectShortName">event_s_size[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/lookahead_head" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead_head</obj_property>
+         <obj_property name="ObjectShortName">lookahead_head</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/event_s_last_hs" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_s_last_hs</obj_property>
+         <obj_property name="ObjectShortName">event_s_last_hs</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/event_s_hs" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_s_hs</obj_property>
+         <obj_property name="ObjectShortName">event_s_hs</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mca_s_hs" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_s_hs</obj_property>
+         <obj_property name="ObjectShortName">mca_s_hs</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/last_frame_address" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">last_frame_address[3:0]</obj_property>
+         <obj_property name="ObjectShortName">last_frame_address[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/last_frame_word" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">last_frame_word</obj_property>
+         <obj_property name="ObjectShortName">last_frame_word</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mca_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_last</obj_property>
+         <obj_property name="ObjectShortName">mca_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/trace_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">trace_last</obj_property>
+         <obj_property name="ObjectShortName">trace_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/lookahead_size" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead_size[15:0]</obj_property>
+         <obj_property name="ObjectShortName">lookahead_size[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/frame_size" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_size[15:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_size[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/lookahead_type" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">lookahead_type</obj_property>
+         <obj_property name="ObjectShortName">lookahead_type</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/event_s_type" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">event_s_type</obj_property>
+         <obj_property name="ObjectShortName">event_s_type</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/event_head" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_head</obj_property>
+         <obj_property name="ObjectShortName">event_head</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/header" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">header</obj_property>
+         <obj_property name="ObjectShortName">header</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mca_sequence" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_sequence[15:0]</obj_property>
+         <obj_property name="ObjectShortName">mca_sequence[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/event_sequence" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">event_sequence[15:0]</obj_property>
+         <obj_property name="ObjectShortName">event_sequence[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/trace_sequence" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">trace_sequence[15:0]</obj_property>
+         <obj_property name="ObjectShortName">trace_sequence[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/mtu_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mtu_bits</obj_property>
+         <obj_property name="ObjectShortName">mtu_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/tick_latency_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_latency_bits</obj_property>
+         <obj_property name="ObjectShortName">tick_latency_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/framer_address_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_address_bits</obj_property>
+         <obj_property name="ObjectShortName">framer_address_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/default_mtu" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">default_mtu[15:0]</obj_property>
+         <obj_property name="ObjectShortName">default_mtu[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/default_tick_latency" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">default_tick_latency[15:0]</obj_property>
+         <obj_property name="ObjectShortName">default_tick_latency[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/ethernet_header_words" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ethernet_header_words</obj_property>
+         <obj_property name="ObjectShortName">ethernet_header_words</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/sequence_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">sequence_bits</obj_property>
+         <obj_property name="ObjectShortName">sequence_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ethernet_framer_tb/UUT/endianness" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">endianness[1:6]</obj_property>
+         <obj_property name="ObjectShortName">endianness[1:6]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

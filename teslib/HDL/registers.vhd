@@ -409,6 +409,7 @@ constant MCA_UPDATE_ADDR_BIT:integer:=13;
 constant NUM_CTL_FLAGS:integer:=2; 
 constant CTL_FMC108_INTERNAL_CLK_BIT:integer:=0;
 constant CTL_VCO_POWER_BIT:integer:=1;
+constant CTL_MMCM_LOCKED_BIT:integer:=2;
 --MCA flags
 constant MCA_UPDATE_ON_COMPLETION_BIT:integer:=0;
 constant MCA_UPDATE_ASAP:integer:=1;

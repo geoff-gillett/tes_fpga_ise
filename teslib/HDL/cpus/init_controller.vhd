@@ -23,16 +23,16 @@ use work.KCPSM6_AXI.all;
 
 --! Control unit -- CPU receives and responds to commands over the USB UART
 --! interface.
-entity io_controller is
+entity init_controller is
 generic(
-  TES_CHANNEL_BITS:integer:=3;
+  CHANNELS:integer:=3;
   ADC_CHIPS:integer:=4
   --SPI_CHANNELS:integer:=4
 );
 port(
   --!* system signals
   clk:in std_logic;
-  LEDs:out std_logic_vector(7 downto 0);
+  --LEDs:out std_logic_vector(7 downto 0);
   --!* main UART connected to the host PC
   --reset1:in std_logic;
   global_reset:in std_logic;
@@ -42,7 +42,8 @@ port(
   FMC_power_good:in std_logic;
   FMC_present:in std_logic;
   FMC_AD9510_status:in std_logic;
-  pipeline_mmcm_locked:in std_logic;
+  fmc_mmcm_locked:in std_logic;
+  iodelay_ready:in std_logic;
   ------------------------------------------------------------------------------
   -- resets
   ------------------------------------------------------------------------------
@@ -52,40 +53,43 @@ port(
   ------------------------------------------------------------------------------
   -- Interrupts from MCA
   ------------------------------------------------------------------------------
-  interrupt:in boolean; -- interrupt
-  interrupt_ack:out boolean;
+  --interrupt:in boolean; -- interrupt
+  --interrupt_ack:out boolean;
   ------------------------------------------------------------------------------
   --!* UART communication with HOST and channel CPUs
   ------------------------------------------------------------------------------
-  main_rx:in std_logic;
-  main_tx:out std_logic;
-  channel_rx:in std_logic_vector(2**TES_CHANNEL_BITS-1 downto 0);
-  channel_tx:out std_logic_vector(2**TES_CHANNEL_BITS-1 downto 0);
+  --main_rx:in std_logic;
+  --main_tx:out std_logic;
+  --channel_rx:in std_logic_vector(CHANNELS-1 downto 0);
+  --channel_tx:out std_logic_vector(CHANNELS-1 downto 0);
   ------------------------------------------------------------------------------
   --!* SPI communication 
   ------------------------------------------------------------------------------
   spi_clk:out std_logic;
   spi_ce_n:out std_logic_vector(ADC_CHIPS downto 0);
   spi_miso:in std_logic_vector(ADC_CHIPS downto 0);
-  spi_mosi:out std_logic;
+  spi_mosi:out std_logic
   ------------------------------------------------------------------------------
-  -- Global Register IO
+  -- Register and AXI IO
   ------------------------------------------------------------------------------
-  address:out register_address_t;
-  data_out:out register_data_t;
-  data_in:in register_data_t;
-  write:out boolean --flag
-  ------------------------------------------------------------------------------
-  --!* AXI lite master interface to the system
-  --TODO rework the AXI its currently not used
-  --But should be used to control the TEMAC to add jumbo frames/statistics
-  ------------------------------------------------------------------------------
-);
-end entity io_controller;
---
-architecture picoblaze of io_controller is
+  --address:out register_address_t;
+  --data:out register_data_t;
+  --select_axi:out boolean;  -- selects value to come from axi
+  --value:in register_data_t;
+  --axi_resp:in std_logic_vector(1 downto 0);
+  --axi_resp_valid:in boolean;
+  -- Global registers
+  --reg_write:out boolean; 
+  -- AXI interface to ethernet MAC
+  --axi_read:out boolean;
+  --axi_write:out boolean
   
-constant TES_CHANNELS:integer:=2**TES_CHANNEL_BITS;
+);
+end entity init_controller;
+--
+architecture picoblaze of init_controller is
+  
+constant TES_CHANNELS:integer:=CHANNELS;
 constant SPI_CHANNELS:integer:=ADC_CHIPS+1;
 --
 --------------------------------------------------------------------------------
@@ -112,8 +116,8 @@ signal main_uart_sel:boolean; --true io through main uart otherwise the chan
 --------------------------------------------------------------------------------
 --Channel UART signals
 --------------------------------------------------------------------------------
-signal channel_sel:std_logic_vector(TES_CHANNELS-1 downto 0):=(others => '0');
-signal channel_tx_int:std_logic_vector(TES_CHANNELS-1 downto 0);
+signal channel_sel:std_logic_vector(CHANNELS-1 downto 0):=(others => '0');
+signal channel_tx_int:std_logic_vector(CHANNELS-1 downto 0);
 --Signals used to define baud rate
 signal baud_count:integer range 0 to 67:=0;
 signal en_16_x_baud:std_logic:= '0';
@@ -134,7 +138,6 @@ signal serial_in_reg:std_logic;
 signal uart_reset_tx:std_logic;
 signal uart_reset_rx:std_logic;
 --
-signal test_regs:std_logic_vector(7 downto 0):=(others => '0');
 signal spi_ce_n_int:std_logic_vector(SPI_CHANNELS-1 downto 0):=(others => '1');
 signal spi_clk_int:std_logic;
 signal uart_reset_tx_int:std_logic;
@@ -147,7 +150,9 @@ signal write_byte_to_data:boolean;
 signal interrupt_ack_int:std_logic;
 --
 begin
-interrupt_ack <= to_boolean(interrupt_ack_int);
+--interrupt_ack <= to_boolean(interrupt_ack_int);
+--interrupt <= to_boolean(interrupt_ack_int);
+
 reset0 <= reset0_int;
 reset1 <= reset1_int;
 reset2 <= reset2_int;
@@ -156,31 +161,12 @@ spi_clk <= spi_clk_int;
 spi_mosi <= spi_mosi_int;
 --
 --LEDs(SPI_CHANNELS-1 downto 0) <= not spi_ce_n_int;
-LEDs <= (others => '0');
+--LEDs <= (others => '0');
 --
-debug:process(clk)
-begin
-if rising_edge(clk) then
-  if k_write_strobe='1' and port_id(CONTROL_COO_PORTID_BIT)='1' and 
-     out_port(CONTROL_TEST_BIT)='1' 
-  then
-    test_regs(1) <= not test_regs(1);
-  end if;
-  if uart_wr_en='1' then
-    test_regs(2) <= not test_regs(2);
-  end if;
-  if serial_out_reg='0' then
-    test_regs(7) <=  '1';
-  end if;
-  if serial_in_reg='0' then
-    test_regs(6) <= '1';
-  end if;
-end if;
-end process debug;
 --------------------------------------------------------------------------------
 -- reset sequencer
 --------------------------------------------------------------------------------
-resetSequencer:process(clk)
+resetSeqReg:process(clk)
 begin
 if rising_edge(clk) then
   if global_reset='1' then
@@ -198,14 +184,15 @@ if rising_edge(clk) then
     end if;
   end if;
 end if;
-end process resetSequencer;
+end process resetSeqReg;
 --------------------------------------------------------------------------------
 --Picoblaze CPU and UARTs
 --------------------------------------------------------------------------------
 CPU:entity work.kcpsm6
 generic map(
   HWBUILD => to_std_logic(to_unsigned(ADC_CHIPS,4) & 
-               to_unsigned(TES_CHANNEL_BITS,4)
+							 --FIXME check this works was CHANNEL_BITS
+               to_unsigned(ceilLog2(CHANNELS),4) 
              ), 
   INTERRUPT_VECTOR => X"7F0",
   SCRATCH_PAD_MEMORY_SIZE => 64
@@ -220,8 +207,8 @@ port map(
   out_port => out_port,
   read_strobe => read_strobe,
   in_port => in_port,
-  interrupt => interrupt_ack_int,
-  interrupt_ack => interrupt_ack_int,
+  interrupt => '0', --to_std_logic(interrupt),
+  interrupt_ack => open, --interrupt_ack_int,
   sleep => kcpsm6_sleep,
   reset => cpu_reset,
   clk => clk
@@ -230,7 +217,7 @@ port map(
 --kcpsm6_reset <= global_reset or cpu_reset or rdl;
 kcpsm6_sleep <= '0';
 
-programROM:entity work.IO_controller_program
+programROM:entity work.init_controller_program
 port map(
   address => program_address,
   instruction => instruction,
@@ -243,67 +230,67 @@ port map(
 -- To set serial communication baud rate to 115,200 then en_16_x_baud must pulse 
 -- High at 1,843,200Hz which is every 67.81 cycles at 125MHz. In this 
 -- implementation a pulse is generated every 68 cycles.
-baudRate:process(clk)
-begin
-if rising_edge(clk) then
-  if baud_count=67 then                 -- counts 68 states including zero
-    baud_count <= 0;
-    en_16_x_baud <= '1';                -- single cycle enable pulse
-   else
-    baud_count <= baud_count+1;
-    en_16_x_baud <= '0';
-  end if;
-end if;
-end process baudRate;
+--baudRate:process(clk)
+--begin
+--if rising_edge(clk) then
+--  if baud_count=67 then                 -- counts 68 states including zero
+--    baud_count <= 0;
+--    en_16_x_baud <= '1';                -- single cycle enable pulse
+--   else
+--    baud_count <= baud_count+1;
+--    en_16_x_baud <= '0';
+--  end if;
+--end if;
+--end process baudRate;
 --------------------------------------------------------------------------------
 -- UART Transmitter
 --------------------------------------------------------------------------------
-uartTx:entity work.uart_tx6
-port map(
-  data_in => uart_din,
-  en_16_x_baud => en_16_x_baud,
-  serial_out => serial_out,
-  buffer_write => uart_wr_en,
-  buffer_data_present => tx_not_empty,
-  buffer_half_full => open,
-  buffer_full => tx_full,
-  buffer_reset => uart_reset_tx_int,
-  clk => clk
-);
-uart_reset_tx_int <= uart_reset_tx or reset2_int;
-main_tx <= serial_out_reg when main_uart_sel else '1';
-channel_tx_int <= (others => serial_out_reg) when not main_uart_sel 
-               else (others => '1');
-channel_tx <= (not channel_sel) or channel_tx_int;
--- registering the serial signals is necessary to avoid a MAP error
-regUart:process(clk)
-begin
-if rising_edge(clk) then
-  serial_out_reg <= serial_out;
-  serial_in_reg <= serial_in;
-  uart_din <= out_port;
-  uart_wr_en <= write_strobe and port_id(UART_IO_PORTID_BIT);
-end if;
-end process regUart;
---------------------------------------------------------------------------------
--- UART Receiver
---------------------------------------------------------------------------------
-uartRx:entity work.uart_rx6
-port map(
-  serial_in => serial_in_reg, --main_Rx,
-  en_16_x_baud => en_16_x_baud,
-  data_out => uart_rx_byte,
-  buffer_read => uart_rd_en,
-  buffer_data_present => rx_not_empty,
-  buffer_half_full => open,
-  buffer_full => open,
-  buffer_reset => uart_reset_rx_int,
-  clk => clk
-);
-uart_reset_rx_int <= uart_reset_rx or reset2_int;
-serial_in <= main_rx when main_uart_sel 
-             else to_std_logic(unaryOR(channel_rx and channel_sel));
-uart_rd_en <= read_strobe and port_id(UART_IO_PORTID_BIT);
+--uartTx:entity work.uart_tx6
+--port map(
+--  data_in => uart_din,
+--  en_16_x_baud => en_16_x_baud,
+--  serial_out => serial_out,
+--  buffer_write => uart_wr_en,
+--  buffer_data_present => tx_not_empty,
+--  buffer_half_full => open,
+--  buffer_full => tx_full,
+--  buffer_reset => uart_reset_tx_int,
+--  clk => clk
+--);
+--uart_reset_tx_int <= uart_reset_tx or reset2_int;
+----main_tx <= serial_out_reg when main_uart_sel else '1';
+--channel_tx_int <= (others => serial_out_reg) when not main_uart_sel 
+--               else (others => '1');
+----channel_tx <= (not channel_sel) or channel_tx_int;
+---- registering the serial signals is necessary to avoid a MAP error
+--regUart:process(clk)
+--begin
+--if rising_edge(clk) then
+--  serial_out_reg <= serial_out;
+--  serial_in_reg <= serial_in;
+--  uart_din <= out_port;
+--  uart_wr_en <= write_strobe and port_id(UART_IO_PORTID_BIT);
+--end if;
+--end process regUart;
+----------------------------------------------------------------------------------
+---- UART Receiver
+----------------------------------------------------------------------------------
+--uartRx:entity work.uart_rx6
+--port map(
+--  serial_in => serial_in_reg, --main_Rx,
+--  en_16_x_baud => en_16_x_baud,
+--  data_out => uart_rx_byte,
+--  buffer_read => uart_rd_en,
+--  buffer_data_present => rx_not_empty,
+--  buffer_half_full => open,
+--  buffer_full => open,
+--  buffer_reset => uart_reset_rx_int,
+--  clk => clk
+--);
+--uart_reset_rx_int <= uart_reset_rx or reset2_int;
+--serial_in <= main_rx when main_uart_sel 
+--             else to_std_logic(unaryOR(channel_rx and channel_sel));
+--uart_rd_en <= read_strobe and port_id(UART_IO_PORTID_BIT);
 --------------------------------------------------------------------------------
 -- CPU IO ports 
 --------------------------------------------------------------------------------
@@ -319,6 +306,7 @@ if rising_edge(clk) then
   end if;
 end if;
 end process IOselect;
+--select_axi <= to_boolean(IO_sel(SEL_AXI_BIT));
 -- CPU input port mux
 inportMux:process(clk)
 begin
@@ -339,8 +327,12 @@ if rising_edge(clk) then
                   STATUS_FMC_PRESENT_BIT => FMC_present,
                   STATUS_FMC_POWER_BIT => FMC_power_good,
                   STATUS_FMC_AD9510_BIT => FMC_AD9510_status,
-                  STATUS_MMCM_LOCK_BIT => pipeline_mmcm_locked,
+                  STATUS_MMCM_LOCK_BIT => fmc_mmcm_locked,
+                  STATUS_IODELAY_READY_BIT => iodelay_ready,
                   others => '-');
+--    elsif port_id(RESP_IN_PORTID_BIT)='1' then
+--    	in_port(RESP_VALID_BIT) <= to_std_logic(axi_resp_valid);
+--    	in_port(RESP_UPPER_BIT downto RESP_LOWER_BIT) <= axi_resp;
     else
      in_port <= (others => '-');
     end if;
@@ -354,18 +346,18 @@ write_byte_to_address <= write_strobe='1' and
 write_byte_to_data <= write_strobe='1' and 
                       byte_sel/="0000" and IO_sel(SEL_DATA_BIT)='1';
 --
-regIOblock:entity work.register_IO_block
-port map(
-  clk => clk,
-  byte_in => out_port,
-  byte_out => byte_from_registers,
-  byte_select => byte_sel,
-  address_wr => write_byte_to_address,
-  data_wr => write_byte_to_data,
-  address => address,
-  data => data_out,
-  read_data => data_in
-);
+--regIOblock:entity work.register_IO_block
+--port map(
+--  clk => clk,
+--  byte_in => out_port,
+--  byte_out => byte_from_registers,
+--  byte_select => byte_sel,
+--  address_wr => write_byte_to_address,
+--  data_wr => write_byte_to_data,
+--  address => address,
+--  data => data,
+--  read_data => value
+--);
 --------------------------------------------------------------------------------
 -- SPI communication
 --------------------------------------------------------------------------------
@@ -429,13 +421,34 @@ end process channelSelect;
 --------------------------------------------------------------------------------
 --control strobes 
 --------------------------------------------------------------------------------
-uart_reset_tx <= k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and 
-                 out_port(CONTROL_RESET_UART_TX_BIT);
-uart_reset_rx <= k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
-                 out_port(CONTROL_RESET_UART_RX_BIT);
-write <= to_boolean(
-           k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
-           out_port(CONTROL_REG_WRITE_BIT)
-         );
+--uart_reset_tx <= k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and 
+--                 out_port(CONTROL_RESET_UART_TX_BIT);
+--uart_reset_rx <= k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
+--                 out_port(CONTROL_RESET_UART_RX_BIT);
+                 
+--toRegisters:process(clk)
+--begin
+--	if rising_edge(clk) then
+--		if reset0_int = '1' then
+--			reg_write <= FALSE;
+--			axi_write <= FALSE;
+--			axi_read <= FALSE;
+--		else
+--      reg_write <= to_boolean(
+--                 k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
+--                 out_port(CONTROL_REG_WRITE_BIT)
+--               );
+--      axi_write <= to_boolean(
+--                 k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
+--                 out_port(CONTROL_AXI_WRITE_BIT)
+--               );
+--      axi_read <= to_boolean(
+--                 k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
+--                 out_port(CONTROL_AXI_READ_BIT)
+--               );
+--		end if;
+--	end if;
+--end process toRegisters;
+
 --
 end architecture picoblaze;

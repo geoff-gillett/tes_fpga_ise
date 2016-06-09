@@ -15,6 +15,7 @@ use ieee.numeric_std.all;
 
 library extensions;
 use extensions.boolean_vector.all;
+use extensions.logic.all;
 
 library streamlib;
 use streamlib.types.all;
@@ -43,9 +44,12 @@ end entity CDC_bytestream_adapter;
 -- NOTE expects stream_clk to be twice bytestream_clk ignores keep_n
 architecture HALF_RATE of CDC_bytestream_adapter is
 
+attribute clock_signal:string;
+attribute clock_signal of s_clk,b_clk:signal is "YES";
 
 type byte_array is array (natural range <>) of std_logic_vector(7 downto 0);
 signal bytes,bits:byte_array(7 downto 0);
+signal bus_byte:std_logic_vector(7 downto 0);
 signal s_ready:boolean;
 signal bytestream_int:std_logic_vector(8 downto 0);
 signal ready_for_byte:boolean;
@@ -72,24 +76,37 @@ bytestream_last <= to_boolean(bytestream_int(8));
 
 -- byte 0 is the LSB of bus and first transmitted
 -- transpose the bus for the selector
-bitmap:process(streambus.data)
-variable bus_byte:std_logic_vector(7 downto 0);
+--bitmap:process(streambus.data)
+--variable bus_byte:std_logic_vector(7 downto 0);
+--begin
+--	for bit in 7 downto 0 loop
+--		for byte in 7 downto 0 loop
+--			bus_byte:=streambus.data(8*(byte+1)-1 downto 8*byte);
+--			bits(bit)(byte) <= bus_byte(bit);
+--		end loop;
+--	end loop;
+--end process bitmap;
+
+bitGen:for bit in 7 downto 0 generate
 begin
-	for bit in 7 downto 0 loop
-		for byte in 7 downto 0 loop
-			bus_byte:=streambus.data(8*(byte+1)-1 downto 8*byte);
-			bits(bit)(byte) <= bus_byte(bit);
-		end loop;
-	end loop;
-end process bitmap;
+	byteGen:for byte in 7 downto 0 generate	
+	begin
+			--bus_byte <= streambus.data(8*(byte+1)-1 downto 8*byte);
+			bits(bit)(byte) <= streambus.data(8*byte+bit);
+	end generate;
+end generate;
 
 --generate selectors that select each bit from the bytes in the bus
 byteSelGen:for bit in 7 downto 0 generate
+--variable bytebits,sel:std_logic_vector(12 downto 0);
 begin
+	
+	--sel := resize(ring);
+	
 	selector:entity work.select_1of12
 		port map(
-			input => "0000" & bits(bit),
-			sel => "0000" & ring,
+			input => resize(bits(bit), 12),
+			sel => resize(ring, 12),
 			output => byte_out(bit)
 		);
 end generate;
@@ -123,7 +140,7 @@ end process input;
 
 --streambus_ready_bclk <= byte_count=7 and ready_for_byte;
 
-outputReg:entity streamlib.register_slice
+outputReg:entity streamlib.stream_register
 generic map(
   WIDTH => 9
 )

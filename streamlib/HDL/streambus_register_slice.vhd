@@ -27,7 +27,7 @@ architecture wrapper of streambus_register_slice is
 signal streamvector:streamvector_t;
 begin
 	
-registers:entity work.register_slice
+registers:entity work.stream_register
 generic map(
   WIDTH => BUS_BITS
 )

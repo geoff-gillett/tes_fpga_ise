@@ -48,7 +48,6 @@ if rising_edge(clk) then
     store_valid <= FALSE;
     ready_int <= TRUE;
     store_last <= FALSE;
-    stream_reg <= (others => '-');
   else
     case sel is
 		--straight through

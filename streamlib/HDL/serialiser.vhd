@@ -49,11 +49,11 @@ subtype ramword is std_logic_vector(DATA_BITS-1 downto 0);
 type pipe is array (natural range <>) of ramword; -- inferring RAM?
 signal data_shifter:pipe(1 to LATENCY);
 attribute shreg_extract:string;
-attribute shreg_extract of data_shifter:signal is "YES";
+attribute shreg_extract of data_shifter:signal is "NO";
 signal valid_int,valid_read,last_int,read_stream,ready_int,data_valid:boolean;
 signal valid_read_pipe,last_read_pipe,last_shifter:boolean_vector(1 to LATENCY);
 attribute shreg_extract of valid_read_pipe,last_read_pipe,last_shifter:
-					signal is "YES";
+					signal is "NO";
 signal read_en_pipe:boolean_vector(1 to LATENCY);
 signal stream_int:ramword;
 signal shift_addr:integer range 0 to LATENCY;
@@ -87,7 +87,6 @@ begin
 if rising_edge(clk) then
   if reset = '1' then
     valid_int <= FALSE; 
-    stream_int <= (others => '-');
     valid_read_pipe <= (others => FALSE);
     last_read_pipe <= (others => FALSE);
   else

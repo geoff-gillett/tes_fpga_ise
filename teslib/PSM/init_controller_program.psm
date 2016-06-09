@@ -42,39 +42,28 @@
                     ;-----------------------------------------------------------
         cold_start: CALL reset_sequence
                     ; send reset response
-                    CALL store_features
-                    LOAD command, RESET
-                    CALL respond_features						;reset response
+                    ;LOAD command, RESET
+                    ;CALL respond_features						;reset response
                     ; Main loop
-              main: CALL read_command              	;see command_IO.psm
-                    CALL Z, route_command
+                    ;FIXME use sleep
+              main: ;CALL read_command              	;see command_IO.psm
+                    ;CALL Z, route_command
                     JUMP main
                     ;
                     ;
                     ;-----------------------------------------------------------
-                    ; SUROUTINE respond_reset
-                    ; sends a reset response containing hardware features
-                    ;-----------------------------------------------------------
-  respond_features: CALL clear_value_regs
-                    FETCH value0, TES_channels
-                    FETCH value1, ADC_chips
-                    CALL feature_bits
-                    LOAD value2, s0
-                    JUMP send_response
-                    ;
-                    ;-----------------------------------------------------------
                     ; End of Program
                     ;-----------------------------------------------------------
-                    INCLUDE "uart_interface_routines.psm"
-                    INCLUDE "command_IO.psm"
-                    INCLUDE "route_command.psm"
+                    ;INCLUDE "uart_interface_routines.psm"
+                    ;INCLUDE "command_IO.psm"
+                    ;INCLUDE "route_command.psm"
                     INCLUDE "SPI_IO.psm"
                     INCLUDE "ADC_SPI.psm"
-                    INCLUDE "ADC_control.psm"
-                    INCLUDE "AD9510_SPI.psm"
-                    INCLUDE "utility.psm"
+                    INCLUDE "delay.psm"
                     INCLUDE "common.psm"
-                    INCLUDE "global_registers.psm"
-                    INCLUDE "reset.psm"
                     INCLUDE "init.psm"
+                    INCLUDE "reset.psm"
+                    ;INCLUDE "AD9510_SPI.psm"
+                    ;INCLUDE "utility.psm"
+                    ;INCLUDE "global_registers.psm"
                     ;

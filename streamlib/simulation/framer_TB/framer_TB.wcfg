@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="framer_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="boolean_vector" />
+            <top_module name="framer_tb" />
+            <top_module name="logic" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="13" />
+   <wvobject fp_name="/framer_tb/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/reset" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/data" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">data</obj_property>
+      <obj_property name="ObjectShortName">data</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/address" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">address[3:0]</obj_property>
+      <obj_property name="ObjectShortName">address[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/chunk_we" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">chunk_we[3:0]</obj_property>
+      <obj_property name="ObjectShortName">chunk_we[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/length" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">length[4:0]</obj_property>
+      <obj_property name="ObjectShortName">length[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/commit" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">commit</obj_property>
+      <obj_property name="ObjectShortName">commit</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/free" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">free[4:0]</obj_property>
+      <obj_property name="ObjectShortName">free[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/stream" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">stream</obj_property>
+      <obj_property name="ObjectShortName">stream</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/valid" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/ready" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">ready</obj_property>
+      <obj_property name="ObjectShortName">ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/we" type="other" db_ref_id="1">
+      <obj_property name="ElementShortName">we</obj_property>
+      <obj_property name="ObjectShortName">we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/framer_tb/sim_count" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">sim_count[63:0]</obj_property>
+      <obj_property name="ObjectShortName">sim_count[63:0]</obj_property>
+   </wvobject>
+</wave_config>

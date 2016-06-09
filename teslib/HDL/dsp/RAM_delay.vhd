@@ -50,7 +50,6 @@ signal ring_addr:unsigned(ceilLog2(DEPTH)-1 downto 0):=(others => '0');
 signal data_out_int,data_out:std_logic_vector(DATA_BITS-1 downto 0);
 signal delay_reg:natural range 0 to DEPTH-1;
 begin
-delayed <= data_out;
 -- infer RAM
 ramInstance:process(clk)
 begin
@@ -64,6 +63,7 @@ end process ramInstance;
 addrCount:process(clk)
 begin
 if rising_edge(clk) then
+	delayed <= data_out;
 	delay_reg <= delay;
   ring_addr <= ring_addr+1;
   delay_addr <= ring_addr-delay_reg;

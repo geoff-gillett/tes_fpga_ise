@@ -1,0 +1,214 @@
+                    ;-----------------------------------------------------------
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: ADC_IO
+                    ; Project Name: teslib
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;
+                    ; Sets/gets ADC registers over SPI interface
+                    ;-----------------------------------------------------------
+                    ;
+   ADC_SPI_handler: CALL check_ADC_address
+                    JUMP NZ, respond_decerr              ; returns to caller
+                    COMPARE command, READ
+                    JUMP Z, ADC_read
+                    COMPARE address0, ADC_OUTMODE_ADDR   ; forbid writes 
+                    JUMP Z, respond_slverr
+                    COMPARE address0, ADC_STANDBY_ADDR
+                    JUMP NZ, ADC_write
+                    TEST value0, FORBIDDEN_STANDBY_MASK  ; forbid external ref
+                    JUMP NZ, respond_slverr              ; returns to caller
+                    JUMP ADC_write
+                    ;
+          ADC_read: OUTPUT address1, SPI_SEL_O_PORT 
+          					CALL ADC_read_enable
+                    CALL ADC_transact
+                    JUMP send_response                   ; returns to caller
+                    ;
+         ADC_write: OUTPUT address1, SPI_SEL_O_PORT 
+         						CALL ADC_write_enable
+                    CALL ADC_transact
+                    JUMP send_response_byte
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE write_adc_enables 
+                    ; Uses SPI to power-down/standby chips based on enables in
+                    ; value0
+                    ; 
+                    ; ASSUMES: address registers set to the adc_enables register
+                    ; USES s0-6
+                    ; NOTE: needs changes if more than 8 ADC chans required
+                    ;
+                    ; Turns enables off then changes the power state then 
+                    ; sets adc_enables register to the new value
+                    ;-----------------------------------------------------------
+                    ;
+ ;write_adc_enables: OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset2 high
+ write_adc_enables: CALL write_register          ; write new adc_enables 
+                    ;JUMP send_response           ; returns to caller
+                    ;
+                    LOAD s6, value0              ; save the new adc_enables
+                    LOAD value0, 00           
+                    CALL write_register          ; enables off
+                    LOAD s4, s6
+                    LOAD s0, 00000001'b 
+                    OUTPUT s0, SPI_SEL_O_PORT    ; select SPI to adc chip 1
+                    CALL ADC_power_state
+                    SR0 s4											 ; shift adc_enables 
+                    SR0 s4											 ; to set up for chip 2
+                    LOAD s0, 00000010'b 
+                    OUTPUT s0, SPI_SEL_O_PORT    ; select SPI to adc chip 2
+                    CALL ADC_power_state
+                    SR0 s4
+                    SR0 s4
+                    LOAD s0, 00000100'b 
+                    OUTPUT s0, SPI_SEL_O_PORT    ; select SPI to adc chip 3
+                    CALL ADC_power_state
+                    SR0 s4
+                    SR0 s4
+                    LOAD s0, 00001000'b 
+                    OUTPUT s0, SPI_SEL_O_PORT    ; select SPI to adc chip 4
+                    CALL ADC_power_state
+                    CALL SPI_disable
+                    CALL delay_1ms               ; wait for ADCs to power-up
+                    LOAD value0, s6
+                    CALL write_register          ; write new adc_enables 
+                    ;OUTPUTK 00, RESET_CO_PORT    ; reset2 low
+                    ;CALL delay_40us
+                    JUMP send_response           ; returns to caller
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE adc_power_state 
+                    ;-----------------------------------------------------------
+                    ; sets power up/down and stand by states for ADC chips 
+                    ; and channels based on the new adc_enables setting in
+                    ; value0. If no channels are required on a chip it is 
+                    ; put in standby mode. 
+                    ;
+                    ; REQUIRES s4 set to enables for the ADC chip bit0 channel A
+                    ; bit1 channel B
+                    ; ASSUMES SPI channel enables set for the chip
+                    ; s4 is unchanged
+                    ;-----------------------------------------------------------
+   ADC_power_state: TEST s4, 03
+                    JUMP Z, ADC_chip_standby    ; returns to caller 
+                    JUMP NC, ADC_chip_normal    ; returns to caller 
+                    ; only one adc channel active
+                    TEST s4, 01
+                    JUMP Z, ADC_a_standby       ; returns to caller 
+                    JUMP ADC_b_standby          ; returns to caller 
+                    ;
+                    ;-----------------------------------------------------------
+                    ; These routines should not be called directly
+                    ; The adc_enables register should be used as it also 
+                    ; controls the ADC FIFOs. 
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE ADC_power_down 
+                    ; assumes chip enables set
+                    ;-----------------------------------------------------------
+ADC_chip_powerdown: CALL ADC_write_enable
+                    LOAD s2, 40
+                    CALL ADC_SPI_transact
+                    LOAD s2, 0C
+                    CALL ADC_SPI_transact
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE ADC_power_up 
+                    ; assumes chip enables set
+                    ;-----------------------------------------------------------
+  ADC_chip_powerup: CALL ADC_write_enable
+                    LOAD s2, 40
+                    CALL ADC_SPI_transact
+                    LOAD s2, 08
+                    CALL ADC_SPI_transact
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE ADC_chip_standby 
+                    ; assumes chip enables set
+                    ;-----------------------------------------------------------
+  ADC_chip_standby: CALL ADC_write_enable
+                    LOAD s2, 3F
+                    CALL ADC_SPI_transact
+                    LOAD s2, 21
+                    CALL ADC_SPI_transact
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE ADC_chip_normal 
+                    ; assumes chip enables set
+                    ;-----------------------------------------------------------
+   ADC_chip_normal: CALL ADC_write_enable
+                    LOAD s2, 3F
+                    CALL ADC_SPI_transact
+                    LOAD s2, 20
+                    CALL ADC_SPI_transact
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE ADC_a_standby 
+                    ; assumes chip enables set
+                    ;-----------------------------------------------------------
+     ADC_a_standby: CALL ADC_write_enable
+                    LOAD s2, 40
+                    CALL ADC_SPI_transact
+                    LOAD s2, 0E
+                    CALL ADC_SPI_transact
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE ADC_b_standby 
+                    ; assumes chip enables set
+                    ;-----------------------------------------------------------
+     ADC_b_standby: CALL ADC_write_enable
+                    LOAD s2, 40
+                    CALL ADC_SPI_transact
+                    LOAD s2, 0D
+                    CALL ADC_SPI_transact
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE ADC_b_standby 
+                    ; assumes chip enables set
+                    ;-----------------------------------------------------------
+     ADC_a_disable: CALL ADC_write_enable
+                    LOAD s2, 40
+                    CALL ADC_SPI_transact
+                    LOAD s2, 0A
+                    CALL ADC_SPI_transact
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE ADC_b_standby 
+                    ; assumes chip enables set
+                    ;-----------------------------------------------------------
+     ADC_b_disable: CALL ADC_write_enable
+                    LOAD s2, 40
+                    CALL ADC_SPI_transact
+                    LOAD s2, 09
+                    CALL ADC_SPI_transact
+                    RETURN
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROUTINE check_ADC_SPI_addr
+                    ; checks for valid ADC address returns with z flag set if
+                    ; address is valid
+                    ; USES s2,s4,s5
+                    ;-----------------------------------------------------------
+ check_ADC_address: LOAD s5, ADC_defaults'upper
+                    LOAD s4, ADC_defaults'lower
+  next_ADC_address: CALL@ (s5 ,s4)
+                    COMPARE s2, FF
+                    JUMP NZ, test_ADC_address
+                    SL1 s2                   ; reset z flag--bad address
+                    RETURN
+  test_ADC_address: COMPARE s2, address0
+                    RETURN Z
+                    ADD s4, 02
+                    ADDCY s5, 00
+                    JUMP next_ADC_address
+                    ;

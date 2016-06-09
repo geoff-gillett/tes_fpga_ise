@@ -49,7 +49,7 @@ constant STATUS_RX_NOTEMPTY_BIT:integer:=2;
 constant STATUS_FMC_PRESENT_BIT:integer:=3;
 constant STATUS_FMC_POWER_BIT:integer:=4;
 constant STATUS_FMC_AD9510_BIT:integer:=5;
-constant STATUS_PIPELINE_LOCK_BIT:integer:=6;
+constant STATUS_MMCM_LOCK_BIT:integer:=6;
 constant STATUS_IODELAY_READY_BIT:integer:=7;
 -- channel_controller status bits
 --constant STATUS_AXIS_READY_BIT:integer:=3; --FIXME move these to resp

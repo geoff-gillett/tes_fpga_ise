@@ -228,15 +228,15 @@ signal pulse_end:boolean;
 
 -- framer signals
 signal frame_word:streambus_t;
-signal framer_free:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal area_dump:boolean;
-signal frame_length:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal frame_length:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_word_reg:streambus_t;
 signal frame_address_reg:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_we_reg:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal frame_length_reg:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal frame_length_reg:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal commit_frame_reg:boolean;
 signal frame_overflow:boolean;
 signal dump_int:boolean;
@@ -264,7 +264,7 @@ signal pulse_peak_bus,pulse_peak_bus_reg,pulse_peak_bus_mux:streambus_t;
 signal pulse_peak_we,pulse_peak_we_reg:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal pulse_peak_we_mux:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal pulse_peak_lost,pulse_peak_last:boolean;
-signal last_pulse_peak_addr:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal last_pulse_peak_addr:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal pulse_peak_addr:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 
 --trace events
@@ -291,7 +291,7 @@ signal trace_done:boolean;
 --signal trace_clear_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal trace_peak_addr:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal trace_peak_last:boolean;
-signal last_trace_peak_addr:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal last_trace_peak_addr:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal write_trace:boolean;
 --signal trace_peak_full:boolean;
 
@@ -671,14 +671,20 @@ port map (
   empty => open
 );
 
-flags_pd <= (to_std_logic(minima_pd),
-						 to_std_logic(slope_neg_0xing_pd), 
-						 to_std_logic(pulse_start_pd),
-						 to_std_logic(pulse_stop_pd),
-						 to_std_logic(peak_pd),
-						 to_std_logic(slope_pos_0xing_pd),
-						 to_std_logic(slope_pos_thresh_xing_pd) 
-				    );
+flagsReg : process (clk) is
+begin
+	if rising_edge(clk) then
+    flags_pd <= (to_std_logic(minima_pd),
+                 to_std_logic(slope_neg_0xing_pd), 
+                 to_std_logic(pulse_start_pd),
+                 to_std_logic(pulse_stop_pd),
+                 to_std_logic(peak_pd),
+                 to_std_logic(slope_pos_0xing_pd),
+                 to_std_logic(slope_pos_thresh_xing_pd) 
+                );
+	end if;
+end process flagsReg;
+
 
 -- TODO make this break the delays up into 64 bit lots with a reg at the end 
 flagsCFDdelay:entity work.RAM_delay
@@ -689,7 +695,7 @@ generic map(
 port map(
   clk => clk,
   data_in => flags_pd,
-  delay => CFD_DELAY+3,
+  delay => CFD_DELAY+2, -- was +3 before flagsReg added
   delayed => flags_cfd_delay
 );
 
@@ -989,9 +995,9 @@ if rising_edge(clk) then
 																 -- use extra flags and delay
 			--for framer
 	    last_pulse_peak_addr 
-    		<= resize(capture_pd.max_peaks+2,FRAMER_ADDRESS_BITS);
+    		<= resize(capture_pd.max_peaks+2,FRAMER_ADDRESS_BITS+1);
     	last_trace_peak_addr 
-    		<= resize(capture_pd.max_peaks+3,FRAMER_ADDRESS_BITS);
+    		<= resize(capture_pd.max_peaks+3,FRAMER_ADDRESS_BITS+1);
 			--last_peak_count <= capture_pd.max_peaks(PEAK_COUNT_BITS-1 downto 0);
 		end if;
  		
@@ -1729,7 +1735,7 @@ begin
           frame_word <= to_streambus(trace_header,2,ENDIANNESS);
           frame_address <= (1 => '1',others => '0');
           frame_we <= (others => TRUE);
-          frame_length <= trace_address;
+          frame_length <= '0' & trace_address;
           
         when PEAKS =>
           commit_frame <= FALSE;

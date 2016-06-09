@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- Engineer: Geoff Gillett
 -- Date:21/03/2014 
@@ -32,14 +31,14 @@ port(
   --
   read:out boolean;
   read_en:in boolean; 
-  last_read:in boolean; --used to generate last signal
+  --last_read:in boolean; --change caller to use a ram word bit
   -- ram data
   data:in std_logic_vector(DATA_BITS-1 downto 0);
   --! stream interface
   stream:out std_logic_vector(DATA_BITS-1 downto 0);
   ready:in boolean;
-  valid:out boolean;
-  last:out boolean
+  valid:out boolean
+  --last:out boolean
 );
 end entity first_word_fall_through;
 --
@@ -51,20 +50,58 @@ signal data_shifter:pipe(1 to LATENCY);
 attribute shreg_extract:string;
 attribute shreg_extract of data_shifter:signal is "NO";
 signal valid_int,valid_read,last_int,read_stream,ready_int,data_valid:boolean;
-signal valid_read_pipe,last_read_pipe,last_shifter:boolean_vector(1 to LATENCY);
-attribute shreg_extract of valid_read_pipe,last_read_pipe,last_shifter:
-					signal is "NO";
+signal read_pipe,last_read_pipe,last_shifter:boolean_vector(1 to LATENCY);
+attribute shreg_extract of read_pipe,last_read_pipe,last_shifter:
+					signal is "YES";
 signal read_en_pipe:boolean_vector(1 to LATENCY);
 signal stream_int:ramword;
 signal shift_addr:integer range 0 to LATENCY;
 signal read_ram:boolean;
 --
+signal handshake:boolean;
+signal store_valid:boolean:=FALSE;
+signal store_addr:boolean:=FALSE;
+signal store_t,store_f:ramword;
 begin
+	
+handshake <= valid_int and ready;
+read <= read_pipe(1);
+name : process (clk) is
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			read_pipe <= (others => FALSE);
+		else
+			read <= read_en and (not valid or handshake or not store_valid);
+			read_pipe(1) <= read_en and 
+											(not valid_int or handshake or not store_valid);
+			read_pipe(2 to LATENCY) <= read_pipe(1 to LATENCY-1);
+		
+			if read_pipe(LATENCY) then
+				if handshake then
+					
+				end if;
+			end if;
+		
+		end if;
+		
+	end if;
+end process name;
+
+
+
+-- starting from two registers get read first then the ram stream
+-- but the output would be a through a mux
+-- need output reg giving 3 registers
+-- 
+--this will need to be registered
+
+
 
 read <= read_ram;
 stream <= stream_int;
 valid <= valid_int;
-last <= last_int;
+--last <= last_int;
 --FIXME why extra signal?
 ready_int <= ready;
 read_stream <= (valid_int and ready_int) or not valid_int; -- stream read

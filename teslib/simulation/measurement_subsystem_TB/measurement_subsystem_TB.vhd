@@ -28,7 +28,7 @@ use work.dsptypes.all; --TODO move to types
 
 entity measurement_subsystem_TB is
 generic(
-	CHANNELS:integer:=8;
+	CHANNELS:integer:=2;
 	FRAMER_ADDRESS_BITS:integer:=14;
 	ENDIANNESS:string:="LITTLE";
   MIN_TICK_PERIOD:integer:=2**16;

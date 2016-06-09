@@ -73,7 +73,7 @@ type FSMstate is (IDLE,FIRST,SECOND,THIRD);
 signal state,nextstate:FSMstate;
 signal data:streambus_t;
 signal address:unsigned(ADDRESS_BITS-1 downto 0);
-signal free:unsigned(ADDRESS_BITS-1 downto 0);
+signal free:unsigned(ADDRESS_BITS downto 0);
 signal wr_en:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal tick_event:tick_event_t;
 signal time_stamp:unsigned(TIMESTAMP_BITS-1 downto 0);
@@ -101,7 +101,7 @@ port map(
   address => address,
   chunk_we => wr_en,
   free => free,
-  length => to_unsigned(TICK_BUSWORDS,ADDRESS_BITS),
+  length => to_unsigned(TICK_BUSWORDS,ADDRESS_BITS+1),
   commit => commit,
   stream => tickstream,
   valid => valid,

@@ -1,0 +1,58 @@
+                    ;-----------------------------------------------------------
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: common
+                    ; Project Name: teslib
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    ;
+                    ;-----------------------------------------------------------
+                    ; SUBROTINE features (feature_bits to just get flags in s0)
+                    ; Get hardware features
+                    ; Stores values in scratch
+                    ; scratch 00-number of TES channels
+                    ; scratch 01-number of ADC chips
+                    ;
+                    ; s0-bit flags 
+                    ;    bit0-FMC card present
+                    ;    bit1-FMC power good
+                    ;		 bit2-AD9510 status
+                    ;
+                    ; USED s0,s1
+                    ;-----------------------------------------------------------
+    store_features: HWBUILD s1
+                    AND s1, F0
+                    SR0 s1
+                    SR0 s1
+                    SR0 s1
+                    SR0 s1
+                    STORE s1, ADC_chips
+                    SL0 s1                       ; chips*2
+                    SUB s1, 01
+                    STORE s1, TES_channel_mask
+                    FETCH s1, ADC_chips
+                    LOAD s0, 01
+  AD9510_bit_shift: COMPARE s1, 00
+                    JUMP Z, AD9510_bit_done
+                    SL0 s0
+                    SUB s1, 01
+                    JUMP AD9510_bit_shift
+   AD9510_bit_done: STORE s0, AD9510_spi_ce_bit
+                    HWBUILD s1
+                    AND s1, 0F
+                    LOAD s0, 01
+                    COMPARE s1, 00
+ TES_channel_shift: JUMP Z, TES_channels_done
+                    SL0 s0
+                    SUB s1, 01
+                    JUMP TES_channel_shift
+ TES_channels_done: STORE s0, TES_channels 
+ 			feature_bits: input s0, STATUS_IN_PORT
+                    SR0 s0
+                    SR0 s0
+                    SR0 s0
+                    AND s0, 00011111'b
+                    RETURN

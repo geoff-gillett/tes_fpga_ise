@@ -32,10 +32,11 @@ generic(
 port(
   --!* system signals
   clk:in std_logic;
-  LEDs:out std_logic_vector(7 downto 0);
+  --LEDs:out std_logic_vector(7 downto 0);
   --!* main UART connected to the host PC
   --reset1:in std_logic;
-  global_reset:in std_logic;
+  reset:in std_logic;
+  sys_reset:out std_logic;
   ------------------------------------------------------------------------------
   -- FMC status
   ------------------------------------------------------------------------------
@@ -47,9 +48,9 @@ port(
   ------------------------------------------------------------------------------
   -- resets
   ------------------------------------------------------------------------------
-  reset0:out std_logic; --channel cpus ethernet
-  reset1:out std_logic; --buses
-  reset2:out std_logic; --adc pipline also triggered by changing adc_enables
+  --reset0:out std_logic; --channel cpus ethernet
+  --reset1:out std_logic; --buses
+  --reset2:out std_logic; --adc pipline also triggered by changing adc_enables
   ------------------------------------------------------------------------------
   -- Interrupts from MCA
   ------------------------------------------------------------------------------
@@ -126,7 +127,7 @@ signal en_16_x_baud:std_logic:= '0';
 --------------------------------------------------------------------------------
 signal IO_sel:std_logic_vector(7 downto 0);
 signal byte_sel:std_logic_vector(3 downto 0);
-signal cpu_reset,reset0_int,reset1_int,reset2_int:std_logic;
+--signal cpu_reset,reset0_int,reset1_int,reset2_int:std_logic;
 --
 signal uart_rd_en:std_logic;
 signal uart_wr_en:std_logic;
@@ -140,8 +141,8 @@ signal uart_reset_rx:std_logic;
 --
 signal spi_ce_n_int:std_logic_vector(SPI_CHANNELS-1 downto 0):=(others => '1');
 signal spi_clk_int:std_logic;
-signal uart_reset_tx_int:std_logic;
-signal uart_reset_rx_int:std_logic;
+--signal uart_reset_tx_int:std_logic;
+--signal uart_reset_rx_int:std_logic;
 signal spi_mosi_int:std_logic;
 --- 
 signal byte_from_registers:std_logic_vector(7 downto 0);
@@ -153,38 +154,38 @@ begin
 interrupt_ack <= to_boolean(interrupt_ack_int);
 --interrupt <= to_boolean(interrupt_ack_int);
 
-reset0 <= reset0_int;
-reset1 <= reset1_int;
-reset2 <= reset2_int;
+--reset0 <= reset0_int;
+--reset1 <= reset1_int;
+--reset2 <= reset2_int;
 spi_ce_n <= spi_ce_n_int;
 spi_clk <= spi_clk_int;
 spi_mosi <= spi_mosi_int;
 --
 --LEDs(SPI_CHANNELS-1 downto 0) <= not spi_ce_n_int;
-LEDs <= (others => '0');
+--LEDs <= (others => '0');
 --
 --------------------------------------------------------------------------------
 -- reset sequencer
 --------------------------------------------------------------------------------
-resetSeqReg:process(clk)
-begin
-if rising_edge(clk) then
-  if global_reset='1' then
-    cpu_reset <= '1';
-    reset0_int <= '1';
-    reset1_int <= '1';
-    reset2_int <= '1';
-  else
-  	cpu_reset <= '0';
-    if k_write_strobe='1' and port_id(RESET_COO_PORTID_BIT)='1' then
-      cpu_reset <= out_port(RESET_SYSTEM_BIT);
-      reset0_int <= out_port(RESET_TIER0);
-      reset1_int <= out_port(RESET_TIER1);
-      reset2_int <= out_port(RESET_TIER2);
-    end if;
-  end if;
-end if;
-end process resetSeqReg;
+--resetSeqReg:process(clk)
+--begin
+--if rising_edge(clk) then
+--  if reset='1' then
+--    cpu_reset <= '1';
+--    reset0_int <= '1';
+--    reset1_int <= '1';
+--    reset2_int <= '1';
+--  else
+--  	cpu_reset <= '0';
+--    if k_write_strobe='1' and port_id(RESET_COO_PORTID_BIT)='1' then
+--      cpu_reset <= out_port(RESET_SYSTEM_BIT);
+--      reset0_int <= out_port(RESET_TIER0);
+--      reset1_int <= out_port(RESET_TIER1);
+--      reset2_int <= out_port(RESET_TIER2);
+--    end if;
+--  end if;
+--end if;
+--end process resetSeqReg;
 --------------------------------------------------------------------------------
 --Picoblaze CPU and UARTs
 --------------------------------------------------------------------------------
@@ -210,7 +211,7 @@ port map(
   interrupt => to_std_logic(interrupt),
   interrupt_ack => interrupt_ack_int,
   sleep => kcpsm6_sleep,
-  reset => cpu_reset,
+  reset => reset, --cpu_reset,
   clk => clk
 );
 -- Reset connected to JTAG Loader enabled Program Memory 
@@ -254,10 +255,10 @@ port map(
   buffer_data_present => tx_not_empty,
   buffer_half_full => open,
   buffer_full => tx_full,
-  buffer_reset => uart_reset_tx_int,
+  buffer_reset => reset,
   clk => clk
 );
-uart_reset_tx_int <= uart_reset_tx or reset2_int;
+--uart_reset_tx_int <= uart_reset_tx or reset2_int;
 main_tx <= serial_out_reg when main_uart_sel else '1';
 channel_tx_int <= (others => serial_out_reg) when not main_uart_sel 
                else (others => '1');
@@ -284,10 +285,10 @@ port map(
   buffer_data_present => rx_not_empty,
   buffer_half_full => open,
   buffer_full => open,
-  buffer_reset => uart_reset_rx_int,
+  buffer_reset => reset,
   clk => clk
 );
-uart_reset_rx_int <= uart_reset_rx or reset2_int;
+--uart_reset_rx_int <= uart_reset_rx or reset2_int;
 serial_in <= main_rx when main_uart_sel 
              else to_std_logic(unaryOR(channel_rx and channel_sel));
 uart_rd_en <= read_strobe and port_id(UART_IO_PORTID_BIT);
@@ -297,7 +298,7 @@ uart_rd_en <= read_strobe and port_id(UART_IO_PORTID_BIT);
 IOselect:process(clk)
 begin
 if rising_edge(clk) then
-  if reset0_int='1' then
+  if reset='1' then --reset0_int='1' then
     IO_sel <= (others => '0');
   else
     if k_write_strobe='1' and port_id(IO_SEL_COO_PORTID_BIT)='1' then
@@ -311,7 +312,7 @@ select_axi <= to_boolean(IO_sel(SEL_AXI_BIT));
 inportMux:process(clk)
 begin
 if rising_edge(clk) then
-  if cpu_reset = '1' then
+  if reset='1' then --cpu_reset = '1' then
     in_port <= (others => '0');
   else
     if  port_id(UART_IO_PORTID_BIT)='1' then
@@ -327,7 +328,7 @@ if rising_edge(clk) then
                   STATUS_FMC_PRESENT_BIT => FMC_present,
                   STATUS_FMC_POWER_BIT => FMC_power_good,
                   STATUS_FMC_AD9510_BIT => FMC_AD9510_status,
-                  STATUS_PIPELINE_LOCK_BIT => fmc_mmcm_locked,
+                  STATUS_MMCM_LOCK_BIT => fmc_mmcm_locked,
                   STATUS_IODELAY_READY_BIT => iodelay_ready,
                   others => '-');
     elsif port_id(RESP_IN_PORTID_BIT)='1' then
@@ -364,7 +365,7 @@ port map(
 SPIselect:process(clk)
 begin
 if rising_edge(clk) then
-  if reset0_int='1' then
+  if reset='1' then --reset0_int='1' then
     spi_ce_n_int <= (others => '1');
   else
     if write_strobe='1' and port_id(SPI_SEL_O_PORTID_BIT)='1' then
@@ -377,7 +378,7 @@ end process SPIselect;
 SPIoutput:process(clk)
 begin
 if rising_edge(clk) then
-  if reset0_int='1' then
+  if reset='1' then --reset0_int='1' then
     spi_mosi_int <= '0';
     spi_clk_int <= '0';
   else
@@ -395,7 +396,7 @@ end process SPIoutput;
 UARTselect:process(clk)
 begin
 if rising_edge(clk) then
-  if reset0_int= '1' then
+  if reset='1' then --reset0_int= '1' then
     main_uart_sel <= TRUE;
   else
     if k_write_strobe='1' and port_id(IO_SEL_COO_PORTID_BIT)='1' then
@@ -429,7 +430,7 @@ uart_reset_rx <= k_write_strobe and port_id(CONTROL_COO_PORTID_BIT) and
 toRegisters:process(clk)
 begin
 	if rising_edge(clk) then
-		if reset0_int = '1' then
+		if reset='1' then --reset0_int = '1' then
 			reg_write <= FALSE;
 			axi_write <= FALSE;
 			axi_read <= FALSE;

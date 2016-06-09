@@ -77,3 +77,4 @@ teslib/Vivado/
 teslib/vivado_IP/*/*
 teslib/simulation/measurement_overflow_TB/.ipynb_checkpoints/
 .texlipse
+teslib/simulation/ethernet_framer_TB/.ipynb_checkpoints/

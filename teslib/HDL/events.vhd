@@ -68,7 +68,7 @@ function to_std_logic(f:detection_flags_t) return std_logic_vector;
 --------------------------- tick flags 16 bits ---------------------------------
 -- First byte
 -- | 2 |      1       |     1     |      3     |1|
--- | 0 | mux_overflow | tick_lost | type_flags |0|
+-- | 0 | events_lost  | tick_lost | type_flags |0|
 
 type tickflags_t is record 
 	--mux_overflow:boolean;

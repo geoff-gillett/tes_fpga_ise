@@ -1,0 +1,30 @@
+
+                    ;-----------------------------------------------------------
+                    ; Engineer: Geoff Gillett
+                    ; Date:12/11/2013 
+                    ;
+                    ; Design Name: TES_digitiser
+                    ; Module Name: IO_controller
+                    ; Project Name: teslib
+                    ; Target Devices: KCPSM6
+                    ; Tool versions: ISE 14.7
+                    ;-----------------------------------------------------------
+                    ;-----------------------------------------------------------
+                    ; Reset sequence
+                    ;-----------------------------------------------------------
+    reset_sequence: CALL delay_64ns 									 ;iodelays need 50ns reset 
+                    OUTPUTK RESET_TIER1, RESET_CO_PORT ;reset0 low
+                    CALL store_features            
+                    ;CALL respond_features
+                    CALL initialise_AD9510
+                    CALL initialise_ADCs
+                    ;CALL store_features     
+     pipeline_wait: INPUT s0, STATUS_IN_PORT
+                    TEST s0, fmc_mmcm_locked
+                    JUMP Z, pipeline_wait       
+                    ;CALL delay_40us
+                    OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset1 low
+                    CALL delay_40us
+                    OUTPUTK 00, RESET_CO_PORT ;reset2 low
+                    RETURN
+                    ;

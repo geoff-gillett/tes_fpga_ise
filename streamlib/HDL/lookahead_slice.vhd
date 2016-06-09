@@ -49,7 +49,7 @@ shift <= output_handshake or not valid_int;
 reg_ready <= output_handshake or shift;
 
 -- inefficient but need to break ready combinatorial path
-inputReg:entity work.register_slice
+inputReg:entity work.stream_register
 generic map(
   WIDTH => WIDTH
 )

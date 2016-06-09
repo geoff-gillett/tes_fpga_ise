@@ -1,6 +1,7 @@
 ../../teslib tes
 ../../teslib/PSM/IO_controller_program.vhd tes
 ../../teslib/PSM/channel_program.vhd tes
+../../teslib/PSM/init_controller_program.vhd tes
 ../../extensions extensions
 ../../streamlib streamlib
 ../../mcalib mcalib

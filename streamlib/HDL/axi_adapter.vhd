@@ -75,7 +75,7 @@ begin
 	
 -- input register slice to break ready combinatorial path
 stream_in <= to_std_logic(axi_last) & axi_stream;
-inputReg:entity work.register_slice
+inputReg:entity work.stream_register
 generic map(
   WIDTH => AXI_CHUNKS*CHUNK_DATABITS+1
 )
