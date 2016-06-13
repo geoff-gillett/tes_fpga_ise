@@ -978,8 +978,8 @@ generic map(
   HDL_VERSION => VERSION
 )
 port map(
-  reg_clk => signal_clk,
-  reg_reset => reset0,
+  clk => signal_clk,
+  reset => reset0,
   data => reg_data,
   address => reg_address,
   value => global_value,

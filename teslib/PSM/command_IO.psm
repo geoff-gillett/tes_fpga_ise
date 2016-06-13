@@ -128,6 +128,7 @@
                     ;-----------------------------------------------------------
      read_register: OUTPUTK SEL_ADDRESS, IO_SEL_CO_PORT   ;set to write address
                     CALL write_address24
+                    LOAD s0,s0														;delay 16 ns
                     CALL read_value   
                     RETURN
                     ;

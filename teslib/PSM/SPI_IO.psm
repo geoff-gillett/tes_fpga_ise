@@ -23,11 +23,15 @@
  SPI_byte_transact: LOAD s1, 08            ;8-bits to transmit and receive
       next_SPI_bit: LOAD s0, s2            ;prepare next bit to transmit
                     AND s0, SPI_MOSI
-                    OUTPUT s0, SPI_IO_PORT
+                    OUTPUT s0, SPI_IO_PORT ;setup mosi
+                    OR s0, SPI_CLK				
+                    OUTPUT s0, SPI_IO_PORT ;clk rising
+                    AND s0, ~SPI_CLK			 
+                    OUTPUT s0, SPI_IO_PORT ;clk falling
                     INPUT s3, SPI_IO_PORT  ;read input bits
                     TEST s3, s4  			     ;bit -> carry flag assumes 1 enable
                     SLA s2                 ;shift data in and present next bit
-                    CALL SPI_clk_pulse     ;pulse spi_clk High
+                    ;CALL SPI_clk_pulse     ;pulse spi_clk High
                     SUB s1, 01             ;count bits
                     JUMP NZ, next_SPI_bit  ;repeat until last bit
                     RETURN 

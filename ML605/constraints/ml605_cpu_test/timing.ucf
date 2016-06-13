@@ -2,7 +2,7 @@
 # ML605 development board TES digitiser design
 # Geoff Gillett
 ################################################################################
-NET "cpu/reset*" TIG;
+NET "ioController/reset*" TIG;
 ################################################################################
 # Register CDC
 ################################################################################
@@ -15,19 +15,25 @@ NET "cpu/reset*" TIG;
 #NET "tesChannel[?].cpu/reg_write" TNM_NET = "chan_write";
 #TIMESPEC TS_chan_write = FROM "chan_write" 8 ns;
 
-INST tesChannel[?].cpu TNM = "channel_cpu";
+INST tesChannel[?].controller TNM = "channel_cpu";
 INST tesChannel[?].registers TNM = "channel_reg";
-TIMESPEC TS_channel_reg2cpu = FROM "channel_reg" TO "channel_cpu" 8 ns;
-TIMESPEC TS_channel_cpu2reg = FROM "channel_cpu" TO "channel_reg" 8 ns;
+TIMESPEC TS_channel_reg2cpu = FROM "channel_reg" TO "channel_cpu" 15.5 ns DATAPATHONLY;
+TIMESPEC TS_channel_cpu2reg = FROM "channel_cpu" TO "channel_reg" 15.5 ns DATAPATHONLY;
 INST "tesChannel[?].regWriteSync" TNM = "channel_writesync";
-TIMESPEC TS_channel_write = FROM "channel_cpu" TO "channel_writesync" 8 ns;
+TIMESPEC TS_channel_write = FROM "channel_cpu" TO "channel_writesync" 8 ns DATAPATHONLY;
 
-INST cpu TNM = "main_cpu";
-INST registers TNM = "main_reg";
-TIMESPEC TS_main_reg2cpu = FROM "main_reg" TO "main_cpu" 8 ns;
-TIMESPEC TS_main_cpu2reg = FROM "main_cpu" TO "main_reg" 8 ns;
-PIN "cpu/reg_write" TNM = "main_write";
-TIMESPEC TS_main_write = FROM "main_write" 8 ns;
+INST ioController/regIOblock/data_reg_? TNM = "io_out";
+INST ioController/regIOblock/address_reg_? TNM = "io_out";
+INST ioController/regIOblock/read_data_reg_? TNM = "io_in";
+INST ioController/reg_write TNM = "global_write";
+INST regWriteSync TNM = "global_sync";
+INST registers/address_reg_? TNM = "global_in";
+INST registers/data_reg_? TNM = "global_in";
+INST registers/value_? TNM = "global_out";
+
+TIMESPEC TS_global2cpu = FROM "global_out" TO "io_in" 15.5 ns DATAPATHONLY;
+TIMESPEC TS_cpu2global = FROM "io_out" TO "global_in" 15.5 ns DATAPATHONLY;
+TIMESPEC TS_global_write = FROM "global_write" to "global_sync" 8 ns DATAPATHONLY;
 
 # FROM chan reg to CPU
 #NET "tesChannel[?].cpu/reg_value[?]" TNM_NET = "chan_value";
@@ -49,6 +55,23 @@ TIMESPEC TS_main_write = FROM "main_write" 8 ns;
 
 #TIMEGRP "main_reg_cdc" = "main_value" "main_data" "main_address" "main_write";
 #TIMESPEC TS_main_reg_cdc = TO "main_reg_cdc" 12 ns;
+
+################################################################################
+# SPI
+################################################################################
+#IOBs
+#PIN *_spi_clk/D TNM = "spi_out";
+#PIN *_spi_ce_n_?/D TNM = "spi_out";
+#PIN *_spi_mosi/D TNM = "spi_out";
+#PIN spi_miso_?/D TNM = "spi_in";
+#Cpus
+#PIN *controller/spi_miso_?/D TNM = "cpu_spi_in";
+#PIN *controller/spi_mosi TNM = "cpu_spi_out";
+#PIN *controller/spi_clk TNM = "cpu_spi_out";
+#PIN *controller/spi_ce_n[?] TNM = "cpu_spi_out";
+
+#TIMESPEC "TS_spi_in" = FROM "spi_in" to "spi_cpu_in" 7.5 ns;
+#TIMESPEC "TS_spi_out" = FROM "cpu_spi_out" to "spi_out" 7.5 ns;
 
 ################################################################################
 # ADC input FIFO cdc constraint the ISE tools bawk at my clocking arrangement

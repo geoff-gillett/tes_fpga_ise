@@ -185,13 +185,14 @@ attribute S:string;
 --------------------------------------------------------------------------------
 -- Clock and reset signals
 --------------------------------------------------------------------------------
-signal global_reset_init_clk,IO_clk,signal_clk,axi_clk,init_clk:std_logic;
-signal reset0,reset1,reset2,fmc108_MMCM_locked:std_logic;
+signal global_reset_boot_clk,IO_clk,signal_clk,axi_clk,boot_clk:std_logic;
+signal reset0,reset1,reset2,sys_reset,fmc108_MMCM_locked:std_logic;
+signal init:std_logic;
 
 signal refclk:std_logic;
 signal onboard_mmcm_locked:std_logic;
 signal idelayctrl_rdy:std_ulogic;
-signal reset_enable:std_logic;
+--signal reset_enable:std_logic;
 --signal iodelay_inc:ddr_sample_array(ADC_CHANNELS-1 downto 0);
 --signal iodelay_ce:ddr_sample_array(ADC_CHANNELS-1 downto 0);
 --signal iodelay_clk_inc:std_logic_vector(ADC_CHIPS-1 downto 0);
@@ -234,7 +235,11 @@ signal FMC_present:std_logic;
 -- Main CPU signals
 --------------------------------------------------------------------------------
 signal spi_clk,spi_mosi:std_logic;
+signal main_spi_clk,main_spi_mosi:std_logic;
+signal init_spi_clk,init_spi_mosi:std_logic;
 signal spi_ce_n,spi_miso:std_logic_vector(SPI_CHANNELS-1 downto 0);
+signal main_spi_ce_n,main_spi_miso:std_logic_vector(SPI_CHANNELS-1 downto 0);
+signal init_spi_ce_n,init_spi_miso:std_logic_vector(SPI_CHANNELS-1 downto 0);
 
 signal global:global_registers_t;
 attribute S of global:signal is "TRUE"; -- KEEP the register outputs
@@ -356,6 +361,18 @@ signal bytestream_last:boolean;
 signal test_counter:unsigned(31 downto 0):=(others => '0');
 signal test_clk:std_logic;
 --------------------------------------------------------------------------------
+attribute iob:string;
+attribute iob of ADC_spi_ce_n:signal is "TRUE";
+attribute iob of AD9510_spi_ce_n:signal is "TRUE";
+attribute iob of ADC_spi_clk:signal is "TRUE";
+attribute iob of AD9510_spi_clk:signal is "TRUE";
+attribute iob of ADC_spi_mosi:signal is "TRUE";
+attribute iob of AD9510_spi_mosi:signal is "TRUE";
+--attribute iob of ADC_spi_miso:signal is "TRUE";
+--attribute iob of AD9510_spi_miso:signal is "TRUE";
+attribute iob of spi_miso:signal is "TRUE";
+--------------------------------------------------------------------------------
+
 --signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
 begin
@@ -367,25 +384,65 @@ begin
 	end if;
 end process test;
 
+spiReg:process(boot_clk)
+begin
+	if rising_edge(boot_clk) then
+    ADC_spi_ce_n <= spi_ce_n(ADC_CHIPS-1 downto 0); 
+    AD9510_spi_ce_n  <= spi_ce_n(ADC_CHIPS); 
+    spi_miso(ADC_CHIPS-1 downto 0) <= ADC_spi_miso; 
+    spi_miso(ADC_CHIPS) <= AD9510_spi_miso; 
+    ADC_spi_clk <= spi_clk;
+    AD9510_spi_clk <= spi_clk;
+    ADC_spi_mosi <= spi_mosi;
+    AD9510_spi_mosi <= spi_mosi;
+	end if;
+end process spiReg;
 
-ADC_spi_ce_n <= spi_ce_n(ADC_CHIPS-1 downto 0); 
-AD9510_spi_ce_n  <= spi_ce_n(ADC_CHIPS); 
-spi_miso(ADC_CHIPS-1 downto 0) <= ADC_spi_miso; 
-spi_miso(ADC_CHIPS) <= AD9510_spi_miso; 
-ADC_spi_clk <= spi_clk;
-AD9510_spi_clk <= spi_clk;
-ADC_spi_mosi <= spi_mosi;
-AD9510_spi_mosi <= spi_mosi;
-FMC_reset <= '0';--reset0;
+FMC_reset <= reset0;
 FMC_internal_clk_en <= '1'; --to_std_logic(global.FMC108_internal_clk);
 FMC_VCO_power_en <= '1'; --to_std_logic(global.VCO_power);
 --
+--spiMux:process(boot_clk)
+--begin
+--	if rising_edge(boot_clk) then	
+----		AD9510_spi_clk <= init_spi_clk;
+----		AD9510_spi_ce_n  <= init_spi_ce_n(ADC_CHIPS); 
+----		AD9510_spi_mosi <= init_spi_mosi;
+----		init_spi_miso(ADC_CHIPS) <= AD9510_spi_miso; 
+--		
+--    spi_clk <= init_spi_clk;
+--    spi_mosi <= init_spi_mosi;
+--    init_spi_miso <= spi_miso;
+--    spi_ce_n <= init_spi_ce_n;
+--	end if;
+--end process spiMux;
+		
+--spiMux:process(boot_clk)
+--begin
+--	if rising_edge(boot_clk) then
+--spiMux:process(init,init_spi_ce_n,init_spi_clk,init_spi_mosi,main_spi_ce_n,
+--	main_spi_clk,main_spi_mosi,spi_miso
+--)
+--begin
+--    if init='1' then
+--      spi_clk <= init_spi_clk;
+--      spi_mosi <= init_spi_mosi;
+--      init_spi_miso <= spi_miso;
+--      spi_ce_n <= init_spi_ce_n;
+--    else
+--      spi_clk <= main_spi_clk;
+--      spi_mosi <= main_spi_mosi;
+--      main_spi_miso <= spi_miso;
+--      spi_ce_n <= main_spi_ce_n;
+--    end if;
+----  end if;
+--end process spiMux;
 
 -- FIXME what does this do?
 --FMC_AD9510_function <= '1';
-FMCfunction:process(init_clk) is
+FMCfunction:process(boot_clk) is
 begin
-if rising_edge(init_clk) then
+if rising_edge(boot_clk) then
   if reset0 = '1' then
     FMC_AD9510_function <= '0';
   else
@@ -426,7 +483,7 @@ port map
   sys_clk_P => sys_clk_p,
   sys_clk_N => sys_clk_n,
   refclk => refclk,
-  io_clk => init_clk, --io_clk, --open,--io_clk,
+  io_clk => boot_clk, --io_clk, --open,--io_clk,
   axi_clk => axi_clk,
   signal_clk => open, --signal_clk,
   locked => onboard_mmcm_locked
@@ -443,10 +500,10 @@ port map (
 --reset_enable <= onboard_mmcm_locked;    
 glbl_reset_gen:entity tes.reset_sync
 port map(
-  clk => init_clk,
+  clk => boot_clk,
   enable => onboard_mmcm_locked,
-  reset_in => global_reset,
-  reset_out => global_reset_init_clk
+  reset_in => global_reset, -- or sys_reset,
+  reset_out => global_reset_boot_clk
 );
 
 --------------------------------------------------------------------------------
@@ -662,7 +719,7 @@ end generate adcChip;
 adcEnable:process(signal_clk)
 begin
   if rising_edge(signal_clk) then
-    if reset1 = '1' then
+    if reset2 = '1' then
       enables_reg <= (others => '0');
       fifo_reset <= '1';
       fifo_rd_en <= (others => '0');
@@ -698,7 +755,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   )
   port map(
     clk => signal_clk,
-    reset => reset1,
+    reset => reset2,
     data => channel_data(c),
     address => channel_address(c),
     write => channel_reg_write(c),
@@ -733,10 +790,10 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     output => channel_reg_write(c)
   );
 
-	cpu:entity tes.channel_controller
+	controller:entity tes.channel_controller
 		port map(
 			clk => io_clk,
-			reset => reset1,
+			reset => reset2,
 			uart_tx => channel_rx(c),
 			uart_rx => channel_tx(c),
 			reg_address => channel_address(c),
@@ -990,9 +1047,9 @@ generic map(
   HDL_VERSION => VERSION
 )
 port map(
-  reg_clk => signal_clk,
-  reg_reset => reset1,
-  mmcm_locked => fmc108_MMCM_locked,
+  clk => signal_clk,
+  reset => reset2,
+  --mmcm_locked => fmc108_MMCM_locked,
   data => reg_data,
   address => reg_address,
   value => global_value,
@@ -1008,34 +1065,34 @@ port map(
 );
 
 --reset0 <= '0';
-cpu:entity tes.main_controller
+ioController:entity tes.main_controller
 generic map(
   CHANNELS => DSP_CHANNELS,
   ADC_CHIPS => ADC_CHIPS
 )
 port map(
-  clk => io_clk,
+  clk => boot_clk,
   --LEDs => LEDs,
-  reset => reset1,
-  sys_reset => open,
+  reset => global_reset_boot_clk,
+  --sys_reset => open,
   FMC_power_good => FMC_power_good,
   FMC_present => FMC_present,
   FMC_AD9510_status => FMC_AD9510_status,
-  fmc_mmcm_locked => std_logic(test_counter(30)),
+  fmc_mmcm_locked => fmc108_mmcm_locked, --std_logic(test_counter(30)),
   iodelay_ready => idelayctrl_rdy,
-  --reset0 => open, --reset0,
-  --reset1 => open, --reset1,
-  --reset2 => open, --reset2,
+  reset0 => reset0,
+  reset1 => reset1,
+  reset2 => reset2,
   interrupt => FALSE,
   interrupt_ack => open,
   main_rx => main_Rx,
   main_tx => main_Tx,
   channel_rx => channel_rx,
   channel_tx => channel_tx,
-  spi_clk => open, --spi_clk,
-  spi_ce_n => open, --spi_ce_n,
-  spi_miso => (others => '0'), --spi_miso,
-  spi_mosi => open, --spi_mosi,
+  spi_clk => spi_clk,
+  spi_ce_n => spi_ce_n,
+  spi_miso => spi_miso,
+  spi_mosi => spi_mosi,
   address => reg_address,
   data => reg_data,
   select_axi => open,
@@ -1047,26 +1104,26 @@ port map(
   axi_write => open
 );
 
-initCpu:entity tes.init_controller
-	generic map(
-		CHANNELS  => CHANNELS,
-		ADC_CHIPS => ADC_CHIPS
-	)
-	port map(
-		clk => init_clk,
-		global_reset => global_reset_init_clk,
-		FMC_power_good => FMC_power_good,
-		FMC_present => FMC_present,
-		FMC_AD9510_status => FMC_AD9510_status,
-		fmc_mmcm_locked => fmc108_mmcm_locked,
-		iodelay_ready => idelayctrl_rdy,
-		reset0 => reset0,
-		reset1 => reset1,
-		reset2 => reset2,
-		spi_clk => spi_clk,
-		spi_ce_n => spi_ce_n,
-		spi_miso => spi_miso,
-		spi_mosi => spi_mosi
-	);
+--initCpu:entity tes.init_controller
+--	generic map(
+--		CHANNELS  => CHANNELS,
+--		ADC_CHIPS => ADC_CHIPS
+--	)
+--	port map(
+--		clk => init_clk,
+--		global_reset => global_reset_init_clk,
+--		FMC_power_good => FMC_power_good,
+--		FMC_present => FMC_present,
+--		FMC_AD9510_status => FMC_AD9510_status,
+--		fmc_mmcm_locked => fmc108_mmcm_locked,
+--		iodelay_ready => idelayctrl_rdy,
+--		reset0 => reset0,
+--		reset1 => reset1,
+--		reset2 => reset2,
+--		spi_clk => spi_clk,
+--		spi_ce_n => spi_ce_n,
+--		spi_miso => spi_miso,
+--		spi_mosi => spi_mosi
+--	);
 
 end architecture RTL;

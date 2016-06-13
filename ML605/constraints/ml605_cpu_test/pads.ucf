@@ -15,16 +15,16 @@ NET "main_?x" TIG;
 NET "global_reset" LOC = H10 | TIG;
 
 # LEDs for debugging
-NET "LEDs[0]" LOC = AC22;
-NET "LEDs[1]" LOC = AC24;
-NET "LEDs[2]" LOC = AE22;
-NET "LEDs[3]" LOC = AE23;
-NET "LEDs[4]" LOC = AB23;
-NET "LEDs[5]" LOC = AG23;
-NET "LEDs[6]" LOC = AE24;
-NET "LEDs[7]" LOC = AD24;
-#NET "LEDs[?]" TNM_NET = "LEDS";
-NET "LEDs[?]" TIG;
+#NET "LEDs[0]" LOC = AC22;
+#NET "LEDs[1]" LOC = AC24;
+#NET "LEDs[2]" LOC = AE22;
+#NET "LEDs[3]" LOC = AE23;
+#NET "LEDs[4]" LOC = AB23;
+#NET "LEDs[5]" LOC = AG23;
+#NET "LEDs[6]" LOC = AE24;
+#NET "LEDs[7]" LOC = AD24;
+##NET "LEDs[?]" TNM_NET = "LEDS";
+#NET "LEDs[?]" TIG;
 
 ################################################################################
 # FMC108 in the HPC FMC header on the ML605
