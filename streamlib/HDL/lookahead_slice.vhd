@@ -81,7 +81,7 @@ if rising_edge(clk) then
   	if shift then
  			stream <= lookahead_int;
  			valid_int <= lookahead_valid_int;
- 			lookahead_valid_int <= input_handshake;
+ 			--lookahead_valid_int <= input_handshake;
   	end if;
   	
   end if;

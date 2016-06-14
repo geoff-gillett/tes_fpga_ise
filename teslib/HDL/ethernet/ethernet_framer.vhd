@@ -91,16 +91,20 @@ signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
 --signal frame_we:boolean;
 signal mtu_int:unsigned(MTU_BITS-1 downto 0):=
 			 to_unsigned(to_integer(DEFAULT_MTU/8),MTU_BITS);
+signal mtu_m1:unsigned(MTU_BITS-1 downto 0):=
+			 to_unsigned(to_integer(DEFAULT_MTU/8)-1,MTU_BITS);
 signal tick_latency_count:unsigned(TICK_LATENCY_BITS-1 downto 0);
 signal tick_latency_int:unsigned(TICK_LATENCY_BITS-1 downto 0):=
 			 DEFAULT_TICK_LATENCY;
 signal wait_for_tick:boolean;
-signal event_frame_full:boolean;
+--signal event_frame_full:boolean;
 signal lookahead:streambus_t;
 signal lookahead_valid:boolean;
 --
 signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
+signal frame_free_m1:unsigned(FRAMER_ADDRESS_BITS downto 0);
+signal frame_last:boolean;
 signal inc_address:boolean;
 signal framer_ready:boolean;
 -- frame_size is the size of events in the current frame
@@ -183,6 +187,7 @@ begin
 	if rising_edge(clk) then
     if arbiter_state=IDLE then
       mtu_int <= shift_right(mtu,3); --MTU in 8byte blocks
+      mtu_m1 <= shift_right(mtu,3)-1; --MTU in 8byte blocks
       tick_latency_int <= tick_latency;
     end if;
 	end if;
@@ -242,9 +247,13 @@ begin
     	event_head <= TRUE;
     else
     	
-      if arbiter_state=EVENT and frame_state=HEADER0 then
-        header.frame_type <= event_s_type;
-        frame_size <= event_s_size;
+    	if frame_state=HEADER0 then
+    		if arbiter_state=EVENT then
+        	header.frame_type <= event_s_type;
+        	frame_size <= event_s_size;
+        else -- must be MCA
+        	frame_size <= (0 => '1', others => '0');
+        end if;	
       end if;
     	
     	if lookahead_valid and (event_s_hs or not event_s_valid) then
@@ -421,10 +430,10 @@ begin
 end process arbiterFSMtransition;
 
 --FIXME need registered output
-event_frame_full <= frame_free < to_0ifX(frame_size);
+--event_frame_full <= frame_free < to_0ifX(frame_size);
 frameFSMtransition:process(frame_state,arbiter_nextstate,arbiter_state,
 													 framer_ready,mca_s_valid,flush_events,
-												   event_s_valid,frame_free,event_frame_full,
+												   event_s_valid,frame_last,
 												   mca_s,event_s,event_head,event_s_type,event_s_size,
 												   frame_size,header.frame_type,header,frame_address,
 												   last_frame_address,last_frame_word,lookahead_valid)
@@ -469,7 +478,7 @@ begin
       framer_we <= (others => mca_s_valid and framer_ready);
       inc_address <= mca_s_valid and framer_ready;
     	if mca_s_valid and framer_ready then 
-        if frame_free=0 or flush_events or mca_s.last(0) then
+        if frame_last or flush_events or mca_s.last(0) then
         	frame_nextstate <= LENGTH;
         	framer_word.last(0) <= TRUE;
         end if;
@@ -486,7 +495,7 @@ begin
       	-- the buffer can be addressed as a array
         frame_nextstate <= TERMINATE;
       elsif event_s_valid then 
-      	if event_frame_full then
+      	if frame_last then
       		if event_s.last(0) then
       			framer_word.last(0) <= TRUE;
       			framer_we <= (others => framer_ready);
@@ -629,11 +638,14 @@ begin
 			--FIXME is the -1 correct for frame free?
 			frame_free 
 				<= to_unsigned(to_integer(DEFAULT_MTU/8),FRAMER_ADDRESS_BITS+1);
+			frame_free_m1 
+				<= to_unsigned(to_integer(DEFAULT_MTU/8)-1,FRAMER_ADDRESS_BITS+1);
 		else
 			framer_ready <= framer_free > frame_address;
 			if commit_frame then
 				frame_address <= (others => '0');
 				frame_free <= resize(mtu_int,FRAMER_ADDRESS_BITS+1);
+				frame_free_m1 <= resize(mtu_int-1,FRAMER_ADDRESS_BITS+1);
 			elsif inc_address then
 				last_frame_word <= framer_word;
 				last_frame_word.discard <= framer_word.discard;
@@ -641,6 +653,8 @@ begin
 				last_frame_address <= frame_address;
 				frame_address <= frame_address+1;
         frame_free <= frame_free-1;
+        frame_free_m1 <= frame_free_m1-1;
+        frame_last <= frame_free_m1 < frame_size;
 			end if;
 		end if;
 	end if;

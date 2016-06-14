@@ -1,0 +1,286 @@
+################################################################################
+# ML605 development board TES digitiser
+# Geoff Gillett
+################################################################################
+
+################################################################################
+# ML605 general IO pads
+################################################################################
+
+# UART used for serial register IO
+NET "main_rx" LOC = J24 | IOSTANDARD = LVCMOS25;
+NET "main_tx" LOC = J25 | IOSTANDARD = LVCMOS25 | DRIVE = 4 | SLEW = SLOW;
+NET "main_?x" TIG;
+
+NET "global_reset" LOC = H10 | TIG;
+
+# LEDs for debugging
+#NET "LEDs[0]" LOC = AC22;
+#NET "LEDs[1]" LOC = AC24;
+#NET "LEDs[2]" LOC = AE22;
+#NET "LEDs[3]" LOC = AE23;
+#NET "LEDs[4]" LOC = AB23;
+#NET "LEDs[5]" LOC = AG23;
+#NET "LEDs[6]" LOC = AE24;
+#NET "LEDs[7]" LOC = AD24;
+##NET "LEDs[?]" TNM_NET = "LEDS";
+#NET "LEDs[?]" TIG;
+
+################################################################################
+# FMC108 in the HPC FMC header on the ML605
+################################################################################
+#-------------------------------------------------------------------------------
+# SPI communication with chips on the FMC108
+#  ADS62P49 ADC SPI pins
+#  TI labels the SPI pins as follows
+#     spi_clk  -> SCLK     serial clock
+#     spi_ce_n -> SEN      low active chip enable
+#     spi_mosi -> SDATA    data to chip 
+#     spi_miso -> SDOUT    data from chip
+#  AD9510 is the clock generator/VCO/PLL chip
+#-------------------------------------------------------------------------------
+PIN "ADC_spi_ce_n[0]" LOC = V33;
+PIN "ADC_spi_ce_n[1]" LOC = U31;
+PIN "ADC_spi_ce_n[2]" LOC = U30; 
+PIN "ADC_spi_ce_n[3]" LOC = U28;
+PIN "ADC_spi_miso[0]" LOC = AE33;
+PIN "ADC_spi_miso[1]" LOC = AF33;
+PIN "ADC_spi_miso[2]" LOC = AD29;
+PIN "ADC_spi_miso[3]" LOC = AC29;
+PIN "ADC_spi_mosi" LOC = U27;
+PIN "ADC_spi_clk" LOC = U26;
+PIN "AD9510_spi_ce_n" LOC = AH23;
+PIN "AD9510_spi_miso" LOC = T33;
+PIN "AD9510_spi_mosi" LOC = AG26;
+PIN "AD9510_spi_clk" LOC = AG25;
+NET "*_spi_*" TIG;
+
+#-------------------------------------------------------------------------------
+# FMC108 control/status
+#-------------------------------------------------------------------------------
+NET "FMC_internal_clk_en" LOC = AH29 | TIG;
+NET "FMC_VCO_power_en" LOC = AP21 | TIG;
+NET "FMC_AD9510_status" LOC = T34 | TIG;
+NET "FMC_AD9510_function" LOC = U33 | TIG;
+NET "FMC_reset" LOC = V29 | TIG;
+NET "FMC_power_good" LOC = J27 | TIG;
+NET "FMC_present_n" LOC = AP25 | TIG;
+NET "FMC_internal_clk_en" LOC = AH29 | TIG;
+NET "FMC_VCO_power_en" LOC = AP21 | TIG;
+NET "FMC_AD9510_status" LOC = T34 | TIG;
+NET "FMC_AD9510_function" LOC = U33 | TIG;
+NET "FMC_reset" LOC = V29 | TIG;
+NET "FMC_power_good" LOC = J27 | TIG;
+NET "FMC_present_n" LOC = AP25 | TIG;
+
+#-------------------------------------------------------------------------------
+# LVDS data from ADS62P49s
+#-------------------------------------------------------------------------------
+NET "adc_data_?<?>[?]" IOSTANDARD = LVDS_25;
+NET "adc_data_?<?>[?]" DIFF_TERM = "TRUE";
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel A (0)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<0>[0]" LOC = AE19;
+NET "adc_data_p<0>[0]" LOC = AF19;
+NET "adc_data_n<0>[1]" LOC = AD19;
+NET "adc_data_p<0>[1]" LOC = AC19;
+NET "adc_data_n<0>[2]" LOC = AD20;
+NET "adc_data_p<0>[2]" LOC = AC20;
+NET "adc_data_n<0>[3]" LOC = AG21;
+NET "adc_data_p<0>[3]" LOC = AG20;
+NET "adc_data_n<0>[4]" LOC = AH22;
+NET "adc_data_p<0>[4]" LOC = AG22;
+NET "adc_data_n<0>[5]" LOC = AJ21;
+NET "adc_data_p<0>[5]" LOC = AK21;
+NET "adc_data_n<0>[6]" LOC = AJ22;
+NET "adc_data_p<0>[6]" LOC = AK22;
+
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel B (1)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<1>[0]" LOC = AC27;
+NET "adc_data_p<1>[0]" LOC = AB27;
+NET "adc_data_n<1>[1]" LOC = AC25;
+NET "adc_data_p<1>[1]" LOC = AB25;
+NET "adc_data_n<1>[2]" LOC = AA29;
+NET "adc_data_p<1>[2]" LOC = AA28;
+NET "adc_data_n<1>[3]" LOC = AB26;
+NET "adc_data_p<1>[3]" LOC = AA26;
+NET "adc_data_n<1>[4]" LOC = AB31;
+NET "adc_data_p<1>[4]" LOC = AB30;
+NET "adc_data_n<1>[5]" LOC = AC28;
+NET "adc_data_p<1>[5]" LOC = AB28;
+NET "adc_data_n<1>[6]" LOC = Y26;
+NET "adc_data_p<1>[6]" LOC = AA25;
+
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel C (2)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<2>[0]" LOC = AN22;
+NET "adc_data_p<2>[0]" LOC = AM22;
+NET "adc_data_n<2>[1]" LOC = AL21;
+NET "adc_data_p<2>[1]" LOC = AM21;
+NET "adc_data_n<2>[2]" LOC = AL20;
+NET "adc_data_p<2>[2]" LOC = AM20;
+NET "adc_data_n<2>[3]" LOC = AL18;
+NET "adc_data_p<2>[3]" LOC = AM18;
+NET "adc_data_n<2>[4]" LOC = AN18;
+NET "adc_data_p<2>[4]" LOC = AP19;
+NET "adc_data_n<2>[5]" LOC = AL23;
+NET "adc_data_p<2>[5]" LOC = AM23;
+NET "adc_data_n<2>[6]" LOC = AN20;
+NET "adc_data_p<2>[6]" LOC = AN19;
+
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel D (3)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<3>[1]" LOC = AA31;
+NET "adc_data_p<3>[1]" LOC = AA30;
+NET "adc_data_n<3>[2]" LOC = AC32;
+NET "adc_data_p<3>[2]" LOC = AB32;
+NET "adc_data_n<3>[0]" LOC = AD31;
+NET "adc_data_p<3>[0]" LOC = AE31;
+NET "adc_data_n<3>[3]" LOC = AE32;
+NET "adc_data_p<3>[3]" LOC = AD32;
+NET "adc_data_n<3>[4]" LOC = AC34;
+NET "adc_data_p<3>[4]" LOC = AD34;
+NET "adc_data_n<3>[5]" LOC = AG32;
+NET "adc_data_p<3>[5]" LOC = AG33;
+NET "adc_data_n<3>[6]" LOC = AF31;
+NET "adc_data_p<3>[6]" LOC = AG31;
+
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel E (4)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<4>[0]" LOC = AM26;
+NET "adc_data_p<4>[0]" LOC = AL26;
+NET "adc_data_n<4>[1]" LOC = AN24;
+NET "adc_data_p<4>[1]" LOC = AN25;
+NET "adc_data_n<4>[2]" LOC = AL24;
+NET "adc_data_p<4>[2]" LOC = AK23;
+NET "adc_data_n<4>[3]" LOC = AN23;
+NET "adc_data_p<4>[3]" LOC = AP22;
+NET "adc_data_n<4>[4]" LOC = AP26;
+NET "adc_data_p<4>[4]" LOC = AP27;
+NET "adc_data_n<4>[5]" LOC = AL25;
+NET "adc_data_p<4>[5]" LOC = AM25;
+NET "adc_data_n<4>[6]" LOC = AP29;
+NET "adc_data_p<4>[6]" LOC = AN29;
+
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel F (5)
+#-------------------------------------------------------------------------------
+NET "adc_data_n<5>[0]" LOC = AN34;
+NET "adc_data_p<5>[0]" LOC = AN33;
+NET "adc_data_n<5>[1]" LOC = AG30;
+NET "adc_data_p<5>[1]" LOC = AF30;
+NET "adc_data_n<5>[2]" LOC = AK34;
+NET "adc_data_p<5>[2]" LOC = AL34;
+NET "adc_data_n<5>[3]" LOC = AL33;
+NET "adc_data_p<5>[3]" LOC = AM33;
+NET "adc_data_n<5>[4]" LOC = AM32;
+NET "adc_data_p<5>[4]" LOC = AN32;
+NET "adc_data_n<5>[5]" LOC = AP33;
+NET "adc_data_p<5>[5]" LOC = AP32;
+NET "adc_data_n<5>[6]" LOC = AM31;
+NET "adc_data_p<5>[6]" LOC = AL30;
+
+#-------------------------------------------------------------------------------
+# LVDS data from ADC channel G (6) 
+#-------------------------------------------------------------------------------
+NET "adc_data_n<6>[0]" LOC = AK28;
+NET "adc_data_p<6>[0]" LOC = AL28;
+NET "adc_data_n<6>[1]" LOC = AP31;
+NET "adc_data_p<6>[1]" LOC = AP30;
+NET "adc_data_n<6>[2]" LOC = AM30;
+NET "adc_data_p<6>[2]" LOC = AN30;
+NET "adc_data_n<6>[3]" LOC = AM28;
+NET "adc_data_p<6>[3]" LOC = AN28;
+NET "adc_data_n<6>[4]" LOC = AJ27;
+NET "adc_data_p<6>[4]" LOC = AK27;
+NET "adc_data_n<6>[5]" LOC = AK24;
+NET "adc_data_p<6>[5]" LOC = AJ24;
+NET "adc_data_n<6>[6]" LOC = AK29;
+NET "adc_data_p<6>[6]" LOC = AL29;
+
+#-------------------------------------------------------------------------------
+# LVDS from ADC channel H (7) 
+#-------------------------------------------------------------------------------
+NET "adc_data_n<7>[0]" LOC = AH32;
+NET "adc_data_p<7>[0]" LOC = AH33;
+NET "adc_data_n<7>[1]" LOC = AF29;
+NET "adc_data_p<7>[1]" LOC = AF28;
+NET "adc_data_n<7>[2]" LOC = AD27;
+NET "adc_data_p<7>[2]" LOC = AE27;
+NET "adc_data_n<7>[3]" LOC = AE29;
+NET "adc_data_p<7>[3]" LOC = AE28;
+NET "adc_data_n<7>[4]" LOC = AJ32;
+NET "adc_data_p<7>[4]" LOC = AJ31;
+NET "adc_data_n<7>[5]" LOC = AJ30;
+NET "adc_data_p<7>[5]" LOC = AJ29;
+NET "adc_data_n<7>[6]" LOC = AK32;
+NET "adc_data_p<7>[6]" LOC = AK33;
+
+
+################################################################################
+# VIRTEX 6 embedded MAC  modified example design
+################################################################################
+# TODO remove the example design switches
+################################################################################
+
+NET "frame_error" LOC = AH28 | IOSTANDARD = LVCMOS25;
+NET "frame_errorn" LOC = AH27 | IOSTANDARD = LVCMOS25;
+
+#### Module Push_Buttons_4Bit constraints
+NET "update_speed" LOC = G26 | IOSTANDARD = LVCMOS15;
+NET "serial_command" LOC = G17 | IOSTANDARD = LVCMOS15;
+NET "pause_req_s" LOC = A19 | IOSTANDARD = LVCMOS15;
+NET "reset_error" LOC = A18 | IOSTANDARD = LVCMOS15;
+
+#### Module DIP_Switches_4Bit constraints
+NET "mac_speed[0]" LOC = D22 | IOSTANDARD = LVCMOS15;
+NET "mac_speed[1]" LOC = C22 | IOSTANDARD = LVCMOS15;
+
+# need to stop these from being optimised out
+NET "serial_response" S = "TRUE";
+NET "tx_statistics_s" S = "TRUE";
+NET "rx_statistics_s" S = "TRUE";
+
+# gmii/mdo physical interface
+NET "phy_resetn" LOC = AH13 | IOSTANDARD = LVCMOS25 | TIG;
+NET "mdc" LOC = AP14 | IOSTANDARD = LVCMOS25;
+NET "mdio" LOC = AN14 | IOSTANDARD = LVCMOS25;
+
+NET "gmii_rxd[?]" IOSTANDARD = LVCMOS25;
+NET "gmii_rxd[7]" LOC = AC13;
+NET "gmii_rxd[6]" LOC = AC12;
+NET "gmii_rxd[5]" LOC = AD11;
+NET "gmii_rxd[4]" LOC = AM12;
+NET "gmii_rxd[3]" LOC = AN12;
+NET "gmii_rxd[2]" LOC = AE14;
+NET "gmii_rxd[1]" LOC = AF14;
+NET "gmii_rxd[0]" LOC = AN13;
+
+NET "gmii_txd[?]" IOSTANDARD = LVCMOS25;
+NET "gmii_txd[0]" LOC = AM11;
+NET "gmii_txd[1]" LOC = AL11;
+NET "gmii_txd[2]" LOC = AG10;
+NET "gmii_txd[3]" LOC = AG11;
+NET "gmii_txd[4]" LOC = AL10;
+NET "gmii_txd[5]" LOC = AM10;
+NET "gmii_txd[6]" LOC = AE11;
+NET "gmii_txd[7]" LOC = AF11;
+
+NET "gmii_tx_en" LOC = AJ10 | IOSTANDARD = LVCMOS25;
+NET "gmii_tx_er" LOC = AH10 | IOSTANDARD = LVCMOS25;
+NET "gmii_col" LOC = AK13 | IOSTANDARD = LVCMOS25;
+NET "gmii_crs" LOC = AL13 | IOSTANDARD = LVCMOS25;
+NET "mii_tx_clk" LOC = AD12 | IOSTANDARD = LVCMOS25;
+
+NET "gmii_tx_clk" LOC = AH12 | IOSTANDARD = LVCMOS25;
+NET "gmii_rx_dv" LOC = AM13 | IOSTANDARD = LVCMOS25;
+NET "gmii_rx_er" LOC = AG12 | IOSTANDARD = LVCMOS25;
+# P20 - GCLK7
+NET "gmii_rx_clk" LOC = AP11 | IOSTANDARD = LVCMOS25;
+
