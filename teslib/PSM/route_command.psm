@@ -18,21 +18,21 @@
                     ;-----------------------------------------------------------
                     ; Routing is based on the MSB of address: (address3)
                     ;
-                    ;   00-CHANNEL_MASK   Channel
+                    ;   0C		Channel
                     ;
-                    ;   CHANNEL_MASK+1    General registers
+                    ;   01    General registers
                     ;
-                    ;   CHANNEL_MASK+2    ADC SPI
-                    ;                       LSB:SPI address
-                    ;                       2nd LSB: SPI channel select
+                    ;   02    SPI
+                    ;         LSB:SPI address
+                    ;         2nd LSB: SPI channel select
                     ;
-                    ;  >CHANNEL_MASK+3    AXI lite bus (NOT IMPLEMENTED)
-                    ; TODO make channel mask fixed at 4 bits
+                    ;  	03    AXI lite bus (NOT IMPLEMENTED)
+                    ;
                     ;-----------------------------------------------------------
      route_command: COMPARE address3, 10
                     JUMP Z, global_register      	; returns to caller
                     COMPARE address3, 20				 	; spi?
-                    JUMP NZ, SPI_handler 
+                    JUMP Z, SPI_handler 
       							FETCH s3, TES_channels
                     COMPARE address3, s3
                     JUMP NC, respond_decerr     	; returns to caller
