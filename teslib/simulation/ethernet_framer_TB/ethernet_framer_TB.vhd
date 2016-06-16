@@ -31,23 +31,43 @@ end entity ethernet_framer_TB;
 
 architecture testbench of ethernet_framer_TB is
 
-signal clk:std_logic:='1';	
+signal signal_clk:std_logic:='1';	
+signal io_clk:std_logic:='1';	
 signal reset:std_logic:='1';	
-constant CLK_PERIOD:time:=4 ns;
+constant SIGNAL_PERIOD:time:=4 ns;
+constant IO_PERIOD:time:=8 ns;
 
 signal mtu:unsigned(MTU_BITS-1 downto 0);
 signal tick_latency:unsigned(TICK_LATENCY_BITS-1 downto 0);
 signal eventstream:streambus_t;
 signal eventstream_valid:boolean;
 signal eventstream_ready:boolean;
+signal eventdata:std_logic_vector(63 downto 0);
+signal eventlast:boolean;
 signal mcastream:streambus_t;
 signal mcastream_valid:boolean;
 signal mcastream_ready:boolean;
+signal mcadata:std_logic_vector(63 downto 0);
+signal mcalast:boolean;
 signal ethernetstream:streambus_t;
 signal ethernetstream_valid:boolean;
 signal ethernetstream_ready:boolean;
+signal bytestream:std_logic_vector(7 downto 0);
+signal bytestream_valid:boolean;
+signal bytestream_ready:boolean;
+signal bytestream_last:boolean;
+
 begin
-clk <= not clk after CLK_PERIOD/2;
+signal_clk <= not signal_clk after SIGNAL_PERIOD/2;
+io_clk <= not io_clk after IO_PERIOD/2;
+
+eventstream.data <= eventdata;
+eventstream.discard <= (others => FALSE);
+eventstream.last <= (0 => eventlast, others => FALSE);
+
+mcastream.data <= mcadata;
+mcastream.discard <= (others => FALSE);
+mcastream.last <= (0 => mcalast, others => FALSE);
 
 UUT:entity work.ethernet_framer
 generic map(
@@ -59,7 +79,7 @@ generic map(
   ENDIANNESS => ENDIANNESS
 )
 port map(
-  clk => clk,
+  clk => signal_clk,
   reset => reset,
   mtu => mtu,
   tick_latency => tick_latency,
@@ -74,21 +94,19 @@ port map(
   ethernetstream_ready => ethernetstream_ready
 );
 
-stimulus:process is
-begin
-eventstream.last <= (0 => TRUE, others => FALSE);
-eventstream.discard <= (others => FALSE);
-eventstream.data <= (others => '0');
-mcastream.data <= (others => '0');
-mcastream.last <= (others => FALSE);
-mcastream.discard <= (others => FALSE);
-mtu <= to_unsigned(88,MTU_BITS);
-tick_latency <= to_unsigned(800,TICK_LATENCY_BITS);
-wait for CLK_PERIOD;
-ethernetstream_ready <= TRUE;
-reset <= '0';
-wait for CLK_PERIOD;
-wait;
-end process stimulus;
+enetCdc:entity work.CDC_bytestream_adapter
+port map(
+  s_clk => signal_clk,
+  s_reset => reset,
+  streambus => ethernetstream,
+  streambus_valid => ethernetstream_valid,
+  streambus_ready => ethernetstream_ready,
+  b_clk => io_clk,
+  b_reset => reset,
+  bytestream => bytestream,
+  bytestream_valid => bytestream_valid,
+  bytestream_ready => bytestream_ready,
+  bytestream_last => bytestream_last
+);
 
 end architecture testbench;

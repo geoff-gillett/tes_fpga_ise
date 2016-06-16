@@ -105,10 +105,12 @@ signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_free_m1:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_last:boolean;
+signal frame_under:boolean;
 signal inc_address:boolean;
 signal framer_ready:boolean;
 -- frame_size is the size of events in the current frame
 signal event_s_size:unsigned(SIZE_BITS-1 downto 0);
+signal size_change,type_change:boolean;
 signal lookahead_head:boolean;
 signal event_s_last_hs:boolean;
 signal event_s_hs:boolean;
@@ -126,6 +128,7 @@ signal event_head:boolean;
 -- Ethernet Header
 --------------------------------------------------------------------------------
 constant ETHERNET_HEADER_WORDS:integer:=3;
+constant MIN_FRAME:integer:=8;
 constant SEQUENCE_BITS:integer:=16;
 type ethernet_header_t is record
 	destination_address:unsigned(47 downto 0);
@@ -251,6 +254,8 @@ begin
     		if arbiter_state=EVENT then
         	header.frame_type <= event_s_type;
         	frame_size <= event_s_size;
+        	type_change <= FALSE;
+        	size_change <= FALSE;
         else -- must be MCA
         	frame_size <= (0 => '1', others => '0');
         end if;	
@@ -262,20 +267,28 @@ begin
     	
     		if lookahead_head then	
     			event_s_type <= lookahead_type;
+    			if frame_state=PAYLOAD then
+    				type_change <= header.frame_type/=lookahead_type;
+    			end if;
         
           if lookahead_type.tick then
-            size := to_unsigned(3, SIZE_BITS);
+          	size := to_unsigned(3, SIZE_BITS);
+          	size_change <= FALSE;
           else
             case lookahead_type.detection is
             when PEAK_DETECTION_D =>
-              size := (0 =>'1', others => '0');
+            	size := (0 =>'1', others => '0');
+            	size_change <= FALSE;
             when AREA_DETECTION_D =>
               size := (0 =>'1', others => '0');
+            	size_change <= FALSE;
             when PULSE_DETECTION_D =>
               size := lookahead_size;
+            	size_change <= frame_size/=lookahead_size;
             when TRACE_DETECTION_D =>
               -- traces can extend over multiple frames set event_size to 1
               size := (0 => '1', others => '0');
+            	size_change <= FALSE;
             end case;
           end if;
           
@@ -321,8 +334,10 @@ header.source_address <= x"5A0102030405";
 header.destination_address <= x"DA0102030405";
 seqNumbers:process(clk)
 begin
+	
 	if rising_edge(clk) then
 		if reset = '1' then
+			
 			header.frame_sequence <= (others => '0');
 			header.length <= (others => '-');
 			event_sequence <= (others => '0');
@@ -433,10 +448,10 @@ end process arbiterFSMtransition;
 --event_frame_full <= frame_free < to_0ifX(frame_size);
 frameFSMtransition:process(frame_state,arbiter_nextstate,arbiter_state,
 													 framer_ready,mca_s_valid,flush_events,
-												   event_s_valid,frame_last,
-												   mca_s,event_s,event_head,event_s_type,event_s_size,
-												   frame_size,header.frame_type,header,frame_address,
-												   last_frame_address,last_frame_word,lookahead_valid)
+												   event_s_valid,frame_last,mca_s,event_s,event_head,
+												   header.frame_type,header,frame_address,
+												   last_frame_address,last_frame_word,lookahead_valid,
+												   size_change,type_change,frame_under)
 begin
 	frame_nextstate <= frame_state;
   framer_address <= frame_address; 
@@ -487,10 +502,7 @@ begin
     else -- must be event
     	
 	    framer_word.data <= event_s.data;
-      if event_head and 
-      		(event_s_type/=header.frame_type or 
-      			event_s_size/=to_0ifX(frame_size)
-      		) then
+      if event_head and (type_change or size_change) then
       	-- Want to keep one type and size in a frame so when it arrives at the 
       	-- the buffer can be addressed as a array
         frame_nextstate <= TERMINATE;
@@ -522,7 +534,7 @@ begin
 				end if;
 			else
 				-- FIXME this should probably only terminate if mca_valid
-				if not lookahead_valid and event_head then
+				if not lookahead_valid and event_head and not frame_under then
 					frame_nextstate <= TERMINATE;
 				end if;
       end if;
@@ -655,6 +667,7 @@ begin
         frame_free <= frame_free-1;
         frame_free_m1 <= frame_free_m1-1;
         frame_last <= frame_free_m1 < frame_size;
+        frame_under <= frame_free_m1 < MIN_FRAME;
 			end if;
 		end if;
 	end if;

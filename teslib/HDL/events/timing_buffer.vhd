@@ -236,29 +236,32 @@ end if;
 end process FIFOreg;
 
 --FIXME clock this??
-ReadFifos:process(buffer_state,all_dumped_reg,started_reg,ticked_reg,read_next)
+--ReadFifos:process(buffer_state,all_dumped_reg,started_reg,ticked_reg,read_next)
+ReadFifos:process(clk)
 begin
-case buffer_state is 
-when IDLE =>
-  time_rd_en <= '0';
-  commit_rd_en <= (others => '0');
-when WAITEVENT =>
-	if all_dumped_reg and not ticked_reg then
-		time_rd_en <= '1';
-		commit_rd_en <= started_reg;
-	else
-    time_rd_en <= '0';
-    commit_rd_en <= (others => '0');
-	end if;
-when VALIDEVENT =>
-	if read_next then
-		time_rd_en <= '1';
-		commit_rd_en <= started_reg;
-	else
-    time_rd_en <= '0';
-    commit_rd_en <= (others => '0');
-	end if;	
-end case;
+	if rising_edge(clk) then
+    case buffer_state is 
+    when IDLE =>
+      time_rd_en <= '0';
+      commit_rd_en <= (others => '0');
+    when WAITEVENT =>
+      if all_dumped_reg and not ticked_reg then
+        time_rd_en <= '1';
+        commit_rd_en <= started_reg;
+      else
+        time_rd_en <= '0';
+        commit_rd_en <= (others => '0');
+      end if;
+    when VALIDEVENT =>
+      if read_next then
+        time_rd_en <= '1';
+        commit_rd_en <= started_reg;
+      else
+        time_rd_en <= '0';
+        commit_rd_en <= (others => '0');
+      end if;	
+    end case;
+end if;
 end process ReadFifos;
 
 --------------------------------------------------------------------------------
