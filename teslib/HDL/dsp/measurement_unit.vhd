@@ -575,7 +575,7 @@ if rising_edge(clk) then
     if minima_pd then	
       last_minima_value <= filtered_pd;	
       capture_pd <= registers.capture;
-      if capture_pd.threshold_rel2min and pd_pulse_state=IDLE then
+      if registers.capture.threshold_rel2min and pd_pulse_state=IDLE then
         pulse_threshold 
           <= filtered_pd + signed('0' & registers.capture.pulse_threshold);
       else
@@ -671,7 +671,7 @@ port map (
   empty => open
 );
 
-flagsReg : process (clk) is
+flagsReg:process (clk) is
 begin
 	if rising_edge(clk) then
     flags_pd <= (to_std_logic(minima_pd),

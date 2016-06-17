@@ -133,13 +133,13 @@ begin
 	-- baseline
 	delay:entity work.RAM_delay
   generic map(
-    DEPTH     => 2**DELAY_BITS,
+    DEPTH => 2**DELAY_BITS,
     DATA_BITS => ADC_BITS
   )
   port map(
     clk => sample_clk,
     data_in => adc_sample,
-    delay => to_integer(registers(c).capture.delay),
+    delay => 0, --to_integer(registers(c).capture.delay),
     delayed => adc_delayed(c)
   );
 
@@ -398,11 +398,11 @@ wait for SAMPLE_CLK_PERIOD;
 update_asap <= TRUE;
 wait for SAMPLE_CLK_PERIOD;
 update_asap <= FALSE;
-wait for IO_CLK_PERIOD*10;
-wait until bytestream_last and bytestream_ready and bytestream_valid;
-bytestream_ready <= FALSE;
-wait for IO_CLK_PERIOD*24;
-bytestream_ready <= TRUE;
+--wait for IO_CLK_PERIOD*10;
+--wait until bytestream_last and bytestream_ready and bytestream_valid;
+--bytestream_ready <= FALSE;
+--wait for IO_CLK_PERIOD*24;
+--bytestream_ready <= TRUE;
 wait;
 end process stimulus;
 

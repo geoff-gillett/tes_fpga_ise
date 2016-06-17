@@ -737,19 +737,19 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     axis_error => axis_error(c)
   );
 
-	mca_values(c) <= resize(signed('0' & adc_samples(c)),MCA_VALUE_BITS);
+	--mca_values(c) <= resize(signed('0' & adc_samples(c)),MCA_VALUE_BITS);
 	--TODO add reset??
---  delay:entity tes.RAM_delay
---  generic map(
---    DEPTH => 2**DELAY_BITS,
---    DATA_BITS => ADC_BITS
---  )
---  port map(
---    clk => signal_clk,
---    data_in => adc_samples(c),
---    delay => to_integer(channel_registers(c).capture.delay),
---    delayed => adc_delayed(c)
---  );
+  delay:entity tes.RAM_delay
+  generic map(
+    DEPTH => 2**DELAY_BITS,
+    DATA_BITS => ADC_BITS
+  )
+  port map(
+    clk => signal_clk,
+    data_in => adc_samples(c),
+    delay => to_integer(channel_registers(c).capture.delay),
+    delayed => adc_delayed(c)
+  );
 
 --  inputSel:entity tes.input_sel
 --  generic map(
@@ -764,92 +764,92 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 --    output => adc_samples(c)
 --  );
 
---	measurement:entity tes.measurement_unit
---  generic map(
---    FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
---    CHANNEL => c,
---    ENDIANNESS => ENDIANNESS
---  )
---  port map(
---    clk => signal_clk,
---    reset => reset2,
---    adc_sample => adc_delayed(c),
---    registers => channel_registers(c),
---    filter_config_data => filter_config_data(c),
---    filter_config_valid => filter_config_valid(c),
---    filter_config_ready => filter_config_ready(c),
---    filter_reload_data => filter_data(c),
---    filter_reload_valid => filter_valid(c),
---    filter_reload_ready => filter_ready(c),
---    filter_reload_last => filter_last(c),
---    filter_reload_last_missing => filter_last_missing(c),
---    filter_reload_last_unexpected => filter_last_unexpected(c),
---    dif_config_data => dif_config_data(c),
---    dif_config_valid => dif_config_valid(c),
---    dif_config_ready => dif_config_ready(c),
---    dif_reload_data => dif_data(c),
---    dif_reload_valid => dif_valid(c),
---    dif_reload_ready => dif_ready(c),
---    dif_reload_last => dif_last(c),
---    dif_reload_last_missing => dif_last_missing(c),
---    dif_reload_last_unexpected => dif_last_unexpected(c),
---    measurements => measurements(c),
---    mca_value_select => value_select,
---    mca_trigger_select => trigger_select,
---    mca_value => mca_values(c),
---    mca_value_valid => mca_value_valids(c),
---    mux_full => mux_full,
---    start => starts(c),
---    dump => dumps(c),
---    commit => commits(c),
---    cfd_error => cfd_errors(c),
---    time_overflow => time_overflows(c),
---    peak_overflow => peak_overflows(c),
---    framer_overflow => framer_overflows(c),
---    mux_overflow => mux_overflows(c),
---    measurement_overflow => measurement_overflows(c),
---    baseline_underflow => baseline_errors(c),
---    eventstream => eventstreams(c),
---    valid => eventstreams_valid(c),
---    ready => eventstreams_ready(c)
---  );
+	measurement:entity tes.measurement_unit
+  generic map(
+    FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
+    CHANNEL => c,
+    ENDIANNESS => ENDIANNESS
+  )
+  port map(
+    clk => signal_clk,
+    reset => reset2,
+    adc_sample => adc_delayed(c),
+    registers => channel_registers(c),
+    filter_config_data => filter_config_data(c),
+    filter_config_valid => filter_config_valid(c),
+    filter_config_ready => filter_config_ready(c),
+    filter_reload_data => filter_data(c),
+    filter_reload_valid => filter_valid(c),
+    filter_reload_ready => filter_ready(c),
+    filter_reload_last => filter_last(c),
+    filter_reload_last_missing => filter_last_missing(c),
+    filter_reload_last_unexpected => filter_last_unexpected(c),
+    dif_config_data => dif_config_data(c),
+    dif_config_valid => dif_config_valid(c),
+    dif_config_ready => dif_config_ready(c),
+    dif_reload_data => dif_data(c),
+    dif_reload_valid => dif_valid(c),
+    dif_reload_ready => dif_ready(c),
+    dif_reload_last => dif_last(c),
+    dif_reload_last_missing => dif_last_missing(c),
+    dif_reload_last_unexpected => dif_last_unexpected(c),
+    measurements => measurements(c),
+    mca_value_select => value_select,
+    mca_trigger_select => trigger_select,
+    mca_value => mca_values(c),
+    mca_value_valid => mca_value_valids(c),
+    mux_full => mux_full,
+    start => starts(c),
+    dump => dumps(c),
+    commit => commits(c),
+    cfd_error => cfd_errors(c),
+    time_overflow => time_overflows(c),
+    peak_overflow => peak_overflows(c),
+    framer_overflow => framer_overflows(c),
+    mux_overflow => mux_overflows(c),
+    measurement_overflow => measurement_overflows(c),
+    baseline_underflow => baseline_errors(c),
+    eventstream => eventstreams(c),
+    valid => eventstreams_valid(c),
+    ready => eventstreams_ready(c)
+  );
 end generate tesChannel;
 --------------------------------------------------------------------------------
 
---mux:entity tes.eventstream_mux
---generic map(
---  --CHANNEL_BITS => CHANNEL_BITS,
---  CHANNELS => DSP_CHANNELS,
---  TIME_BITS => TIME_BITS,
---  TIMESTAMP_BITS => TIMESTAMP_BITS,
---  TICKPERIOD_BITS => TICK_PERIOD_BITS,
---  MIN_TICKPERIOD => MIN_TICKPERIOD,
---  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
---  ENDIANNESS => ENDIANNESS
---)
---port map(
---  clk => signal_clk,
---  reset => reset1,
---  start => starts,
---  commit => commits,
---  dump => dumps,
---  instreams => eventstreams,
---  instream_valids => eventstreams_valid,
---  instream_readys => eventstreams_ready,
---  full => mux_full,
---  tick_period => global.tick_period,
---  window => global.window,
---  cfd_errors => cfd_errors,
---  framer_overflows => framer_overflows,
---  mux_overflows => mux_overflows,
---  measurement_overflows => measurement_overflows,
---  peak_overflows => peak_overflows,
---  time_overflows => time_overflows,
---  baseline_underflows => baseline_errors,
---  muxstream => muxstream,
---  valid => muxstream_valid,
---  ready => muxstream_ready
---);
+mux:entity tes.eventstream_mux
+generic map(
+  --CHANNEL_BITS => CHANNEL_BITS,
+  CHANNELS => DSP_CHANNELS,
+  TIME_BITS => TIME_BITS,
+  TIMESTAMP_BITS => TIMESTAMP_BITS,
+  TICKPERIOD_BITS => TICK_PERIOD_BITS,
+  MIN_TICKPERIOD => MIN_TICKPERIOD,
+  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
+  ENDIANNESS => ENDIANNESS
+)
+port map(
+  clk => signal_clk,
+  reset => reset1,
+  start => starts,
+  commit => commits,
+  dump => dumps,
+  instreams => eventstreams,
+  instream_valids => eventstreams_valid,
+  instream_readys => eventstreams_ready,
+  full => mux_full,
+  tick_period => global.tick_period,
+  window => global.window,
+  cfd_errors => cfd_errors,
+  framer_overflows => framer_overflows,
+  mux_overflows => mux_overflows,
+  measurement_overflows => measurement_overflows,
+  peak_overflows => peak_overflows,
+  time_overflows => time_overflows,
+  baseline_underflows => baseline_errors,
+  muxstream => muxstream,
+  valid => muxstream_valid,
+  ready => muxstream_ready
+);
 
 mcaChanSel:entity tes.mca_channel_selector
 generic map(
@@ -902,9 +902,9 @@ port map(
 );
 
 
-muxstream.data <= (others => '0');
-muxstream.last <= (others => FALSE);
-muxstream.discard <= (others => FALSE);
+--muxstream.data <= (others => '0');
+--muxstream.last <= (others => FALSE);
+--muxstream.discard <= (others => FALSE);
 
 enet:entity tes.ethernet_framer
 generic map(

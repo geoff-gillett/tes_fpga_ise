@@ -1001,7 +1001,6 @@ generic map(
 )
 port map(
   clk => io_clk,
-  LEDs => LEDs,
   reset => global_reset,
   FMC_power_good => FMC_power_good,
   FMC_present => FMC_present,

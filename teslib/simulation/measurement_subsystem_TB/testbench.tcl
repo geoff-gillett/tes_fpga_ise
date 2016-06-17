@@ -1,15 +1,17 @@
 #measurement_subsystem_TB
 package require xilinx
-namespace import ::isim::*
-namespace import ::sim::*
 
+#find out if script is sourced into isim or xsim
+set is_isim [catch version]
+if $is_isim { namespace import ::isim::* } { namespace import ::xsim::* }
+namespace import ::sim::*
 
 #variable channels
 set channels [getsig CHANNELS unsigned]
 
 # input signal text file has 2 byte ascii hex value per line 
 # TODO make inputs binary files
-set input [open "../input_signals/double_peak" r]
+set input [open "../input_signals/long" r]
 fconfigure $input -buffering line
 
 # open data files for binary writing
@@ -75,26 +77,6 @@ fconfigure $bytestream -translation binary
 set baseline [open "../baseline" w]
 fconfigure $baseline -translation binary
 
-restart
-
-# set up wave database
-wave add /measurement_subsystem_TB
-wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
-#wave add /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator/mostFrequent
-#wave add /measurement_subsystem_TB/mux
-#wave add /measurement_subsystem_TB/mux/buffers
-wave add /measurement_subsystem_TB/enet
-#wave add /measurement_subsystem_TB/enet/eventbuffer
-#wave add /measurement_subsystem_TB/enet/eventbuffer/streambuffer
-#wave add /measurement_subsystem_TB/enet/eventbuffer/lookaheadslice
-#wave add /measurement_subsystem_TB/mca
-#wave add /measurement_subsystem_TB/mca/MCA
-#wave add /measurement_subsystem_TB/mca/mcaAdapter
-#wave add /measurement_subsystem_TB/cdc
-
-# advance past reset so settings are valid
-run 8 ns 
-
 set generic [open "../generic" w]
 fconfigure $generic -translation binary
 write_signal $generic CHANNELS unsigned i
@@ -105,6 +87,79 @@ fconfigure $globals -translation binary
 write_signal $globals tick_period unsigned i
 close $globals
 
+restart
+
+# set up wave database
+if {$is_isim} {
+  wave log /measurement_subsystem_TB
+  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
+  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/filteredXing
+  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator
+#  #wave add /measurement_subsystem_TB/mux
+#  #wave add /measurement_subsystem_TB/mux/buffers
+  wave log /measurement_subsystem_TB/enet
+#  #wave add /measurement_subsystem_TB/enet/eventbuffer
+#  #wave add /measurement_subsystem_TB/enet/eventbuffer/streambuffer
+#  #wave add /measurement_subsystem_TB/enet/eventbuffer/lookaheadslice
+#  #wave add /measurement_subsystem_TB/mca
+#  #wave add /measurement_subsystem_TB/mca/MCA
+#  #wave add /measurement_subsystem_TB/mca/mcaAdapter
+  wave log /measurement_subsystem_TB/cdc
+} 
+
+set period [getsig SAMPLE_CLK_PERIOD]
+
+#set up registers
+#setsig mtu 88 dec
+#setsig tick_period 10000 hex
+#setsig window 2 dec
+#setsig tick_latency 20000 hex
+
+#for {set c 0} {$c < $channels} {incr c} {
+#	setsig registers($c).capture.pulse_threshold [expr 300 << 3] unsigned
+#	setsig registers($c).capture.slope_threshold [expr 10 << 8] unsigned
+#	setsig registers($c).baseline.timeconstant 1000 hex
+#	setsig registers($c).baseline.count_threshold 30 unsigned
+#	setsig registers($c).baseline.average_order 4 dec
+#	setsig registers($c).baseline.offset 250 dec
+#	setsig registers($c).baseline.threshold  1FF hex
+#	setsig registers($c).baseline.subtraction 1 bin
+#	setsig registers($c).capture.constant_fraction 52428 dec
+#	setsig registers($c).capture.cfd_rel2min 1 bin
+#	setsig registers($c).capture.height peak_height_d
+#	setsig registers($c).capture.detection peak_detection_d
+#	setsig registers($c).capture.timing pulse_thresh_timing_d
+#	
+#	setsig registers($c).capture.threshold_rel2min 0 bin
+#	setsig registers($c).capture.height_rel2min 0 bin
+#	setsig registers($c).capture.area_threshold 500 dec
+#	setsig registers($c).capture.max_peaks 0 unsigned
+#  setsig registers($c).capture.delay $c unsigned
+#  setsig registers($c).capture.adc_select 0 unsigned
+#	setsig registers($c).capture.full_trace 1 bin
+#	setsig registers($c).capture.trace0 no_trace_d
+#	setsig registers($c).capture.trace1 no_trace_d
+#}
+#
+#setsig mca_registers.channel 0 dec
+#setsig mca_registers.bin_n 0 dec
+#setsig mca_registers.last_bin 3FFF hex
+#setsig mca_registers.lowest_value FFFFFC18 hex
+#setsig mca_registers.value mca_filtered_signal_d
+#setsig mca_registers.trigger clock_mca_trigger_d
+#setsig mca_registers.ticks 1 dec
+#setsig mca_registers.iodelay_control 0 unsigned
+#setsig bytestream_ready 1 bin
+#setsig update_on_completion 0 bin
+
+# advance and clear reset
+run [lindex $period 0] [lindex $period 1]
+run [lindex $period 0] [lindex $period 1]
+
+#setsig sample_reset 0 bin
+#setsig io_reset 0 bin
+
+#store settings
 set c 0
 foreach fp $settings {
 	#baseline registers
@@ -143,10 +198,20 @@ close $mcasetting
 set clk 0
 set ifg 0
 set packet_last 0
+set mca_updated 0
 
 while {[gets $input hexsample] >= 0} {
-#while {$clk < 50000} {}
-  #gets $input hexsample
+#while {$clk < 1000} {}
+#  gets $input hexsample
+	
+#	if {[getbool update_on_completion]} {
+#		setsig update_on_completion 0 bin
+#	}
+#	
+#	if {~[getbool mca_initialising] && ~$mca_updated } {
+#		setsig update_on_completion 1 bin
+#		set mca_updated 1
+#	}
 	
 	if {![expr $clk % 10000]} {
 		# print progress and flush files every 10000 clks

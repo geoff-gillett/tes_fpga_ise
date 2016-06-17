@@ -100,9 +100,11 @@ proc ::isim::getsig {name {radix ""}} {
 
 proc ::isim::setsig {name value {radix ""} } {
 	if { $radix == "" } {
-		isim force add $name $value 
+		put $name $value 
+		#isim force add $name $value 
 	} {
-		isim force add $name $value -radix $radix
+		put $name $value -radix $radix
+		#isim force add $name $value -radix $radix
 	}
   return $value
 }
