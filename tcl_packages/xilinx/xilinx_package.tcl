@@ -363,12 +363,14 @@ proc ::xilinx::process_simdir {vivado sim_dir projname buildDir} {
 	set_property top_file {} $simset
 	
 	if { $vivado } {
-		#vivado can add multiple wfcgs
-		foreach wfcg $vivado_wfcgs {
-      add_files -fileset $TB_file -norecurse $wcfg
-      set_property xsim.view $wfcg [get_filesets $TB_file]	
+		#TODO vivado can add multiple wfcgs handle then here
+    set wcfgName [file rootname $TB_file]_behav.wcfg
+		#puts "wcfgName:$wcfgName"
+    if {[file exists $wcfgName]} { 
+			#can actually add file in vivado 
+      add_files -fileset $name -norecurse $wcfgName
+      set_property xsim.view [file tail $wcfgName] $simset	
 		}
-		set vivado_wfcgs [glob -nocomplian  ]
 	} {
     set wcfgName [file rootname $TB_file].wcfg
     if {[file exists $wcfgName]} { 
@@ -376,6 +378,7 @@ proc ::xilinx::process_simdir {vivado sim_dir projname buildDir} {
     }
 	}
 	
+	# create hard links to files listed in linkfiles file
 	if [file exists $sim_dir/linkfiles] {
     set links [open $sim_dir/linkfiles]
     foreach lfile [split [read $links] \n] {

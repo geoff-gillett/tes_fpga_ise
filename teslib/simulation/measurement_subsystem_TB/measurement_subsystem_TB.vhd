@@ -57,7 +57,7 @@ signal registers:channel_register_array(CHANNELS-1 downto 0);
 
 -- discrete types as unsigned for reading into settings file
 type height_type_array is array (natural range <>) of
-		 unsigned(NUM_HEIGHT_D-1 downto 0);
+		 unsigned(HEIGHT_D_BITS-1 downto 0);
 signal height_types:height_type_array(CHANNELS-1 downto 0);
 type detection_type_array is array (natural range <>) of
 		 unsigned(DETECTION_D_BITS-1 downto 0);
@@ -189,12 +189,12 @@ begin
     ready => eventstreams_ready(c)
   );
 	
-  detection_types(0) 
-  	<= unsigned(to_std_logic(registers(0).capture.detection,DETECTION_D_BITS));
-  height_types(0) 
-  	<= unsigned(to_std_logic(registers(0).capture.height,HEIGHT_D_BITS));
-  trigger_types(0) 
-  	<= unsigned(to_std_logic(registers(0).capture.timing,TIMING_D_BITS));
+  detection_types(c) 
+  	<= unsigned(to_std_logic(registers(c).capture.detection,DETECTION_D_BITS));
+  height_types(c) 
+  	<= unsigned(to_std_logic(registers(c).capture.height,HEIGHT_D_BITS));
+  trigger_types(c) 
+  	<= unsigned(to_std_logic(registers(c).capture.timing,TIMING_D_BITS));
 end generate chanGen;
 
 -- unsigned value for writing to file

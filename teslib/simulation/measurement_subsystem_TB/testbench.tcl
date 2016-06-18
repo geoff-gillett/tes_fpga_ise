@@ -8,10 +8,11 @@ namespace import ::sim::*
 
 #variable channels
 set channels [getsig CHANNELS unsigned]
+set period [getsig SAMPLE_CLK_PERIOD]
 
 # input signal text file has 2 byte ascii hex value per line 
 # TODO make inputs binary files
-set input [open "../input_signals/long" r]
+set input [open "../input_signals/short" r]
 fconfigure $input -buffering line
 
 # open data files for binary writing
@@ -93,8 +94,8 @@ restart
 if {$is_isim} {
   wave log /measurement_subsystem_TB
   wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
-  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/filteredXing
-  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator
+#  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/filteredXing
+#  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator
 #  #wave add /measurement_subsystem_TB/mux
 #  #wave add /measurement_subsystem_TB/mux/buffers
   wave log /measurement_subsystem_TB/enet
@@ -105,9 +106,12 @@ if {$is_isim} {
 #  #wave add /measurement_subsystem_TB/mca/MCA
 #  #wave add /measurement_subsystem_TB/mca/mcaAdapter
   wave log /measurement_subsystem_TB/cdc
-} 
-
-set period [getsig SAMPLE_CLK_PERIOD]
+} {
+  log_wave /measurement_subsystem_TB
+  log_wave /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
+  log_wave /measurement_subsystem_TB/enet
+  log_wave /measurement_subsystem_TB/cdc
+}
 
 #set up registers
 #setsig mtu 88 dec
@@ -153,8 +157,8 @@ set period [getsig SAMPLE_CLK_PERIOD]
 #setsig update_on_completion 0 bin
 
 # advance and clear reset
-run [lindex $period 0] [lindex $period 1]
-run [lindex $period 0] [lindex $period 1]
+run [lindex $period 0] [lindex $period 1] 
+run [lindex $period 0] [lindex $period 1] 
 
 #setsig sample_reset 0 bin
 #setsig io_reset 0 bin
@@ -248,6 +252,7 @@ while {[gets $input hexsample] >= 0} {
 	}
 	
 	setsig adc_sample $hexsample hex
+	#puts $hexsample
 	
 	#channel0 baseline
 	write_signal $baseline \\chanGen(0)\\/measurementUnit/baseline_estimate
@@ -427,28 +432,17 @@ while {[gets $input hexsample] >= 0} {
 		write_signal $baselineerror baseline_errors_u unsigned c
 	}
 	
-	if {![expr $clk % 2]} {   # rising edge of IO_clk
-		if {![getsig bytestream_ready]} {
-			# ifg = interframe gap
-			incr ifg
-			if {$ifg == 19} {setsig bytestream_ready 1 bin}
-		}
-		if {$packet_last} {
-			setsig bytestream_ready 0 bin
-			set packet_last 0
-			set ifg 0
-		} else {
-      if { [getsig bytestream_valid] && [getsig bytestream_ready] } {
-        puts -nonewline $bytestream [binary format i $clk]
-        write_signal $bytestream bytestream unsigned c
-        write_signal $bytestream bytestream_last unsigned c
-        set packet_last [getsig bytestream_last]
-      }
-		}
+	if {![expr $clk % 2]} { 
+    if { [getsig bytestream_valid] && [getsig bytestream_ready] } {
+      puts -nonewline $bytestream [binary format i $clk]
+      write_signal $bytestream bytestream unsigned c
+      write_signal $bytestream bytestream_last unsigned c
+      set packet_last [getsig bytestream_last]
+    }
 	}
 	
   # run SAMPLE_CLK_PERIOD 
-	run 4 ns 
+	run [lindex $period 0] [lindex $period 1] 
 	incr clk 
 }
 

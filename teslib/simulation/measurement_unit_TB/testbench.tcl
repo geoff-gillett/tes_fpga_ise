@@ -81,8 +81,8 @@ if {$is_isim} {
 #	wave add /measurement_unit_TB/UUT/baselineEstimator
 #	wave add /measurement_unit_TB/UUT/baselineEstimator/mostFrequent
 } {
-#	log_wave /measurement_unit_TB
-#	log_wave /measurement_unit_TB/UUT
+	log_wave /measurement_unit_TB
+	log_wave /measurement_unit_TB/UUT
 #	log_wave /measurement_unit_TB/UUT/baselineEstimator
 #	log_wave /measurement_unit_TB/UUT/baselineEstimator/mostFrequent
 }
