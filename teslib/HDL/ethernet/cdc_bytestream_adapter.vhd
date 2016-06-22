@@ -47,15 +47,17 @@ architecture HALF_RATE of CDC_bytestream_adapter is
 attribute clock_signal:string;
 attribute clock_signal of s_clk,b_clk:signal is "YES";
 
-type byte_array is array (natural range <>) of std_logic_vector(7 downto 0);
-signal bytes,bits:byte_array(7 downto 0);
-signal bus_byte:std_logic_vector(7 downto 0);
+type byte_array is array (natural range <>) of std_logic_vector(11 downto 0);
+signal bits:byte_array(7 downto 0);
+--signal bus_byte:std_logic_vector(7 downto 0);
 signal s_ready:boolean;
 signal bytestream_int:std_logic_vector(8 downto 0);
 signal ready_for_byte:boolean;
 
 signal ring,byte_out:std_logic_vector(7 downto 0);
+signal ring_int:std_logic_vector(11 downto 0);
 signal last:std_logic;
+signal stream_in:std_logic_vector(8 downto 0);
 
 begin
 	
@@ -97,16 +99,13 @@ begin
 end generate;
 
 --generate selectors that select each bit from the bytes in the bus
+ring_int <= resize(ring, 12);
 byteSelGen:for bit in 7 downto 0 generate
---variable bytebits,sel:std_logic_vector(12 downto 0);
 begin
-	
-	--sel := resize(ring);
-	
 	selector:entity work.select_1of12
 		port map(
-			input => resize(bits(bit), 12),
-			sel => resize(ring, 12),
+			input => bits(bit),
+			sel => ring_int,
 			output => byte_out(bit)
 		);
 end generate;
@@ -139,7 +138,7 @@ begin
 end process input;
 
 --streambus_ready_bclk <= byte_count=7 and ready_for_byte;
-
+stream_in <= last & byte_out;
 outputReg:entity streamlib.stream_register
 generic map(
   WIDTH => 9
@@ -147,7 +146,7 @@ generic map(
 port map(
   clk => b_clk,
   reset => b_reset,
-  stream_in => last & byte_out,
+  stream_in => stream_in,
   ready_out => ready_for_byte,
   valid_in => streambus_valid,
   stream => bytestream_int,

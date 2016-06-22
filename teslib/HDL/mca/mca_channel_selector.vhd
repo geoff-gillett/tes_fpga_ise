@@ -40,14 +40,15 @@ port (
 end entity mca_channel_selector;
 
 architecture RTL of mca_channel_selector is
-type input_array is array (natural range <>) 
-										of std_logic_vector(CHANNELS-1 downto 0);
+type input_array is array (natural range <>) of std_logic_vector(11 downto 0);
 signal inputs:input_array(MCA_VALUE_BITS-1 downto 0);
 signal valid_int:std_logic;
 signal value_int:signed(VALUE_BITS-1 downto 0);
+signal sel,valids_int:std_logic_vector(11 downto 0);
 
 begin
-	
+
+sel <= resize(channel_select, 12);
 valueMuxGen:for b in 0 to MCA_VALUE_BITS-1 generate
 begin
 	inputGen:for c in 0 to CHANNELS-1 generate
@@ -56,16 +57,17 @@ begin
 	end generate;
 	selector:entity work.select_1of12
 		port map(
-			input => resize(inputs(b), 12),
-			sel => resize(channel_select, 12),
+			input => inputs(b),
+			sel => sel,
 			output => value_int(b)
 		);
 end generate;
 
+valids_int <= resize(to_std_logic(valids), 12);
 validSelector:entity work.select_1of12
 port map(
-  input => resize(to_std_logic(valids), 12),
-  sel => resize(channel_select, 12),
+  input => valids_int,
+  sel => sel,
   output => valid_int
 );
 

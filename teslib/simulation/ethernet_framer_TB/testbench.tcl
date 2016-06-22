@@ -42,12 +42,16 @@ record define peak_event {
 	rel_timestamp
 }
 
+proc mask16 x {
+	return [expr 65535 & $x]
+}
+
 proc peak_2hex p {
 	set f [flags_2hex [$p cget -flags]]
-	set t [format %.4X [$p cget -rel_timestamp]]
+	set t [format %.4X [mask16 [$p cget -rel_timestamp]]]
 	#puts $t
-	set m [format %.4X [$p cget -minima]]
-	set h [format %.4X [$p cget -height]]
+	set m [format %.4X [mask16 [$p cget -minima]]]
+	set h [format %.4X [mask16 [$p cget -height]]]
 	return $h$m$f$t
 }
  
@@ -77,7 +81,7 @@ record define tick_event {
 proc tick_2hex {p w} {
 	if {$w==0} {
 		set f [tick_flags_2hex [$p cget -flags]]
-		set t [format %.4X [$p cget -rel_timestamp]]
+		set t [format %.4X [mask16 [$p cget -rel_timestamp]]]
 		set p [format %.8X [$p cget -period]]
 		return $p$f$t
 	} elseif {$w==1} {
@@ -117,13 +121,11 @@ if {$is_isim} {
 }
 
 set period [getsig SIGNAL_PERIOD]
-setsig mtu 88 unsigned
-setsig tick_latency 100 unsigned
-set tick_period 100
+set tick_period 500
 
 setsig eventdata 0 hex
 setsig eventlast 0 bin
-setsig eventstream_valid 1 bin
+setsig eventstream_valid 0 bin
 
 setsig mcadata 0 hex
 setsig mcalast 0 bin
@@ -132,11 +134,9 @@ setsig mcastream_valid 0 bin
 #run past reset
 run [lindex $period 0] [lindex $period 1]
 run [lindex $period 0] [lindex $period 1]
-setsig reset 0 bin
-setsig bytestream_ready 1 bin
 
-set event_count 0
-set mca_count 0
+set event_count 1
+set mca_count 1
 set clk 0
 
 peak_event peak 
@@ -148,17 +148,20 @@ tick configure -flags [tick_flags #auto] -period $tick_period \
 							 -rel_timestamp $clk -timestamp $clk -errors 0
 
 							 
-for {set clk 0} {$clk < 500} {incr clk} {
+for {set clk 0} {$clk < 100000} {incr clk} {
 	write_stream $ethernetstream ethernetstream
-	if {~[expr $clk%2]} {write_bytestream $bytestream}
-	if {[expr $clk%$tick_period] == 0 } {
+	if {[expr $clk%2]==0} {write_bytestream $bytestream}
+	if {[expr $clk%$tick_period]==0} {
 		set tickword 0
+		puts "tick - clk:$clk"
+		flush stdout
 		tick configure -rel_timestamp $clk -timestamp $clk
 	}
+	
 	if {$tickword < 3 } {
 		setsig eventstream_valid 1 bin 
 		set s [tick_2hex tick $tickword]
-#			puts "tick:$clk $s"
+		#puts "tick:$tickword clk:$clk - $s"
     setsig eventdata $s hex
     if {$tickword == 2} {setsig eventlast 1 bin} {setsig eventlast 0 bin}
 		if {[getbool eventstream_ready]} {
@@ -166,7 +169,7 @@ for {set clk 0} {$clk < 500} {incr clk} {
 		}
 		
 	} {	
-		if {[expr $clk%100] < 11} {
+		if {[expr $clk%1000] < 20} {
 			setsig eventstream_valid 1 bin 
       peak configure -height $event_count -minima $event_count \
       							 -rel_timestamp $clk
@@ -181,11 +184,7 @@ for {set clk 0} {$clk < 500} {incr clk} {
     }
 	}
 	
-	if {[expr $mca_count%100 == 0]} {
-		setsig mcastream_valid 0 bin
-	}
-	
-	if {[expr $clk%200] == 100} {
+	if {[expr $clk%1000] == 100} {
 		setsig mcastream_valid 1 bin
 	}
 	
@@ -193,7 +192,7 @@ for {set clk 0} {$clk < 500} {incr clk} {
     set s [format %.16X $mca_count]
     #puts $s
     setsig mcadata $s hex
-    if {[expr $mca_count%100 == 99]} {
+    if {[expr $mca_count%20 == 19]} {
       setsig mcalast 1 bin
     } {
       setsig mcalast 0 bin
@@ -209,6 +208,7 @@ for {set clk 0} {$clk < 500} {incr clk} {
 	
 	if {[getbool mcastream_valid] && [getbool mcastream_ready]} {
 		incr mca_count
+		if {[getbool mcalast]} {setsig mcastream_valid 0 bin}
 		#puts "mca:$mca_count"
 	}
 	

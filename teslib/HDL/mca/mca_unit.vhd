@@ -111,6 +111,10 @@ signal active:boolean;
 signal updating:boolean;
 signal ticks:unsigned(TICKCOUNT_BITS-1 downto 0);
 signal update_reg:boolean;
+signal bin_n:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
+signal last_bin:unsigned(ADDRESS_BITS-1 downto 0);
+signal lowest_value:signed(VALUE_BITS-1 downto 0);
+signal mca_axi_stream_int:std_logic_vector(2*CHUNK_DATABITS-1 downto 0);
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- MCA protocol
@@ -464,6 +468,9 @@ end process streamFSMtransition;
 -- the register values are internally saved each swap_buffer
 -- swap_buffer when not enabled saves registers but does not swap_the internal
 -- buffer and nothing will be counted
+bin_n <= resize(next_registers.bin_n,ceilLog2(ADDRESS_BITS)); 
+last_bin <= resize(next_registers.last_bin,ADDRESS_BITS);
+lowest_value <= resize(next_registers.lowest_value,VALUE_BITS);
 MCA:entity mcalib.mapped_mca
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
@@ -479,9 +486,9 @@ port map(
   value_valid => value_valid,
   swap_buffer => swap_buffer,
   enabled => enabled,
-  bin_n => resize(next_registers.bin_n,ceilLog2(ADDRESS_BITS)), 
-  last_bin => resize(next_registers.last_bin,ADDRESS_BITS),
-  lowest_value => resize(next_registers.lowest_value,VALUE_BITS),
+  bin_n => bin_n, 
+  last_bin => last_bin,
+  lowest_value => lowest_value,
   readable => readable,
   total => total,
   max_count => max_count,
@@ -492,6 +499,11 @@ port map(
   last => mca_axi_last
 );
 
+mca_axi_stream_int <= set_endianness(
+  	resize(unsigned(mca_axi_stream),2*CHUNK_DATABITS),
+  	ENDIANNESS
+  );
+
 mcaAdapter:entity streamlib.axi_adapter
 generic map(
   AXI_CHUNKS => 2
@@ -499,10 +511,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  axi_stream => set_endianness(
-  	resize(unsigned(mca_axi_stream),2*CHUNK_DATABITS),
-  	ENDIANNESS
-  ),
+  axi_stream => mca_axi_stream_int,
   axi_valid => mca_axi_valid,
   axi_ready => mca_axi_ready,
   axi_last => mca_axi_last,

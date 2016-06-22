@@ -22,7 +22,7 @@ entity ethernet_framer_TB is
 generic(
 	MTU_BITS:integer:=16;
 	TICK_LATENCY_BITS:integer:=16;
-	FRAMER_ADDRESS_BITS:integer:=4;
+	FRAMER_ADDRESS_BITS:integer:=7;
 	DEFAULT_MTU:unsigned:=to_unsigned(80,16);
 	DEFAULT_TICK_LATENCY:unsigned:=to_unsigned(128,16);
 	ENDIANNESS:string:="LITTLE"
@@ -108,5 +108,16 @@ port map(
   bytestream_ready => bytestream_ready,
   bytestream_last => bytestream_last
 );
+
+stimulus:process
+begin
+mtu <= to_unsigned(800,MTU_BITS);
+tick_latency <= to_unsigned(1000, TICK_LATENCY_BITS);
+wait for IO_PERIOD;
+reset <= '0';
+bytestream_ready <= TRUE;
+wait;
+end process stimulus;
+
 
 end architecture testbench;

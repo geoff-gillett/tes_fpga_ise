@@ -139,7 +139,7 @@ begin
   port map(
     clk => sample_clk,
     data_in => adc_sample,
-    delay => 0, --to_integer(registers(c).capture.delay),
+    delay => to_integer(registers(c).capture.delay),
     delayed => adc_delayed(c)
   );
 
@@ -329,81 +329,81 @@ port map(
 );
 
 -- all channels see same register settings
-stimulus:process is
-begin
-mtu <= to_unsigned(64,MTU_BITS);
-tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
-window <= to_unsigned(2,TIME_BITS);
-tick_latency <= to_unsigned(2**16,TICK_PERIOD_BITS);
-
--- register settings common to all channels
-for c in CHANNELS-1 downto 0 loop 
-  registers(c).capture.pulse_threshold 
-  	<= to_unsigned(300,DSP_BITS-DSP_FRAC-1) & to_unsigned(0,DSP_FRAC);
-  registers(c).capture.slope_threshold 
-  	<= to_unsigned(10,DSP_BITS-SLOPE_FRAC-1) & to_unsigned(0,SLOPE_FRAC);
-  registers(c).baseline.timeconstant 
-    <= to_unsigned(2**12,BASELINE_TIMECONSTANT_BITS);
-  registers(c).baseline.threshold 
-    <= to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
-  registers(c).baseline.count_threshold 
-    <= to_unsigned(30,BASELINE_COUNTER_BITS);
-  registers(c).baseline.average_order <= 4;
-  registers(c).baseline.offset <= to_std_logic(250,ADC_BITS);
-  registers(c).baseline.subtraction <= TRUE;
-  registers(c).capture.constant_fraction 
-    <= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
-  registers(c).capture.cfd_rel2min <= TRUE;
-  registers(c).capture.height <= CFD_HEIGHT_D;
-  registers(c).capture.detection <= PEAK_DETECTION_D;
-  registers(c).capture.timing <= CFD_LOW_TIMING_D;
-  registers(c).capture.threshold_rel2min <= FALSE;
-  registers(c).capture.height_rel2min <= FALSE;
-  registers(c).capture.area_threshold <= to_signed(500,AREA_BITS);
-  registers(c).capture.max_peaks <= (0 => '0', others => '0');
-  registers(c).capture.delay <= to_unsigned(2**(DELAY_BITS-1)+c,DELAY_BITS);
-  registers(c).capture.full_trace <= TRUE;
-  registers(c).capture.trace0 <= NO_TRACE_D;
-  registers(c).capture.trace1 <= NO_TRACE_D;
-end loop;
-
---registers(1).capture.detection <= PULSE_DETECTION_D;
---registers(2).capture.detection <= PULSE_DETECTION_D;
---registers(2).capture.max_peaks <= (0 => '1', others => '0');
---registers(3).capture.detection <= TRACE_DETECTION_D;
---registers(3).capture.trace0 <= FILTERED_TRACE_D;
---registers(3).capture.trace1 <= RAW_TRACE_D;
---registers(4).capture.detection <= TRACE_DETECTION_D;
---registers(4).capture.trace0 <= FILTERED_TRACE_D;
---registers(4).capture.trace1 <= SLOPE_TRACE_D;
---registers(4).capture.full_trace <= FALSE;
---registers(7).capture.detection <= AREA_DETECTION_D;
-
-mca_registers.channel <= (others => '0');
-mca_registers.bin_n <= (others => '0');
-mca_registers.last_bin <= (others => '1');
-mca_registers.lowest_value <= to_signed(-1000, MCA_VALUE_BITS);
-mca_registers.value <= MCA_FILTERED_AREA_D;
-mca_registers.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
-mca_registers.ticks <= (0 => '1', others => '0');
-
-update_on_completion <= FALSE;
-
-wait for IO_CLK_PERIOD;
-sample_reset <= '0';
-IO_reset <= '0';
-bytestream_ready <= FALSE;
-wait until not mca_initialising;
-wait for SAMPLE_CLK_PERIOD;
-update_asap <= TRUE;
-wait for SAMPLE_CLK_PERIOD;
-update_asap <= FALSE;
---wait for IO_CLK_PERIOD*10;
---wait until bytestream_last and bytestream_ready and bytestream_valid;
+--stimulus:process is
+--begin
+--mtu <= to_unsigned(64,MTU_BITS);
+--tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
+--window <= to_unsigned(2,TIME_BITS);
+--tick_latency <= to_unsigned(2**16,TICK_PERIOD_BITS);
+--
+---- register settings common to all channels
+--for c in CHANNELS-1 downto 0 loop 
+--  registers(c).capture.pulse_threshold 
+--  	<= to_unsigned(300,DSP_BITS-DSP_FRAC-1) & to_unsigned(0,DSP_FRAC);
+--  registers(c).capture.slope_threshold 
+--  	<= to_unsigned(10,DSP_BITS-SLOPE_FRAC-1) & to_unsigned(0,SLOPE_FRAC);
+--  registers(c).baseline.timeconstant 
+--    <= to_unsigned(2**12,BASELINE_TIMECONSTANT_BITS);
+--  registers(c).baseline.threshold 
+--    <= to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
+--  registers(c).baseline.count_threshold 
+--    <= to_unsigned(30,BASELINE_COUNTER_BITS);
+--  registers(c).baseline.average_order <= 4;
+--  registers(c).baseline.offset <= to_std_logic(250,ADC_BITS);
+--  registers(c).baseline.subtraction <= TRUE;
+--  registers(c).capture.constant_fraction 
+--    <= to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
+--  registers(c).capture.cfd_rel2min <= TRUE;
+--  registers(c).capture.height <= CFD_HEIGHT_D;
+--  registers(c).capture.detection <= PEAK_DETECTION_D;
+--  registers(c).capture.timing <= CFD_LOW_TIMING_D;
+--  registers(c).capture.threshold_rel2min <= FALSE;
+--  registers(c).capture.height_rel2min <= FALSE;
+--  registers(c).capture.area_threshold <= to_signed(500,AREA_BITS);
+--  registers(c).capture.max_peaks <= (0 => '0', others => '0');
+--  registers(c).capture.delay <= to_unsigned(2**(DELAY_BITS-1)+c,DELAY_BITS);
+--  registers(c).capture.full_trace <= TRUE;
+--  registers(c).capture.trace0 <= NO_TRACE_D;
+--  registers(c).capture.trace1 <= NO_TRACE_D;
+--end loop;
+--
+----registers(1).capture.detection <= PULSE_DETECTION_D;
+----registers(2).capture.detection <= PULSE_DETECTION_D;
+----registers(2).capture.max_peaks <= (0 => '1', others => '0');
+----registers(3).capture.detection <= TRACE_DETECTION_D;
+----registers(3).capture.trace0 <= FILTERED_TRACE_D;
+----registers(3).capture.trace1 <= RAW_TRACE_D;
+----registers(4).capture.detection <= TRACE_DETECTION_D;
+----registers(4).capture.trace0 <= FILTERED_TRACE_D;
+----registers(4).capture.trace1 <= SLOPE_TRACE_D;
+----registers(4).capture.full_trace <= FALSE;
+----registers(7).capture.detection <= AREA_DETECTION_D;
+--
+--mca_registers.channel <= (others => '0');
+--mca_registers.bin_n <= (others => '0');
+--mca_registers.last_bin <= (others => '1');
+--mca_registers.lowest_value <= to_signed(-1000, MCA_VALUE_BITS);
+--mca_registers.value <= MCA_FILTERED_AREA_D;
+--mca_registers.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
+--mca_registers.ticks <= (0 => '1', others => '0');
+--
+--update_on_completion <= FALSE;
+--
+--wait for IO_CLK_PERIOD;
+--sample_reset <= '0';
+--IO_reset <= '0';
 --bytestream_ready <= FALSE;
---wait for IO_CLK_PERIOD*24;
---bytestream_ready <= TRUE;
-wait;
-end process stimulus;
+--wait until not mca_initialising;
+--wait for SAMPLE_CLK_PERIOD;
+--update_asap <= TRUE;
+--wait for SAMPLE_CLK_PERIOD;
+--update_asap <= FALSE;
+----wait for IO_CLK_PERIOD*10;
+----wait until bytestream_last and bytestream_ready and bytestream_valid;
+----bytestream_ready <= FALSE;
+----wait for IO_CLK_PERIOD*24;
+----bytestream_ready <= TRUE;
+--wait;
+--end process stimulus;
 
 end architecture testbench;

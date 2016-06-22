@@ -22,7 +22,7 @@ use work.functions.all;
 -- FIXME rework this module
 entity timing_buffer is
 generic(
-	CHANNELS:integer:=8;
+	CHANNELS:integer:=1;
   --CHANNEL_BITS:integer:=3;
   TIME_BITS:integer:=16;
   TIMESTAMP_BITS:integer:=64
@@ -103,6 +103,7 @@ signal commit_wr_en,commit_rd_en:std_logic_vector(CHANNELS-1 downto 0);
 signal commit_empty,commit_full:std_logic_vector(CHANNELS-1 downto 0);
 signal commited_int,dumped_int,dumped_reg:std_logic_vector(CHANNELS-1 downto 0);
 signal time_in,time_out,time_out_reg:std_logic_vector(TIMEFIFO_BITS-1 downto 0);
+signal time_vec:std_logic_vector(CHANNELS+TIMESTAMP_BITS downto 0);
 signal buffers_full,time_empty,time_rd_en,time_wr_en:std_logic;
 signal time_full:std_logic;
 signal ticked_reg,valid_event,all_dumped,timedif_valid,timefifo_valid:boolean;
@@ -136,19 +137,21 @@ port map(
   empty => time_empty
 ); 
 --
+time_vec <= to_std_logic(timestamp) & to_std_logic(tick) & to_std_logic(start);
 fifoInReg:process(clk)
 begin
 	if rising_edge(clk) then
 		if reset='1' then
 			time_wr_en <= '0';
 		else
-      time_wr_en <= to_std_logic(unaryOR(start) or tick);
-      time_in(TIMEFIFO_BITS-1 downto TIMETAG_BITS+CHANNELS+1) 
-      	<= (others => '0');
-      time_in(TIMETAG_BITS+CHANNELS downto CHANNELS+1) 
-        <= std_logic_vector(timestamp(TIMETAG_BITS-1 downto 0));
-      time_in(CHANNELS) <= to_std_logic(tick);
-      time_in(CHANNELS-1 downto 0) <= to_std_logic(start); 
+			time_wr_en <= to_std_logic(unaryOR(start) or tick);
+			time_in <= resize(time_vec,TIMEFIFO_BITS);
+--      time_in(TIMEFIFO_BITS-1 downto TIMETAG_BITS+CHANNELS+1) 
+--      	<= (others => '0');
+--      time_in(TIMETAG_BITS+CHANNELS downto CHANNELS+1) 
+--        <= std_logic_vector(timestamp(TIMETAG_BITS-1 downto 0));
+--      time_in(CHANNELS) <= to_std_logic(tick);
+--      time_in(CHANNELS-1 downto 0) <= to_std_logic(start); 
 --      time_in <= resize(
 --      	--to_std_logic(timestamp(TIMETAG_BITS-1 downto 0)) &
 --      	to_std_logic(timestamp) & --FIXME why does this break resize?
@@ -219,6 +222,7 @@ if rising_edge(clk) then
       started_reg <= started_int;
 	    ticked_reg <= ticked_int;
 	    no_starts_reg <= no_starts; 
+	    --FIXME make eventtime_reg & last eventtime the right size
       eventtime_reg(TIMETAG_BITS-1 downto 0) <= 
         unsigned(time_out(TIMETAG_BITS+CHANNELS downto CHANNELS+1));
       eventtime_reg(TIMESTAMP_BITS-1 downto TIMETAG_BITS+CHANNELS+1) 

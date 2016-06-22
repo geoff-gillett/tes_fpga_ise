@@ -177,7 +177,7 @@ proc ::xilinx::process_cores {vivado cores_dir} {
       } 
       add_files -norecurse $cores_dir/$name/$corefile
     }
-    generate_target all [get_ips]
+    #generate_target all [get_ips]
   }
 }
 		

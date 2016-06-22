@@ -37,18 +37,18 @@ end entity eventstream_select;
 
 architecture combinatorial of eventstream_select is
 	
-type input_array is array(0 to BUS_BITS-1) of 
-										std_logic_vector(CHANNELS-1 downto 0);
+type input_array is array(0 to BUS_BITS-1) of std_logic_vector(11 downto 0);
 signal mux_inputs:input_array;
 signal valid_int:std_logic;
 signal input_streamvectors:streamvector_array(CHANNELS-1 downto 0);
 signal mux_streamvector:streamvector_t;
+signal sel_int,valids_int:std_logic_vector(11 downto 0);
 begin
 	
 mux_valid <= to_boolean(valid_int);
 mux_stream <= to_streambus(mux_streamvector);
-
 input_streamvectors <= to_std_logic(instreams);	
+sel_int <= resize(sel,12);
 muxGen:for bit in 0 to BUS_BITS-1 generate
 begin
 	-- transpose streamvector_array 
@@ -59,16 +59,17 @@ begin
 	
 	selector:entity work.select_1of12
   port map(
-    input => resize(mux_inputs(bit),12),
-    sel => resize(sel,12),
+    input => mux_inputs(bit),
+    sel => sel_int,
     output => mux_streamvector(bit)
   );
 end generate;
 
+valids_int <= resize(to_std_logic(valids),12);
 validMux:entity work.select_1of12
 port map(
-  input  => resize(to_std_logic(valids),12),
-  sel    => resize(sel,12),
+  input => valids_int,
+  sel => sel_int,
   output => valid_int
 );
 

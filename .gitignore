@@ -79,3 +79,9 @@ teslib/simulation/measurement_overflow_TB/.ipynb_checkpoints/
 .texlipse
 teslib/simulation/ethernet_framer_TB/.ipynb_checkpoints/
 *.jou
+streamlib/Vivado/streamlib.cache/
+streamlib/Vivado/streamlib.hw/streamlib.lpr
+streamlib/Vivado/streamlib.ip_user_files/README.txt
+streamlib/Vivado/
+streamlib/vivado_IP/streambus_fifo/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3.vhd
+streamlib/vivado_IP/streambus_fifo/

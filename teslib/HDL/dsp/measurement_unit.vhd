@@ -39,8 +39,6 @@ generic(
   BASELINE_MAX_AV_ORDER:integer:=6;
   CFD_BITS:integer:=18;
   CFD_FRAC:integer:=17;
-  -- max value is PEAK_COUNT_WIDTH
-  --FIXME remove this
   PEAK_COUNT_BITS:integer:=4;
   FRAMER_ADDRESS_BITS:integer:=10;
   CHANNEL:integer:=7;
@@ -141,6 +139,7 @@ signal pd_state,pd_nextstate:peakFSMstate;
 type pulseFSMstate is (IDLE,FIRST_RISE,PEAKED);
 signal pd_pulse_state,pd_pulse_nextstate:pulseFSMstate;
 
+signal slope_threshold:signed(WIDTH-1 downto 0);
 signal pulse_threshold:signed(WIDTH-1 downto 0);
 signal slope_pos_0xing_pd,slope_neg_0xing_pd:boolean;
 signal slope_zero_xing_pd,arming_pd:boolean;
@@ -458,6 +457,7 @@ port map(
 
 --TODO add closest for threshxing? used to get slope threshold timiing
 --FIXME closest 0xings not good for area						 
+slope_threshold <= signed('0' & registers.capture.slope_threshold);
 slopeXing:entity work.signal_measurement
 generic map(
   WIDTH => WIDTH,
@@ -468,7 +468,7 @@ port map(
   reset => reset,
   signal_in => slope_FIR,
   signal_out => slope_pd,
-  threshold => signed('0' & registers.capture.slope_threshold),
+  threshold => slope_threshold,
   pos_threshxing => slope_pos_thresh_xing_pd,
   neg_threshxing => open,
   pos_0xing => open,

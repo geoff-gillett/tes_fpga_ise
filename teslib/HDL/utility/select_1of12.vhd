@@ -27,7 +27,6 @@ use unisim.vcomponents.MUXCY;
 entity select_1of12 is
 port(
 	input:std_logic_vector(11 downto 0);
-	-- sel is one hot
 	sel:in std_logic_vector(11 downto 0);
 	output:out std_logic
 );

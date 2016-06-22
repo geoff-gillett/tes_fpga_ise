@@ -46,9 +46,10 @@ architecture registered of mca_value_selector is
 signal values:mca_value_array(NUM_VALUES-1 downto 0);
 type input_array is array (natural range <> ) of std_logic_vector(11 downto 0);
 signal inputs:input_array(VALUE_BITS-1 downto 0);
-signal valids:std_logic_vector(NUM_VALIDS-1 downto 0);
+signal valids:std_logic_vector(11 downto 0);
 signal measurement_int:signed(VALUE_BITS-1 downto 0);
 signal valid_int:std_logic;
+signal sel,trigger_sel:std_logic_vector(11 downto 0);
 
 begin
 
@@ -60,21 +61,22 @@ begin
   begin
     inputs(b)(m) <= values(m)(b);
   end generate;
-  
+ 	
+ 	sel <= resize(value_select, 12);
 	selector:entity work.select_1of12
   port map(
     input => inputs(b),
-    sel => resize(value_select, 12),
+    sel => sel,
     output => measurement_int(b)
   );
 end generate;
 
-valids <= get_mca_triggers(measurements);
-
+valids <= resize(get_mca_triggers(measurements),12);
+trigger_sel <= resize(trigger_select, 12);
 validSel:entity work.select_1of12
 port map(
-  input => resize(valids, 12),
-  sel => resize(trigger_select, 12),
+  input => valids,
+  sel => trigger_sel,
   output => valid_int
 );
 

@@ -84,7 +84,7 @@ signal frame_state,frame_nextstate:frameFSMstate;
 --------------------------------------------------------------------------------
 
 signal framer_word:streambus_t;
-signal framer_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal framer_address,next_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal framer_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal commit_frame:boolean;
 signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
@@ -103,6 +103,7 @@ signal lookahead_valid:boolean;
 --
 signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
+signal frame_length:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_free_m1:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_last:boolean;
 signal frame_under:boolean;
@@ -358,11 +359,11 @@ begin
 			
 			if arbiter_state=MCA then
 				
-				if frame_state=HEADER0 then
+				--if frame_state=HEADER0 then
 					header.ethernet_type <= x"88B6";
-				elsif frame_state=HEADER1 then
+				--elsif frame_state=HEADER1 then
 					header.protocol_sequence <= mca_sequence;
-				end if;
+				--end if;
 				
 			elsif arbiter_state=EVENT then
 				
@@ -491,9 +492,11 @@ begin
 			
       framer_word.data <= mca_s.data;
       framer_we <= (others => mca_s_valid and framer_ready);
-      inc_address <= mca_s_valid and framer_ready;
+      --inc_address <= mca_s_valid and framer_ready;
     	if mca_s_valid and framer_ready then 
-        if frame_last or flush_events or mca_s.last(0) then
+    		inc_address <= TRUE;
+    		if frame_last or flush_events or mca_s.last(0) then
+    			inc_address <= FALSE;
         	frame_nextstate <= LENGTH;
         	framer_word.last(0) <= TRUE;
         end if;
@@ -506,6 +509,7 @@ begin
       	-- Want to keep one type and size in a frame so when it arrives at the 
       	-- the buffer can be addressed as a array
         frame_nextstate <= TERMINATE;
+        framer_we <= (others => FALSE);
       elsif event_s_valid then 
       	if frame_last then
       		if event_s.last(0) then
@@ -646,6 +650,7 @@ begin
 	if rising_edge(clk) then
 		if reset = '1' then
 			frame_address <= (others => '0');
+			next_address <= (0 => '1', others => '0');
 			last_frame_address <= (others => '0');
 			--FIXME is the -1 correct for frame free?
 			frame_free 
@@ -656,6 +661,7 @@ begin
 			framer_ready <= framer_free > frame_address;
 			if commit_frame then
 				frame_address <= (others => '0');
+				next_address <= (0 => '1', others => '0');
 				frame_free <= resize(mtu_int,FRAMER_ADDRESS_BITS+1);
 				frame_free_m1 <= resize(mtu_int-1,FRAMER_ADDRESS_BITS+1);
 			elsif inc_address then
@@ -663,10 +669,12 @@ begin
 				last_frame_word.discard <= framer_word.discard;
 				last_frame_word.last <= (0 => TRUE, others => FALSE);
 				last_frame_address <= frame_address;
-				frame_address <= frame_address+1;
+				next_address <= next_address+1;
+				frame_address <= next_address;
+				framer_ready <= framer_free > next_address;
         frame_free <= frame_free-1;
         frame_free_m1 <= frame_free_m1-1;
-        frame_last <= frame_free_m1 < frame_size;
+        frame_last <= frame_free_m1 = 0;
         frame_under <= frame_free_m1 < MIN_FRAME;
 			end if;
 		end if;
@@ -674,6 +682,7 @@ begin
 end process payloadAddress;
 
 commit_frame <= frame_state=LENGTH;
+frame_length <= '0' & frame_address; --TODO check this
 framer:entity streamlib.framer
 generic map(
   BUS_CHUNKS => BUS_CHUNKS,
@@ -685,7 +694,7 @@ port map(
   data => framer_word,
   address => framer_address,
   chunk_we => framer_we,
-  length => '0' & frame_address, --TODO check this
+  length => frame_length,
   commit => commit_frame,
   free => framer_free,
   stream => ethernetstream,
