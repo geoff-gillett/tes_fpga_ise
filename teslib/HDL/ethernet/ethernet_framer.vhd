@@ -41,7 +41,7 @@ port (
   --
   mtu:in unsigned(MTU_BITS-1 downto 0);
   -- maximum clocks without transmitting a tick before dumping buffer
-  tick_latency:unsigned(TICK_LATENCY_BITS-1 downto 0);
+  tick_latency:in unsigned(TICK_LATENCY_BITS-1 downto 0);
   --
   eventstream:in streambus_t;
   eventstream_valid:in boolean;

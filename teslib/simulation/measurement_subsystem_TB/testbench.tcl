@@ -206,7 +206,7 @@ set packet_last 0
 set mca_updated 0
 
 #while {[gets $input hexsample] >= 0} {}
-while {$clk < 100000} {
+while {$clk < 10000} {
   gets $input hexsample
 	
 #	if {[getbool update_on_completion]} {

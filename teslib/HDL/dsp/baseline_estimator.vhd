@@ -41,10 +41,10 @@ port(
   --
   timeconstant:in unsigned(TIMECONSTANT_BITS-1 downto 0);
   -- above this threshold sample does not contribute to estimate
-  threshold:unsigned(BASELINE_BITS-2 downto 0);
+  threshold:in unsigned(BASELINE_BITS-2 downto 0);
   -- count required before adding to average
   count_threshold:in unsigned(COUNTER_BITS-1 downto 0);
-  average_order:natural range 0 to MAX_AVERAGE_ORDER;
+  average_order:in natural range 0 to MAX_AVERAGE_ORDER;
   --only include a value in average if it different from the previous value
   new_only:in boolean;
   --
