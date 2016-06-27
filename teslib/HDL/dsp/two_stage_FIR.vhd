@@ -96,7 +96,7 @@ port (
 );
 end component;
 
-signal stage1_out:std_logic_vector(23 downto 0);
+signal stage1_out,stage1_in:std_logic_vector(23 downto 0);
 signal stage2_out:std_logic_vector(31 downto 0);
 signal stage1_delayed:std_logic_vector(WIDTH-1 downto 0);
 
@@ -106,12 +106,13 @@ begin
 -- FIR filter stages with reloadable coefficients (FIR compiler 6.3)
 --------------------------------------------------------------------------------
 -- stage1 internal output w=45 f=25
+stage1_in <= to_std_logic(resize(sample_in,24));
 stage1FIRfilter:stage1_FIR_23
 port map(
   aclk => clk,
   s_axis_data_tvalid => '1',
   s_axis_data_tready => open,
-  s_axis_data_tdata => to_std_logic(resize(sample_in,24)),
+  s_axis_data_tdata => stage1_in,
   s_axis_config_tvalid => stage1_config_valid,
   s_axis_config_tready => stage1_config_ready,
   s_axis_config_tdata => stage1_config_data,

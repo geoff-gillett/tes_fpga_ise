@@ -1,1 +1,3 @@
-xilinx::make_project planahead teslib ../ ../
+package require xil
+namespace import xil::*
+xil::make_project planahead teslib ../ ../

@@ -54,8 +54,8 @@ signal s_ready:boolean;
 signal bytestream_int:std_logic_vector(8 downto 0);
 signal ready_for_byte:boolean;
 
-signal ring,byte_out:std_logic_vector(7 downto 0);
-signal ring_int:std_logic_vector(11 downto 0);
+signal sel_ring,byte_out:std_logic_vector(7 downto 0);
+signal sel_int:std_logic_vector(11 downto 0);
 signal last:std_logic;
 signal stream_in:std_logic_vector(8 downto 0);
 
@@ -99,28 +99,29 @@ begin
 end generate;
 
 --generate selectors that select each bit from the bytes in the bus
-ring_int <= resize(ring, 12);
+sel_int(11 downto 8) <= (others => '0');
+sel_int(7 downto 0) <= sel_ring;
 byteSelGen:for bit in 7 downto 0 generate
 begin
 	selector:entity work.select_1of12
 		port map(
 			input => bits(bit),
-			sel => ring_int,
+			sel => sel_int,
 			output => byte_out(bit)
 		);
 end generate;
-last <= to_std_logic(streambus.last(0)) and ring(0);
+last <= to_std_logic(streambus.last(0)) and sel_ring(0);
 
 -- create one-hot sel value
 selRing:process(b_clk)
 begin
 	if rising_edge(b_clk) then
 		if b_reset = '1' then
-			ring <= (7 => '1', others => '0');
+			sel_ring <= (others => '1');
 		else
 			if ready_for_byte and streambus_valid then
-				ring(7) <= ring(0);
-				ring(6 downto 0) <= ring(7 downto 1);
+				--ring(6 downto 0) <= ring(7 downto 1);
+				sel_ring(7) <= sel_ring(0);
 			end if;
 		end if;
 	end if;
@@ -132,7 +133,7 @@ begin
 		if s_reset = '1' then
 			s_ready <= FALSE;
 		else
-			s_ready <= ready_for_byte and ring(0)='1' and not s_ready;	
+			s_ready <= ready_for_byte and sel_ring(0)='1' and not s_ready;	
 		end if;
 	end if;
 end process input;

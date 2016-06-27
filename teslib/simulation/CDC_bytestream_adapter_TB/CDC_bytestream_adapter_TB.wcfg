@@ -35,19 +35,6 @@
       <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">streambus</obj_property>
          <obj_property name="ObjectShortName">streambus</obj_property>
-         <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus.keep_n" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.keep_n</obj_property>
-            <obj_property name="ObjectShortName">streambus.keep_n</obj_property>
-         </wvobject>
-         <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus.last" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.last</obj_property>
-            <obj_property name="ObjectShortName">streambus.last</obj_property>
-         </wvobject>
-         <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus.data" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.data</obj_property>
-            <obj_property name="ObjectShortName">streambus.data</obj_property>
-            <obj_property name="Radix">HEXRADIX</obj_property>
-         </wvobject>
       </wvobject>
       <wvobject fp_name="/cdc_bytestream_adapter_tb/streambus_valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">streambus_valid</obj_property>
@@ -113,6 +100,10 @@
          <obj_property name="ElementShortName">b_reset</obj_property>
          <obj_property name="ObjectShortName">b_reset</obj_property>
       </wvobject>
+      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/ring" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ring[7:0]</obj_property>
+         <obj_property name="ObjectShortName">ring[7:0]</obj_property>
+      </wvobject>
       <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/bytestream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream[7:0]</obj_property>
          <obj_property name="ObjectShortName">bytestream[7:0]</obj_property>
@@ -134,10 +125,6 @@
       <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/bytestream_last" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream_last</obj_property>
          <obj_property name="ObjectShortName">bytestream_last</obj_property>
-      </wvobject>
-      <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/bytes" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">bytes[7:0]</obj_property>
-         <obj_property name="ObjectShortName">bytes[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/cdc_bytestream_adapter_tb/UUT/bytestream_int" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream_int[8:0]</obj_property>

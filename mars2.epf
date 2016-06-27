@@ -1,4 +1,4 @@
-#Sat Jun 18 18:24:46 GMT+10:00 2016
+#Thu Jun 23 06:55:57 GMT+10:00 2016
 @org.eclipse.ui.editors=3.9.0.v20150213-1939
 @org.eclipse.debug.ui=3.11.101.v20160203-1230
 /instance/org.eclipse.debug.ui/overriddenByCSS=,org.eclipse.debug.ui.MemoryHistoryKnownColor,org.eclipse.debug.ui.MemoryHistoryUnknownColor,org.eclipse.debug.ui.PREF_CHANGED_VALUE_BACKGROUND,org.eclipse.debug.ui.changedDebugElement,org.eclipse.debug.ui.consoleBackground,org.eclipse.debug.ui.errorColor,org.eclipse.debug.ui.inColor,org.eclipse.debug.ui.outColor,
@@ -31,6 +31,7 @@
 /instance/org.eclipse.jdt.ui/semanticHighlighting.localVariableDeclaration.color=237,127,72
 /configuration/org.eclipse.ui.ide/SHOW_WORKSPACE_SELECTION_DIALOG=true
 /instance/org.eclipse.ui.ide/quickStart=false
+/instance/com.sigasi.hdt.toolchains/externalcompilers.enabled=isim
 /instance/org.eclipse.cdt.ui/pp_header=23,198,163
 /instance/org.eclipse.jdt.ui/java_string=23,198,163
 /instance/org.eclipse.jdt.ui/semanticHighlighting.abstractClass.color=62,171,230
@@ -53,8 +54,8 @@
 /instance/org.eclipse.ui.editors/occurrenceIndication=true
 /configuration/org.eclipse.equinox.p2.garbagecollector/gc_enabled=false
 /instance/org.eclipse.ui.workbench/org.eclipse.e4.ui.css.theme.e4_dark.org.eclipse.ui.workbench.INACTIVE_TAB_OUTLINE_COLOR=59,64,66
-@org.eclipse.ui=3.107.0.v20150507-1945
 /instance/org.eclipse.cdt.ui/semanticHighlighting.methodDeclaration.bold=true
+@org.eclipse.ui=3.107.0.v20150507-1945
 /instance/org.eclipse.ui.workbench/org.eclipse.jface.textfont=1|Consolas|12.0|0|WINDOWS|1|-16|0|0|0|400|0|0|0|0|3|2|1|49|Consolas;
 /instance/org.eclipse.dltk.tcl.formatter/indent.script=true
 /instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled
@@ -64,6 +65,7 @@
 /instance/org.eclipse.dltk.tcl.formatter/wrap.comments.length=80
 /instance/net.sourceforge.texlipse/cmd.TexColor=211,231,231
 /instance/org.eclipse.ui.workbench/RUN_IN_BACKGROUND=true
+/instance/com.sigasi.hdt.vhdl.Vhdl/vhdlVersion=V02
 /instance/org.eclipse.cdt.ui/pp_directive=221,40,103
 @net.sourceforge.texlipse=1.5.0
 /instance/org.eclipse.jdt.ui/semanticHighlighting.class.color=18,144,195
@@ -155,7 +157,7 @@
 /instance/com.sigasi.hdt.vhdl.Vhdl/com.sigasi.hdt.vhdl.Vhdl.syntaxColorer.tokenStyles.port.color=210,197,226
 /instance/org.eclipse.cdt.ui/semanticHighlighting.localVariableDeclaration.enabled=true
 /instance/org.eclipse.debug.ui/org.eclipse.debug.ui.outColor=235,235,235
-/instance/com.sigasi.hdt.toolchains/com.sigasi.toolchains.xilinx.ise.path=c\:\\Xilinx\\14.7\\ISE_DS\\ISE
+/instance/com.sigasi.hdt.toolchains/com.sigasi.toolchains.xilinx.ise.path=C\:\\Xilinx\\14.7\\ISE_DS\\ISE
 /instance/net.sourceforge.vrapper.eclipse/vrapperEnabled=true
 /instance/org.eclipse.ui.editors/overrideIndicatorColor=78,120,117
 /instance/org.eclipse.ui.workbench/org.eclipse.e4.ui.css.theme.e4_dark.org.eclipse.ui.workbench.INACTIVE_UNSELECTED_TABS_COLOR_END=70,70,73
@@ -363,6 +365,7 @@
 /instance/org.eclipse.ui.browser/browser-choice=0
 /instance/com.sigasi.hdt.vhdl.Vhdl/com.sigasi.hdt.vhdl.Vhdl.syntaxColorer.tokenStyles.variable.color=196,255,255
 /instance/org.eclipse.epp.logging.aeri.ide/resetSendModeOn=0
+/instance/com.sigasi.hdt.toolchains/com.sigasi.toolchains.xilinx.vivado.path=C\:\\Xilinx\\Vivado\\2015.4
 /instance/org.eclipse.jdt.ui/semanticHighlighting.deprecatedMember.strikethrough=true
 /instance/org.eclipse.rse.core/useridperkey=GILLETT-W7VM.Local\=Geoffrey Gillett;
 /instance/org.eclipse.jdt.ui/content_assist_proposals_foreground=238,238,238
@@ -411,6 +414,7 @@
 /instance/org.eclipse.jdt.ui/useAnnotationsPrefPage=true
 /instance/org.eclipse.cdt.ui/semanticHighlighting.localVariableDeclaration.color=237,127,72
 /instance/org.eclipse.team.ui/org.eclipse.team.ui.first_time=false
+/instance/org.eclipse.search/org.eclipse.search.defaultPerspective=org.eclipse.search.defaultPerspective.none
 /instance/org.eclipse.cdt.ui/semanticHighlighting.macroDefinition.bold=true
 /instance/org.eclipse.xtext.ui/syntaxColorer.comment.color=98,98,98
 /instance/org.eclipse.ui.browser/browsers=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<web-browsers current\="0">\r\n<system/>\r\n<external location\="C\:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" name\="Firefox"/>\r\n<external location\="C\:\\Program Files\\Internet Explorer\\iexplore.exe" name\="Internet Explorer"/>\r\n</web-browsers>
@@ -464,6 +468,7 @@ file_export_version=3.0
 /instance/org.eclipse.cdt.ui/semanticHighlighting.externalSDK.enabled=true
 /instance/org.eclipse.jdt.ui/content_assist_completion_replacement_background=200,200,0
 /instance/org.eclipse.ui.workbench/org.eclipse.egit.ui.IgnoredResourceForegroundColor=155,155,155
+@org.eclipse.search=3.10.0.v20150318-0856
 /instance/org.eclipse.jdt.ui/java_keyword=221,40,103
 /instance/org.eclipse.cdt.ui/semanticHighlighting.function.enabled=true
 /instance/org.eclipse.dltk.tcl.core/org.eclipse.dltk.core.filename.associations=

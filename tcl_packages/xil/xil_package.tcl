@@ -1,6 +1,6 @@
 # tcl scripts for xilinx ISE 14.7 and vivado 2015.4.2
 # Geoff Gillett
-package provide xilinx 2015.4.2
+package provide xil 2015.4.2
 
 namespace eval sim {
 	namespace export write_signal gen_names open_binfiles close_files \
@@ -150,12 +150,12 @@ proc ::xsim::write_stream { fp stream } {
 	}
 }
 
-namespace eval xilinx {
+namespace eval xil {
 	namespace export make_project update_version src build_bitstream versionHex
 }
 
 #expects either *.xci or *.xco having both will cause an error *.xci prefered
-proc ::xilinx::process_cores {vivado cores_dir} {
+proc ::xil::process_cores {vivado cores_dir} {
 	
 	set cores [glob -nocomplain $cores_dir/*.{xci,xco}]
 
@@ -182,7 +182,7 @@ proc ::xilinx::process_cores {vivado cores_dir} {
 }
 		
 #return a list of all vhdl sources under dir searches sub-dirs
-proc ::xilinx::get_sources {dir} {
+proc ::xil::get_sources {dir} {
 	
   set sources [glob -nocomplain $dir/*.{vhd,vhdl}]
   set subdirs [glob -nocomplain -type d $dir/*]
@@ -207,7 +207,7 @@ proc ::xilinx::get_sources {dir} {
 #
 #FIXME need separate vivado/planahead depsfile?
 # 
-proc ::xilinx::process_deps {vivado projname buildDir scriptsDir} {
+proc ::xil::process_deps {vivado projname buildDir scriptsDir} {
 	if [file exists $scriptsDir/$projname.dep] {
     puts "Processing dependency file $scriptsDir/$projname.dep"
     set depsfile [open $scriptsDir/$projname.dep]
@@ -255,7 +255,7 @@ proc ::xilinx::process_deps {vivado projname buildDir scriptsDir} {
 }
 
 # source a script but with args
-proc ::xilinx::src {file args} {
+proc ::xil::src {file args} {
   set argv $::argv
   set argc $::argc
   set ::argv $args
@@ -267,7 +267,7 @@ proc ::xilinx::src {file args} {
 }	
 
 # assumes project open and runs created
-proc ::xilinx::build_bitstream {top  synth implementation} {
+proc ::xil::build_bitstream {top  synth implementation} {
 	set imp [get_runs $implementation]
 	set syn [get_runs $synth]
 	if {[get_property top [current_fileset]]!=$top} {
@@ -303,12 +303,12 @@ proc ::xilinx::build_bitstream {top  synth implementation} {
 }
 
 #provides a 28 bit value as hex string for the VHDL generic VERSION
-proc ::xilinx::versionHex {} {
+proc ::xil::versionHex {} {
 	 return [exec git rev-parse --short HEAD]
 }
 
 #sets the XST option to override the top level HDL generic VERSION
-proc ::xilinx::update_version {synth} {
+proc ::xil::update_version {synth} {
 	if { ![catch {set version [versionHex]}] } {
 		set current_opt \
 				[get_property {steps.xst.args.more options} [get_runs $synth]]
@@ -320,7 +320,7 @@ proc ::xilinx::update_version {synth} {
 	}
 }
 	
-proc ::xilinx::process_simdir {vivado sim_dir projname buildDir} {
+proc ::xil::process_simdir {vivado sim_dir projname buildDir} {
 	# add linkfiles file
 	#handle structural
 	
@@ -390,7 +390,7 @@ proc ::xilinx::process_simdir {vivado sim_dir projname buildDir} {
 
 # optional args dependency HDL dirs 
 # sourceDir is the source project directory
-proc ::xilinx::make_project {tool name {sourceDir "../"} {buildDir "../"} args} {
+proc ::xil::make_project {tool name {sourceDir "../"} {buildDir "../"} args} {
 	set vivado [string equal $tool vivado]
 
 	set scriptsDir [pwd]

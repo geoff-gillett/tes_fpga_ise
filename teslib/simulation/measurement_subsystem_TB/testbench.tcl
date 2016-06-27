@@ -1,5 +1,5 @@
 #measurement_subsystem_TB
-package require xilinx
+package require xil
 
 #find out if script is sourced into isim or xsim
 set is_isim [catch version]
@@ -63,8 +63,8 @@ fconfigure $input -buffering line
 #set muxstream [open "../muxstream" w]
 #fconfigure $muxstream -translation binary
 
-set ethernetstream [open "../ethernetstream" w]
-fconfigure $ethernetstream -translation binary
+#set ethernetstream [open "../ethernetstream" w]
+#fconfigure $ethernetstream -translation binary
 
 #set mcastream [open "../mcastream" w]
 #fconfigure $mcastream -translation binary
@@ -72,8 +72,8 @@ fconfigure $ethernetstream -translation binary
 #set mcasetting [open "../mcasetting" w]
 #fconfigure $mcasetting -translation binary
 
-#set bytestream [open "../bytestream" w]
-#fconfigure $bytestream -translation binary
+set bytestream [open "../bytestream" w]
+fconfigure $bytestream -translation binary
 
 #set baseline [open "../baseline" w]
 #fconfigure $baseline -translation binary
@@ -88,24 +88,22 @@ fconfigure $ethernetstream -translation binary
 #write_signal $globals tick_period unsigned i
 #close $globals
 
-restart
-
 # set up wave database
 if {$is_isim} {
-  wave log /measurement_subsystem_TB
-  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
-#  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/filteredXing
-#  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator
-  wave add /measurement_subsystem_TB/mux
-#  #wave add /measurement_subsystem_TB/mux/buffers
+#  wave log /measurement_subsystem_TB
+#  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
+##  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/filteredXing
+##  wave log /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit/baselineEstimator
+#  wave log /measurement_subsystem_TB/mux
+#	wave log /measurement_subsystem_TB/mux/buffers
   wave log /measurement_subsystem_TB/enet
-#  #wave add /measurement_subsystem_TB/enet/eventbuffer
-#  #wave add /measurement_subsystem_TB/enet/eventbuffer/streambuffer
-#  #wave add /measurement_subsystem_TB/enet/eventbuffer/lookaheadslice
-#  #wave add /measurement_subsystem_TB/mca
-#  #wave add /measurement_subsystem_TB/mca/MCA
-#  #wave add /measurement_subsystem_TB/mca/mcaAdapter
-  wave log /measurement_subsystem_TB/cdc
+##  #wave add /measurement_subsystem_TB/enet/eventbuffer
+##  #wave add /measurement_subsystem_TB/enet/eventbuffer/streambuffer
+##  #wave add /measurement_subsystem_TB/enet/eventbuffer/lookaheadslice
+##  #wave add /measurement_subsystem_TB/mca
+##  #wave add /measurement_subsystem_TB/mca/MCA
+##  #wave add /measurement_subsystem_TB/mca/mcaAdapter
+	wave log /measurement_subsystem_TB/cdc
 } {
   log_wave /measurement_subsystem_TB
   log_wave /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
@@ -114,6 +112,8 @@ if {$is_isim} {
   log_wave /measurement_subsystem_TB/cdc
 }
 
+restart
+onerror {quit -f}
 #set up registers
 #setsig mtu 88 dec
 #setsig tick_period 10000 hex
@@ -160,6 +160,9 @@ if {$is_isim} {
 # advance and clear reset
 run [lindex $period 0] [lindex $period 1] 
 run [lindex $period 0] [lindex $period 1] 
+#setsig sample_reset 0 bin
+#setsig IO_reset 0 bin
+#setsig bytestream_ready 0 bin
 
 #setsig sample_reset 0 bin
 #setsig io_reset 0 bin
@@ -206,8 +209,10 @@ set packet_last 0
 set mca_updated 0
 
 #while {[gets $input hexsample] >= 0} {}
-while {$clk < 100000} {
+while {$clk < 24500} {
+	
   gets $input hexsample
+	setsig adc_sample $hexsample hex
 	
 #	if {[getbool update_on_completion]} {
 #		setsig update_on_completion 0 bin
@@ -218,8 +223,8 @@ while {$clk < 100000} {
 #		set mca_updated 1
 #	}
 	
-	if {![expr $clk % 1000]} {
-		# print progress and flush files every 10000 clks
+	if {![expr $clk % 2000]} {
+#		# print progress and flush files every 10000 clks
 		puts sample:$clk
 		flush stdout
 #		flush_files $traces
@@ -253,7 +258,6 @@ while {$clk < 100000} {
 #		flush $bytestream
 	}
 	
-	setsig adc_sample $hexsample hex
 	#puts $hexsample
 	
 	#channel0 baseline
@@ -434,16 +438,16 @@ while {$clk < 100000} {
 #		write_signal $baselineerror baseline_errors_u unsigned c
 #	}
 	
-#	if {![expr $clk % 2]} { 
-#    if { [getbool bytestream_valid] && [getbool bytestream_ready] } {
-#      puts -nonewline $bytestream [binary format i $clk]
-#      write_signal $bytestream bytestream unsigned c
-#      write_signal $bytestream bytestream_last unsigned c
-#      #set packet_last [getsig bytestream_last]
-#    }
-#	}
+	if {![expr $clk % 2]} { 
+    if { [getbool bytestream_valid] && [getbool bytestream_ready] } {
+      puts -nonewline $bytestream [binary format i $clk]
+      write_signal $bytestream bytestream unsigned c
+      write_signal $bytestream bytestream_last unsigned c
+      #set packet_last [getsig bytestream_last]
+    }
+	}
 	
-  # run SAMPLE_CLK_PERIOD 
+  # run SAMPLE_CLK_PERIOD  
 	run [lindex $period 0] [lindex $period 1] 
 	incr clk 
 }
@@ -477,4 +481,4 @@ close $input
 #close $mcastream
 #close $frameroverflow
 #close $baselineerror
-#close $bytestream
+close $bytestream
