@@ -7,7 +7,7 @@ planahead: $(planahead_project)
 vivado: $(vivado_project)
 
 $(planahead_project): 
-	planahead -mode batch -source create_planahead.tcl
+	planAhead -mode batch -source create_planahead.tcl
 
 $(vivado_project):
 	vivado -mode batch -source create_vivado.tcl	

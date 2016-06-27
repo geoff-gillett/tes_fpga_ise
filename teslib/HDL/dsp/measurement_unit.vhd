@@ -75,7 +75,7 @@ port(
   measurements:out measurement_t;
   
   mca_value_select:in std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
-	mca_trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
+	mca_trigger_select:in std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
   mca_value:out signed(MCA_VALUE_BITS-1 downto 0);
   mca_value_valid:out boolean;
 

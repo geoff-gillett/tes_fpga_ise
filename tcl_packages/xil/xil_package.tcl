@@ -382,7 +382,7 @@ proc ::xil::process_simdir {vivado sim_dir projname buildDir} {
 	if [file exists $sim_dir/linkfiles] {
     set links [open $sim_dir/linkfiles]
     foreach lfile [split [read $links] \n] {
-      file link $tooldir/[file tail $lfile] $lfile
+      file link $tooldir/[file tail $lfile] [file normalize $lfile]
     }
 	}
 	

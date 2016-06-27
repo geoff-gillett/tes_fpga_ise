@@ -31,7 +31,7 @@ port(
   clk:in std_logic;
   reset:in std_logic;
   --! data chunks to write to frame 
-  data:streambus_t;
+  data:in streambus_t;
   --! frame address
   address:in unsigned(ADDRESS_BITS-1 downto 0);
   chunk_we:in boolean_vector(BUS_CHUNKS-1 downto 0);

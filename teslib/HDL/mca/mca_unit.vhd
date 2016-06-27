@@ -54,8 +54,8 @@ port(
   ------------------------------------------------------------------------------
   -- control signals
   ------------------------------------------------------------------------------
-  registers:mca_registers_t;
-  tick_period:unsigned(TICKPERIOD_BITS-1 downto 0);
+  registers:in mca_registers_t;
+  tick_period:in unsigned(TICKPERIOD_BITS-1 downto 0);
   ------------------------------------------------------------------------------
   --! selects out to muxs
   ------------------------------------------------------------------------------
