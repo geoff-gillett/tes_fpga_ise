@@ -153,7 +153,7 @@ signal clk_count:integer:=0;
 
 
 type int_file is file of integer;
-file bytestream_file:int_file;
+file bytestream_file,trace_file:int_file;
 
 function hexstr2vec(str:string) return std_logic_vector is
 	variable slv:std_logic_vector(str'length*4-1 downto 0):=(others => 'X');
@@ -198,7 +198,8 @@ begin
 	end loop;
 	return slv;
 end function;
-	
+
+
 begin
 	
 sample_clk <= not sample_clk after SAMPLE_CLK_PERIOD/2;
@@ -571,6 +572,8 @@ mca_registers.ticks <= (0 => '1', others => '0');
 --update_on_completion <= FALSE;
 --
 
+
+
 mcaControlStimulus:process
 begin
 	wait for SAMPLE_CLK_PERIOD;
@@ -588,7 +591,7 @@ begin
     wait until rising_edge(io_clk);
     if bytestream_valid and bytestream_ready then
     	write(bytestream_file, to_integer(unsigned(bytestream)));
-    	if bytestream_last then
+      if bytestream_last then
     		write(bytestream_file, -clk_count); --identify last by -ve value
     	else
     		write(bytestream_file, clk_count);
@@ -596,6 +599,18 @@ begin
     end if;
 	end loop;
 end process byteStreamWriter;
+
+file_open(trace_file, "../traces",WRITE_MODE);
+traceWriter:process
+begin
+	while TRUE loop
+    wait until rising_edge(sample_clk);
+	  write(trace_file, to_integer(measurements(0).raw.sample));
+	  write(trace_file, to_integer(measurements(0).filtered.sample));
+	  write(trace_file, to_integer(measurements(0).slope.sample));
+	end loop;
+end process traceWriter; 
+
 
 clkCount:process is
 begin
