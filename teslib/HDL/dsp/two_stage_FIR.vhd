@@ -99,7 +99,6 @@ end component;
 signal stage1_out,stage1_in:std_logic_vector(23 downto 0);
 signal stage2_out:std_logic_vector(31 downto 0);
 signal stage1_delayed:std_logic_vector(WIDTH-1 downto 0);
-signal stage1_in:std_logic_vector(23 downto 0);
 
 begin
 	

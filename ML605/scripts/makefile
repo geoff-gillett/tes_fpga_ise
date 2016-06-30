@@ -1,7 +1,8 @@
-project=../PlanAhead/ML605.ppr
+planahead_project=../PlanAhead/teslib.ppr
+vivado_project=../Vivado/teslib.xpr
 ethernet=../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design
 
-all: cpus | $(project)
+planahead: $(planahead_project) | $(ethernet) cpus
 
 $(ethernet):
 	planahead -mode batch -source generateEthernetExample.tcl
@@ -9,5 +10,5 @@ $(ethernet):
 cpus:
 	$(MAKE) -C ../../teslib/PSM
 	
-$(project): | $(ethernet)
+$(planahead_project):  $(ethernet)
 	planahead -mode batch -source create_planahead.tcl

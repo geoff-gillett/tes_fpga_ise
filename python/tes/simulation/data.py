@@ -431,26 +431,27 @@ class Data:
 
 
 class Packet:
-    def __init__(self, byte_stream):
-        self.bytes = byte_stream
-        self.ethertype = byte_stream[12:14].view(np.uint16).byteswap()[0]
-        self.length = byte_stream[14:16].view(np.uint16)[0]
-        self.payload = byte_stream[24:]
+    def __init__(self, stream):
+        self.bytes = stream
+        self.type = stream[12:14].view(np.uint16).byteswap()[0]
+        self.length = stream[14:16].view(np.uint16)[0]
+        self.payload = stream[24:]
 
-        if self.ethertype == 0x88B5:
+        print(self.bytes)
+        if self.type == 0x88B5:
             if np.bitwise_and(self.bytes[20], 0x02):
                 self.payload_type = PayloadType.tick
             else:
                 self.payload_type = PayloadType.from_int(
                     np.right_shift(np.bitwise_and(self.bytes[20], 0x0C), 2))
-        elif self.ethertype == 0x88B6:
+        elif self.type == 0x88B6:
             self.payload_type = PayloadType.mca
         else:
-            print('Unknown ethertype:{:X}'.format(self.ethertype))
+            print('Unknown ethertype:{:X}'.format(self.type))
             self.payload_type = None
 
-        self.frame_sequence = byte_stream[16:18].view(np.int16)[0]
-        self.protocol_sequence = byte_stream[18:20].view(np.int16)[0]
+        self.frame_sequence = self.bytes[16:18].view(np.int16)[0]
+        self.protocol_sequence = self.bytes[18:20].view(np.int16)[0]
 
     def __repr__(self):
         if self.payload_type is None:
@@ -458,7 +459,7 @@ class Packet:
         else:
             pname = self.payload_type.name
         return 'ethertype:{:04X} length:{:d} Payload:{:s} frame:{:d} protocol:{:d}'.format(
-            self.ethertype, self.length, pname, self.frame_sequence,
+            self.type, self.length, pname, self.frame_sequence,
             self.protocol_sequence)
 
     @property
@@ -490,26 +491,28 @@ class PacketStream:
     # NOTE copies stream['data'] to bytestream
     def __init__(self, stream):
 
-        lasts = stream['last'].nonzero()[0] + 1
+        lasts = (np.where(stream['last'] < 0)[0]) + 1
 
         if not lasts.size:
-            self.byte_stream = None
+            self.bytes = None
             self.packets = None
             return
 
-        # TODO pre allocate byte_stream
-        self.byte_stream = np.copy(stream['data'][0:lasts[0]]).view(np.uint8)
-        prev = lasts[0]
-        end = len(self.byte_stream)
-        self.packets = [Packet(self.byte_stream[0:end])]
+        if stream['data'].dtype == np.uint32:
+            dt = np.dtype([('data', np.uint8), ('pad', np.uint8, (3,))])
+        else:
+            dt = np.uint8
 
-        for last in lasts[1:]:
-            self.byte_stream = np.append(self.byte_stream, np.copy(
-                stream['data'][prev:last]).view(np.uint8))
-            prev = last
-            start = end
-            end = len(self.byte_stream)
-            self.packets.append(Packet(self.byte_stream[start:end]))
+        self.bytes = stream['data'].view(dt)['data'].astype(
+            np.uint8, copy=True)[0:lasts[-1]]
+
+        print(self.bytes)
+        start = 0
+        self.packets = []
+
+        for last in lasts:
+            self.packets.append(Packet(self.bytes[start:last]))
+            start = last;
 
     @property
     def distributions(self):

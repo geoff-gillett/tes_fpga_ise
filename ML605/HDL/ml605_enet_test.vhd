@@ -170,6 +170,21 @@ port (
 );
 end component adc_fifo;
 
+component enet_cdc_fifo
+port (
+  wr_clk:in std_logic;
+  wr_rst:in std_logic;
+  rd_clk:in std_logic;
+  rd_rst:in std_logic;
+  din:in std_logic_vector(71 downto 0);
+  wr_en:in std_logic;
+  rd_en:in std_logic;
+  dout:out std_logic_vector(8 downto 0);
+  full:out std_logic;
+  empty:out std_logic
+);
+end component;
+
 attribute S:string;
 --------------------------------------------------------------------------------
 -- Clock and reset signals
@@ -335,6 +350,15 @@ signal bytestream:std_logic_vector(7 downto 0);
 signal bytestream_valid:boolean;
 signal bytestream_ready:std_logic;
 signal bytestream_last:boolean;
+signal cdc_din:std_logic_vector(71 downto 0);
+signal cdc_wr_en:std_logic;
+signal cdc_rd_en:std_logic;
+signal cdc_dout:std_logic_vector(8 downto 0);
+signal cdc_full:std_logic;
+signal cdc_empty:std_logic;
+signal cdc_ready:boolean;
+signal cdc_valid:boolean;
+signal bytestream_int:std_logic_vector(8 downto 0);
 
 --attribute S:string;
 --attribute S of bytestream:signal is "TRUE";
@@ -930,22 +954,68 @@ port map(
   ethernetstream_ready => ethernetstream_ready
 );
 
+cdc_din <= '0' & ethernetstream.data(63 downto 56) &
+           '0' & ethernetstream.data(55 downto 48) &
+           '0' & ethernetstream.data(47 downto 40) &
+           '0' & ethernetstream.data(39 downto 32) &
+           '0' & ethernetstream.data(31 downto 24) &
+           '0' & ethernetstream.data(23 downto 16) &
+           '0' & ethernetstream.data(15 downto 8) &
+           to_std_logic(ethernetstream.last(0)) & 
+           ethernetstream.data(7 downto 0);
+           
+ethernetstream_ready <= cdc_full='0';
+cdc_wr_en <= to_std_logic(ethernetstream_valid); 
 
-
-enetCdc:entity tes.CDC_bytestream_adapter
-port map(
-  s_clk => signal_clk,
-  s_reset => reset0,
-  streambus => ethernetstream,
-  streambus_valid => ethernetstream_valid,
-  streambus_ready => ethernetstream_ready,
-  b_clk => io_clk,
-  b_reset => reset0,
-  bytestream => bytestream,
-  bytestream_valid => bytestream_valid,
-  bytestream_ready => to_boolean(bytestream_ready),
-  bytestream_last => bytestream_last
+cdcFIFO:enet_cdc_fifo
+port map (
+  wr_clk => signal_clk,
+  wr_rst =>	reset0,
+  rd_clk => io_clk,
+  rd_rst => reset0,
+  din => cdc_din,
+  wr_en => cdc_wr_en,
+  rd_en => cdc_rd_en,
+  dout => cdc_dout,
+  full => cdc_full,
+  empty => cdc_empty
 );
+cdc_valid <= cdc_empty='0';
+cdc_rd_en <= to_std_logic(cdc_ready);
+
+bytestreamReg:entity streamlib.stream_register
+generic map(
+  WIDTH => 9
+)
+port map(
+  clk => io_clk,
+  reset => reset0,
+  stream_in => cdc_dout,
+  ready_out => cdc_ready,
+  valid_in => cdc_valid,
+  stream => bytestream_int,
+  ready => to_boolean(bytestream_ready),
+  valid => bytestream_valid
+);
+
+bytestream <= bytestream_int(7 downto 0);
+bytestream_last <= bytestream_int(8)='1';
+
+
+--enetCdc:entity tes.CDC_bytestream_adapter
+--port map(
+--  s_clk => signal_clk,
+--  s_reset => reset0,
+--  streambus => ethernetstream,
+--  streambus_valid => ethernetstream_valid,
+--  streambus_ready => ethernetstream_ready,
+--  b_clk => io_clk,
+--  b_reset => reset0,
+--  bytestream => bytestream,
+--  bytestream_valid => bytestream_valid,
+--  bytestream_ready => to_boolean(bytestream_ready),
+--  bytestream_last => bytestream_last
+--);
 
 emac:entity work.v6_emac_v2_3
 port map(

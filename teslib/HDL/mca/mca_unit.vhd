@@ -77,6 +77,20 @@ port(
 end entity mca_unit;
 --
 architecture RTL of mca_unit is
+component count_buffer
+port(
+  wr_clk:in std_logic;
+  wr_rst:in std_logic;
+  rd_clk:in std_logic;
+  rd_rst:in std_logic;
+  din:in std_logic_vector(32 downto 0);
+  wr_en:in std_logic;
+  rd_en:in std_logic;
+  dout:out std_logic_vector(65 downto 0);
+  full:out std_logic;
+  empty:out std_logic
+);
+end component;
 
 -- control registers -----------------------------------------------------------
 signal tick_count:unsigned(TICKCOUNT_BITS-1 downto 0);
@@ -114,8 +128,15 @@ signal update_reg:boolean;
 signal bin_n:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal last_bin:unsigned(ADDRESS_BITS-1 downto 0);
 signal lowest_value:signed(VALUE_BITS-1 downto 0);
-signal mca_axi_stream_int:std_logic_vector(2*CHUNK_DATABITS-1 downto 0);
---------------------------------------------------------------------------------
+signal buff_din:std_logic_vector(32 downto 0);
+signal buff_wr_en:std_logic;
+signal buff_rd_en:std_logic;
+signal buff_dout:std_logic_vector(65 downto 0);
+signal buff_full:std_logic;
+signal buff_empty:std_logic;
+signal counts_ready:boolean;
+signal counts_valid:boolean;
+signal counts:std_logic_vector(65 downto 0);
 --------------------------------------------------------------------------------
 -- MCA protocol
 --------------------------------------------------------------------------------
@@ -193,7 +214,6 @@ begin
 	sb.last:=(others => FALSE);	
 	return sb;
 end function;
-
 
 begin
 --
@@ -499,25 +519,49 @@ port map(
   last => mca_axi_last
 );
 
-mca_axi_stream_int <= set_endianness(
-  	resize(unsigned(mca_axi_stream),2*CHUNK_DATABITS),
-  	ENDIANNESS
-  );
+mca_axi_ready <= buff_full='0';
 
-mcaAdapter:entity streamlib.axi_adapter
-generic map(
-  AXI_CHUNKS => 2
-)
+buff_din <= to_std_logic(mca_axi_last) & 
+  set_endianness(resize(unsigned(mca_axi_stream),32), ENDIANNESS);
+  
+buff_wr_en <= to_std_logic(mca_axi_valid);  
+
+countBuffer:count_buffer
+port map (
+  wr_clk => clk,
+  wr_rst => reset,
+  rd_clk => clk,
+  rd_rst => reset,
+  din => buff_din,
+  wr_en => buff_wr_en,
+  rd_en => buff_rd_en,
+  dout => buff_dout,
+  full => buff_full,
+  empty => buff_empty
+);
+
+buff_rd_en <= to_std_logic(counts_ready);
+counts_valid <= buff_empty='0';
+
+countstreamReg:entity streamlib.stream_register
+generic map(WIDTH => 66)
 port map(
   clk => clk,
   reset => reset,
-  axi_stream => mca_axi_stream_int,
-  axi_valid => mca_axi_valid,
-  axi_ready => mca_axi_ready,
-  axi_last => mca_axi_last,
-  stream => countstream,
-  valid => countstream_valid,
-  ready => countstream_ready
+  stream_in => buff_dout,
+  ready_out => counts_ready,
+  valid_in => counts_valid,
+  stream => counts,
+  ready => countstream_ready,
+  valid => countstream_valid
+);
+
+countstream.data <= counts(64 downto 33) & counts(31 downto 0);
+countstream.discard <= (others => FALSE);
+countstream.last <= (
+	0 => to_boolean(counts(32)),
+	-- 2 => to_boolean(buff_dout(65)), 
+	others => FALSE
 );
 
 outstreamReg:entity streamlib.streambus_register_slice

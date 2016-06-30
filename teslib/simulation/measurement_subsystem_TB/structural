@@ -2,3 +2,5 @@
 ../../structural_cores/time_fifo.vhd
 ../../structural_cores/commit_dump_fifo.vhd
 ../../structural_cores/streambus_fifo.vhd
+../../structural_cores/count_buffer.vhd
+../../structural_cores/enet_cdc_fifo.vhd

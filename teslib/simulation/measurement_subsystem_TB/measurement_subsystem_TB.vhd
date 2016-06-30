@@ -12,8 +12,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.std_logic_textio.all;
-
+--use ieee.std_logic_textio.all;
 use std.textio.all;
 
 library extensions;
@@ -49,6 +48,21 @@ end entity measurement_subsystem_TB;
 architecture testbench of measurement_subsystem_TB is
 
 --constant CHANNELS:integer:=2**CHANNEL_BITS;
+component enet_cdc_fifo
+port (
+  wr_clk:in std_logic;
+  wr_rst:in std_logic;
+  rd_clk:in std_logic;
+  rd_rst:in std_logic;
+  din:in std_logic_vector(71 downto 0);
+  wr_en:in std_logic;
+  rd_en:in std_logic;
+  dout:out std_logic_vector(8 downto 0);
+  full:out std_logic;
+  empty:out std_logic
+);
+end component;
+			
 
 signal sample_clk:std_logic:='1';	
 signal io_clk:std_logic:='1';	
@@ -123,10 +137,23 @@ signal mca_value_valids:boolean_vector(CHANNELS-1 downto 0);
 signal mca_value:signed(MCA_VALUE_BITS-1 downto 0);
 signal bytestream:std_logic_vector(7 downto 0);
 signal bytestream_valid:boolean;
-signal bytestream_ready:boolean;
+signal bytestream_ready:boolean:=FALSE;
 signal bytestream_last:boolean;
+signal cdc_din:std_logic_vector(71 downto 0);
+signal cdc_ready:boolean;
+signal cdc_valid:boolean;
+signal cdc_wr_en:std_logic;
+signal cdc_rd_en:std_logic;
+signal cdc_dout:std_logic_vector(8 downto 0);
+signal cdc_full:std_logic;
+signal cdc_empty:std_logic;
+signal bytestream_int:std_logic_vector(8 downto 0);
 
 signal clk_count:integer:=0;
+
+
+type int_file is file of integer;
+file bytestream_file:int_file;
 
 function hexstr2vec(str:string) return std_logic_vector is
 	variable slv:std_logic_vector(str'length*4-1 downto 0):=(others => 'X');
@@ -176,9 +203,9 @@ begin
 	
 sample_clk <= not sample_clk after SAMPLE_CLK_PERIOD/2;
 io_clk <= not IO_clk after IO_CLK_PERIOD/2;
-sample_reset <= '0' after IO_CLK_PERIOD; 
-io_reset <= '0' after IO_CLK_PERIOD; 
-bytestream_ready <= TRUE after IO_CLK_PERIOD;
+sample_reset <= '0' after 2*IO_CLK_PERIOD; 
+io_reset <= '0' after 2*IO_CLK_PERIOD; 
+bytestream_ready <= TRUE after 2*IO_CLK_PERIOD;
 
 mca_value_type 
 	<= unsigned(to_std_logic(mca_registers.value,ceilLog2(NUM_MCA_VALUE_D)));
@@ -285,7 +312,7 @@ begin
     valid => eventstreams_valid(c),
     ready => eventstreams_ready(c)
   );
-	
+  
   detection_types(c) 
   	<= unsigned(to_std_logic(registers(c).capture.detection,DETECTION_D_BITS));
   height_types(c) 
@@ -385,7 +412,7 @@ port map(
   valid => mcastream_valid,
   ready => mcastream_ready
 );
-
+--
 enet:entity work.ethernet_framer
 generic map(
   MTU_BITS => MTU_BITS,
@@ -410,40 +437,57 @@ port map(
   ethernetstream_ready => ethernetstream_ready
 );
 
-cdc:entity work.CDC_bytestream_adapter
-	port map(
-		s_clk            => sample_clk,
-		s_reset          => sample_reset,
-		streambus        => ethernetstream,
-		streambus_valid  => ethernetstream_valid,
-		streambus_ready  => ethernetstream_ready,
-		b_clk            => io_clk,
-		b_reset          => io_reset,
-		bytestream       => bytestream,
-		bytestream_valid => bytestream_valid,
-		bytestream_ready => bytestream_ready,
-		bytestream_last  => bytestream_last
-	);
+cdc_din <= '0' & ethernetstream.data(63 downto 56) &
+           '0' & ethernetstream.data(55 downto 48) &
+           '0' & ethernetstream.data(47 downto 40) &
+           '0' & ethernetstream.data(39 downto 32) &
+           '0' & ethernetstream.data(31 downto 24) &
+           '0' & ethernetstream.data(23 downto 16) &
+           '0' & ethernetstream.data(15 downto 8) &
+           to_std_logic(ethernetstream.last(0)) & 
+           ethernetstream.data(7 downto 0);
+           
+ethernetstream_ready <= cdc_full='0';
+cdc_wr_en <= to_std_logic(ethernetstream_valid); 
 
---cdc:entity work.CDC_bytestream_adapter
---port map(
---  s_clk => sample_clk,
---  s_reset => sample_reset,
---  streambus => ethernetstream,
---  streambus_valid => ethernetstream_valid,
---  streambus_ready => ethernetstream_ready,
---  b_clk => io_clk,
---  b_reset => io_reset,
---  bytestream => bytestream,
---  bytestream_valid => bytestream_valid,
---  bytestream_ready => bytestream_ready,
---  bytestream_last => bytestream_last
---);
---
+cdcFIFO:enet_cdc_fifo
+port map (
+  wr_clk => sample_clk,
+  wr_rst =>	sample_reset,
+  rd_clk => io_clk,
+  rd_rst => io_reset,
+  din => cdc_din,
+  wr_en => cdc_wr_en,
+  rd_en => cdc_rd_en,
+  dout => cdc_dout,
+  full => cdc_full,
+  empty => cdc_empty
+);
+cdc_valid <= cdc_empty='0';
+cdc_rd_en <= to_std_logic(cdc_ready);
+
+bytestreamReg:entity streamlib.stream_register
+generic map(
+  WIDTH => 9
+)
+port map(
+  clk => io_clk,
+  reset => io_reset,
+  stream_in => cdc_dout,
+  ready_out => cdc_ready,
+  valid_in => cdc_valid,
+  stream => bytestream_int,
+  ready => bytestream_ready,
+  valid => bytestream_valid
+);
+
+bytestream <= bytestream_int(7 downto 0);
+bytestream_last <= bytestream_int(8)='1';
+
 -- all channels see same register settings
 --stimulus:process is
 --begin
-mtu <= to_unsigned(64,MTU_BITS);
+mtu <= to_unsigned(1500,MTU_BITS);
 tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
 window <= to_unsigned(2,TIME_BITS);
 tick_latency <= to_unsigned(2**16,TICK_PERIOD_BITS);
@@ -520,8 +564,8 @@ mca_registers.channel <= (others => '0');
 mca_registers.bin_n <= (others => '0');
 mca_registers.last_bin <= (others => '1');
 mca_registers.lowest_value <= to_signed(-1000, MCA_VALUE_BITS);
-mca_registers.value <= MCA_FILTERED_AREA_D;
-mca_registers.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
+mca_registers.value <= MCA_FILTERED_SIGNAL_D;
+mca_registers.trigger <= CLOCK_MCA_TRIGGER_D;
 mca_registers.ticks <= (0 => '1', others => '0');
 --
 --update_on_completion <= FALSE;
@@ -537,6 +581,28 @@ begin
 	wait;
 end process mcaControlStimulus;	
 
+file_open(bytestream_file,"../bytestream",WRITE_MODE);
+byteStreamWriter:process
+begin
+	while TRUE loop
+    wait until rising_edge(io_clk);
+    if bytestream_valid and bytestream_ready then
+    	write(bytestream_file, to_integer(unsigned(bytestream)));
+    	if bytestream_last then
+    		write(bytestream_file, -clk_count); --identify last by -ve value
+    	else
+    		write(bytestream_file, clk_count);
+    	end if;
+    end if;
+	end loop;
+end process byteStreamWriter;
+
+clkCount:process is
+begin
+		wait until rising_edge(sample_clk);
+		clk_count <= clk_count+1;
+end process clkCount;
+
 stimulus:process
 	file sample_file:text is in "../input_signals/short";
 	variable file_line:line; -- text line buffer 
@@ -547,9 +613,8 @@ begin
 		readline(sample_file, file_line);
 		read(file_line, str_sample);
 		sample_in:=hexstr2vec(str_sample);
-		wait until sample_clk='1';
+		wait until rising_edge(sample_clk);
 		adc_sample <= resize(sample_in, 14);
-		clk_count <= clk_count+1;
 		if clk_count mod 10000 = 0 then
 			report "clk " & integer'image(clk_count);
 		end if;

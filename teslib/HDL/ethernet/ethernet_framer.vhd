@@ -496,7 +496,7 @@ begin
     	if mca_s_valid and framer_ready then 
     		inc_address <= TRUE;
     		if frame_last or flush_events or mca_s.last(0) then
-    			inc_address <= FALSE;
+    			--inc_address <= FALSE;
         	frame_nextstate <= LENGTH;
         	framer_word.last(0) <= TRUE;
         end if;
@@ -538,7 +538,8 @@ begin
 				end if;
 			else
 				-- FIXME this should probably only terminate if mca_valid
-				if not lookahead_valid and event_head and not frame_under then
+				if not lookahead_valid and event_head and not frame_under and 
+				    mca_s_valid then
 					frame_nextstate <= TERMINATE;
 				end if;
       end if;
@@ -562,88 +563,6 @@ begin
 	end case;
 end process frameFSMtransition;
 
---frameFSMoutput:process(clk)
---begin
---	if rising_edge(clk) then
---		if reset='1' then
---      framer_word.data <= (others => '-');
---      framer_word.last <= (others => FALSE);
---      framer_word.discard <= (others => FALSE);
---      framer_we <= (others => FALSE); 
---      inc_address <= FALSE;
---		else
---      case frame_state is 
---      when IDLE =>
---      	null;
---      when HEADER0 =>
---        framer_word <= to_streambus(header,0,ENDIANNESS);
---        framer_we <= (others => framer_ready);
---        inc_address <= framer_ready;
---      when HEADER1 =>
---        framer_word <= to_streambus(header,1,ENDIANNESS);
---        framer_we <= (others => framer_ready);
---        inc_address <= framer_ready;
---      when HEADER2 =>
---        framer_word <= to_streambus(header,2,ENDIANNESS);
---        framer_we <= (others => framer_ready);
---        inc_address <= framer_ready;
---      when PAYLOAD =>
---        if arbiter_state=MCA then
---          
---          framer_word.data <= mca_s.data;
---          framer_we <= (others => mca_s_valid and framer_ready);
---          inc_address <= mca_s_valid and framer_ready;
---          if mca_s_valid and framer_ready then 
---            if frame_free=0 or flush_events or mca_s.last(0) then
---              framer_word.last(0) <= TRUE;
---            end if;
---          end if;
---          
---        else -- must be event
---          framer_word.data <= event_s.data;
---          if event_head and 
---          	(event_s_type/=header.frame_type or 
---          		event_s_size/=to_0ifX(frame_size)
---          	) then
---          	null;
---          elsif event_s_valid then 
---            if event_frame_full then
---              if event_s.last(0) then
---                framer_word.last(0) <= TRUE;
---                framer_we <= (others => framer_ready);
---                inc_address <= framer_ready;
---              elsif event_head then
---              else
---                framer_we <= (others => framer_ready);
---                inc_address <= framer_ready;
---              end if;
---            else
---              framer_we <= (others => framer_ready);
---              inc_address <= framer_ready;
---              if header.frame_type.detection=TRACE_DETECTION_D or 
---                  header.frame_type.tick then
---                framer_word.last(0) <= event_s.last(0);
---              end if;
---            end if;
---          else
---          end if;
---        end if;
---      when TERMINATE =>  -- write last
---        framer_word <= last_frame_word;
---        framer_address <= last_frame_address;
---        framer_we <= (others => TRUE);
---      when LENGTH => -- commit frame
---        framer_address <= (0 => '1', others => '0');
---        framer_word.data(CHUNK_DATABITS-1 downto 0) 
---          <= set_endianness(
---            shift_left(resize(frame_address, CHUNK_DATABITS),3),
---            ENDIANNESS
---          );
---        framer_we <= (0 => TRUE, others => FALSE);
---      end case;
---    end if;
---  end if;
---end process frameFSMoutput;
 
 payloadAddress:process(clk)
 begin
@@ -674,8 +593,8 @@ begin
 				framer_ready <= framer_free > next_address;
         frame_free <= frame_free-1;
         frame_free_m1 <= frame_free_m1-1;
-        frame_last <= frame_free_m1 = 0;
-        frame_under <= frame_free_m1 < MIN_FRAME;
+        frame_last <= frame_free_m1 = 1;
+        frame_under <= next_address < MIN_FRAME;
 			end if;
 		end if;
 	end if;

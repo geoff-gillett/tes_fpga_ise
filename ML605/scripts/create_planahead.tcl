@@ -1,1 +1,3 @@
-xilinx::make_project PlanAhead ML605 ../ ../
+package require xil
+namespace import xil::*
+xil::make_project planahead ML605 ../ ../

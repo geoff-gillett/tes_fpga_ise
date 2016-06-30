@@ -59,12 +59,33 @@ signal sel_int:std_logic_vector(11 downto 0);
 signal last:std_logic;
 signal stream_in:std_logic_vector(8 downto 0);
 
+signal stream_reg:streamvector_t;
+signal stream_last:boolean_vector(BUS_CHUNKS-1 downto 0);
+signal ready_io:boolean;
 begin
 	
 streambus_ready <= s_ready;
 bytestream <= bytestream_int(7 downto 0);
 bytestream_last <= to_boolean(bytestream_int(8));
 
+inputReg:process(s_clk)
+begin
+	if rising_edge(s_clk) then
+		if s_reset = '1' then
+			s_ready <= FALSE;
+		else
+			if s_ready and streambus_valid then
+				stream_reg <= to_std_logic(streambus);
+				stream_last <= streambus.last;
+				s_ready <= FALSE; 
+			end if;
+			if ready_io then --io_clk domain
+				s_ready <= TRUE;		
+			end if;
+		end if;
+	end if;
+end process inputReg;
+ready_io <= ready_for_byte and sel_ring(0)='1';
 
 -- break streambus into bytes
 --bytes(7) <= streambus.data(63 downto 56);
@@ -88,6 +109,7 @@ bytestream_last <= to_boolean(bytestream_int(8));
 --		end loop;
 --	end loop;
 --end process bitmap;
+
 
 bitGen:for bit in 7 downto 0 generate
 begin
@@ -117,10 +139,10 @@ selRing:process(b_clk)
 begin
 	if rising_edge(b_clk) then
 		if b_reset = '1' then
-			sel_ring <= (others => '1');
+			sel_ring <= (7 => '1', others => '0');
 		else
-			if ready_for_byte and streambus_valid then
-				--ring(6 downto 0) <= ring(7 downto 1);
+			if ready_for_byte and streambus_valid then -- this is a problem ready in IO valid in sample
+				sel_ring(6 downto 0) <= sel_ring(7 downto 1);
 				sel_ring(7) <= sel_ring(0);
 			end if;
 		end if;
