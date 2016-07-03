@@ -278,6 +278,7 @@
       <wvobject fp_name="/measurement_subsystem_tb/bytestream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream[7:0]</obj_property>
          <obj_property name="ObjectShortName">bytestream[7:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/bytestream_valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream_valid</obj_property>
@@ -332,6 +333,7 @@
       <wvobject fp_name="/measurement_subsystem_tb/bytestream_int" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream_int[8:0]</obj_property>
          <obj_property name="ObjectShortName">bytestream_int[8:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/clk_count" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">clk_count</obj_property>

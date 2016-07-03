@@ -81,7 +81,11 @@ type bin_pipeline is array (natural range <>) of MCA_bin;
 type count_pipeline is array (natural range <>) of MCA_count;
 constant INC_BITS:integer:=2; 
 signal inc:unsigned(INC_BITS-1 downto 0);
+
+attribute use_dsp48:string;
 signal incremented_count:unsigned(COUNTER_BITS downto 0);
+attribute use_dsp48 of incremented_count:signal is "YES";
+
 signal saturated:boolean;
 -- pipelines handling read latency
 signal newcount_pipe:count_pipeline(1 to 2);

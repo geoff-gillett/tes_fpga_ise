@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="packet_generator_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="adc" />
+            <top_module name="boolean_vector" />
+            <top_module name="dsptypes" />
+            <top_module name="ethernet" />
+            <top_module name="events" />
+            <top_module name="functions" />
+            <top_module name="logic" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="packet_generator_tb" />
+            <top_module name="registers" />
+            <top_module name="std_logic_1164" />
+            <top_module name="types" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group169" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/packet_generator_tb/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/period" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">period[31:0]</obj_property>
+         <obj_property name="ObjectShortName">period[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream</obj_property>
+         <obj_property name="ObjectShortName">stream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/clk_period" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">clk_period</obj_property>
+         <obj_property name="ObjectShortName">clk_period</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group186" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/packet_generator_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/period" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">period[31:0]</obj_property>
+         <obj_property name="ObjectShortName">period[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream</obj_property>
+         <obj_property name="ObjectShortName">stream</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         <wvobject fp_name="/packet_generator_tb/UUT/stream.discard" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.discard</obj_property>
+            <obj_property name="ObjectShortName">stream.discard</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/packet_generator_tb/UUT/stream.last" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.last</obj_property>
+            <obj_property name="ObjectShortName">stream.last</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+         <wvobject fp_name="/packet_generator_tb/UUT/stream.data" type="array" db_ref_id="1">
+            <obj_property name="ElementShortName">.data</obj_property>
+            <obj_property name="ObjectShortName">stream.data</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="CustomSignalColor">#00ffff</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/header" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">header</obj_property>
+         <obj_property name="ObjectShortName">header</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/seq_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">seq_count[15:0]</obj_property>
+         <obj_property name="ObjectShortName">seq_count[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/stream_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream_int</obj_property>
+         <obj_property name="ObjectShortName">stream_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/ready_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready_int</obj_property>
+         <obj_property name="ObjectShortName">ready_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/valid_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid_int</obj_property>
+         <obj_property name="ObjectShortName">valid_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/send" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">send</obj_property>
+         <obj_property name="ObjectShortName">send</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/t_counter" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">t_counter[31:0]</obj_property>
+         <obj_property name="ObjectShortName">t_counter[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/packet_generator_tb/UUT/period_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">period_int[31:0]</obj_property>
+         <obj_property name="ObjectShortName">period_int[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

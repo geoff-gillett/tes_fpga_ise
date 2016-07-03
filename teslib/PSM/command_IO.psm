@@ -141,6 +141,7 @@
                     OUTPUTK SEL_DATA, IO_SEL_CO_PORT       ;set to write data
                     CALL write_value
                     OUTPUTK REG_WRITE, CONTROL_CO_PORT     ; write it
+                    LOAD s0,s0														 ;delay 16 ns
                     CALL read_value                        ; read value back
                     RETURN
                     ;
