@@ -36,7 +36,7 @@
    <wave_markers>
       <marker time="525856000000" label="" />
    </wave_markers>
-   <wvobject fp_name="group375" type="group">
+   <wvobject fp_name="group319" type="group">
       <obj_property name="label">testbench</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <wvobject fp_name="/measurement_subsystem_tb/sample_clk" type="logic" db_ref_id="1">
@@ -47,153 +47,33 @@
          <obj_property name="ElementShortName">io_clk</obj_property>
          <obj_property name="ObjectShortName">io_clk</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/sample_reset" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">sample_reset</obj_property>
-         <obj_property name="ObjectShortName">sample_reset</obj_property>
+      <wvobject fp_name="/measurement_subsystem_tb/reset0" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset0</obj_property>
+         <obj_property name="ObjectShortName">reset0</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/io_reset" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">io_reset</obj_property>
-         <obj_property name="ObjectShortName">io_reset</obj_property>
+      <wvobject fp_name="/measurement_subsystem_tb/reset1" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset1</obj_property>
+         <obj_property name="ObjectShortName">reset1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/reset2" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset2</obj_property>
+         <obj_property name="ObjectShortName">reset2</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/measurements" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">measurements[1:0]</obj_property>
          <obj_property name="ObjectShortName">measurements[1:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/dumps" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dumps[1:0]</obj_property>
-         <obj_property name="ObjectShortName">dumps[1:0]</obj_property>
+      <wvobject fp_name="/measurement_subsystem_tb/adc_samples" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_samples[1:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_samples[1:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/commits" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commits[1:0]</obj_property>
-         <obj_property name="ObjectShortName">commits[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/eventstreams_valid" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">eventstreams_valid[1:0]</obj_property>
-         <obj_property name="ObjectShortName">eventstreams_valid[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/eventstreams_ready" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">eventstreams_ready[1:0]</obj_property>
-         <obj_property name="ObjectShortName">eventstreams_ready[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/adc_delayed" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">adc_delayed[1:0]</obj_property>
-         <obj_property name="ObjectShortName">adc_delayed[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/adc_sample" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
-         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+      <wvobject fp_name="/measurement_subsystem_tb/sample_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample_reg[13:0]</obj_property>
+         <obj_property name="ObjectShortName">sample_reg[13:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/registers" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">registers[1:0]</obj_property>
          <obj_property name="ObjectShortName">registers[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/height_types" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">height_types[1:0]</obj_property>
-         <obj_property name="ObjectShortName">height_types[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/detection_types" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">detection_types[1:0]</obj_property>
-         <obj_property name="ObjectShortName">detection_types[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/trigger_types" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trigger_types[1:0]</obj_property>
-         <obj_property name="ObjectShortName">trigger_types[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca_value_type" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_value_type[3:0]</obj_property>
-         <obj_property name="ObjectShortName">mca_value_type[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca_trigger_type" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_trigger_type[3:0]</obj_property>
-         <obj_property name="ObjectShortName">mca_trigger_type[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux_overflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mux_overflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">mux_overflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux_overflows_u" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mux_overflows_u[1:0]</obj_property>
-         <obj_property name="ObjectShortName">mux_overflows_u[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/framer_overflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">framer_overflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_overflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/framer_overflows_u" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">framer_overflows_u[1:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_overflows_u[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/measurement_overflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">measurement_overflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">measurement_overflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/measurement_overflows_u" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">measurement_overflows_u[1:0]</obj_property>
-         <obj_property name="ObjectShortName">measurement_overflows_u[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux_full" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mux_full</obj_property>
-         <obj_property name="ObjectShortName">mux_full</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/time_overflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">time_overflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">time_overflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/cfd_errors" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_errors[1:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_errors[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/time_overflows_u" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">time_overflows_u[1:0]</obj_property>
-         <obj_property name="ObjectShortName">time_overflows_u[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/cfd_errors_u" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_errors_u[1:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_errors_u[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/baseline_errors" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline_errors[1:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline_errors[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/baseline_errors_u" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline_errors_u[1:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline_errors_u[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/peak_overflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_overflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">peak_overflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/peak_overflows_u" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_overflows_u[1:0]</obj_property>
-         <obj_property name="ObjectShortName">peak_overflows_u[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/eventstreams" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">eventstreams[1:0]</obj_property>
-         <obj_property name="ObjectShortName">eventstreams[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/tick_period" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">tick_period[31:0]</obj_property>
-         <obj_property name="ObjectShortName">tick_period[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/starts" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">starts[1:0]</obj_property>
-         <obj_property name="ObjectShortName">starts[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/muxstream" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream</obj_property>
-         <obj_property name="ObjectShortName">muxstream</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/muxstream_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_valid</obj_property>
-         <obj_property name="ObjectShortName">muxstream_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/muxstream_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_ready</obj_property>
-         <obj_property name="ObjectShortName">muxstream_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mcastream" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mcastream</obj_property>
-         <obj_property name="ObjectShortName">mcastream</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/ethernetstream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">ethernetstream</obj_property>
@@ -207,90 +87,30 @@
          <obj_property name="ElementShortName">ethernetstream_ready</obj_property>
          <obj_property name="ObjectShortName">ethernetstream_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mtu" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mtu[15:0]</obj_property>
-         <obj_property name="ObjectShortName">mtu[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/tick_latency" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">tick_latency[31:0]</obj_property>
-         <obj_property name="ObjectShortName">tick_latency[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/window" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">window[15:0]</obj_property>
-         <obj_property name="ObjectShortName">window[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca_initialising" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_initialising</obj_property>
-         <obj_property name="ObjectShortName">mca_initialising</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/update_asap" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">update_asap</obj_property>
-         <obj_property name="ObjectShortName">update_asap</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/update_on_completion" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">update_on_completion</obj_property>
-         <obj_property name="ObjectShortName">update_on_completion</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/updated" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">updated</obj_property>
-         <obj_property name="ObjectShortName">updated</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca_registers" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_registers</obj_property>
-         <obj_property name="ObjectShortName">mca_registers</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/channel_select" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">channel_select[1:0]</obj_property>
-         <obj_property name="ObjectShortName">channel_select[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/value_select" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">value_select[11:0]</obj_property>
-         <obj_property name="ObjectShortName">value_select[11:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/trigger_select" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trigger_select[9:0]</obj_property>
-         <obj_property name="ObjectShortName">trigger_select[9:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca_values" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_values[1:0]</obj_property>
-         <obj_property name="ObjectShortName">mca_values[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca_value_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_value_valid</obj_property>
-         <obj_property name="ObjectShortName">mca_value_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mcastream_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mcastream_valid</obj_property>
-         <obj_property name="ObjectShortName">mcastream_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mcastream_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mcastream_ready</obj_property>
-         <obj_property name="ObjectShortName">mcastream_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca_value_valids" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_value_valids[1:0]</obj_property>
-         <obj_property name="ObjectShortName">mca_value_valids[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca_value" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_value[31:0]</obj_property>
-         <obj_property name="ObjectShortName">mca_value[31:0]</obj_property>
-      </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/bytestream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream[7:0]</obj_property>
          <obj_property name="ObjectShortName">bytestream[7:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
          <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/bytestream_valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream_valid</obj_property>
          <obj_property name="ObjectShortName">bytestream_valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/bytestream_ready" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream_ready</obj_property>
          <obj_property name="ObjectShortName">bytestream_ready</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/bytestream_last" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream_last</obj_property>
          <obj_property name="ObjectShortName">bytestream_last</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/cdc_din" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">cdc_din[71:0]</obj_property>
@@ -315,901 +135,888 @@
       <wvobject fp_name="/measurement_subsystem_tb/cdc_dout" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">cdc_dout[8:0]</obj_property>
          <obj_property name="ObjectShortName">cdc_dout[8:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/cdc_full" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">cdc_full</obj_property>
          <obj_property name="ObjectShortName">cdc_full</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/cdc_empty" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">cdc_empty</obj_property>
          <obj_property name="ObjectShortName">cdc_empty</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/bytestream_int" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">bytestream_int[8:0]</obj_property>
          <obj_property name="ObjectShortName">bytestream_int[8:0]</obj_property>
          <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/global" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">global</obj_property>
+         <obj_property name="ObjectShortName">global</obj_property>
+      </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/clk_count" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">clk_count</obj_property>
          <obj_property name="ObjectShortName">clk_count</obj_property>
       </wvobject>
    </wvobject>
-   <wvobject fp_name="group138" type="group">
-      <obj_property name="label">mux</obj_property>
+   <wvobject fp_name="group386" type="group">
+      <obj_property name="label">UUT</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/clk" type="logic" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/clk" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/reset" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">reset</obj_property>
-         <obj_property name="ObjectShortName">reset</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/start" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">start[1:0]</obj_property>
-         <obj_property name="ObjectShortName">start[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/commit" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commit[1:0]</obj_property>
-         <obj_property name="ObjectShortName">commit[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/dump" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dump[1:0]</obj_property>
-         <obj_property name="ObjectShortName">dump[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/instreams" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">instreams[1:0]</obj_property>
-         <obj_property name="ObjectShortName">instreams[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/instream_valids" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">instream_valids[1:0]</obj_property>
-         <obj_property name="ObjectShortName">instream_valids[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/instream_readys" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">instream_readys[1:0]</obj_property>
-         <obj_property name="ObjectShortName">instream_readys[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/full" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">full</obj_property>
-         <obj_property name="ObjectShortName">full</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/tick_period" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">tick_period[31:0]</obj_property>
-         <obj_property name="ObjectShortName">tick_period[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/cfd_errors" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">cfd_errors[1:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_errors[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/framer_overflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">framer_overflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_overflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/mux_overflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mux_overflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">mux_overflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/measurement_overflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">measurement_overflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">measurement_overflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/peak_overflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">peak_overflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">peak_overflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/time_overflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">time_overflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">time_overflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/baseline_underflows" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">baseline_underflows[1:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline_underflows[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/window" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">window[15:0]</obj_property>
-         <obj_property name="ObjectShortName">window[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/muxstream" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream</obj_property>
-         <obj_property name="ObjectShortName">muxstream</obj_property>
-         <wvobject fp_name="/measurement_subsystem_tb/mux/muxstream.discard" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.discard</obj_property>
-            <obj_property name="ObjectShortName">muxstream.discard</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_subsystem_tb/mux/muxstream.last" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.last</obj_property>
-            <obj_property name="ObjectShortName">muxstream.last</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_subsystem_tb/mux/muxstream.data" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.data</obj_property>
-            <obj_property name="ObjectShortName">muxstream.data</obj_property>
-            <obj_property name="Radix">HEXRADIX</obj_property>
-         </wvobject>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">valid</obj_property>
-         <obj_property name="ObjectShortName">valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">ready</obj_property>
-         <obj_property name="ObjectShortName">ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/timestamp" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">timestamp[63:0]</obj_property>
-         <obj_property name="ObjectShortName">timestamp[63:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/eventtime" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">eventtime[63:0]</obj_property>
-         <obj_property name="ObjectShortName">eventtime[63:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/reltime" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">reltime[15:0]</obj_property>
-         <obj_property name="ObjectShortName">reltime[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/reltime_stamp" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">reltime_stamp[15:0]</obj_property>
-         <obj_property name="ObjectShortName">reltime_stamp[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/started" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">started[1:0]</obj_property>
-         <obj_property name="ObjectShortName">started[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/commited" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">commited[1:0]</obj_property>
-         <obj_property name="ObjectShortName">commited[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/dumped" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">dumped[1:0]</obj_property>
-         <obj_property name="ObjectShortName">dumped[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/req" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">req[1:0]</obj_property>
-         <obj_property name="ObjectShortName">req[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/gnt" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">gnt[1:0]</obj_property>
-         <obj_property name="ObjectShortName">gnt[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/handled" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">handled[2:0]</obj_property>
-         <obj_property name="ObjectShortName">handled[2:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/sel" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">sel[2:0]</obj_property>
-         <obj_property name="ObjectShortName">sel[2:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/sel_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">sel_int[2:0]</obj_property>
-         <obj_property name="ObjectShortName">sel_int[2:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/ticked" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">ticked</obj_property>
-         <obj_property name="ObjectShortName">ticked</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/tick" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">tick</obj_property>
-         <obj_property name="ObjectShortName">tick</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/time_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">time_valid</obj_property>
-         <obj_property name="ObjectShortName">time_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/read_next" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">read_next</obj_property>
-         <obj_property name="ObjectShortName">read_next</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/arb_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">arb_state</obj_property>
-         <obj_property name="ObjectShortName">arb_state</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/arb_nextstate" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">arb_nextstate</obj_property>
-         <obj_property name="ObjectShortName">arb_nextstate</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/tickstream" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">tickstream</obj_property>
-         <obj_property name="ObjectShortName">tickstream</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/muxstream_int_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_int_valid</obj_property>
-         <obj_property name="ObjectShortName">muxstream_int_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/muxstream_int_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_int_ready</obj_property>
-         <obj_property name="ObjectShortName">muxstream_int_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/muxstream_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_last</obj_property>
-         <obj_property name="ObjectShortName">muxstream_last</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/tickstream_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">tickstream_valid</obj_property>
-         <obj_property name="ObjectShortName">tickstream_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/tickstream_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">tickstream_ready</obj_property>
-         <obj_property name="ObjectShortName">tickstream_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/streams" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">streams[2:0]</obj_property>
-         <obj_property name="ObjectShortName">streams[2:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/muxstream_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_int</obj_property>
-         <obj_property name="ObjectShortName">muxstream_int</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/stream_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">stream_int</obj_property>
-         <obj_property name="ObjectShortName">stream_int</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/valids" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">valids[2:0]</obj_property>
-         <obj_property name="ObjectShortName">valids[2:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/readys" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">readys[2:0]</obj_property>
-         <obj_property name="ObjectShortName">readys[2:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/time_done" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">time_done</obj_property>
-         <obj_property name="ObjectShortName">time_done</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/muxstream_handshake" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_handshake</obj_property>
-         <obj_property name="ObjectShortName">muxstream_handshake</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/pulses_done" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">pulses_done</obj_property>
-         <obj_property name="ObjectShortName">pulses_done</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/muxstream_last_handshake" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">muxstream_last_handshake</obj_property>
-         <obj_property name="ObjectShortName">muxstream_last_handshake</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/out_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">out_state</obj_property>
-         <obj_property name="ObjectShortName">out_state</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/out_nextstate" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">out_nextstate</obj_property>
-         <obj_property name="ObjectShortName">out_nextstate</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/first_event" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">first_event</obj_property>
-         <obj_property name="ObjectShortName">first_event</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/new_window" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">new_window</obj_property>
-         <obj_property name="ObjectShortName">new_window</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mux/window_start" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">window_start</obj_property>
-         <obj_property name="ObjectShortName">window_start</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group222" type="group">
-      <obj_property name="label">enet</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/clk" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">clk</obj_property>
-         <obj_property name="ObjectShortName">clk</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/reset" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">reset</obj_property>
-         <obj_property name="ObjectShortName">reset</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mtu" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mtu[15:0]</obj_property>
-         <obj_property name="ObjectShortName">mtu[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/tick_latency" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">tick_latency[31:0]</obj_property>
-         <obj_property name="ObjectShortName">tick_latency[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/eventstream" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">eventstream</obj_property>
-         <obj_property name="ObjectShortName">eventstream</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/eventstream_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">eventstream_valid</obj_property>
-         <obj_property name="ObjectShortName">eventstream_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/eventstream_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">eventstream_ready</obj_property>
-         <obj_property name="ObjectShortName">eventstream_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mcastream" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mcastream</obj_property>
-         <obj_property name="ObjectShortName">mcastream</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mcastream_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mcastream_valid</obj_property>
-         <obj_property name="ObjectShortName">mcastream_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mcastream_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mcastream_ready</obj_property>
-         <obj_property name="ObjectShortName">mcastream_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/ethernetstream" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/reset0" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset0</obj_property>
+         <obj_property name="ObjectShortName">reset0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/reset1" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset1</obj_property>
+         <obj_property name="ObjectShortName">reset1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/reset2" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset2</obj_property>
+         <obj_property name="ObjectShortName">reset2</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/samples" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">samples[1:0]</obj_property>
+         <obj_property name="ObjectShortName">samples[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/channel_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">channel_reg[1:0]</obj_property>
+         <obj_property name="ObjectShortName">channel_reg[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/global_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">global_reg</obj_property>
+         <obj_property name="ObjectShortName">global_reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/filter_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_data[1:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_config_data[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/filter_config_valid" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_valid[1:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_config_valid[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/filter_config_ready" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_config_ready[1:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_config_ready[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/filter_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_data[1:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_data[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/filter_valid" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_valid[1:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_valid[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/filter_ready" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_ready[1:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_ready[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/filter_last" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_last[1:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_last[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/filter_last_missing" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_last_missing[1:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_last_missing[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/filter_last_unexpected" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filter_last_unexpected[1:0]</obj_property>
+         <obj_property name="ObjectShortName">filter_last_unexpected[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dif_config_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dif_config_data[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dif_config_data[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dif_config_valid" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dif_config_valid[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dif_config_valid[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dif_config_ready" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dif_config_ready[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dif_config_ready[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dif_data" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dif_data[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dif_data[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dif_valid" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dif_valid[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dif_valid[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dif_ready" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dif_ready[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dif_ready[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dif_last" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dif_last[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dif_last[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dif_last_missing" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dif_last_missing[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dif_last_missing[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dif_last_unexpected" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dif_last_unexpected[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dif_last_unexpected[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/measurements" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">measurements[1:0]</obj_property>
+         <obj_property name="ObjectShortName">measurements[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/ethernetstream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">ethernetstream</obj_property>
          <obj_property name="ObjectShortName">ethernetstream</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
-         <wvobject fp_name="/measurement_subsystem_tb/enet/ethernetstream.discard" type="array" db_ref_id="1">
+         <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/ethernetstream.discard" type="array" db_ref_id="1">
             <obj_property name="ElementShortName">.discard</obj_property>
             <obj_property name="ObjectShortName">ethernetstream.discard</obj_property>
          </wvobject>
-         <wvobject fp_name="/measurement_subsystem_tb/enet/ethernetstream.last" type="array" db_ref_id="1">
+         <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/ethernetstream.last" type="array" db_ref_id="1">
             <obj_property name="ElementShortName">.last</obj_property>
             <obj_property name="ObjectShortName">ethernetstream.last</obj_property>
          </wvobject>
-         <wvobject fp_name="/measurement_subsystem_tb/enet/ethernetstream.data" type="array" db_ref_id="1">
+         <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/ethernetstream.data" type="array" db_ref_id="1">
             <obj_property name="ElementShortName">.data</obj_property>
             <obj_property name="ObjectShortName">ethernetstream.data</obj_property>
             <obj_property name="Radix">HEXRADIX</obj_property>
          </wvobject>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/ethernetstream_valid" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/ethernetstream_valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">ethernetstream_valid</obj_property>
          <obj_property name="ObjectShortName">ethernetstream_valid</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/ethernetstream_ready" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/ethernetstream_ready" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">ethernetstream_ready</obj_property>
          <obj_property name="ObjectShortName">ethernetstream_ready</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/event_s" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">event_s</obj_property>
-         <obj_property name="ObjectShortName">event_s</obj_property>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/adc_delayed" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_delayed[1:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_delayed[1:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/eventstream_ready_int" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">eventstream_ready_int</obj_property>
-         <obj_property name="ObjectShortName">eventstream_ready_int</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/buffer_full" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">buffer_full</obj_property>
-         <obj_property name="ObjectShortName">buffer_full</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/buffer_empty" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">buffer_empty</obj_property>
-         <obj_property name="ObjectShortName">buffer_empty</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/flush_events" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">flush_events</obj_property>
-         <obj_property name="ObjectShortName">flush_events</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/event_s" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">event_s</obj_property>
-         <obj_property name="ObjectShortName">event_s</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/event_s_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">event_s_ready</obj_property>
-         <obj_property name="ObjectShortName">event_s_ready</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/event_s_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">event_s_valid</obj_property>
-         <obj_property name="ObjectShortName">event_s_valid</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mca_s" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_s</obj_property>
-         <obj_property name="ObjectShortName">mca_s</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-         <wvobject fp_name="/measurement_subsystem_tb/enet/mca_s.discard" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.discard</obj_property>
-            <obj_property name="ObjectShortName">mca_s.discard</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_subsystem_tb/enet/mca_s.last" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.last</obj_property>
-            <obj_property name="ObjectShortName">mca_s.last</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_subsystem_tb/enet/mca_s.data" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.data</obj_property>
-            <obj_property name="ObjectShortName">mca_s.data</obj_property>
-            <obj_property name="Radix">HEXRADIX</obj_property>
-         </wvobject>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mca_s_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_s_ready</obj_property>
-         <obj_property name="ObjectShortName">mca_s_ready</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mca_s_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_s_valid</obj_property>
-         <obj_property name="ObjectShortName">mca_s_valid</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/event_s_type" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">event_s_type</obj_property>
-         <obj_property name="ObjectShortName">event_s_type</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/frame_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_last</obj_property>
-         <obj_property name="ObjectShortName">frame_last</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/size_change" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">size_change</obj_property>
-         <obj_property name="ObjectShortName">size_change</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/type_change" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">type_change</obj_property>
-         <obj_property name="ObjectShortName">type_change</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/frame_under" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_under</obj_property>
-         <obj_property name="ObjectShortName">frame_under</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/arbiter_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">arbiter_state</obj_property>
-         <obj_property name="ObjectShortName">arbiter_state</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/frame_state" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_state</obj_property>
-         <obj_property name="ObjectShortName">frame_state</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/framer_word" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">framer_word</obj_property>
-         <obj_property name="ObjectShortName">framer_word</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ff00</obj_property>
-         <wvobject fp_name="/measurement_subsystem_tb/enet/framer_word.discard" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.discard</obj_property>
-            <obj_property name="ObjectShortName">framer_word.discard</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_subsystem_tb/enet/framer_word.last" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.last</obj_property>
-            <obj_property name="ObjectShortName">framer_word.last</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_subsystem_tb/enet/framer_word.data" type="array" db_ref_id="1">
-            <obj_property name="ElementShortName">.data</obj_property>
-            <obj_property name="ObjectShortName">framer_word.data</obj_property>
-            <obj_property name="Radix">HEXRADIX</obj_property>
-         </wvobject>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/commit_frame" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">commit_frame</obj_property>
-         <obj_property name="ObjectShortName">commit_frame</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/frame_length" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_length[14:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_length[14:0]</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/framer_we" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">framer_we[3:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_we[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/framer_address" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">framer_address[13:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_address[13:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/frame_address" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_address[13:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_address[13:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/next_address" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">next_address[13:0]</obj_property>
-         <obj_property name="ObjectShortName">next_address[13:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/framer_free" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">framer_free[14:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_free[14:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mtu_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mtu_int[15:0]</obj_property>
-         <obj_property name="ObjectShortName">mtu_int[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mtu_m1" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mtu_m1[15:0]</obj_property>
-         <obj_property name="ObjectShortName">mtu_m1[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/tick_latency_count" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">tick_latency_count[31:0]</obj_property>
-         <obj_property name="ObjectShortName">tick_latency_count[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/tick_latency_int" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">tick_latency_int[31:0]</obj_property>
-         <obj_property name="ObjectShortName">tick_latency_int[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/wait_for_tick" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">wait_for_tick</obj_property>
-         <obj_property name="ObjectShortName">wait_for_tick</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/lookahead" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">lookahead</obj_property>
-         <obj_property name="ObjectShortName">lookahead</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/lookahead_valid" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">lookahead_valid</obj_property>
-         <obj_property name="ObjectShortName">lookahead_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/frame_free" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_free[14:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_free[14:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/frame_free_m1" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_free_m1[14:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_free_m1[14:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/inc_address" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">inc_address</obj_property>
-         <obj_property name="ObjectShortName">inc_address</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/framer_ready" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">framer_ready</obj_property>
-         <obj_property name="ObjectShortName">framer_ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/event_s_size" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">event_s_size[15:0]</obj_property>
-         <obj_property name="ObjectShortName">event_s_size[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/lookahead_head" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">lookahead_head</obj_property>
-         <obj_property name="ObjectShortName">lookahead_head</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/event_s_last_hs" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">event_s_last_hs</obj_property>
-         <obj_property name="ObjectShortName">event_s_last_hs</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/event_s_hs" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">event_s_hs</obj_property>
-         <obj_property name="ObjectShortName">event_s_hs</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mca_s_hs" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_s_hs</obj_property>
-         <obj_property name="ObjectShortName">mca_s_hs</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/last_frame_address" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">last_frame_address[13:0]</obj_property>
-         <obj_property name="ObjectShortName">last_frame_address[13:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/last_frame_word" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">last_frame_word</obj_property>
-         <obj_property name="ObjectShortName">last_frame_word</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mca_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_last</obj_property>
-         <obj_property name="ObjectShortName">mca_last</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/trace_last" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_last</obj_property>
-         <obj_property name="ObjectShortName">trace_last</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/lookahead_size" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">lookahead_size[15:0]</obj_property>
-         <obj_property name="ObjectShortName">lookahead_size[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/frame_size" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">frame_size[15:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_size[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/lookahead_type" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">lookahead_type</obj_property>
-         <obj_property name="ObjectShortName">lookahead_type</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/event_head" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">event_head</obj_property>
-         <obj_property name="ObjectShortName">event_head</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/header" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">header</obj_property>
-         <obj_property name="ObjectShortName">header</obj_property>
-         <obj_property name="Radix">HEXRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/mca_sequence" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">mca_sequence[15:0]</obj_property>
-         <obj_property name="ObjectShortName">mca_sequence[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/event_sequence" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">event_sequence[15:0]</obj_property>
-         <obj_property name="ObjectShortName">event_sequence[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/enet/trace_sequence" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">trace_sequence[15:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_sequence[15:0]</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group453" type="group">
-      <obj_property name="label">mca</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/clk" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">clk</obj_property>
-         <obj_property name="ObjectShortName">clk</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/reset" type="logic" db_ref_id="1">
-         <obj_property name="ElementShortName">reset</obj_property>
-         <obj_property name="ObjectShortName">reset</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/initialising" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">initialising</obj_property>
-         <obj_property name="ObjectShortName">initialising</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/update_asap" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">update_asap</obj_property>
-         <obj_property name="ObjectShortName">update_asap</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/update_on_completion" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">update_on_completion</obj_property>
-         <obj_property name="ObjectShortName">update_on_completion</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/updated" type="other" db_ref_id="1">
-         <obj_property name="ElementShortName">updated</obj_property>
-         <obj_property name="ObjectShortName">updated</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/registers" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">registers</obj_property>
-         <obj_property name="ObjectShortName">registers</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/tick_period" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">tick_period[31:0]</obj_property>
-         <obj_property name="ObjectShortName">tick_period[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/channel_select" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">channel_select[1:0]</obj_property>
-         <obj_property name="ObjectShortName">channel_select[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/value_select" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/value_select" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">value_select[11:0]</obj_property>
          <obj_property name="ObjectShortName">value_select[11:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/trigger_select" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/value_sel_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">value_sel_reg[7:0]</obj_property>
+         <obj_property name="ObjectShortName">value_sel_reg[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/trigger_select" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">trigger_select[9:0]</obj_property>
          <obj_property name="ObjectShortName">trigger_select[9:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/value" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca_values" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_values[1:0]</obj_property>
+         <obj_property name="ObjectShortName">mca_values[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca_values_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_values_reg[1:0]</obj_property>
+         <obj_property name="ObjectShortName">mca_values_reg[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca_value_valids" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_value_valids[1:0]</obj_property>
+         <obj_property name="ObjectShortName">mca_value_valids[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dumps" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dumps[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dumps[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/commits" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commits[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commits[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/baseline_errors" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_errors[1:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_errors[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/cfd_errors" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_errors[1:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_errors[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/time_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">time_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">time_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/peak_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/framer_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/channel_select" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">channel_select[1:0]</obj_property>
+         <obj_property name="ObjectShortName">channel_select[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca_value" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">mca_value[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca_value_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_value_valid</obj_property>
+         <obj_property name="ObjectShortName">mca_value_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/updated" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">updated</obj_property>
+         <obj_property name="ObjectShortName">updated</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mcastream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream</obj_property>
+         <obj_property name="ObjectShortName">mcastream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mcastream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream_valid</obj_property>
+         <obj_property name="ObjectShortName">mcastream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mcastream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mcastream_ready</obj_property>
+         <obj_property name="ObjectShortName">mcastream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/eventstreams" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstreams[1:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstreams[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/eventstreams_valid" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstreams_valid[1:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstreams_valid[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/eventstreams_ready" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventstreams_ready[1:0]</obj_property>
+         <obj_property name="ObjectShortName">eventstreams_ready[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/starts" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">starts[1:0]</obj_property>
+         <obj_property name="ObjectShortName">starts[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/muxstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream</obj_property>
+         <obj_property name="ObjectShortName">muxstream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/muxstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_valid</obj_property>
+         <obj_property name="ObjectShortName">muxstream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/muxstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_ready</obj_property>
+         <obj_property name="ObjectShortName">muxstream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux_full" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_full</obj_property>
+         <obj_property name="ObjectShortName">mux_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">mux_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/measurement_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">measurement_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">measurement_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/dsp_channels" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dsp_channels</obj_property>
+         <obj_property name="ObjectShortName">dsp_channels</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/event_framer_address_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">event_framer_address_bits</obj_property>
+         <obj_property name="ObjectShortName">event_framer_address_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/enet_framer_address_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">enet_framer_address_bits</obj_property>
+         <obj_property name="ObjectShortName">enet_framer_address_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca_address_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_address_bits</obj_property>
+         <obj_property name="ObjectShortName">mca_address_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/min_tickperiod" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">min_tickperiod</obj_property>
+         <obj_property name="ObjectShortName">min_tickperiod</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/endianness" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">endianness[1:6]</obj_property>
+         <obj_property name="ObjectShortName">endianness[1:6]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group549" type="group">
+      <obj_property name="label">mca</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/initialising" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">initialising</obj_property>
+         <obj_property name="ObjectShortName">initialising</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/update_asap" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">update_asap</obj_property>
+         <obj_property name="ObjectShortName">update_asap</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/update_on_completion" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">update_on_completion</obj_property>
+         <obj_property name="ObjectShortName">update_on_completion</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/updated" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">updated</obj_property>
+         <obj_property name="ObjectShortName">updated</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/registers" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">registers</obj_property>
+         <obj_property name="ObjectShortName">registers</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/tick_period" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_period[31:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_period[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/channel_select" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">channel_select[1:0]</obj_property>
+         <obj_property name="ObjectShortName">channel_select[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/value_select" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">value_select[11:0]</obj_property>
+         <obj_property name="ObjectShortName">value_select[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/trigger_select" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">trigger_select[9:0]</obj_property>
+         <obj_property name="ObjectShortName">trigger_select[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/value" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">value[31:0]</obj_property>
          <obj_property name="ObjectShortName">value[31:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/value_valid" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/value_valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">value_valid</obj_property>
          <obj_property name="ObjectShortName">value_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/stream" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/stream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">stream</obj_property>
          <obj_property name="ObjectShortName">stream</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/valid" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">valid</obj_property>
          <obj_property name="ObjectShortName">valid</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/ready" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/ready" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">ready</obj_property>
          <obj_property name="ObjectShortName">ready</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#00ffff</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/tick_count" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/tick_count" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">tick_count[31:0]</obj_property>
          <obj_property name="ObjectShortName">tick_count[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/enabled" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/enabled" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">enabled</obj_property>
          <obj_property name="ObjectShortName">enabled</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/readable" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/readable" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">readable</obj_property>
          <obj_property name="ObjectShortName">readable</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/total" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/total" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">total[63:0]</obj_property>
          <obj_property name="ObjectShortName">total[63:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/control_state" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/control_state" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">control_state</obj_property>
          <obj_property name="ObjectShortName">control_state</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/control_nextstate" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/control_nextstate" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">control_nextstate</obj_property>
          <obj_property name="ObjectShortName">control_nextstate</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/stream_state" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/stream_state" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">stream_state</obj_property>
          <obj_property name="ObjectShortName">stream_state</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/stream_nextstate" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/stream_nextstate" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">stream_nextstate</obj_property>
          <obj_property name="ObjectShortName">stream_nextstate</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/mca_axi_valid" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/mca_axi_valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">mca_axi_valid</obj_property>
          <obj_property name="ObjectShortName">mca_axi_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/mca_axi_ready" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/mca_axi_ready" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">mca_axi_ready</obj_property>
          <obj_property name="ObjectShortName">mca_axi_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/mca_axi_stream" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/mca_axi_stream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">mca_axi_stream[31:0]</obj_property>
          <obj_property name="ObjectShortName">mca_axi_stream[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/can_swap" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/can_swap" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">can_swap</obj_property>
          <obj_property name="ObjectShortName">can_swap</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/ticks_complete" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/ticks_complete" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">ticks_complete</obj_property>
          <obj_property name="ObjectShortName">ticks_complete</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/swap_buffer" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/swap_buffer" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">swap_buffer</obj_property>
          <obj_property name="ObjectShortName">swap_buffer</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/last_tick" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/last_tick" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">last_tick</obj_property>
          <obj_property name="ObjectShortName">last_tick</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/save_registers" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/save_registers" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">save_registers</obj_property>
          <obj_property name="ObjectShortName">save_registers</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/tick" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/tick" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">tick</obj_property>
          <obj_property name="ObjectShortName">tick</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/mca_axi_last" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/mca_axi_last" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">mca_axi_last</obj_property>
          <obj_property name="ObjectShortName">mca_axi_last</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/update_int" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/update_int" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">update_int</obj_property>
          <obj_property name="ObjectShortName">update_int</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/max_count" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/max_count" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">max_count[31:0]</obj_property>
          <obj_property name="ObjectShortName">max_count[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/most_frequent" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/most_frequent" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">most_frequent[13:0]</obj_property>
          <obj_property name="ObjectShortName">most_frequent[13:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/timestamp" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/timestamp" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">timestamp[63:0]</obj_property>
          <obj_property name="ObjectShortName">timestamp[63:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/start_time" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/start_time" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">start_time[63:0]</obj_property>
          <obj_property name="ObjectShortName">start_time[63:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/stop_time" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/stop_time" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">stop_time[63:0]</obj_property>
          <obj_property name="ObjectShortName">stop_time[63:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/saved_registers" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/saved_registers" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">saved_registers</obj_property>
          <obj_property name="ObjectShortName">saved_registers</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/next_registers" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/next_registers" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">next_registers</obj_property>
          <obj_property name="ObjectShortName">next_registers</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/outstream" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/outstream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">outstream</obj_property>
          <obj_property name="ObjectShortName">outstream</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/countstream" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/countstream" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">countstream</obj_property>
          <obj_property name="ObjectShortName">countstream</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/outstream_valid" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/outstream_valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">outstream_valid</obj_property>
          <obj_property name="ObjectShortName">outstream_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/outstream_ready" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/outstream_ready" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">outstream_ready</obj_property>
          <obj_property name="ObjectShortName">outstream_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/countstream_valid" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/countstream_valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">countstream_valid</obj_property>
          <obj_property name="ObjectShortName">countstream_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/countstream_ready" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/countstream_ready" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">countstream_ready</obj_property>
          <obj_property name="ObjectShortName">countstream_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/tick_pipe" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/tick_pipe" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">tick_pipe[0:2]</obj_property>
          <obj_property name="ObjectShortName">tick_pipe[0:2]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/active" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/active" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">active</obj_property>
          <obj_property name="ObjectShortName">active</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/updating" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/updating" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">updating</obj_property>
          <obj_property name="ObjectShortName">updating</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/ticks" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/ticks" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">ticks[31:0]</obj_property>
          <obj_property name="ObjectShortName">ticks[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/update_reg" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/update_reg" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">update_reg</obj_property>
          <obj_property name="ObjectShortName">update_reg</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/bin_n" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/bin_n" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">bin_n[3:0]</obj_property>
          <obj_property name="ObjectShortName">bin_n[3:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/last_bin" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/last_bin" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">last_bin[13:0]</obj_property>
          <obj_property name="ObjectShortName">last_bin[13:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/lowest_value" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/lowest_value" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">lowest_value[31:0]</obj_property>
          <obj_property name="ObjectShortName">lowest_value[31:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/buff_din" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/buff_din" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">buff_din[32:0]</obj_property>
          <obj_property name="ObjectShortName">buff_din[32:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/buff_wr_en" type="logic" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/buff_wr_en" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">buff_wr_en</obj_property>
          <obj_property name="ObjectShortName">buff_wr_en</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/buff_rd_en" type="logic" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/buff_rd_en" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">buff_rd_en</obj_property>
          <obj_property name="ObjectShortName">buff_rd_en</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/buff_dout" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/buff_dout" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">buff_dout[65:0]</obj_property>
          <obj_property name="ObjectShortName">buff_dout[65:0]</obj_property>
-         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/buff_full" type="logic" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/buff_full" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">buff_full</obj_property>
          <obj_property name="ObjectShortName">buff_full</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/buff_empty" type="logic" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/buff_empty" type="logic" db_ref_id="1">
          <obj_property name="ElementShortName">buff_empty</obj_property>
          <obj_property name="ObjectShortName">buff_empty</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/counts_ready" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/counts_ready" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">counts_ready</obj_property>
          <obj_property name="ObjectShortName">counts_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/counts_valid" type="other" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/counts_valid" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">counts_valid</obj_property>
          <obj_property name="ObjectShortName">counts_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/counts" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/counts" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">counts[65:0]</obj_property>
          <obj_property name="ObjectShortName">counts[65:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/mca/header" type="array" db_ref_id="1">
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/header" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">header</obj_property>
          <obj_property name="ObjectShortName">header</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/channels" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">channels</obj_property>
+         <obj_property name="ObjectShortName">channels</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/address_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">address_bits</obj_property>
+         <obj_property name="ObjectShortName">address_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/counter_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">counter_bits</obj_property>
+         <obj_property name="ObjectShortName">counter_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/value_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">value_bits</obj_property>
+         <obj_property name="ObjectShortName">value_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/total_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">total_bits</obj_property>
+         <obj_property name="ObjectShortName">total_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/tickcount_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tickcount_bits</obj_property>
+         <obj_property name="ObjectShortName">tickcount_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/tickperiod_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tickperiod_bits</obj_property>
+         <obj_property name="ObjectShortName">tickperiod_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/min_tick_period" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">min_tick_period</obj_property>
+         <obj_property name="ObjectShortName">min_tick_period</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/tickpipe_depth" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tickpipe_depth</obj_property>
+         <obj_property name="ObjectShortName">tickpipe_depth</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/mca_protocol_header_words" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_protocol_header_words</obj_property>
+         <obj_property name="ObjectShortName">mca_protocol_header_words</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/endianness" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">endianness[1:6]</obj_property>
+         <obj_property name="ObjectShortName">endianness[1:6]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group616" type="group">
+      <obj_property name="label">mux</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/start" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">start[1:0]</obj_property>
+         <obj_property name="ObjectShortName">start[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/commit" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commit[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/dump" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dump[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dump[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/instreams" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">instreams[1:0]</obj_property>
+         <obj_property name="ObjectShortName">instreams[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/instream_valids" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">instream_valids[1:0]</obj_property>
+         <obj_property name="ObjectShortName">instream_valids[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/instream_readys" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">instream_readys[1:0]</obj_property>
+         <obj_property name="ObjectShortName">instream_readys[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/full" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">full</obj_property>
+         <obj_property name="ObjectShortName">full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/tick_period" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tick_period[31:0]</obj_property>
+         <obj_property name="ObjectShortName">tick_period[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/cfd_errors" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">cfd_errors[1:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_errors[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/framer_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">framer_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/mux_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mux_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">mux_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/measurement_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">measurement_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">measurement_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/peak_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">peak_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">peak_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/time_overflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">time_overflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">time_overflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/baseline_underflows" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_underflows[1:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_underflows[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/window" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">window[15:0]</obj_property>
+         <obj_property name="ObjectShortName">window[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/muxstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream</obj_property>
+         <obj_property name="ObjectShortName">muxstream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/timestamp" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">timestamp[63:0]</obj_property>
+         <obj_property name="ObjectShortName">timestamp[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/eventtime" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">eventtime[63:0]</obj_property>
+         <obj_property name="ObjectShortName">eventtime[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/reltime" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reltime[15:0]</obj_property>
+         <obj_property name="ObjectShortName">reltime[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/reltime_stamp" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reltime_stamp[15:0]</obj_property>
+         <obj_property name="ObjectShortName">reltime_stamp[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/started" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">started[1:0]</obj_property>
+         <obj_property name="ObjectShortName">started[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/commited" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">commited[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commited[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/dumped" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">dumped[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dumped[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/req" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">req[1:0]</obj_property>
+         <obj_property name="ObjectShortName">req[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/gnt" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">gnt[1:0]</obj_property>
+         <obj_property name="ObjectShortName">gnt[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/handled" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">handled[2:0]</obj_property>
+         <obj_property name="ObjectShortName">handled[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/sel" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sel[2:0]</obj_property>
+         <obj_property name="ObjectShortName">sel[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/sel_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sel_int[2:0]</obj_property>
+         <obj_property name="ObjectShortName">sel_int[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/ticked" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ticked</obj_property>
+         <obj_property name="ObjectShortName">ticked</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/tick" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tick</obj_property>
+         <obj_property name="ObjectShortName">tick</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/time_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">time_valid</obj_property>
+         <obj_property name="ObjectShortName">time_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/read_next" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">read_next</obj_property>
+         <obj_property name="ObjectShortName">read_next</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/arb_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">arb_state</obj_property>
+         <obj_property name="ObjectShortName">arb_state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/arb_nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">arb_nextstate</obj_property>
+         <obj_property name="ObjectShortName">arb_nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/tickstream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">tickstream</obj_property>
+         <obj_property name="ObjectShortName">tickstream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/muxstream_int_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_int_valid</obj_property>
+         <obj_property name="ObjectShortName">muxstream_int_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/muxstream_int_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_int_ready</obj_property>
+         <obj_property name="ObjectShortName">muxstream_int_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/muxstream_last" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_last</obj_property>
+         <obj_property name="ObjectShortName">muxstream_last</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/tickstream_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tickstream_valid</obj_property>
+         <obj_property name="ObjectShortName">tickstream_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/tickstream_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tickstream_ready</obj_property>
+         <obj_property name="ObjectShortName">tickstream_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/streams" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">streams[2:0]</obj_property>
+         <obj_property name="ObjectShortName">streams[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/muxstream_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_int</obj_property>
+         <obj_property name="ObjectShortName">muxstream_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/stream_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream_int</obj_property>
+         <obj_property name="ObjectShortName">stream_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/valids" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">valids[2:0]</obj_property>
+         <obj_property name="ObjectShortName">valids[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/readys" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">readys[2:0]</obj_property>
+         <obj_property name="ObjectShortName">readys[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/time_done" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">time_done</obj_property>
+         <obj_property name="ObjectShortName">time_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/muxstream_handshake" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_handshake</obj_property>
+         <obj_property name="ObjectShortName">muxstream_handshake</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/pulses_done" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">pulses_done</obj_property>
+         <obj_property name="ObjectShortName">pulses_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/muxstream_last_handshake" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">muxstream_last_handshake</obj_property>
+         <obj_property name="ObjectShortName">muxstream_last_handshake</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/out_state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">out_state</obj_property>
+         <obj_property name="ObjectShortName">out_state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/out_nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">out_nextstate</obj_property>
+         <obj_property name="ObjectShortName">out_nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/first_event" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">first_event</obj_property>
+         <obj_property name="ObjectShortName">first_event</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/new_window" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_window</obj_property>
+         <obj_property name="ObjectShortName">new_window</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/window_start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">window_start</obj_property>
+         <obj_property name="ObjectShortName">window_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/channels" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">channels</obj_property>
+         <obj_property name="ObjectShortName">channels</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/time_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">time_bits</obj_property>
+         <obj_property name="ObjectShortName">time_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/timestamp_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">timestamp_bits</obj_property>
+         <obj_property name="ObjectShortName">timestamp_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/tickperiod_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tickperiod_bits</obj_property>
+         <obj_property name="ObjectShortName">tickperiod_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/min_tickperiod" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">min_tickperiod</obj_property>
+         <obj_property name="ObjectShortName">min_tickperiod</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/tickpipe_depth" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">tickpipe_depth</obj_property>
+         <obj_property name="ObjectShortName">tickpipe_depth</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mux/endianness" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">endianness[1:6]</obj_property>
+         <obj_property name="ObjectShortName">endianness[1:6]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
