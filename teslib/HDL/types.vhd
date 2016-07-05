@@ -85,6 +85,8 @@ subtype register_address_t is std_logic_vector(REGISTER_ADDRESS_BITS-1 downto 0)
 type registeraddress_array is array (natural range <>) of register_address_t;
 type slv_32_array is array (natural range <>) of 
 		 unsigned(32 downto 0);
+
+-- FIR config data
 end package types;
 
 package body types is  

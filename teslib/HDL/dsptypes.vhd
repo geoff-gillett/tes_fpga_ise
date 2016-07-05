@@ -20,12 +20,16 @@ constant DSP_FRAC:integer:=3;
 constant CFD_BITS:integer:=18;
 constant CFD_FRAC:integer:=17;
 
--- problem is has in and out
---type dsp_AXI_channels_t is record
---	config_data:std_logic_vector(7 downto 0);
---	config_valid:boolean;
---	config_ready:boolean;
---end record;
+-- DSP coefficient reload
+constant COEF_BITS:integer:=25;
+constant COEF_WIDTH:integer:=32;
+constant CONFIG_BITS:integer:=8;
+constant CONFIG_WIDTH:integer:=8;
+
+type config_array is array (natural range <>) of 
+	std_logic_vector(CONFIG_WIDTH-1 downto 0);
+type coef_array is array (natural range <>) of 
+	std_logic_vector(COEF_WIDTH-1 downto 0);
 
 end package dsptypes;
 
