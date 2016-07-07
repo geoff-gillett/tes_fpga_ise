@@ -374,7 +374,7 @@ if rising_edge(clk) then
   else
   	--swap_buffer_reg <= swap_buffer;
   	-- FIXME remove current_registers
-    last_tick <= tick_count=(to_0IfX(ticks_m1)-1);
+    last_tick <= tick_count=to_0IfX(ticks_m1);
     if swap_buffer then
       tick_count <= (others => '0');
       stop_time <= timestamp;
