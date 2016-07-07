@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="C:/TES_project/fpga_ise/teslib/PlanAhead/teslib.sim/measurement_subsystem_TB/behav/measurement_subsystem_TB.wdb" id="1" type="auto">
+      <db_ref path="measurement_subsystem_TB.wdb" id="1" type="auto">
          <top_modules>
             <top_module name="adc" />
             <top_module name="bip_utils_pkg_v2_0" />
@@ -615,12 +615,6 @@
       <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/last_tick" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">last_tick</obj_property>
          <obj_property name="ObjectShortName">last_tick</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CustomSignalColor">#008080</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/mca/ticks" type="array" db_ref_id="1">
-         <obj_property name="ElementShortName">ticks[31:0]</obj_property>
-         <obj_property name="ObjectShortName">ticks[31:0]</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="CustomSignalColor">#008080</obj_property>
       </wvobject>
@@ -1369,10 +1363,12 @@
       <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/\teschannel(1)\/measurement/filtered_fir" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">filtered_fir[17:0]</obj_property>
          <obj_property name="ObjectShortName">filtered_fir[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/\teschannel(1)\/measurement/slope_fir" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">slope_fir[17:0]</obj_property>
          <obj_property name="ObjectShortName">slope_fir[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/\teschannel(1)\/measurement/sample" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">sample[14:0]</obj_property>
@@ -1401,6 +1397,7 @@
       <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/\teschannel(1)\/measurement/slope_threshold" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">slope_threshold[17:0]</obj_property>
          <obj_property name="ObjectShortName">slope_threshold[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/\teschannel(1)\/measurement/pulse_threshold" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">pulse_threshold[17:0]</obj_property>
