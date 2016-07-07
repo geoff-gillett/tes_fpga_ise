@@ -437,7 +437,7 @@ class Packet:
         self.length = stream[14:16].view(np.uint16)[0]
         self.payload = stream[24:]
 
-        print(self.bytes)
+        # print(self.bytes)
         if self.type == 0x88B5:
             if np.bitwise_and(self.bytes[20], 0x02):
                 self.payload_type = PayloadType.tick
@@ -447,7 +447,7 @@ class Packet:
         elif self.type == 0x88B6:
             self.payload_type = PayloadType.mca
         else:
-            print('Unknown ethertype:{:X}'.format(self.type))
+            # print('Unknown ethertype:{:X}'.format(self.type))
             self.payload_type = None
 
         self.frame_sequence = self.bytes[16:18].view(np.int16)[0]
@@ -458,9 +458,12 @@ class Packet:
             pname = 'UNKNOWN'
         else:
             pname = self.payload_type.name
-        return 'ethertype:{:04X} length:{:d} Payload:{:s} frame:{:d} protocol:{:d}'.format(
-            self.type, self.length, pname, self.frame_sequence,
-            self.protocol_sequence)
+        return 'ethertype:{:04X} length:{:d} Payload:{:s} frame:{:d} ' \
+               'protocol:{:d}' \
+            .format(
+                self.type, self.length, pname, self.frame_sequence,
+                self.protocol_sequence
+            )
 
     @property
     def events(self):
@@ -506,7 +509,7 @@ class PacketStream:
         self.bytes = stream['data'].view(dt)['data'].astype(
             np.uint8, copy=True)[0:lasts[-1]]
 
-        print(self.bytes)
+        # print(self.bytes)
         start = 0
         self.packets = []
 
