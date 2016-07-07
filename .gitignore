@@ -86,3 +86,4 @@ streamlib/Vivado/
 streamlib/vivado_IP/streambus_fifo/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3.vhd
 streamlib/vivado_IP/streambus_fifo/
 *.buildpath
+*.svg
