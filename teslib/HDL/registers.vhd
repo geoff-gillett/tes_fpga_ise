@@ -281,7 +281,7 @@ constant DEFAULT_CFD_REL2MIN:boolean:=TRUE;
 constant DEFAULT_HEIGHT_REL2MIN:boolean:=TRUE;
 constant DEFAULT_THRESHOLD_REL2MIN:boolean:=FALSE;
 constant DEFAULT_PULSE_THRESHOLD:unsigned(DSP_BITS-2 downto 0)
-				 :=to_unsigned(1000,DSP_BITS-DSP_FRAC-1) & to_unsigned(0,DSP_FRAC);
+				 :=to_unsigned(500,DSP_BITS-DSP_FRAC-1) & to_unsigned(0,DSP_FRAC);
 constant DEFAULT_SLOPE_THRESHOLD:unsigned(DSP_BITS-2 downto 0)
 				 :=to_unsigned(2,DSP_BITS-SLOPE_FRAC-1) & to_unsigned(0,SLOPE_FRAC);
 constant DEFAULT_CONSTANT_FRACTION:unsigned(CFD_BITS-2 downto 0)
