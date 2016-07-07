@@ -5,6 +5,9 @@
 \usepackage{booktabs}
 \usepackage[T1]{fontenc}
 \usepackage{upquote}
+\usepackage{svg}
+\setsvg{inkscape = inkscape -z -D}
+\setsvg{svgpath = images/}
 
 \newcommand{\code}[1]{\texttt{#1}}
 
@@ -74,8 +77,19 @@ DSP
 Measurement
 MCA
 Baseline estimation
+blah
 
+\begin{figure}
+  \includesvg[width=0.7\textwidth]{channel}
+\end{figure}
 
+\begin{figure}
+  \includesvg[width=0.7\textwidth]{raw}
+\end{figure}
+
+\begin{figure}
+  \includesvg[width=0.7\textwidth]{baselinecorrected}
+\end{figure}
 
 \section{Registers}
 

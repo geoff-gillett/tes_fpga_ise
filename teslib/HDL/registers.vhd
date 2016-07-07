@@ -283,7 +283,7 @@ constant DEFAULT_THRESHOLD_REL2MIN:boolean:=FALSE;
 constant DEFAULT_PULSE_THRESHOLD:unsigned(DSP_BITS-2 downto 0)
 				 :=to_unsigned(1000,DSP_BITS-DSP_FRAC-1) & to_unsigned(0,DSP_FRAC);
 constant DEFAULT_SLOPE_THRESHOLD:unsigned(DSP_BITS-2 downto 0)
-				 :=to_unsigned(1000,DSP_BITS-SLOPE_FRAC-1) & to_unsigned(0,SLOPE_FRAC);
+				 :=to_unsigned(2,DSP_BITS-SLOPE_FRAC-1) & to_unsigned(0,SLOPE_FRAC);
 constant DEFAULT_CONSTANT_FRACTION:unsigned(CFD_BITS-2 downto 0)
 				 :=to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
 constant DEFAULT_AREA_THRESHOLD:area_t:=to_signed(10000,AREA_BITS);
@@ -297,7 +297,7 @@ constant DEFAULT_BL_TIMECONSTANT:unsigned(BASELINE_TIMECONSTANT_BITS-1 downto 0)
 constant DEFAULT_BL_THRESHOLD:unsigned(BASELINE_BITS-2 downto 0)
 				 :=to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
 constant DEFAULT_BL_COUNT_THRESHOLD:unsigned(BASELINE_COUNTER_BITS-1 downto 0)
-				 :=to_unsigned(150,BASELINE_COUNTER_BITS);
+				 :=to_unsigned(40,BASELINE_COUNTER_BITS);
 constant DEFAULT_BL_AVERAGE_ORDER:integer:=4;
 
 function capture_register(r:capture_registers_t) return std_logic_vector;
@@ -329,7 +329,7 @@ type mca_registers_t is record
 	trigger:mca_trigger_d;
 	update_asap:boolean;
 	update_on_completion:boolean;
-	iodelay_control:std_logic_vector(IODELAY_CONTROL_BITS-1 downto 0);
+	--iodelay_control:std_logic_vector(IODELAY_CONTROL_BITS-1 downto 0);
 end record;
 
 -- Other global registers ------------------------------------------------------

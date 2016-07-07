@@ -306,7 +306,7 @@ global.mca.last_bin <= (others => '1');
 global.mca.lowest_value <= to_signed(-1000,MCA_VALUE_BITS);
 --TODO normalise these type names
 global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
-global.mca.value <= MCA_FILTERED_SIGNAL_D;
+global.mca.value <= MCA_RAW_SIGNAL_D;
 
 mcaControlStimulus:process
 begin

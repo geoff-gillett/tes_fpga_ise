@@ -123,7 +123,7 @@ signal countstream_valid,countstream_ready:boolean;
 signal tick_pipe:boolean_vector(0 to TICKPIPE_DEPTH);
 signal active:boolean;
 signal updating:boolean;
-signal ticks:unsigned(TICKCOUNT_BITS-1 downto 0);
+signal ticks_m1:unsigned(TICKCOUNT_BITS-1 downto 0);
 signal update_reg:boolean;
 signal bin_n:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal last_bin:unsigned(ADDRESS_BITS-1 downto 0);
@@ -268,7 +268,7 @@ if rising_edge(clk) then
     
     if tick then
     	enabled <= next_registers.trigger/=DISABLED_MCA_TRIGGER_D;
-    	ticks <= next_registers.ticks;
+    	ticks_m1 <= next_registers.ticks-1;
     	updating <= FALSE;
     end if;
     
@@ -374,7 +374,7 @@ if rising_edge(clk) then
   else
   	--swap_buffer_reg <= swap_buffer;
   	-- FIXME remove current_registers
-    last_tick <= tick_count=(to_0IfX(ticks)-1);
+    last_tick <= tick_count=(to_0IfX(ticks_m1)-1);
     if swap_buffer then
       tick_count <= (others => '0');
       stop_time <= timestamp;

@@ -234,7 +234,8 @@ attribute shreg_extract:string;
 attribute shreg_extract of adc_pipes:signal is "NO";
 attribute shreg_extract of adc_dout_pipe:signal is "NO";
 
-signal adc_samples,fifo_dout:adc_sample_array(ADC_CHANNELS-1 downto 0);
+signal adc_samples:adc_sample_array(DSP_CHANNELS-1 downto 0);
+signal fifo_dout:adc_sample_array(ADC_CHANNELS-1 downto 0);
 --attribute S of adc_samples:signal is "TRUE";
 
 --type input_sel_array is array (DSP_CHANNELS-1 downto 0) of
@@ -621,7 +622,7 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
         <= adc_dout_pipe(ADCPIPE_DEPTH-2 downto 0);
   	end if;
   end process adcPipe;
-  adc_samples <= adc_dout_pipe(ADCPIPE_DEPTH-1);
+  adc_samples <= adc_dout_pipe(ADCPIPE_DEPTH-1)(DSP_CHANNELS-1 downto 0);
   
  	resetSync:entity tes.sync_2FF
   generic map(

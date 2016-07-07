@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 2481 3508" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
+    <g transform="matrix(0.57398,2.23972e-17,-1.79234e-17,0.459327,330.143,753.282)">
+        <rect x="471.003" y="722.362" width="446.929" height="405.354" style="fill:rgb(235,235,235);"/>
+    </g>
+    <g transform="matrix(1.0739,4.19045e-17,-1.79234e-17,0.459327,396.721,753.282)">
+        <rect x="471.003" y="722.362" width="446.929" height="405.354" style="fill:rgb(235,235,235);"/>
+    </g>
+    <g transform="matrix(0.57398,2.23972e-17,-1.79234e-17,0.459327,23.9637,749.145)">
+        <rect x="471.003" y="722.362" width="446.929" height="405.354" style="fill:rgb(235,235,235);"/>
+    </g>
+    <g transform="matrix(0.796166,0,0,0.796166,61.0496,-120.006)">
+        <g>
+            <text x="335.885px" y="1584.45px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:50px;fill:black;">Baseline</text>
+            <text x="335.885px" y="1636.09px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:50px;fill:black;">estimator</text>
+        </g>
+    </g>
+    <g transform="matrix(0.796166,0,0,0.796166,-80.6866,-392.026)">
+        <text x="881.555px" y="1922.25px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:50px;fill:black;">Stage 1 FIR</text>
+        <text x="881.555px" y="2023.88px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:50px;fill:black;">Smoothing</text>
+    </g>
+    <g transform="matrix(0.796166,0,0,0.796166,-101.374,-545.115)">
+        <g>
+            <text x="1286.91px" y="2135.32px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:50px;fill:black;">Stage 2 FIR</text>
+            <text x="1286.91px" y="2236.95px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:50px;fill:black;">Smoothing dif<tspan x="1591.74px 1605.63px " y="2236.95px 2236.95px ">fe</tspan>rentiator</text>
+        </g>
+    </g>
+</svg>
