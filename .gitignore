@@ -88,3 +88,4 @@ streamlib/vivado_IP/streambus_fifo/
 *.buildpath
 *.pdf
 docs/images/*.pdf_tex
+teslib/simulation/measurement_subsystem_TB/*.svg
