@@ -21,7 +21,6 @@ use work.types.all;
 --! buffer from RAM to stream interface, handling ram read latency
 entity first_word_fall_through is
 generic(
-  LATENCY:integer:=2;
   DATA_BITS:integer:=8
 );
 port(
@@ -29,127 +28,110 @@ port(
   -- synchronous reset
   reset:in std_logic;
   --
-  read:out boolean;
-  read_en:in boolean; 
+  ready_out:out boolean;
+  --read_en:in boolean; 
   --last_read:in boolean; --change caller to use a ram word bit
   -- ram data
   data:in std_logic_vector(DATA_BITS-1 downto 0);
+  data_valid:in boolean;
+  pending:in boolean;
   --! stream interface
   stream:out std_logic_vector(DATA_BITS-1 downto 0);
   ready:in boolean;
   valid:out boolean
-  --last:out boolean
 );
 end entity first_word_fall_through;
 --
 architecture FSM of first_word_fall_through is
 --
+
 subtype ramword is std_logic_vector(DATA_BITS-1 downto 0);
-type pipe is array (natural range <>) of ramword;
-signal data_shifter:pipe(1 to LATENCY);
-attribute shreg_extract:string;
-attribute shreg_extract of data_shifter:signal is "NO";
-signal valid_int,valid_read,last_int,read_stream,ready_int,data_valid:boolean;
-signal read_pipe,last_read_pipe,last_shifter:boolean_vector(1 to LATENCY);
-attribute shreg_extract of read_pipe,last_read_pipe,last_shifter:
-					signal is "YES";
-signal read_en_pipe:boolean_vector(1 to LATENCY);
+signal reg1, reg2:ramword;
+type FSMstate is (IDLE,REG_s,REG2_s);
+signal state,nextstate:FSMstate;
+
+signal valid_int,ready_int:boolean;
 signal stream_int:ramword;
-signal shift_addr:integer range 0 to LATENCY;
-signal read_ram:boolean;
---
 signal handshake:boolean;
-signal store_valid:boolean:=FALSE;
-signal store_addr:boolean:=FALSE;
-signal store_t,store_f:ramword;
 begin
-	
-handshake <= valid_int and ready;
-read <= read_pipe(1);
-name : process (clk) is
+
+
+handshake <= valid_int and ready_int;
+--ready_out <= not (state = FULL and not handshake);
+
+FSMnextsate:process(clk)
 begin
-	if rising_edge(clk) then
-		if reset = '1' then
-			read_pipe <= (others => FALSE);
-		else
-			read <= read_en and (not valid or handshake or not store_valid);
-			read_pipe(1) <= read_en and 
-											(not valid_int or handshake or not store_valid);
-			read_pipe(2 to LATENCY) <= read_pipe(1 to LATENCY-1);
-		
-			if read_pipe(LATENCY) then
-				if handshake then
-					
-				end if;
-			end if;
-		
-		end if;
-		
-	end if;
-end process name;
-
-
-
--- starting from two registers get read first then the ram stream
--- but the output would be a through a mux
--- need output reg giving 3 registers
--- 
---this will need to be registered
-
-
-
-read <= read_ram;
-stream <= stream_int;
-valid <= valid_int;
---last <= last_int;
---FIXME why extra signal?
-ready_int <= ready;
-read_stream <= (valid_int and ready_int) or not valid_int; -- stream read
---
-
-shiftLogic:entity work.serialiser_logic
-generic map(LATENCY => LATENCY)
-port map(
- clk => clk,
- reset => reset,
- address => shift_addr,
- read_ram => read_ram,
- read_ram_pipe => valid_read_pipe,
- read_stream => read_stream
-);
---
-valid_read <= read_ram and read_en;
-streamRegisters:process(clk)
-begin
-if rising_edge(clk) then
-  if reset = '1' then
-    valid_int <= FALSE; 
-    stream_int <= (others => '-');
-    valid_read_pipe <= (others => FALSE);
-    last_read_pipe <= (others => FALSE);
-  else
-    -- pipelines handling read latency
-    read_en_pipe <= read_en & read_en_pipe(1 to LATENCY-1);
-    valid_read_pipe <= valid_read & valid_read_pipe(1 to LATENCY-1);
-    -- valid_read_pipe <= read_en  & valid_read_pipe(1 to LATENCY-1);
-    last_read_pipe <= last_read & last_read_pipe(1 to LATENCY-1);
-    if read_stream then
-      if shift_addr=0 then
-        stream_int <= data;
-        valid_int <= valid_read_pipe(LATENCY);
-        last_int <= last_read_pipe(LATENCY) and valid_read_pipe(LATENCY);
-      else
-        stream_int <= data_shifter(shift_addr);
-        valid_int <= TRUE;
-        last_int <= last_shifter(shift_addr);
-      end if;
-    end if;
-    data_valid <= valid_read_pipe(LATENCY-1);
-    if valid_read_pipe(LATENCY) then
-      data_shifter <= data & data_shifter(1 to LATENCY-1);
-      last_shifter <= last_read_pipe(LATENCY) & last_shifter(1 to LATENCY-1);
+  if rising_edge(clk) then
+    if reset = '1' then
+      state <= IDLE;
+    else
+      state <= nextstate;
     end if;
   end if;
-end if;
-end process streamRegisters;
+end process FSMnextsate;
+
+FSMtransition:process(state,data,data_valid,handshake,reg1)
+begin
+  nextstate <= state;
+  stream_int <= data;
+  valid_int <= FALSE;
+  case state is 
+  when IDLE =>
+    valid_int <= data_valid;
+    if data_valid then 
+      if not handshake then
+        
+        nextstate <= REG_s;
+      end if;
+    end if;
+    
+  when REG_s =>
+    valid_int <= TRUE;
+    stream_int <= reg1;
+    if handshake then
+      nextstate <= IDLE;
+    end if;
+  end case;
+  
+end process FSMtransition;
+
+FSMoutput:process (clk) is
+begin
+  if rising_edge(clk) then
+    if reset='1' then
+      
+    else
+      case state is 
+        when IDLE =>
+          if data_valid then
+            reg1 <= data;
+          end if;
+        when REG_s =>
+          
+        when REG2_s =>
+          null;
+      end case;
+    end if;
+  end if;
+end process FSMreg;
+
+stream <= stream_int;
+valid <= valid_int;
+ready_int <= ready;
+
+--outReg:entity work.stream_register
+--generic map(
+--  WIDTH => DATA_BITS
+--)
+--port map(
+--  clk       => clk,
+--  reset     => reset,
+--  stream_in => stream_int,
+--  ready_out => ready_int,
+--  valid_in  => valid_int,
+--  stream    => stream,
+--  ready     => ready,
+--  valid     => valid
+--);
+
 end architecture FSM;
