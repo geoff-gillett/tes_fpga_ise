@@ -48,8 +48,8 @@ begin
 clk <= not clk after CLK_PERIOD/2;
 length <= to_unsigned(1,ADDRESS_BITS+1);
 address <= (others => '0'); --resize(sim_count(1 downto 0),ADDRESS_BITS);
+chunk_we <= (others => TRUE) when address < free and we else (others => FALSE);
 commit <= address < free and we;
-chunk_we <= (others => we);
 
 sim:process(clk)
 begin

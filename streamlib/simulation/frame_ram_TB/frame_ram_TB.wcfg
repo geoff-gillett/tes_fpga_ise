@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="frame_ram_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="boolean_vector" />
+            <top_module name="frame_ram_tb" />
+            <top_module name="logic" />
+            <top_module name="math_real" />
+            <top_module name="numeric_std" />
+            <top_module name="std_logic_1164" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="3" />
+   <wvobject fp_name="group127" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/frame_ram_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/sim_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sim_count[15:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_count[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/din" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">din[15:0]</obj_property>
+         <obj_property name="ObjectShortName">din[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/address" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">address[3:0]</obj_property>
+         <obj_property name="ObjectShortName">address[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/chunk_we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">chunk_we[1:0]</obj_property>
+         <obj_property name="ObjectShortName">chunk_we[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/length" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">length[4:0]</obj_property>
+         <obj_property name="ObjectShortName">length[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/free" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">free[4:0]</obj_property>
+         <obj_property name="ObjectShortName">free[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group109" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/frame_ram_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/din" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">din[15:0]</obj_property>
+         <obj_property name="ObjectShortName">din[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/address" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">address[3:0]</obj_property>
+         <obj_property name="ObjectShortName">address[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/chunk_we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">chunk_we[1:0]</obj_property>
+         <obj_property name="ObjectShortName">chunk_we[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/length" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">length[4:0]</obj_property>
+         <obj_property name="ObjectShortName">length[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/free" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">free[4:0]</obj_property>
+         <obj_property name="ObjectShortName">free[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[15:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/frame_ram" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">frame_ram[0:15]</obj_property>
+         <obj_property name="ObjectShortName">frame_ram[0:15]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/input_word" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">input_word[15:0]</obj_property>
+         <obj_property name="ObjectShortName">input_word[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/ram_dout" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">ram_dout[15:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_dout[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/we" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">we[1:0]</obj_property>
+         <obj_property name="ObjectShortName">we[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/rd_ptr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">rd_ptr[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_ptr[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/rd_ptr_next" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">rd_ptr_next[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_ptr_next[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/wr_addr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">wr_addr[4:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_addr[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/wr_ptr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">wr_ptr[4:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_ptr[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/free_ram" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">free_ram[4:0]</obj_property>
+         <obj_property name="ObjectShortName">free_ram[4:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/write_pending" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">write_pending</obj_property>
+         <obj_property name="ObjectShortName">write_pending</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/read_next" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">read_next</obj_property>
+         <obj_property name="ObjectShortName">read_next</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/empty" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">empty</obj_property>
+         <obj_property name="ObjectShortName">empty</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/good_commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">good_commit</obj_property>
+         <obj_property name="ObjectShortName">good_commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/msb_xor" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">msb_xor</obj_property>
+         <obj_property name="ObjectShortName">msb_xor</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/msb_xor_next" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">msb_xor_next</obj_property>
+         <obj_property name="ObjectShortName">msb_xor_next</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/ptr_equal" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ptr_equal</obj_property>
+         <obj_property name="ObjectShortName">ptr_equal</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/ptr_equal_next" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ptr_equal_next</obj_property>
+         <obj_property name="ObjectShortName">ptr_equal_next</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/one_pending" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">one_pending</obj_property>
+         <obj_property name="ObjectShortName">one_pending</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/two_pending" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">two_pending</obj_property>
+         <obj_property name="ObjectShortName">two_pending</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/none_pending" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">none_pending</obj_property>
+         <obj_property name="ObjectShortName">none_pending</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/handshake" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">handshake</obj_property>
+         <obj_property name="ObjectShortName">handshake</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/ram_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ram_ready</obj_property>
+         <obj_property name="ObjectShortName">ram_ready</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/reg_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">reg_ready</obj_property>
+         <obj_property name="ObjectShortName">reg_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#c0c0c0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/ram_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ram_valid</obj_property>
+         <obj_property name="ObjectShortName">ram_valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/ram_data" type="array" db_ref_id="1">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">ram_data[15:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_data[15:0]</obj_property>
+         <obj_property name="label">ram_data[15:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/reg1" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reg1[15:0]</obj_property>
+         <obj_property name="ObjectShortName">reg1[15:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/reg2" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">reg2[15:0]</obj_property>
+         <obj_property name="ObjectShortName">reg2[15:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#008080</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/stream_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream_int[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stream_int[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/valid_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid_int</obj_property>
+         <obj_property name="ObjectShortName">valid_int</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group62" type="group">
+      <obj_property name="label">REG</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/stream_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stream_in[15:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ff00</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/ready_out" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready_out</obj_property>
+         <obj_property name="ObjectShortName">ready_out</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/valid_in" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid_in</obj_property>
+         <obj_property name="ObjectShortName">valid_in</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[15:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ffff</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/stream_reg" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream_reg[15:0]</obj_property>
+         <obj_property name="ObjectShortName">stream_reg[15:0]</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#00ff00</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/valid_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid_int</obj_property>
+         <obj_property name="ObjectShortName">valid_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/store_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">store_valid</obj_property>
+         <obj_property name="ObjectShortName">store_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/ready_int" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready_int</obj_property>
+         <obj_property name="ObjectShortName">ready_int</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/input_handshake" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">input_handshake</obj_property>
+         <obj_property name="ObjectShortName">input_handshake</obj_property>
+      </wvobject>
+      <wvobject fp_name="/frame_ram_tb/UUT/streamReg/output_handshake" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">output_handshake</obj_property>
+         <obj_property name="ObjectShortName">output_handshake</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

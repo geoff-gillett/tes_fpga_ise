@@ -1,1 +1,3 @@
-xilinx::make_project PlanAhead streamlib ../ ../
+package require xil
+namespace import xil::*
+xil::make_project PlanAhead streamlib ../ ../
