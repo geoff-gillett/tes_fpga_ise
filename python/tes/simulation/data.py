@@ -585,15 +585,20 @@ class Distribution:
         packet_bins = np.uint32((header_packet.length - 40 - 24) / 4)
         # print(packet_bins)
         self.counts[0:packet_bins] = np.copy(
-            header_packet.payload[40:].view(np.uint32))
+            header_packet.payload[40:].view(np.uint32)
+        )
         self._total_bins = packet_bins
 
     def add(self, packet):
-        packet_bins = np.uint32((packet.length - 24) / 4)
-        # print(packet_bins)
-        self.counts[self._total_bins:self._total_bins + packet_bins] = np.copy(
-            packet.payload.view(np.uint32))
-        self._total_bins += packet_bins
+        #packet_bins = np.uint32((packet.length - 24) / 4)
+        counts = packet.payload.view(np.uint32)
+
+        print('frame:{:} length:{:} payload length:{:}'.format(
+            packet.frame_sequence, packet.length, len(packet.payload)))
+        self.counts[self._total_bins:self._total_bins + len(counts)] = np.copy(
+            counts
+        )
+        self._total_bins += len(counts)
 
     def data_counts(self, data):
 
