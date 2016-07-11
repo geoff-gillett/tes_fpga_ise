@@ -71,6 +71,22 @@
 
 \begin{document}
 
+\section{Transition edge sensors}
+A Transition edge sensor (TES) is a micro calorimeter, a device that measures
+particle energy via a change in temperature. All calorimeters consist of three 
+sub-systems; an absortber, a thermometer for measuring the absorbers 
+temperature change and a weak coupling of the absorber to a cold
+bath to cool and reset the sensor after particle absorbtion. 
+
+In the NIST (ref) near IR TES, all three roles are fullfilled by a thin film of
+Tungsten held in the quantum phase trasition between the normal and
+superconducting states. The electron subsystem in the tungsten acts as
+both absorber and thermometer and phonons weakly couple the electrons to the
+tungstem (atomic?) latice which provides the cold bath. 
+
+As thin film tungsten is a type II superconductor and its phase diagram displays
+two critical magnetic fields (or equivilently currents).  
+
 \section{Overview}
 Main components 
 DSP 
@@ -79,17 +95,17 @@ MCA
 Baseline estimation
 blah
 
-\begin{figure}
-  \includesvg[width=0.7\textwidth]{channel}
-\end{figure}
-
-\begin{figure}
-  \includesvg[width=0.7\textwidth]{raw}
-\end{figure}
-
-\begin{figure}
-  \includesvg[width=0.7\textwidth]{baselinecorrected}
-\end{figure}
+% \begin{figure}
+%   \includesvg[width=0.7\textwidth]{channel}
+% \end{figure}
+% 
+% \begin{figure}
+%   \includesvg[width=0.7\textwidth]{raw}
+% \end{figure}
+% 
+% \begin{figure}
+%   \includesvg[width=0.7\textwidth]{baselinecorrected}
+% \end{figure}
 
 \section{Registers}
 
@@ -263,8 +279,6 @@ The length of time between tick events in system clocks ($4 ns$).
 \end{register}
 The maximum allowed to elapse since the last tick event was put in the event
 stream before the event buffer is flushed.
-
-
 
 \section{VHDL Notes}
 

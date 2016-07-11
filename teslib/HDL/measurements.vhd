@@ -103,10 +103,10 @@ begin
   va(5) := resize(m.slope.extrema,MCA_VALUE_BITS);
   va(6) := resize(m.pulse.area,MCA_VALUE_BITS);
   va(7) := resize(m.pulse.extrema,MCA_VALUE_BITS);
-  va(8) := resize(m.raw.sample,MCA_VALUE_BITS);
-  va(9) := resize(m.raw.area,MCA_VALUE_BITS);
-  va(10) := resize(m.raw.extrema,MCA_VALUE_BITS);
-  va(11) := resize(signed('0' & m.pulse.time),MCA_VALUE_BITS);
+  va(8) := resize(signed('0' & m.pulse.time),MCA_VALUE_BITS);
+  va(9) := resize(m.raw.sample,MCA_VALUE_BITS);
+  va(10) := resize(m.raw.area,MCA_VALUE_BITS);
+  va(11) := resize(m.raw.extrema,MCA_VALUE_BITS);
   return va;
 end function;
 
