@@ -192,7 +192,7 @@ begin
 
 end generate chanRegGen;
 
-measurementSubsystem:entity work.measurement_subsystem
+UUT:entity work.measurement_subsystem
   generic map(
     DSP_CHANNELS => CHANNELS,
     EVENT_FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,

@@ -78,14 +78,38 @@ sub-systems; an absortber, a thermometer for measuring the absorbers
 temperature change and a weak coupling of the absorber to a cold
 bath to cool and reset the sensor after particle absorbtion. 
 
-In the NIST (ref) near IR TES, all three roles are fullfilled by a thin film of
-Tungsten held in the quantum phase trasition between the normal and
-superconducting states. The electron subsystem in the tungsten acts as
+In the NIST (ref) near IR TES, all three roles are fullfilled by a
+thin film of Tungsten held in the quantum phase trasition between the normal and
+superconducting states. The electron subsystem acts as
 both absorber and thermometer and phonons weakly couple the electrons to the
-tungstem (atomic?) latice which provides the cold bath. 
+tungsten atomic latice which provides the cold bath. 
 
-As thin film tungsten is a type II superconductor and its phase diagram displays
-two critical magnetic fields (or equivilently currents).  
+As a thin film, tungsten becomes a type II superconductor with its phase diagram
+displaying two critical magnetic fields (or equivilently currents).  
+
+% \begin{figure}[!hbt]
+%   \includesvg[width=0.6\textwidth]{typeIIsuperconductor}
+% \end{figure}
+% \begin{figure}[!hbt]
+%   \includesvg[width=0.6\textwidth]{biastrajectory}
+% \end{figure}
+\begin{figure}[!hpbt]
+  \centering
+  \begin{minipage}[b]{0.48\textwidth}
+    \includesvg[width=\textwidth]{typeIIsuperconductor}
+    \caption{Phase Diagram}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\textwidth}
+    \includesvg[width=\textwidth]{biastrajectory}
+    \caption{Biasing}
+  \end{minipage}
+\end{figure}
+
+The TES package is held below its critical temperature and biased into the
+transition region by passing a current through it. calc
+
+\section{Biasing and Readout}
 
 \section{Overview}
 Main components 
