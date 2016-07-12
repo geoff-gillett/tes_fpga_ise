@@ -7,10 +7,19 @@ if $is_isim { namespace import ::isim::* } { namespace import ::xsim::* }
 namespace import ::sim::*
 
 # set up wave database
+
+restart
+vcd dumpfile ../vcd.dump
+
 if {$is_isim} {
-  wave log /measurement_subsystem_TB
-  wave log /measurement_subsystem_TB/enet
-	wave log /measurement_subsystem_TB/mca
+	vcd dumpvars -u / -l 1
+  vcd dumpvars /UUT -l 1
+	vcd dumpvars /UUT/mca -l 1
+	vcd dumpvars /UUT/mca/MCA -l l
+	vcd dumpvars /UUT/mux -l l
+	vcd dumpvars /UUT/nopacketgen/enet -l 1
+	vcd dumpvars /UUT/nopacketgen/enet/framer -l 1
+	vcd dumpvars /UUT/nopacketgen/enet/framer/frameRam -l 1
 } {
   log_wave /measurement_subsystem_TB
   log_wave /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
@@ -19,4 +28,5 @@ if {$is_isim} {
   log_wave /measurement_subsystem_TB/cdc
 }
 
-restart
+run 4 ms
+vcd dumpflush

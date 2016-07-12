@@ -593,8 +593,9 @@ class Distribution:
         #packet_bins = np.uint32((packet.length - 24) / 4)
         counts = packet.payload.view(np.uint32)
 
-        print('frame:{:} length:{:} payload length:{:}'.format(
-            packet.frame_sequence, packet.length, len(packet.payload)))
+        print('frame:{:} prot:{:} length:{:} payload length:{:}'.format(
+            packet.frame_sequence, packet.protocol_sequence, packet.length,
+            len(packet.payload)))
         self.counts[self._total_bins:self._total_bins + len(counts)] = np.copy(
             counts
         )
