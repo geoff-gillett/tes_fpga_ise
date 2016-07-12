@@ -34,8 +34,8 @@
    </db_ref_list>
    <WVObjectSize size="8" />
    <wave_markers>
+      <marker time="539400000000" label="" />
       <marker time="544552100000" label="" />
-      <marker time="534680000000" label="" />
    </wave_markers>
    <wvobject fp_name="group319" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -1379,10 +1379,14 @@
          <obj_property name="ElementShortName">frame_length[14:0]</obj_property>
          <obj_property name="ObjectShortName">frame_length[14:0]</obj_property>
          <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/nopacketgen/enet/commit_frame" type="other" db_ref_id="1">
          <obj_property name="ElementShortName">commit_frame</obj_property>
          <obj_property name="ObjectShortName">commit_frame</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_tb/measurementSubsystem/nopacketgen/enet/framer_free" type="array" db_ref_id="1">
          <obj_property name="ElementShortName">framer_free[14:0]</obj_property>
