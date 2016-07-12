@@ -74,8 +74,8 @@ signal mca_s_ready,mca_s_valid:boolean;
 -- Signals used by FSMs
 --------------------------------------------------------------------------------
 
-type arbitorFSMstate is (IDLE,MCA,EVENT);
-signal arbiter_state,arbiter_nextstate:arbitorFSMstate;
+type arbiterFSMstate is (IDLE,MCA,EVENT);
+signal arbiter_state,arbiter_nextstate:arbiterFSMstate;
 type frameFSMstate is (IDLE,HEADER0,HEADER1,HEADER2,PAYLOAD,TERMINATE,LENGTH);
 signal frame_state,frame_nextstate:frameFSMstate;
 
@@ -184,7 +184,31 @@ begin
 	return sb;
 end function;
 
+--signals for vcd dump (simulation only)
+function to_std_logic(s:arbiterFSMstate;w:integer) return std_logic_vector is
 begin
+  return to_std_logic(arbiterFSMstate'pos(s),w);
+end function;
+
+function to_std_logic(s:frameFSMstate;w:integer) return std_logic_vector is
+begin
+  return to_std_logic(frameFSMstate'pos(s),w);
+end function;
+
+signal framer_word_s:std_logic_vector(BUS_DATABITS-1 downto 0);
+signal commit_s:std_logic;
+signal framer_we_s:std_logic_vector(BUS_CHUNKS-1 downto 0);
+signal arbiter_state_s:std_logic_vector(2 downto 0);
+signal frame_state_s:std_logic_vector(1 downto 0);
+
+begin
+--simulation only (VCD dump)
+framer_word_s <= framer_word.data;
+commit_s <= to_std_logic(commit_frame);
+framer_we_s <= to_std_logic(framer_we);
+arbiter_state_s <= to_std_logic(arbiter_state,3);
+frame_state_s <= to_std_logic(frame_state,2);
+
 
 mtuCapture:process(clk)
 begin

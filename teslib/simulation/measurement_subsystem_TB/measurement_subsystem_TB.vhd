@@ -96,6 +96,11 @@ signal clk_count:integer:=0;
 type int_file is file of integer;
 file bytestream_file,trace_file:int_file;
 
+--signals for vcd dump
+signal bytestream_valid_s,bytestream_ready_s:std_logic;
+signal ethernetstream_s:std_logic_vector(63 downto 0);
+signal ethernetstream_valid_s,ethernetstream_ready_s,ethernetstream_last_s
+       :std_logic;
 function hexstr2vec(str:string) return std_logic_vector is
 	variable slv:std_logic_vector(str'length*4-1 downto 0):=(others => 'X');
 begin
@@ -234,6 +239,11 @@ UUT:entity work.measurement_subsystem
     ethernetstream_ready => ethernetstream_ready
   );
 
+ethernetstream_s <= ethernetstream.data;
+ethernetstream_valid_s <= to_std_logic(ethernetstream_valid);
+ethernetstream_ready_s <= to_std_logic(ethernetstream_ready);
+ethernetstream_last_s <= to_std_logic(ethernetstream.last(0));
+
 cdc_din <= '0' & ethernetstream.data(63 downto 56) &
            '0' & ethernetstream.data(55 downto 48) &
            '0' & ethernetstream.data(47 downto 40) &
@@ -280,6 +290,8 @@ port map(
 
 bytestream <= bytestream_int(7 downto 0);
 bytestream_last <= bytestream_int(8)='1';
+bytestream_valid_s <= to_std_logic(bytestream_valid);
+bytestream_ready_s <= to_std_logic(bytestream_ready);
 
 --globalreg:entity work.global_registers
 --  generic map(

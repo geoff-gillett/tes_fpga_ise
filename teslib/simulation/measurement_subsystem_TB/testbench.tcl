@@ -9,24 +9,16 @@ namespace import ::sim::*
 # set up wave database
 
 restart
-vcd dumpfile ../vcd.dump
+vcd dumpfile ../dump.vcd
 
-if {$is_isim} {
-	vcd dumpvars -u / -l 1
-  vcd dumpvars /UUT -l 1
-	vcd dumpvars /UUT/mca -l 1
-	vcd dumpvars /UUT/mca/MCA -l l
-	vcd dumpvars /UUT/mux -l l
-	vcd dumpvars /UUT/nopacketgen/enet -l 1
-	vcd dumpvars /UUT/nopacketgen/enet/framer -l 1
-	vcd dumpvars /UUT/nopacketgen/enet/framer/frameRam -l 1
-} {
-  log_wave /measurement_subsystem_TB
-  log_wave /measurement_subsystem_TB/\\chanGen(0)\\/measurementUnit
-  log_wave /measurement_subsystem_TB/mux
-  log_wave /measurement_subsystem_TB/enet
-  log_wave /measurement_subsystem_TB/cdc
-}
+vcd dumpvars -m / -l 1
+vcd dumpvars -m /UUT -l 1
+vcd dumpvars -m /UUT/mca -l 1
+vcd dumpvars -m /UUT/mca/MCA -l 1
+vcd dumpvars -m /UUT/mux -l 1
+vcd dumpvars -m /UUT/nopacketgen/enet -l 1
+vcd dumpvars -m /UUT/nopacketgen/enet/framer -l 1
+vcd dumpvars -m /UUT/nopacketgen/enet/framer/frameRam -l 1
 
-run 4 ms
+run 100 us
 vcd dumpflush
