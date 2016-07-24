@@ -82,6 +82,7 @@ signal ticked,tick,time_valid,read_next:boolean;
 --signal state,nextstate:FSMstate;
 type arbFSMstate is (IDLE,ARBITRATE,SEL_STREAM,SEL_TICK,NEXT_TIME);
 signal arb_state,arb_nextstate:arbFSMstate;
+signal arb_state_v:std_logic_vector(2 downto 0);
 signal tickstream:streambus_t;
 signal muxstream_int_valid,muxstream_int_ready,muxstream_last:boolean;
 signal tickstream_valid:boolean;
@@ -99,8 +100,29 @@ signal out_state,out_nextstate:outFSMstate;
 signal first_event:boolean;
 signal new_window:boolean;
 signal window_start:boolean;
+signal valid_int:boolean;
+
+function to_std_logic(s:arbFSMstate;w:integer) return std_logic_vector is
+begin
+  return to_std_logic(arbFSMstate'pos(s),w);
+end function;
+
+--------------------------------------------------------------------------------
+-- debug
+--------------------------------------------------------------------------------
+constant DEBUG:string:="TRUE";
+attribute MARK_DEBUG:string;
+attribute MARK_DEBUG of arb_state_v:signal is DEBUG;
+attribute MARK_DEBUG of tickstream_valid:signal is DEBUG;
+attribute MARK_DEBUG of tickstream_ready:signal is DEBUG;
+attribute MARK_DEBUG of sel:signal is DEBUG;
+attribute MARK_DEBUG of valid_int:signal is DEBUG;
+attribute MARK_DEBUG of ready:signal is DEBUG;
 
 begin
+
+arb_state_v <= to_std_logic(arb_state,3);
+valid <= valid_int;
 
 tickstreamer:entity work.tickstream
 generic map(
@@ -370,6 +392,6 @@ port map(
   valid_in => muxstream_int_valid,
   stream => muxstream,
   ready => ready,
-  valid => valid
+  valid => valid_int
 );
 end architecture RTL;
