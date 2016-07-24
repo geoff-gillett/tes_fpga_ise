@@ -245,8 +245,9 @@ if rising_edge(clk) then
 end if;
 end process fsmNextstate;
 
-arbFSMtransition:process(arb_state,time_valid,sel,muxstream_last_handshake,
-												 muxstream_int_ready,pulses_done,ticked,gnt)
+arbFSMtransition:process(arb_state,time_valid,sel,muxstream_int_ready,
+  pulses_done,ticked,gnt,muxstream_int.last(0),muxstream_int_valid
+)
 begin
 	arb_nextstate <= arb_state;
 	readys <= (others => FALSE);
@@ -267,27 +268,29 @@ begin
 			arb_nextstate <= SEL_STREAM;
 		end if;
 	when SEL_STREAM =>
+		sel <= gnt & '0';
 		if muxstream_int_ready then
 			readys <= to_boolean(sel);
-		end if;
-		sel <= gnt & '0';
-		if muxstream_last_handshake then
-			if pulses_done then
-				if ticked then
-					arb_nextstate <= SEL_TICK;
-				else
-					arb_nextstate <= NEXT_TIME;
-				end if;
-			else
-				arb_nextstate <= ARBITRATE;
-			end if;
-		end if;
+      if muxstream_int_valid and muxstream_int.last(0) then
+        if pulses_done then
+          if ticked then
+            arb_nextstate <= SEL_TICK;
+          else
+            arb_nextstate <= NEXT_TIME;
+          end if;
+        else
+          arb_nextstate <= ARBITRATE;
+        end if;
+      end if;
+    end if;
 	when SEL_TICK =>
 		sel <= (0 => '1', others => '0');
-		readys <= (0 => TRUE, others => FALSE);
-		if muxstream_last_handshake then
-			arb_nextstate <= next_time;
-		end if;
+		if muxstream_int_ready then
+		  readys <= (0 => TRUE, others => FALSE);
+      if muxstream_int_valid and muxstream_int.last(0) then
+        arb_nextstate <= next_time;
+      end if;
+    end if;
 	when NEXT_TIME =>
 		arb_nextstate <= IDLE;
 	end case;
