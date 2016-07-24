@@ -20,5 +20,5 @@ vcd dumpvars -m /UUT/nopacketgen/enet -l 1
 vcd dumpvars -m /UUT/nopacketgen/enet/framer -l 1
 vcd dumpvars -m /UUT/nopacketgen/enet/framer/frameRam -l 1
 
-run 100 us
+run 4 ms
 vcd dumpflush

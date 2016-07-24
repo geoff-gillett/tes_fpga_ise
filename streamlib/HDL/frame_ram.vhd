@@ -112,12 +112,12 @@ if rising_edge(clk) then
   else
 
   	input_word <= din;
-  	if address < free_ram then
+  	--if address < free_ram then --This check is causing problems
       we <= chunk_we;
       wr_addr <= wr_ptr + address;
-    else
-      we <= (others => FALSE);
-    end if;
+    --else
+      --we <= (others => FALSE);
+    --end if;
     
     if good_commit then
       wr_ptr <= wr_ptr + length; --only place wr_ptr can change

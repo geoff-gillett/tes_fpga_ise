@@ -148,6 +148,7 @@
                     ; RESET port bits (Constant optimised output port)
                     ;-----------------------------------------------------------
                     CONSTANT RESET_SYSTEM,      00001111'b 
+                    CONSTANT RESET_TIER0,       00001110'b
                     CONSTANT RESET_TIER1,       00001100'b
                     CONSTANT RESET_TIER2,       00001000'b
                     ;-----------------------------------------------------------

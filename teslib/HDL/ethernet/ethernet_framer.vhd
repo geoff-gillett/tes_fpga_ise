@@ -30,7 +30,7 @@ entity ethernet_framer is
 generic(
 	MTU_BITS:integer:=MTU_BITS;
 	TICK_LATENCY_BITS:integer:=TICK_LATENCY_BITS;
-	FRAMER_ADDRESS_BITS:integer:=ETHERNET_FRAMER_ADDRESS_BITS;
+	FRAMER_ADDRESS_BITS:integer:=11;
 	DEFAULT_MTU:unsigned:=DEFAULT_MTU;
 	DEFAULT_TICK_LATENCY:unsigned:=DEFAULT_TICK_LATENCY;
 	ENDIANNESS:string:="LITTLE"
@@ -87,7 +87,8 @@ signal framer_word:streambus_t;
 signal framer_address,next_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal framer_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal commit_frame:boolean;
-signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
+signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0):=
+       to_unsigned(to_integer(DEFAULT_MTU/8),FRAMER_ADDRESS_BITS+1);
 --signal frame_we:boolean;
 signal mtu_int:unsigned(MTU_BITS-1 downto 0):=
 			 to_unsigned(to_integer(DEFAULT_MTU/8),MTU_BITS);
@@ -183,8 +184,14 @@ begin
   sb.data := to_std_logic(e,w,endianness);
 	return sb;
 end function;
-
+--------------------------------------------------------------------------------
 --signals for vcd dump (simulation only)
+attribute keep:string;
+attribute S:string;
+signal arbiter_state_v:std_logic_vector(1 downto 0);
+signal frame_state_v:std_logic_vector(2 downto 0);
+attribute keep of arbiter_state_v,frame_state_v:signal is "TRUE";
+attribute S of arbiter_state_v,frame_state_v:signal is "TRUE";
 function to_std_logic(s:arbiterFSMstate;w:integer) return std_logic_vector is
 begin
   return to_std_logic(arbiterFSMstate'pos(s),w);
@@ -195,20 +202,48 @@ begin
   return to_std_logic(frameFSMstate'pos(s),w);
 end function;
 
-signal framer_word_s:std_logic_vector(BUS_DATABITS-1 downto 0);
-signal commit_s:std_logic;
-signal framer_we_s:std_logic_vector(BUS_CHUNKS-1 downto 0);
-signal arbiter_state_s:std_logic_vector(2 downto 0);
-signal frame_state_s:std_logic_vector(1 downto 0);
+--synthesis translate_off
+signal framer_word_v:std_logic_vector(BUS_DATABITS-1 downto 0);
+signal commit_v:std_logic;
+signal framer_we_v:std_logic_vector(BUS_CHUNKS-1 downto 0);
+signal event_s_v:std_logic_vector(BUS_DATABITS-1 downto 0);
+signal event_s_ready_v,event_s_valid_v,event_s_last_v:std_logic;
+signal mca_s_v:std_logic_vector(BUS_DATABITS-1 downto 0);
+signal mca_s_ready_v,mca_s_valid_v,mca_s_last_v:std_logic;
+--synthesis translate_on
+--------------------------------------------------------------------------------
+-- Debugging
+--------------------------------------------------------------------------------
+constant DEBUG:string:="FALSE";
+attribute MARK_DEBUG:string;
+
+attribute MARK_DEBUG of arbiter_state_v:signal is DEBUG;
+attribute MARK_DEBUG of frame_state_v:signal is DEBUG;
+attribute MARK_DEBUG of framer_free:signal is DEBUG;
+attribute MARK_DEBUG of frame_free:signal is DEBUG;
+--attribute MARK_DEBUG of reset:signal is DEBUG;
+--attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
+--attribute MARK_DEBUG of ethernetstream_ready:signal is DEBUG;
 
 begin
---simulation only (VCD dump)
-framer_word_s <= framer_word.data;
-commit_s <= to_std_logic(commit_frame);
-framer_we_s <= to_std_logic(framer_we);
-arbiter_state_s <= to_std_logic(arbiter_state,3);
-frame_state_s <= to_std_logic(frame_state,2);
-
+--------------------------------------------------------------------------------
+--simulation only (for VCD dump)
+arbiter_state_v <= to_std_logic(arbiter_state,2);
+frame_state_v <= to_std_logic(frame_state,3);
+--synthesis translate_off
+framer_word_v <= framer_word.data;
+commit_v <= to_std_logic(commit_frame);
+framer_we_v <= to_std_logic(framer_we);
+event_s_v <= event_s.data;
+event_s_ready_v <= to_std_logic(event_s_ready);
+event_s_valid_v <= to_std_logic(event_s_valid);
+event_s_last_v <= to_std_logic(event_s.last(0));
+mca_s_v <= mca_s.data;
+mca_s_ready_v <= to_std_logic(mca_s_ready);
+mca_s_valid_v <= to_std_logic(mca_s_valid);
+mca_s_last_v <= to_std_logic(mca_s.last(0));
+--synthesis translate_on
+--------------------------------------------------------------------------------
 
 mtuCapture:process(clk)
 begin
@@ -587,7 +622,6 @@ begin
 	end case;
 end process frameFSMtransition;
 
-
 payloadAddress:process(clk)
 begin
 	if rising_edge(clk) then
@@ -600,8 +634,9 @@ begin
 				<= to_unsigned(to_integer(DEFAULT_MTU/8),FRAMER_ADDRESS_BITS+1);
 			frame_free_m1 
 				<= to_unsigned(to_integer(DEFAULT_MTU/8)-1,FRAMER_ADDRESS_BITS+1);
+			framer_ready <= FALSE;
 		else
-			framer_ready <= framer_free > frame_address;
+			framer_ready <= framer_free > next_address;
 			if commit_frame then
 				frame_address <= (others => '0');
 				next_address <= (0 => '1', others => '0');
@@ -614,8 +649,8 @@ begin
 				last_frame_address <= frame_address;
 				next_address <= next_address+1;
 				frame_address <= next_address;
-				framer_ready <= framer_free > next_address;
-        frame_free <= frame_free-1;
+				--framer_ready <= framer_free > next_address;
+        frame_free <= frame_free_m1;
         frame_free_m1 <= frame_free_m1-1;
         frame_last <= frame_free_m1 = 1;
         frame_under <= next_address < MIN_FRAME;

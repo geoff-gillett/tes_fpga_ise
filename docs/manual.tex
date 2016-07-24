@@ -62,7 +62,6 @@
 \begin{regfields}}
 {\end{regfields}\end{minipage}\vspace{0.5\baselineskip}}
 
-
 \newcommand{\return}{\code{\textbackslash r}}
 
 \setlength{\parindent}{0pt}
@@ -106,18 +105,42 @@ displaying two critical magnetic fields (or equivilently currents).
   \end{minipage}
 \end{figure}
 
-The TES package is held below its critical temperature and biased into the
-transition region by passing a current through it. calc
+The TES package is held below its critical temperature and voltage biased
+into the transition region where the sensors resistance is dependent on
+temperature and bias current. 
 
-\section{Biasing and Readout}
+\subsection{Biasing and Readout}
+The constant voltage appied to biasing circuit in fig (add figure)
+induces Electro-thermal feedback (ETF) a negative feedback-loop whereby any
+increase in temperature leads to an increase in resistance which reduces the 
+current and subsequent joule
+utlimately heating cooling the the sensor. Conversly for a decrease in
+temperature. ETF effectively keeps the power dissapation into the bath constant. 
 
-\section{Overview}
-Main components 
-DSP 
-Measurement
-MCA
-Baseline estimation
-blah
+An array of DC SQUIDs is used to readout the signals. (expand add readout
+figure). The resulting output pulse is amplified by at room temperature and 
+fed to Analogue to Digital Convertors (ADCs) to be processed by the FPGA 
+
+
+\section{FPGA Overview}
+\subsection{DSP}
+(include quick description of DSP in general??)
+The DSP constists of two 23 tap FIR filiters the first stage smoothes the siganl
+reducing noise the second stage calculates the first derivative of the smoothed
+signal.
+
+\subsection{Multi channel analyser}
+The multichannel analyser capture the distribution of the measurements
+\subsection{measurement}
+Threshold and zero-crossings are used to generate measurements of the detection
+pulses. (needs figures)
+\subsection{Baseline estimation}
+A cut down MCA is used to track the distribution of the raw signal. The peak of
+this distribution is considered the baseline. 
+
+\subsection{Stream output}
+Measurements and distributions are streamed to the host PC as Ethernet frames
+over a point to point connection. 
 
 % \begin{figure}
 %   \includesvg[width=0.7\textwidth]{channel}
@@ -131,9 +154,10 @@ blah
 %   \includesvg[width=0.7\textwidth]{baselinecorrected}
 % \end{figure}
 
-\section{Registers}
+\subsection{Registers}
 
-\subsection{Serial protocol}
+
+\subsection{Low level serial protocol}
 
 The register IO protocol is compatible with the AMBA AXI Lite specification and
 is currently transported over a RS232 serial connection via the Silicon Labs
@@ -245,7 +269,7 @@ bit 4 & AD9510 chip \\
 \clearpage
 \subsection{Global registers}
 
-\begin{register}{cpu\_version}{01000000 READ ONLY}
+\begin{register}{cpu\_version}{0x01000000 READ ONLY}
 \bitfield{ year }{31}{28}
 \bitfield{month}{27}{24}
 \bitfield{ day }{23}{16}
@@ -303,7 +327,7 @@ The length of time between tick events in system clocks ($4 ns$).
 \end{register}
 The maximum allowed to elapse since the last tick event was put in the event
 stream before the event buffer is flushed.
-
+ 
 \section{VHDL Notes}
 
 \begin{verbatim}

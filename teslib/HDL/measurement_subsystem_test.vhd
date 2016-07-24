@@ -37,20 +37,19 @@ use work.adc.all;
 use work.measurements.all;
 use work.dsptypes.all;
 
-entity measurement_subsystem is
+entity measurement_subsystem_test is
 generic(
   DSP_CHANNELS:integer:=2;
   EVENT_FRAMER_ADDRESS_BITS:integer:=11;
-	ENET_FRAMER_ADDRESS_BITS:integer:=14;
+	ENET_FRAMER_ADDRESS_BITS:integer:=11;
 	MCA_ADDRESS_BITS:integer:=14;
   MIN_TICKPERIOD:integer:=2**TIME_BITS;
 	ENDIANNESS:string:="LITTLE";
-	PACKET_GEN:boolean:=FALSE;
-	TICK_TEST:boolean:=TRUE
+	PACKET_GEN:boolean:=TRUE
 );
 port(
   clk:in std_logic;
-  reset0:in std_logic;
+  --reset0:in std_logic;
   reset1:in std_logic;
   reset2:in std_logic;
   
@@ -87,9 +86,9 @@ port(
   ethernetstream_ready:in boolean
   
 );
-end entity measurement_subsystem;
+end entity measurement_subsystem_test;
 
-architecture RTL of measurement_subsystem is
+architecture RTL of measurement_subsystem_test is
 	
 signal adc_delayed:adc_sample_array(DSP_CHANNELS-1 downto 0);
 
@@ -137,6 +136,17 @@ signal framestream:streambus_t;
 signal framestream_valid:boolean;
 signal framestream_ready:boolean;
 
+--------------------------------------------------------------------------------
+--debug
+constant DEBUG:string:="FALSE";
+attribute MARK_DEBUG:string;
+
+--attribute MARK_DEBUG of reset1:signal is DEBUG;
+attribute MARK_DEBUG of muxstream_valid:signal is DEBUG;
+attribute MARK_DEBUG of muxstream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of ethernetstream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
+
 begin
 
 --------------------------------------------------------------------------------
@@ -155,7 +165,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     delay => to_integer(channel_reg(c).capture.delay),
     delayed => adc_delayed(c)
   );
-
+--
 	measurement:entity work.measurement_unit
   generic map(
     FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
@@ -218,26 +228,26 @@ end generate tesChannel;
 --------------------------------------------------------------------------------
 --
 --------------------------------------------------------------------------------
-tickTest:if TICK_TEST generate
-  events_valid <= (others => FALSE);
-  eventstreams_ready <= (others => FALSE);
-  mcastream_ready <= FALSE;
-  mca_valid <= FALSE;
-  event_starts <= (others => FALSE);
-  event_commits <= (others => FALSE);
-  event_dumps <= (others => FALSE);
-end generate tickTest;
+--tickTest:if TICK_TEST generate
+--  events_valid <= (others => FALSE);
+--  eventstreams_ready <= (others => FALSE);
+--  mcastream_ready <= FALSE;
+--  mca_valid <= FALSE;
+--  event_starts <= (others => FALSE);
+--  event_commits <= (others => FALSE);
+--  event_dumps <= (others => FALSE);
+--end generate tickTest;
 
 
-noTickTest:if not TICK_TEST generate
-  events_valid <= eventstreams_valid;
-  eventstreams_ready <= events_ready;
-  mca_valid <= mcastream_valid;
-  mcastream_ready <= mca_ready;
-  event_starts <= starts;
-  event_commits <= commits;
-  event_dumps <= dumps;
-end generate noTickTest;
+--noTickTest:if not TICK_TEST generate
+--  events_valid <= eventstreams_valid;
+--  eventstreams_ready <= events_ready;
+--  mca_valid <= mcastream_valid;
+--  mcastream_ready <= mca_ready;
+--  event_starts <= starts;
+--  event_commits <= commits;
+--  event_dumps <= dumps;
+--end generate noTickTest;
 
 mux:entity work.eventstream_mux
 generic map(
@@ -253,14 +263,14 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  start => event_starts,
-  commit => event_commits,
-  dump => event_dumps,
+  start => (others => FALSE),
+  commit => (others => FALSE),
+  dump => (others => FALSE),
   instreams => eventstreams,
-  instream_valids => events_valid,
-  instream_readys => events_ready,
+  instream_valids => (others => FALSE),
+  instream_readys => open,
   full => mux_full,
-  tick_period => global_reg.tick_period,
+  tick_period => to_unsigned(2**16,32), --global_reg.tick_period,
   window => global_reg.window,
   cfd_errors => cfd_errors,
   framer_overflows => framer_overflows,
@@ -324,6 +334,16 @@ port map(
   ready => mcastream_ready
 );
 
+
+--eventGen:entity work.event_generator
+--port map(
+--  clk => clk,
+--  reset => reset2,
+--  stream => muxstream,
+--  valid => muxstream_valid,
+--  ready => muxstream_ready
+--);
+
 enet:entity work.ethernet_framer
 generic map(
   MTU_BITS => MTU_BITS,
@@ -334,15 +354,15 @@ generic map(
 )
 port map(
   clk => clk,
-  reset => reset0,
-  mtu => global_reg.mtu,
+  reset => reset2,
+  mtu => to_unsigned(1500,MTU_BITS),
   tick_latency => global_reg.tick_latency,
   eventstream => muxstream,
   eventstream_valid => muxstream_valid,
   eventstream_ready => muxstream_ready,
   mcastream => mcastream,
-  mcastream_valid => mca_valid,
-  mcastream_ready => mca_ready,
+  mcastream_valid => FALSE,
+  mcastream_ready => open,
   ethernetstream => framestream,
   ethernetstream_valid => framestream_valid,
   ethernetstream_ready => framestream_ready
@@ -358,8 +378,8 @@ packetGen:if PACKET_GEN generate
   packetGen:entity work.packet_generator
   port map(
     clk => clk,
-    reset => reset0,
-    period => global_reg.tick_period,
+    reset => reset2,
+    period => to_unsigned(25000000,32),
     stream => ethernetstream,
     ready => ethernetstream_ready,
     valid => ethernetstream_valid

@@ -5,6 +5,9 @@ use ieee.numeric_std.all;
 library streamlib;
 use streamlib.types.all;
 
+library extensions;
+use extensions.logic.all;
+
 use work.events.all;
 use work.registers.all;
 use work.ethernet.all;
@@ -30,8 +33,24 @@ signal ready_int:boolean;
 signal valid_int:boolean;
 signal send:boolean;
 signal t_counter,period_int:unsigned(31 downto 0);
+signal state_v:std_logic_vector(8 downto 0);
+
+function to_std_logic(s:FSMstate;w:integer) return std_logic_vector is
+begin
+  return to_std_logic(FSMstate'pos(s),w);
+end function;
+
+constant DEBUG:string:="FALSE";
+attribute MARK_DEBUG:string;
+attribute MARK_DEBUG of state_v:signal is DEBUG;
+attribute MARK_DEBUG of valid_int:signal is DEBUG;
+attribute MARK_DEBUG of ready:signal is DEBUG;
+attribute MARK_DEBUG of reset:signal is DEBUG;
+--attribute MARK_DEBUG of t_counter:signal is DEBUG;
+--attribute MARK_DEBUG of send:signal is DEBUG;
 
 begin
+state_v <= to_std_logic(state,9);
 header.destination_address <= X"da0102030405";
 header.source_address <= X"5a0102030405";
 header.frame_sequence <= seq_count;

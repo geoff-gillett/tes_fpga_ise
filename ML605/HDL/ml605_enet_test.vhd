@@ -38,7 +38,7 @@ use tes.adc.all;
 use tes.measurements.all;
 use tes.dsptypes.all;
 
-entity ml605_test is
+entity ml605_enet_test is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=12;
@@ -47,10 +47,9 @@ generic(
   ADC_BITS:integer:=14;
   DSP_CHANNELS:integer:=2;
   EVENT_FRAMER_ADDRESS_BITS:integer:=11;
-  ENET_FRAMER_ADDRESS_BITS:integer:=14;
+  ENET_FRAMER_ADDRESS_BITS:integer:=11;
   MIN_TICKPERIOD:integer:=2**TIME_BITS;
-  PACKET_GEN:boolean:=FALSE;
-  TICK_TEST:boolean:=TRUE
+  PACKET_GEN:boolean:=FALSE
 );
 port(
   ------------------------------------------------------------------------------
@@ -123,9 +122,9 @@ port(
   frame_error:out std_logic;
   frame_errorn:out std_logic
 );
-end entity ml605_test;
+end entity ml605_enet_test;
 
-architecture RTL of ml605_test is
+architecture RTL of ml605_enet_test is
 	
 --------------------------------------------------------------------------------
 -- Constants
@@ -189,17 +188,19 @@ port (
 );
 end component;
 
+
 attribute S:string;
 --------------------------------------------------------------------------------
 -- Clock and reset signals
 --------------------------------------------------------------------------------
 signal global_reset_boot_clk,IO_clk,signal_clk,axi_clk,boot_clk:std_logic;
-signal reset0,reset1,reset2,fmc108_MMCM_locked:std_logic;
-signal reset0_sclk,reset1_sclk,reset2_sclk:std_logic;
-signal reset0_ioclk,reset1_ioclk,reset2_ioclk:std_logic;
+signal reset0,reset1,reset2:std_logic;
+signal reset1_sclk,reset2_sclk:std_logic;
+signal reset0_refclk:std_logic;
+signal reset1_ioclk,reset2_ioclk:std_logic;
 
-signal refclk:std_logic;
-signal onboard_mmcm_locked:std_logic;
+signal ref_clk:std_logic;
+signal onboard_mmcm_locked,fmc108_mmcm_locked:std_logic;
 signal idelayctrl_rdy:std_ulogic;
 --signal reset_enable:std_logic;
 --signal iodelay_inc:ddr_sample_array(ADC_CHANNELS-1 downto 0);
@@ -338,6 +339,12 @@ signal bytestream_int:std_logic_vector(8 downto 0);
 --attribute S of bytestream_valid:signal is "TRUE";
 --attribute S of bytestream_ready:signal is "TRUE";
 
+--attribute KEEP:string;
+--attribute KEEP of reset0,reset1,reset2:signal is "TRUE";
+--attribute KEEP of reset0_sclk,reset1_sclk,reset2_sclk:signal is "TRUE";
+--attribute KEEP of reset0_ioclk,reset1_ioclk,reset2_ioclk:signal is "TRUE";
+--attribute KEEP of fmc108_mmcm_locked:signal is "TRUE";
+
 --------------------------------------------------------------------------------
 attribute iob:string;
 attribute iob of ADC_spi_ce_n:signal is "TRUE";
@@ -350,12 +357,35 @@ attribute iob of AD9510_spi_mosi:signal is "TRUE";
 --attribute iob of AD9510_spi_miso:signal is "TRUE";
 attribute iob of spi_miso:signal is "TRUE";
 --------------------------------------------------------------------------------
+--debug
+constant DEBUG:string:="FALSE";
+attribute MARK_DEBUG:string;
+--signal test_counter:unsigned(15 downto 0):=(others => '0');
+--attribute MARK_DEBUG of test_counter:signal is DEBUG;
+--attribute MARK_DEBUG of reset0,reset1,reset2:signal is DEBUG;
+--attribute MARK_DEBUG of reset0_ioclk,reset1_ioclk,reset2_ioclk:signal is DEBUG;
+attribute MARK_DEBUG of reset1_sclk,reset2_sclk:signal is DEBUG;
+--attribute MARK_DEBUG of onboard_mmcm_locked:signal is DEBUG;
+--attribute MARK_DEBUG of fmc108_mmcm_locked:signal is DEBUG;
+attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
+attribute MARK_DEBUG of ethernetstream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of bytestream_valid:signal is DEBUG;
+--attribute MARK_DEBUG of bytestream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of onboard_mmcm_locked:signal is DEBUG;
+
 
 --------------------------------------------------------------------------------
 
 --signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
 begin
+
+--test:process(signal_clk)
+--begin
+--  if rising_edge(signal_clk) then
+--    test_counter <= test_counter + 1;
+--  end if;
+--end process test;
 
 spiReg:process(boot_clk)
 begin
@@ -374,20 +404,21 @@ end process spiReg;
 FMC_reset <= reset0;
 FMC_internal_clk_en <= '1'; --to_std_logic(global.FMC108_internal_clk);
 FMC_VCO_power_en <= '1'; --to_std_logic(global.VCO_power);
+FMC_AD9510_function <= '1';
 --
 
 -- FIXME what does this do?
 --FMC_AD9510_function <= '1';
-FMCfunction:process(boot_clk) is
-begin
-if rising_edge(boot_clk) then
-  if reset0 = '1' then
-    FMC_AD9510_function <= '0';
-  else
-    FMC_AD9510_function <= '1';
-  end if;
-end if;
-end process FMCfunction;
+--FMCfunction:process(boot_clk) is
+--begin
+--if rising_edge(boot_clk) then
+--  if reset0 = '1' then
+--    FMC_AD9510_function <= '0';
+--  else
+--    FMC_AD9510_function <= '1';
+--  end if;
+--end if;
+--end process FMCfunction;
 
 --------------------------------------------------------------------------------
 -- Clock and resets 
@@ -401,13 +432,13 @@ port map
   locked => fmc108_mmcm_locked
 );
 
---io_clk <= test_clk;
+--FIXME should axi_clk come from FMC MMCM?
 onboardmmcm:onboard_clk_tree
 port map
 (
   sys_clk_P => sys_clk_p,
   sys_clk_N => sys_clk_n,
-  refclk => refclk,
+  refclk => ref_clk,
   io_clk => boot_clk, --io_clk, --open,--io_clk,
   axi_clk => axi_clk,
   signal_clk => open, --signal_clk,
@@ -418,7 +449,7 @@ port map
 idelayctrl_inst:idelayctrl
 port map (
    rdy => idelayctrl_rdy,  
-   refclk => refclk, 				
+   refclk => ref_clk, 				
    rst => reset0       				
 );
 
@@ -486,7 +517,16 @@ begin
     I => adc_clk_p(chip),
     IB => adc_clk_n(chip)
   );
-  
+end generate;  
+
+adcClk0Bufg:bufg
+port map(
+   O => adc_clk(0), 
+   I => adc_clk_bufds(0) --adc_clk_delayed(0)  
+);
+
+adcClkBufr:for chip in ADC_CHIPS-1 downto 1 generate
+
   clkIodelay:iodelaye1
   generic map(
     DELAY_SRC => "I",
@@ -508,16 +548,8 @@ begin
     rst => '0',
     t => '1'
   );
-end generate;  
-
-adcClkBufgInst:bufg
-port map(
-   O => adc_clk(0), 
-   I => adc_clk_delayed(0)  
-);
-
-adcBufr:for chip in ADC_CHIPS-1 downto 1 generate
-  bufrInst:bufr
+  
+  adcBufr:bufr
   generic map (
   	SIM_DEVICE => "VIRTEX6",
     BUFR_DIVIDE => "BYPASS"
@@ -599,7 +631,7 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
     
     -- this fifo crosses from the individual chip clk domains the the common 
     -- signal_clk domain.
-    cdcFifo:component adc_fifo
+    adcCdcFIFO:component adc_fifo
     port map(
       wr_clk => adc_clk(chip),
       rst => fifo_reset_chipclk(chip),
@@ -611,7 +643,7 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
       full => open,
       empty => fifo_empty(chip*CHIP_CHANNELS+chan)
     );
-    
+   
   end generate chan;
   
   adcPipe:process(signal_clk)
@@ -642,7 +674,7 @@ end generate adcChip;
 adcEnable:process(signal_clk)
 begin
   if rising_edge(signal_clk) then
-    if reset2 = '1' then
+    if reset2_sclk = '1' then
       enables_reg <= (others => '0');
       fifo_reset <= '1';
       fifo_rd_en <= (others => '0');
@@ -678,7 +710,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   )
   port map(
     clk => signal_clk,
-    reset => reset2_sclk,
+    reset => reset1_sclk,
     data => channel_data(c),
     address => channel_address(c),
     write => channel_reg_write(c),
@@ -716,7 +748,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 	controller:entity tes.channel_controller
   port map(
     clk => io_clk,
-    reset => reset2,
+    reset => reset1_ioclk,
     uart_tx => channel_rx(c),
     uart_rx => channel_tx(c),
     reg_address => channel_address(c),
@@ -801,7 +833,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 end generate tesChannel;
 --------------------------------------------------------------------------------
 
-measurementSubsystem:entity tes.measurement_subsystem
+measurementSubsystem:entity tes.measurement_subsystem_test
   generic map(
     DSP_CHANNELS => DSP_CHANNELS,
     EVENT_FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
@@ -809,12 +841,11 @@ measurementSubsystem:entity tes.measurement_subsystem
     MCA_ADDRESS_BITS => MCA_ADDRESS_BITS,
     MIN_TICKPERIOD => MIN_TICKPERIOD,
     ENDIANNESS => ENDIANNESS,
-    PACKET_GEN => PACKET_GEN,
-    TICK_TEST => TICK_TEST
+    PACKET_GEN => PACKET_GEN
   )
   port map(
     clk => signal_clk,
-    reset0 => reset0_sclk,
+    --reset0 => reset0,
     reset1 => reset1_sclk,
     reset2 => reset2_sclk,
     mca_initialising => open,
@@ -985,9 +1016,9 @@ cdc_wr_en <= to_std_logic(ethernetstream_valid);
 cdcFIFO:enet_cdc_fifo
 port map (
   wr_clk => signal_clk,
-  wr_rst =>	reset0_sclk,
+  wr_rst =>	reset1_sclk,
   rd_clk => io_clk,
-  rd_rst => reset0,
+  rd_rst => reset1_ioclk,
   din => cdc_din,
   wr_en => cdc_wr_en,
   rd_en => cdc_rd_en,
@@ -1004,7 +1035,7 @@ generic map(
 )
 port map(
   clk => io_clk,
-  reset => reset0,
+  reset => reset1_ioclk,
   stream_in => cdc_dout,
   ready_out => cdc_ready,
   valid_in => cdc_valid,
@@ -1018,10 +1049,10 @@ bytestream_last <= bytestream_int(8)='1';
 
 emac:entity work.v6_emac_v2_3
 port map(
-  global_reset_IO_clk => reset0_ioclk,
+  global_reset_IO_clk => reset1_ioclk,
   IO_clk => io_clk,
   s_axi_aclk => axi_clk,
-  refclk_bufg => refclk,
+  refclk_bufg => ref_clk,
   tx_axis_fifo_tdata => bytestream_int(7 downto 0),
   tx_axis_fifo_tvalid => to_std_logic(bytestream_valid),
   tx_axis_fifo_tready => bytestream_ready,
@@ -1058,7 +1089,7 @@ generic map(
 )
 port map(
   clk => signal_clk,
-  reset => reset2,
+  reset => reset1_sclk,
   --mmcm_locked => fmc108_MMCM_locked,
   data => reg_data,
   address => reg_address,
@@ -1074,42 +1105,42 @@ port map(
   output => global_write
 );
 
-reset0syncS:entity tes.sync_2FF
-port map(
-  out_clk => signal_clk,
-  input => reset0,
-  output => reset0_sclk
-);
+--reset0syncS:entity tes.sync_2FF
+--port map(
+--  out_clk => signal_clk,
+--  input => reset0,
+--  output => reset0_sclk
+--);
 
-reset1SyncS:entity tes.sync_2FF
+reset1SiganlSync:entity tes.sync_2FF
 port map(
   out_clk => signal_clk,
   input => reset1,
   output => reset1_sclk
 );
 
-reset2SyncS:entity tes.sync_2FF
+reset2SiganlSync:entity tes.sync_2FF
 port map(
   out_clk => signal_clk,
   input => reset2,
   output => reset2_sclk
 );
 
-reset0syncIO:entity tes.sync_2FF
+reset0RefSync:entity tes.sync_2FF
 port map(
-  out_clk => io_clk,
+  out_clk => ref_clk,
   input => reset0,
-  output => reset0_ioclk
+  output => reset0_refclk
 );
 
-reset1SyncIO:entity tes.sync_2FF
+reset1IOSync:entity tes.sync_2FF
 port map(
   out_clk => io_clk,
   input => reset1,
   output => reset1_ioclk
 );
 
-reset2SyncIO:entity tes.sync_2FF
+reset2IOSync:entity tes.sync_2FF
 port map(
   out_clk => io_clk,
   input => reset2,
@@ -1124,9 +1155,7 @@ generic map(
 )
 port map(
   clk => boot_clk,
-  --LEDs => LEDs,
   reset => global_reset_boot_clk,
-  --sys_reset => open,
   FMC_power_good => FMC_power_good,
   FMC_present => FMC_present,
   FMC_AD9510_status => FMC_AD9510_status,

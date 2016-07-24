@@ -2,7 +2,9 @@
 # ML605 development board TES digitiser design
 # Geoff Gillett
 ################################################################################
-NET "ioController/reset*" TIG;
+PIN "ioContoller/reset?" TIG;
+NET "reset?_*" TIG;
+NET "*_mmcm_locked" TIG;
 ################################################################################
 # Register CDC
 ################################################################################

@@ -12,19 +12,22 @@
                     ;-----------------------------------------------------------
                     ; Reset sequence
                     ;-----------------------------------------------------------
-    reset_sequence: OUTPUTK RESET_TIER1, RESET_CO_PORT ;reset0 low
-										CALL delay_64ns 									 ;iodelays need 50ns reset 
-                    OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset1 low
-                    CALL store_features            
-                    ;CALL respond_features
+                    ;
+    reset_sequence: OUTPUTK RESET_TIER0, RESET_CO_PORT
+                    CALL delay_64ns ; hold reset0 high for > 50ns for iodelays         
+                    OUTPUTK RESET_TIER1, RESET_CO_PORT ;reset0 low
+     pipeline_wait: CALL store_features            
                     CALL initialise_AD9510
                     CALL initialise_ADCs
-                    ;CALL store_features     
-     pipeline_wait: INPUT s0, STATUS_IN_PORT
+                    INPUT s0, STATUS_IN_PORT
                     TEST s0, fmc_mmcm_locked
                     JUMP Z, pipeline_wait       
-                    ;CALL delay_40us
                     CALL delay_40us
+                    ; MMCM clocked by fmc card is up
+                    OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset1 low
+                    CALL delay_40us 
+                    CALL delay_40us
+                    ;ethernet should be up.
                     OUTPUTK 00, RESET_CO_PORT ;reset2 low
                     RETURN
                     ;
