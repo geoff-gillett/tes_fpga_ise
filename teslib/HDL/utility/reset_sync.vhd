@@ -88,9 +88,9 @@ architecture rtl of RESET_SYNC is
   attribute RLOC                         : string;
   attribute RLOC      of reset_sync_reg  : signal is "X0Y0";
   attribute RLOC      of reset_sync_reg2 : signal is "X0Y0";
-  attribute INIT                         : string;
-  attribute INIT      of reset_sync_reg  : signal is "1";
-  attribute INIT      of reset_sync_reg2 : signal is "1";
+--  attribute INIT                         : string;
+--  attribute INIT      of reset_sync_reg  : signal is "1";
+--  attribute INIT      of reset_sync_reg2 : signal is "1";
 
 
 begin

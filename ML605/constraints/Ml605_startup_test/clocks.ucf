@@ -1,0 +1,21 @@
+################################################################################
+# ML605 development board TES digitiser design
+# Geoff Gillett
+################################################################################
+#CONFIG PART = xc6vlx240tff1156-1;
+
+#-------------------------------------------------------------------------------
+# ML605 on board 200MHz Differential Clock.
+#-------------------------------------------------------------------------------
+# Drives onboard_clock_tree MMCM 
+# outputs axi_clk and refclk
+# axi_clk drives the AXI-lite FSM that brings up the Ethernet MAC
+#-------------------------------------------------------------------------------
+
+NET "sys_clk_?" IOSTANDARD = LVDS_25;
+NET "sys_clk_?" DIFF_TERM = "TRUE";
+NET "sys_clk_p" LOC = J9;
+NET "sys_clk_n" LOC = H9;
+NET "sys_clk_p" TNM_NET = "sys_clk";
+TIMESPEC TS_SYS_CLK = PERIOD "sys_clk" 5 ns HIGH 50 %;
+

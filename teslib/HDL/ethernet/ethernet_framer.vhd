@@ -214,7 +214,7 @@ signal mca_s_ready_v,mca_s_valid_v,mca_s_last_v:std_logic;
 --------------------------------------------------------------------------------
 -- Debugging
 --------------------------------------------------------------------------------
-constant DEBUG:string:="FALSE";
+constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
 
 attribute MARK_DEBUG of arbiter_state_v:signal is DEBUG;

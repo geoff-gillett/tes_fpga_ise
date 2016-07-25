@@ -322,17 +322,17 @@ global.mca.lowest_value <= to_signed(-1000,MCA_VALUE_BITS);
 global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 global.mca.value <= MCA_RAW_SIGNAL_D;
 
-mcaControlStimulus:process
-begin
-  global.mca.update_asap <= FALSE;
-  global.mca.update_on_completion <= FALSE;
-	wait for SAMPLE_CLK_PERIOD;
-	wait until not mca_initialising;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait;
-end process mcaControlStimulus;	
+--mcaControlStimulus:process
+--begin
+--  global.mca.update_asap <= FALSE;
+--  global.mca.update_on_completion <= FALSE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	wait until not mca_initialising;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	global.mca.update_asap <= FALSE;
+--	wait;
+--end process mcaControlStimulus;	
 
 file_open(bytestream_file,"../bytestream",WRITE_MODE);
 byteStreamWriter:process
