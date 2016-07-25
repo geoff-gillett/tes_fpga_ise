@@ -16,6 +16,7 @@ entity event_generator is
   port (
     clk:in std_logic;
     reset:in std_logic;
+    
     stream:out streambus_t;
     valid:out boolean;
     ready:in boolean

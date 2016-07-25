@@ -263,12 +263,12 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  start => (others => FALSE),
-  commit => (others => FALSE),
-  dump => (others => FALSE),
+  start => starts, --(others => FALSE),
+  commit => commits, --(others => FALSE),
+  dump => dumps, --(others => FALSE),
   instreams => eventstreams,
-  instream_valids => (others  =>  FALSE),--eventstreams_valid,
-  instream_readys => open,--eventstreams_ready,
+  instream_valids => eventstreams_valid,
+  instream_readys => eventstreams_ready,
   full => mux_full,
   tick_period => to_unsigned(2**16, 32), --global_reg.tick_period,
   window => to_unsigned(25, 16), --global_reg.window,
@@ -323,7 +323,7 @@ port map(
   updated => updated, --TODO implement CPU interupt
   registers => global_reg.mca,
   --TODO remove redundant register port
-  tick_period => global_reg.tick_period,
+  tick_period => to_unsigned(2**16, 32), --global_reg.tick_period,
   channel_select => channel_select,
   value_select => value_select,
   trigger_select => trigger_select,
