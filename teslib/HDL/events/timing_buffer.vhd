@@ -206,12 +206,14 @@ if rising_edge(clk) then
     time_out_reg <= (others => '0');
     all_dumped_reg <= FALSE;
     eventtime_reg <= (others => '0');
+ 		timefifo_valid <= FALSE;
   else
-  	-- FIXME need reg?
+		full <= buffers_full='1';
     if time_rd_en='1' then
   		timefifo_valid <= FALSE;
   		commited_reg <= (others => '0');
   		dumped_reg <= (others => '0');
+	    --ticked_reg <= FALSE;
 		else
   		timefifo_valid <= time_empty='0';
       commited_reg <= commited_int;
@@ -220,7 +222,7 @@ if rising_edge(clk) then
 		if time_empty='0' then
 			all_dumped_reg <= all_dumped;
       started_reg <= started_int;
-	    ticked_reg <= ticked_int;
+	    ticked_reg <= ticked_int and time_rd_en='0';
 	    no_starts_reg <= no_starts; 
 	    --FIXME make eventtime_reg & last eventtime the right size
       eventtime_reg(TIMETAG_BITS-1 downto 0) <= 
@@ -233,7 +235,6 @@ if rising_edge(clk) then
       eventtime_reg <= (others => '-');
       all_dumped_reg <= FALSE;
 	    no_starts_reg <= FALSE; 
-			full <= buffers_full='1';
     end if;
   end if;
 end if;
@@ -249,7 +250,7 @@ begin
       time_rd_en <= '0';
       commit_rd_en <= (others => '0');
     when WAITEVENT =>
-      if all_dumped_reg and not ticked_reg then
+      if all_dumped_reg and not ticked_reg and time_empty='0' then
         time_rd_en <= '1';
         commit_rd_en <= started_reg;
       else
@@ -291,12 +292,12 @@ valid_event <= (ticked_reg or unaryOr(started_reg and commited_reg))
 commited_starts <= unsigned(started_reg and commited_reg) /= 0;
 
 bufferFsmTransition:process(buffer_state,reltime_state,all_dumped_reg,
-														timefifo_valid,read_next,ticked_reg,commited_starts)
+														time_empty,read_next,ticked_reg,commited_starts)
 begin
 buffer_nextstate <= buffer_state;
 case buffer_state is 
 when IDLE =>
-  if timefifo_valid and reltime_state=VALIDTIME then
+  if time_empty='0' and reltime_state=VALIDTIME then
     buffer_nextstate <= WAITEVENT;
   end if;
 when WAITEVENT =>
