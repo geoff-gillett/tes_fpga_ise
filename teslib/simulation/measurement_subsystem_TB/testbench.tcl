@@ -13,12 +13,13 @@ vcd dumpfile ../dump.vcd
 
 vcd dumpvars -m / -l 1
 vcd dumpvars -m /UUT -l 1
-vcd dumpvars -m /UUT/mca -l 1
-vcd dumpvars -m /UUT/mca/MCA -l 1
+#vcd dumpvars -m /UUT/mca -l 1
+#vcd dumpvars -m /UUT/mca/MCA -l 1
 vcd dumpvars -m /UUT/mux -l 1
-vcd dumpvars -m /UUT/nopacketgen/enet -l 1
-vcd dumpvars -m /UUT/nopacketgen/enet/framer -l 1
-vcd dumpvars -m /UUT/nopacketgen/enet/framer/frameRam -l 1
+vcd dumpvars -m /UUT/mux/Buffers/ -l 1
+vcd dumpvars -m /UUT/enet -l 1
+vcd dumpvars -m /UUT/enet/framer -l 1
+#vcd dumpvars -m /UUT/nopacketgen/enet/framer/frameRam -l 1
 
-run 4 ms
+run 16 ms
 vcd dumpflush
