@@ -29,11 +29,12 @@ end component;
 signal boot_clk:std_logic;
 
 signal counter:unsigned(15 downto 0);
-signal locked:std_logic;
+signal locked,trigger:std_logic;
 signal reset:std_logic;
 
 attribute S:string;
 attribute S of counter:signal is "TRUE";
+attribute s of trigger:signal is "TRUE";
 
 attribute MARK_DEBUG:string;
 attribute MARK_DEBUG of counter:signal is "TRUE";
@@ -54,7 +55,7 @@ MMCM:clk_wiz_v3_6_0
 glbl_reset_gen:entity tes.reset_sync
 port map(
   clk => boot_clk,
-  enable => locked,
+  enable => trigger,
   reset_in => '0',
   reset_out => reset
 );
