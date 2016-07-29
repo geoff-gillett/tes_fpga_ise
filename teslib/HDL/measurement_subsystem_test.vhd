@@ -138,7 +138,7 @@ signal framestream_ready:boolean;
 
 --------------------------------------------------------------------------------
 --debug
-constant DEBUG:string:="TRUE";
+constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
 signal muxstream_last:boolean;
 --attribute MARK_DEBUG of reset1:signal is DEBUG;
@@ -271,8 +271,8 @@ port map(
   instream_valids => eventstreams_valid,
   instream_readys => eventstreams_ready,
   full => mux_full,
-  tick_period => to_unsigned(2**16, 32), --global_reg.tick_period,
-  window => to_unsigned(25, 16), --global_reg.window,
+  tick_period => global_reg.tick_period,
+  window => global_reg.window,
   cfd_errors => cfd_errors,
   framer_overflows => framer_overflows,
   mux_overflows => mux_overflows,
@@ -324,7 +324,7 @@ port map(
   updated => updated, --TODO implement CPU interupt
   registers => global_reg.mca,
   --TODO remove redundant register port
-  tick_period => to_unsigned(2**16, 32), --global_reg.tick_period,
+  tick_period => global_reg.tick_period,
   channel_select => channel_select,
   value_select => value_select,
   trigger_select => trigger_select,
@@ -356,7 +356,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset2,
-  mtu => to_unsigned(1500,MTU_BITS),
+  mtu => global_reg.mtu,
   tick_latency => global_reg.tick_latency,
   eventstream => muxstream,
   eventstream_valid => muxstream_valid,

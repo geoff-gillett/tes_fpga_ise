@@ -362,7 +362,7 @@ attribute iob of spi_miso:signal is "TRUE";
 signal reset2_sclk_sync:std_logic;
 signal reset_debug_count:unsigned(34 downto 0);
 
-constant DEBUG:string:="TRUE";
+constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
 --signal test_counter:unsigned(15 downto 0):=(others => '0');
 --attribute MARK_DEBUG of test_counter:signal is DEBUG;

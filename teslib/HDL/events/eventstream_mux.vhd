@@ -111,7 +111,7 @@ end function;
 --------------------------------------------------------------------------------
 -- debug
 --------------------------------------------------------------------------------
-constant DEBUG:string:="TRUE";
+constant DEBUG:string:="FALSE";
 signal tick_s_last,tick_s_ready,tick_s_valid:boolean;
 --signal muxstream_out_last:boolean;
 attribute S:string;
