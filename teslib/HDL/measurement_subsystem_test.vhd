@@ -138,17 +138,18 @@ signal framestream_ready:boolean;
 
 --------------------------------------------------------------------------------
 --debug
-constant DEBUG:string:="FALSE";
+constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
-
+signal muxstream_last:boolean;
 --attribute MARK_DEBUG of reset1:signal is DEBUG;
 attribute MARK_DEBUG of muxstream_valid:signal is DEBUG;
 attribute MARK_DEBUG of muxstream_ready:signal is DEBUG;
+attribute MARK_DEBUG of muxstream_last:signal is DEBUG;
 --attribute MARK_DEBUG of ethernetstream_ready:signal is DEBUG;
 --attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
 
 begin
-
+muxstream_last <= muxstream.last(0);
 --------------------------------------------------------------------------------
 -- processing channels
 --------------------------------------------------------------------------------
@@ -262,7 +263,7 @@ generic map(
 )
 port map(
   clk => clk,
-  reset => reset1,
+  reset => reset2,
   start => starts, --(others => FALSE),
   commit => commits, --(others => FALSE),
   dump => dumps, --(others => FALSE),
@@ -291,7 +292,7 @@ generic map(
 )
 port map(
   clk => clk,
-  reset => reset1,
+  reset => reset2,
   channel_select => channel_select,
   values => mca_values_reg,
   valids => mca_value_valids,
@@ -314,7 +315,7 @@ generic map(
 )
 port map(
   clk => clk,
-  reset => reset1,
+  reset => reset2,
   initialising => mca_initialising,
   --TODO remove redundant register port
   update_asap => global_reg.mca.update_asap,

@@ -136,7 +136,7 @@ if rising_edge(clk) then
 	    	free_ram <= rd_ptr - wr_ptr;
         empty 
           <= rd_ptr(ADDRESS_BITS-1 downto 0) = wr_ptr(ADDRESS_BITS-1 downto 0) 
-      			 and msb_xor_next; 
+      			 and msb_xor; 
 	    end if;
     end if;
     

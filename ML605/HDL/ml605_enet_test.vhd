@@ -345,6 +345,7 @@ signal bytestream_int:std_logic_vector(8 downto 0);
 --attribute KEEP of reset0_ioclk,reset1_ioclk,reset2_ioclk:signal is "TRUE";
 --attribute KEEP of fmc108_mmcm_locked:signal is "TRUE";
 
+
 --------------------------------------------------------------------------------
 attribute iob:string;
 attribute iob of ADC_spi_ce_n:signal is "TRUE";
@@ -358,21 +359,25 @@ attribute iob of AD9510_spi_mosi:signal is "TRUE";
 attribute iob of spi_miso:signal is "TRUE";
 --------------------------------------------------------------------------------
 --debug
-constant DEBUG:string:="FALSE";
+signal reset2_sclk_sync:std_logic;
+signal reset_debug_count:unsigned(34 downto 0);
+
+constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
 --signal test_counter:unsigned(15 downto 0):=(others => '0');
 --attribute MARK_DEBUG of test_counter:signal is DEBUG;
 --attribute MARK_DEBUG of reset0,reset1,reset2:signal is DEBUG;
 --attribute MARK_DEBUG of reset0_ioclk,reset1_ioclk,reset2_ioclk:signal is DEBUG;
-attribute MARK_DEBUG of reset1_sclk,reset2_sclk:signal is DEBUG;
+attribute MARK_DEBUG of reset2_sclk:signal is DEBUG;
 --attribute MARK_DEBUG of onboard_mmcm_locked:signal is DEBUG;
 --attribute MARK_DEBUG of fmc108_mmcm_locked:signal is DEBUG;
-attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
-attribute MARK_DEBUG of ethernetstream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
+--attribute MARK_DEBUG of ethernetstream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of bytestream:signal is DEBUG;
 --attribute MARK_DEBUG of bytestream_valid:signal is DEBUG;
 --attribute MARK_DEBUG of bytestream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of bytestream_last:signal is DEBUG;
 --attribute MARK_DEBUG of onboard_mmcm_locked:signal is DEBUG;
-
 
 --------------------------------------------------------------------------------
 
@@ -1049,7 +1054,7 @@ bytestream_last <= bytestream_int(8)='1';
 
 emac:entity work.v6_emac_v2_3
 port map(
-  global_reset_IO_clk => reset1_ioclk,
+  global_reset_IO_clk => reset2_ioclk,
   IO_clk => io_clk,
   s_axi_aclk => axi_clk,
   refclk_bufg => ref_clk,
@@ -1119,11 +1124,26 @@ port map(
   output => reset1_sclk
 );
 
+debugReset:process(signal_clk) is
+begin
+  if rising_edge(signal_clk) then
+    if reset2_sclk_sync = '1' then
+      reset_debug_count <= (others => '0');
+      reset2_sclk <= '1';
+    else
+      reset_debug_count <= reset_debug_count+1;
+      if reset_debug_count(33)='1' then
+        reset2_sclk <= '0';
+      end if;
+    end if;
+  end if;
+end process debugReset;
+
 reset2SiganlSync:entity tes.sync_2FF
 port map(
   out_clk => signal_clk,
   input => reset2,
-  output => reset2_sclk
+  output => reset2_sclk_sync
 );
 
 reset0RefSync:entity tes.sync_2FF

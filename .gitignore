@@ -91,3 +91,4 @@ docs/images/*.pdf_tex
 teslib/simulation/measurement_subsystem_TB/*.svg
 *.recML
 *.bit
+*.wcfg

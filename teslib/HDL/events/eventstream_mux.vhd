@@ -100,7 +100,8 @@ signal out_state,out_nextstate:outFSMstate;
 signal first_event:boolean;
 signal new_window:boolean;
 signal window_start:boolean;
-signal valid_int:boolean;
+signal valid_out:boolean;
+signal muxstream_out:streambus_t;
 
 function to_std_logic(s:arbFSMstate;w:integer) return std_logic_vector is
 begin
@@ -111,18 +112,26 @@ end function;
 -- debug
 --------------------------------------------------------------------------------
 constant DEBUG:string:="TRUE";
+signal tick_s_last,tick_s_ready,tick_s_valid:boolean;
+--signal muxstream_out_last:boolean;
+attribute S:string;
+
 attribute MARK_DEBUG:string;
 attribute MARK_DEBUG of arb_state_v:signal is DEBUG;
-attribute MARK_DEBUG of tickstream_valid:signal is DEBUG;
-attribute MARK_DEBUG of tickstream_ready:signal is DEBUG;
-attribute MARK_DEBUG of sel:signal is DEBUG;
-attribute MARK_DEBUG of valid_int:signal is DEBUG;
-attribute MARK_DEBUG of ready:signal is DEBUG;
+--attribute MARK_DEBUG of valids:signal is DEBUG;
+--attribute MARK_DEBUG of readys:signal is DEBUG;
+attribute MARK_DEBUG of tick_s_last,tick_s_ready,tick_s_valid:signal is DEBUG;
+--attribute MARK_DEBUG of sel:signal is DEBUG;
+attribute MARK_DEBUG of tick:signal is DEBUG;
 
 begin
-
+tick_s_last <= streams(0).last(0);
+tick_s_valid <= valids(0);
+tick_s_ready <= readys(0);
+--muxstream_out_last <= muxstream_out.last(0);
 arb_state_v <= to_std_logic(arb_state,3);
-valid <= valid_int;
+valid <= valid_out;
+muxstream <= muxstream_out;
 
 tickstreamer:entity work.tickstream
 generic map(
@@ -382,7 +391,6 @@ stream_int.data <= muxstream_int.data(63 downto 17) &
 stream_int.last <= muxstream_int.last;
 stream_int.discard <= muxstream_int.discard;
 
-
 outStreamReg:entity streamlib.streambus_register_slice
 port map(
   clk => clk,
@@ -390,8 +398,8 @@ port map(
   stream_in => stream_int,
   ready_out => muxstream_int_ready,
   valid_in => muxstream_int_valid,
-  stream => muxstream,
+  stream => muxstream_out,
   ready => ready,
-  valid => valid_int
+  valid => valid_out
 );
 end architecture RTL;
