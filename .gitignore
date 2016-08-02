@@ -92,3 +92,4 @@ teslib/simulation/measurement_subsystem_TB/*.svg
 *.recML
 *.bit
 *.wcfg
+python/pcapng/__pycache__/

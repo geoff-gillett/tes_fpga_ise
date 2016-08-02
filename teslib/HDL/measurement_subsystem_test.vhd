@@ -138,13 +138,15 @@ signal framestream_ready:boolean;
 
 --------------------------------------------------------------------------------
 --debug
-constant DEBUG:string:="FALSE";
+constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
 signal muxstream_last:boolean;
 --attribute MARK_DEBUG of reset1:signal is DEBUG;
 attribute MARK_DEBUG of muxstream_valid:signal is DEBUG;
 attribute MARK_DEBUG of muxstream_ready:signal is DEBUG;
 attribute MARK_DEBUG of muxstream_last:signal is DEBUG;
+attribute MARK_DEBUG of mcastream_valid:signal is DEBUG;
+attribute MARK_DEBUG of mcastream_ready:signal is DEBUG;
 --attribute MARK_DEBUG of ethernetstream_ready:signal is DEBUG;
 --attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
 
@@ -166,7 +168,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     delay => to_integer(channel_reg(c).capture.delay),
     delayed => adc_delayed(c)
   );
---
+  
 	measurement:entity work.measurement_unit
   generic map(
     FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
@@ -176,7 +178,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   port map(
     clk => clk,
     reset => reset2,
-    adc_sample => samples(c),
+    adc_sample => adc_delayed(c),
     registers => channel_reg(c),
     filter_config_data => filter_config_data(c),
     filter_config_valid => filter_config_valid(c),

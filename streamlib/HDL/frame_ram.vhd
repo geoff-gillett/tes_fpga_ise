@@ -145,14 +145,14 @@ if rising_edge(clk) then
       rd_ptr_next <= rd_ptr_next + 1;
     end if;
     
-    write_pipe(1) <= good_commit and empty;
-    write_pipe(2 to 3) <= write_pipe(1 to 2); 
-    read_pipe(1) <= read_next;
+    --write_pipe(1) <= good_commit and empty;
+    --write_pipe(2 to 3) <= write_pipe(1 to 2); 
+    read_pipe(1) <= (read_next and not empty) or (good_commit and empty);
     read_pipe(2) <= read_pipe(1) and not empty;
     
-    if handshake or not ram_valid then
-      ram_valid <= read_pipe(2) or write_pipe(3);
-    end if;
+--    if handshake or not ram_valid then
+--      ram_valid <= read_pipe(2); -- or write_pipe(2);
+--    end if;
     
   end if;
 end if;
@@ -172,11 +172,13 @@ begin
     else
       case state is 
       when EMPTY_S =>
-        if ram_valid and not reg_ready then
+        ram_valid <= read_pipe(2);
+        if ram_valid and not reg_ready then 
           state <= REG1_S;
           reg1 <= ram_data;
         end if;
       when REG1_S =>
+        ram_valid <= read_pipe(2);
         if reg_ready then
           if ram_valid then
             reg1 <= ram_data;
@@ -191,33 +193,43 @@ begin
           end if;
         end if;
       when REG2_S =>
-        if reg_ready then
-          if ram_valid then
+        if ram_valid then
+          if reg_ready then
+            ram_valid <= read_pipe(2);
             reg1 <= ram_data;
             reg2 <= reg1;
-          else
+          end if;
+        else
+          if reg_ready then
             state <= REG1_S;
           end if;
+          ram_valid <= read_pipe(2);
         end if;
       end case;
     end if;
     end if;
 end process FSMoutput;
 
-outMux:process(state,ram_valid,ram_data,reg_ready,reg1,reg2,two_pending)
+outMux:process(state,ram_valid,ram_data,reg_ready,reg1,reg2,two_pending,
+  none_pending
+)
 begin
   case state is 
   when EMPTY_S =>
     valid_int <= ram_valid;
     stream_int <= ram_data;
-    ram_ready <= ram_valid;
+    ram_ready <= reg_ready;
   when REG1_S =>
     valid_int <= TRUE;
     stream_int <= reg1;
     if reg_ready then
       ram_ready <= TRUE;
     else
-      ram_ready <= not two_pending;
+      if ram_valid then
+        ram_ready <= none_pending;
+      else
+        ram_ready <= not two_pending;
+      end if;
     end if;
   when REG2_S =>
     valid_int <= TRUE;

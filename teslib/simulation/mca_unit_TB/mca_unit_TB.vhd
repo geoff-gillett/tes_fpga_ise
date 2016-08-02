@@ -29,7 +29,7 @@ entity mca_unit_TB is
 generic(
   CHANNEL_BITS:integer:=1;
   ADDRESS_BITS:integer:=4;
-  COUNTER_BITS:integer:=8;
+  COUNTER_BITS:integer:=32;
   VALUE_BITS:integer:=32;
   TOTAL_BITS:integer:=64;
   TICK_COUNT_BITS:integer:=32;
@@ -67,79 +67,44 @@ begin
 	
 clk <= not clk after CLK_PERIOD/2;
 
-chanGen:for c in 0 to CHANNELS-1 generate
-begin
-	
-	measurements(c).filtered.sample <= to_signed(c,SIGNAL_BITS);
-	measurements(c).slope.sample <= to_signed(-c,SIGNAL_BITS);
-		
-  valueSelector:entity work.mca_value_selector
+value <= X"00000001";
+value_valid <= TRUE;
+UUT:entity work.mca_unit
   generic map(
+    CHANNELS => CHANNELS,
+    ADDRESS_BITS => ADDRESS_BITS,
+    COUNTER_BITS => COUNTER_BITS,
     VALUE_BITS => VALUE_BITS,
-    NUM_VALUES => NUM_VALUES,
-    NUM_VALIDS => NUM_VALIDS
+    TOTAL_BITS => TOTAL_BITS,
+    TICKCOUNT_BITS => 32,
+    TICKPERIOD_BITS => 32,
+    MIN_TICK_PERIOD => MIN_TICK_PERIOD,
+    TICKPIPE_DEPTH => TICKPIPE_DEPTH,
+    ENDIANNESS => ENDIANNESS
   )
   port map(
     clk => clk,
     reset => reset,
-    measurements => measurements(c),
+    initialising => initialising,
+    update_asap => update_asap,
+    update_on_completion => update_on_completion,
+    updated => updated,
+    registers => registers,
+    tick_period => tick_period,
+    channel_select => channel_select,
     value_select => value_select,
     trigger_select => trigger_select,
-    value => values(c),
-    valid => valids(c)
+    value => value,
+    value_valid => value_valid,
+    stream => stream,
+    valid => valid,
+    ready => ready
   );
-  
-end generate;
-
-channelSelector:entity work.mca_channel_selector
-generic map(
-  CHANNEL_BITS => CHANNEL_BITS,
-  VALUE_BITS   => VALUE_BITS
-)
-port map(
-  clk => clk,
-  reset => reset,
-  channel_select => channel_select,
-  values => values,
-  valids => valids,
-  value => value,
-  valid => value_valid
-);
-
-UUT:entity work.mca_unit
-generic map(
-  CHANNEL_BITS => CHANNEL_BITS,
-  ADDRESS_BITS => ADDRESS_BITS,
-  COUNTER_BITS => COUNTER_BITS,
-  VALUE_BITS => VALUE_BITS,
-  TOTAL_BITS => TOTAL_BITS,
-  TICKCOUNT_BITS => TICK_COUNT_BITS,
-  TICKPERIOD_BITS => TICK_PERIOD_BITS,
-  MIN_TICK_PERIOD => MIN_TICK_PERIOD
-)
-port map(
-  clk => clk,
-  reset => reset,
-  initialising => initialising,
-  update_asap => update_asap,
-  update_on_completion => update_on_completion,
-  updated => updated,
-  registers => registers,
-  tick_period => tick_period,
-  channel_select => channel_select,
-  value_select => value_select,
-  trigger_select => trigger_select,
-  value => value,
-  value_valid => value_valid,
-  stream => stream,
-  valid => valid,
-  ready => ready
-);
 
 stimulus:process is
 begin
 registers.bin_n <= to_unsigned(0,MCA_BIN_N_BITS);
-registers.channel <= to_unsigned(0,CHANNEL_WIDTH);
+registers.channel <= to_unsigned(0,3);
 registers.value <= MCA_FILTERED_SIGNAL_D;
 registers.trigger <= CLOCK_MCA_TRIGGER_D;
 registers.last_bin <= to_unsigned(2**ADDRESS_BITS-1,MCA_ADDRESS_BITS);
@@ -158,19 +123,16 @@ wait until not initialising;
 update_asap <= TRUE;
 wait for CLK_PERIOD;
 update_asap <= FALSE;
-wait until updated;
+wait for CLK_PERIOD*128;
+registers.ticks <= to_unsigned(10,MCA_TICKCOUNT_BITS);
+update_asap <= TRUE;
 wait for CLK_PERIOD;
-registers.channel <= to_unsigned(1,CHANNEL_WIDTH);
-update_on_completion <= TRUE;
+update_asap <= FALSE;
+wait for CLK_PERIOD*1280;
+registers.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
+update_asap <= TRUE;
 wait for CLK_PERIOD;
-update_on_completion <= FALSE;
-wait until updated;
-wait for CLK_PERIOD;
-registers.value <= MCA_SLOPE_SIGNAL_D;
-update_on_completion <= TRUE;
-wait for CLK_PERIOD;
-update_on_completion <= FALSE;
-
+update_asap <= FALSE;
 wait;
 end process stimulus;
 

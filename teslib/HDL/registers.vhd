@@ -417,7 +417,7 @@ constant MCA_UPDATE_ASAP:integer:=1;
 function mca_control_register(m:mca_registers_t) return register_data_t;
 
 -- Default register values on reset --------------------------------------------
-constant DEFAULT_TICK_PERIOD_INT:integer:=2**16;
+constant DEFAULT_TICK_PERIOD_INT:integer:=25000000;
 constant DEFAULT_TICK_PERIOD:unsigned(TICK_PERIOD_BITS-1 downto 0)
 				 :=to_unsigned(DEFAULT_TICK_PERIOD_INT,TICK_PERIOD_BITS);
 constant DEFAULT_MTU:unsigned(MTU_BITS-1 downto 0):=to_unsigned(1496,MTU_BITS);

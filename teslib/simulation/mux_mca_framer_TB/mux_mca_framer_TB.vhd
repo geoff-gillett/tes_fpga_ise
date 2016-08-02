@@ -26,9 +26,9 @@ use work.types.all;
 use work.events.all;
 use work.registers.all;
 
-
-entity ethernet_framer_TB is
+entity mux_mca_framer_TB is
 generic(
+  CHANNELS:integer:=2;
 	MTU_BITS:integer:=16;
 	TICK_LATENCY_BITS:integer:=16;
 	FRAMER_ADDRESS_BITS:integer:=8;
@@ -36,9 +36,9 @@ generic(
 	DEFAULT_TICK_LATENCY:unsigned:=to_unsigned(512,16);
 	ENDIANNESS:string:="LITTLE"
 );
-end entity ethernet_framer_TB;
+end entity mux_mca_framer_TB;
 
-architecture testbench of ethernet_framer_TB is
+architecture testbench of mux_mca_framer_TB is
   
 component enet_cdc_fifo
 port (
@@ -101,6 +101,36 @@ signal tick_count:unsigned(1 downto 0);
 
 type int_file is file of integer;
 file bytestream_file:int_file;
+--
+signal start:boolean_vector(CHANNELS-1 downto 0);
+signal commit:boolean_vector(CHANNELS-1 downto 0);
+signal dump:boolean_vector(CHANNELS-1 downto 0);
+signal instreams:streambus_array(CHANNELS-1 downto 0);
+signal instream_valids:boolean_vector(CHANNELS-1 downto 0);
+signal instream_readys : boolean_vector(CHANNELS-1 downto 0);
+signal full : boolean;
+signal tick_period : unsigned(31 downto 0);
+signal cfd_errors : boolean_vector(CHANNELS-1 downto 0);
+signal framer_overflows : boolean_vector(CHANNELS-1 downto 0);
+signal mux_overflows : boolean_vector(CHANNELS-1 downto 0);
+signal measurement_overflows : boolean_vector(CHANNELS-1 downto 0);
+signal peak_overflows : boolean_vector(CHANNELS-1 downto 0);
+signal time_overflows : boolean_vector(CHANNELS-1 downto 0);
+signal baseline_underflows : boolean_vector(CHANNELS-1 downto 0);
+signal window : unsigned(TIME_BITS-1 downto 0);
+signal muxstream : streambus_t;
+signal muxstream_valid : boolean;
+signal muxstream_ready : boolean;
+signal initialising : boolean;
+signal update_asap : boolean;
+signal update_on_completion : boolean;
+signal updated : boolean;
+signal registers : mca_registers_t;
+signal channel_select : std_logic_vector(CHANNELS-1 downto 0);
+signal value_select : std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
+signal trigger_select : std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
+signal value : signed(31 downto 0);
+signal value_valid : boolean;
 
 begin
   
@@ -163,7 +193,73 @@ begin
   end if;
 end process simCount;
 
-UUT:entity work.ethernet_framer
+mux:entity work.eventstream_mux
+generic map(
+  CHANNELS => CHANNELS,
+  TIME_BITS => TIME_BITS,
+  TIMESTAMP_BITS => TIMESTAMP_BITS,
+  TICKPERIOD_BITS => 32,
+  MIN_TICKPERIOD => 128,
+  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
+  ENDIANNESS => ENDIANNESS
+)
+port map(
+  clk => signal_clk,
+  reset => reset,
+  start => start,
+  commit => commit,
+  dump => dump,
+  instreams => instreams,
+  instream_valids => instream_valids,
+  instream_readys => instream_readys,
+  full => full,
+  tick_period => tick_period,
+  cfd_errors => cfd_errors,
+  framer_overflows => framer_overflows,
+  mux_overflows => mux_overflows,
+  measurement_overflows => measurement_overflows,
+  peak_overflows => peak_overflows,
+  time_overflows => time_overflows,
+  baseline_underflows => baseline_underflows,
+  window => window,
+  muxstream => muxstream,
+  valid => muxstream_valid,
+  ready => muxstream_ready
+);
+
+mca:entity work.mca_unit
+  generic map(
+    CHANNELS => CHANNELS,
+    ADDRESS_BITS => 14,
+    COUNTER_BITS => 32,
+    VALUE_BITS => 32,
+    TOTAL_BITS => 64,
+    TICKCOUNT_BITS => 32,
+    TICKPERIOD_BITS => 32,
+    MIN_TICK_PERIOD => 128,
+    TICKPIPE_DEPTH => TICKPIPE_DEPTH,
+    ENDIANNESS => ENDIANNESS
+  )
+  port map(
+    clk => signal_clk,
+    reset => reset,
+    initialising => initialising,
+    update_asap => update_asap,
+    update_on_completion => update_on_completion,
+    updated => updated,
+    registers => registers,
+    tick_period => tick_period,
+    channel_select => channel_select,
+    value_select => value_select,
+    trigger_select => trigger_select,
+    value => value,
+    value_valid => value_valid,
+    stream => mcastream,
+    valid => mcastream_valid,
+    ready => mcastream_ready
+  );
+
+framer:entity work.ethernet_framer
 generic map(
   MTU_BITS => MTU_BITS,
   TICK_LATENCY_BITS => TICK_LATENCY_BITS,

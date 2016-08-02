@@ -215,11 +215,38 @@ begin
 	return sb;
 end function;
 
+--debug
+constant DEBUG:string:="TRUE";
+
+function to_std_logic(s:controlFSMstate;w:integer) return std_logic_vector is
+begin
+  return to_std_logic(controlFSMstate'pos(s),w);
+end function;
+
+function to_std_logic(s:streamFSMstate;w:integer) return std_logic_vector is
+begin
+  return to_std_logic(streamFSMstate'pos(s),w);
+end function;
+
+signal control_state_v:std_logic_vector(1 downto 0);
+signal stream_state_v:std_logic_vector(2 downto 0);
+
+attribute MARK_DEBUG:string;
+
+attribute MARK_DEBUG of update_asap:signal is DEBUG;
+attribute MARK_DEBUG of control_state_v:signal is DEBUG;
+attribute MARK_DEBUG of stream_state_v:signal is DEBUG;
+attribute MARK_DEBUG of mca_axi_valid:signal is DEBUG;
+attribute MARK_DEBUG of mca_axi_ready:signal is DEBUG;
+
 begin
 --
 --------------------------------------------------------------------------------
 -- Control processes and FSM
 --------------------------------------------------------------------------------
+control_state_v <= to_std_logic(control_state,2);
+stream_state_v <= to_std_logic(stream_state,3);
+
 save_registers <= update_asap or update_on_completion;
 initialising <= control_state=INIT;
 controlReg:process(clk)

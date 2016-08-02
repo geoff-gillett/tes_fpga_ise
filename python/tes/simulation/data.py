@@ -4,6 +4,8 @@ from os import path as ospath
 from pickle import Pickler, Unpickler
 from collections import namedtuple
 from datetime import datetime
+from pcapng import FileScanner
+import pcapng
 
 DEFAULT_REPO_PATH = 'c:\\TES_project\\fpga_ise\\'
 File = namedtuple('File', ['filename', 'dtype', 'is_list', 'is_sliceable'])
@@ -450,8 +452,8 @@ class Packet:
             # print('Unknown ethertype:{:X}'.format(self.type))
             self.payload_type = None
 
-        self.frame_sequence = self.bytes[16:18].view(np.int16)[0]
-        self.protocol_sequence = self.bytes[18:20].view(np.int16)[0]
+        self.frame_sequence = self.bytes[16:18].view(np.uint16)[0]
+        self.protocol_sequence = self.bytes[18:20].view(np.uint16)[0]
 
     def __repr__(self):
         if self.payload_type is None:
@@ -491,31 +493,46 @@ class Packet:
 
 
 class PacketStream:
+    # stream can be a filename of a pcapng file
+    # otherwise a np array from simulation data
     # NOTE copies stream['data'] to bytestream
     def __init__(self, stream):
 
-        lasts = (np.where(stream['last'] < 0)[0]) + 1
-
-        if not lasts.size:
-            self.bytes = None
-            self.packets = None
-            return
-
-        if stream['data'].dtype == np.uint32:
-            dt = np.dtype([('data', np.uint8), ('pad', np.uint8, (3,))])
-        else:
-            dt = np.uint8
-
-        self.bytes = stream['data'].view(dt)['data'].astype(
-            np.uint8, copy=True)[0:lasts[-1]]
-
-        # print(self.bytes)
-        start = 0
         self.packets = []
+        self.ticks = []
 
-        for last in lasts:
-            self.packets.append(Packet(self.bytes[start:last]))
-            start = last;
+        if isinstance(stream,str):
+            with open(stream, 'rb') as pcap:
+                s = FileScanner(pcap)
+                for block in s:
+                    if isinstance(block, pcapng.blocks.EnhancedPacket):
+                        self.packets.append(
+                            Packet(
+                                np.frombuffer(block.packet_data, dtype=np.uint8)
+                            )
+                        )
+        else:
+            lasts = (np.where(stream['last'] < 0)[0]) + 1
+
+            if not lasts.size:
+                self.bytes = None
+                self.packets = None
+                return
+
+            if stream['data'].dtype == np.uint32:
+                dt = np.dtype([('data', np.uint8), ('pad', np.uint8, (3,))])
+            else:
+                dt = np.uint8
+
+            self.bytes = stream['data'].view(dt)['data'].astype(
+                np.uint8, copy=True)[0:lasts[-1]]
+
+            # print(self.bytes)
+            start = 0
+
+            for last in lasts:
+                self.packets.append(Packet(self.bytes[start:last]))
+                start = last;
 
     @property
     def distributions(self):
@@ -528,10 +545,11 @@ class PacketStream:
             if packet.payload_type == PayloadType.mca:
                 if last_seq is None:
                     if packet.protocol_sequence != 0:
-                        print(
-                            'Error first MCA frame does not have a 0 protocol sequence number')
+                        print('Error first MCA frame does not have a 0' +
+                              'protocol sequence number')
                 else:
-                    if packet.protocol_sequence != 0 and packet.protocol_sequence != last_seq + 1:
+                    if packet.protocol_sequence != 0 and \
+                                    packet.protocol_sequence != last_seq + 1:
                         print('MCA sequence number:{:d} missing'.format(
                             last_seq + 1))
 
@@ -542,8 +560,9 @@ class PacketStream:
                             distributions.append(d)
                         else:
                             print(
-                                "incomplete distribution dropped starting frame:{:d}".format(
-                                    d._frame_sequence))
+                                'incomplete distribution dropped' +
+                                'starting frame:{:d}'.format(d._frame_sequence)
+                            )
                     d = Distribution(packet)
 
                 else:
@@ -593,9 +612,9 @@ class Distribution:
         #packet_bins = np.uint32((packet.length - 24) / 4)
         counts = packet.payload.view(np.uint32)
 
-        print('frame:{:} prot:{:} length:{:} payload length:{:}'.format(
-            packet.frame_sequence, packet.protocol_sequence, packet.length,
-            len(packet.payload)))
+        # print('frame:{:} prot:{:} length:{:} payload length:{:}'.format(
+        #     packet.frame_sequence, packet.protocol_sequence, packet.length,
+        #     len(packet.payload)))
         self.counts[self._total_bins:self._total_bins + len(counts)] = np.copy(
             counts
         )

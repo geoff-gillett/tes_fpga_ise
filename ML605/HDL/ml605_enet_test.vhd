@@ -881,7 +881,6 @@ measurementSubsystem:entity tes.measurement_subsystem_test
     ethernetstream_ready => ethernetstream_ready
   );
 
-
 --mux:entity tes.eventstream_mux
 --generic map(
 --  --CHANNEL_BITS => CHANNEL_BITS,
