@@ -141,12 +141,13 @@ signal counts:std_logic_vector(65 downto 0);
 -- MCA protocol
 --------------------------------------------------------------------------------
 -- header
---   |  16   |      16       |      32      |  
--- 0 | size  |   last_bin    | lowest_value |  
--- 1 | flags | most_frequent |    reserved  |
--- 2 |                 total                |
--- 3 |             start_time               |
--- 4 |              stop_time               |
+--      packet                                  
+-- word offset  |  16   |      16       |      32      |
+-- 0    24      | size  |   last_bin    | lowest_value |
+-- 1    32      | flags | most_frequent |    reserved  | 
+-- 2    40      |                 total                |
+-- 3    48      |             start_time               |
+-- 4    56      |              stop_time               |
 constant MCA_PROTOCOL_HEADER_WORDS:integer:=5; --FIXME why are these needed
 --constant MCA_PROTOCOL_HEADER_CHUNKS:integer
 --				 :=MCA_PROTOCOL_HEADER_WORDS*BUS_CHUNKS;
@@ -238,6 +239,8 @@ attribute MARK_DEBUG of control_state_v:signal is DEBUG;
 attribute MARK_DEBUG of stream_state_v:signal is DEBUG;
 attribute MARK_DEBUG of mca_axi_valid:signal is DEBUG;
 attribute MARK_DEBUG of mca_axi_ready:signal is DEBUG;
+attribute MARK_DEBUG of tick_count:signal is DEBUG;
+
 
 begin
 --
@@ -318,6 +321,9 @@ end process controlFSMnextstate;
 
 --enabled <= registers.trigger/=DISABLED;
 --FIXME enabled not handled well if not enabled no need to wait on can swap
+--FIXME perhaps should stay in control state till tick or ticks complete
+
+
 controlFSMtransition:process(control_state,update_asap,update_on_completion,
                              enabled,update_int,can_swap,tick,ticks_complete, 
                              tick_pipe,last_tick)

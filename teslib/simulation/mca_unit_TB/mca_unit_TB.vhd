@@ -128,7 +128,7 @@ registers.ticks <= to_unsigned(10,MCA_TICKCOUNT_BITS);
 update_asap <= TRUE;
 wait for CLK_PERIOD;
 update_asap <= FALSE;
-wait for CLK_PERIOD*1280;
+wait for CLK_PERIOD*1000;
 registers.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 update_asap <= TRUE;
 wait for CLK_PERIOD;
