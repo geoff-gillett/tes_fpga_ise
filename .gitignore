@@ -96,3 +96,4 @@ python/pcapng/__pycache__/
 docs/images/python/.ipynb_checkpoints/
 docs/images/python/bytestream
 docs/images/python/traces
+*.svg

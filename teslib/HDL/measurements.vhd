@@ -46,6 +46,7 @@ type raw_measurement_t is record
 	area:area_t;
 	extrema:signal_t;
 	zero_xing:boolean;
+	baseline:signal_t;
 end record;
 
 type pulse_measurement_t is record

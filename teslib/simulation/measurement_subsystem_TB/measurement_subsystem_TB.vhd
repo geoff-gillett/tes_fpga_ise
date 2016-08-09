@@ -358,6 +358,8 @@ begin
 	  write(trace_file, to_integer(measurements(0).raw.sample));
 	  write(trace_file, to_integer(measurements(0).filtered.sample));
 	  write(trace_file, to_integer(measurements(0).slope.sample));
+	  write(trace_file, to_integer(measurements(0).raw.baseline));
+
 	end loop;
 end process traceWriter; 
 

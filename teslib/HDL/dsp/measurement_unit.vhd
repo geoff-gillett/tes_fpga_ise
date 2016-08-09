@@ -411,6 +411,7 @@ port map(
   baseline_estimate => baseline_estimate,
   range_error => baseline_underflow 
 );
+m.raw.baseline <= baseline_estimate;
 
 baselineSubraction:process(clk)
 begin
