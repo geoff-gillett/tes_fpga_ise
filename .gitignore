@@ -93,3 +93,6 @@ teslib/simulation/measurement_subsystem_TB/*.svg
 *.bit
 *.wcfg
 python/pcapng/__pycache__/
+docs/images/python/.ipynb_checkpoints/
+docs/images/python/bytestream
+docs/images/python/traces
