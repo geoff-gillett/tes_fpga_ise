@@ -81,6 +81,7 @@ function to_std_logic(f:tickflags_t) return std_logic_vector;
 ---------------------------- peak event 8 bytes --------------------------------
 -- |   16   |   16   |  16   |  16  |
 -- | height | minima | flags | time |
+--TODO make minima rise_time
 type peak_detection_t is record -- entire peak only event
   height:signal_t; 
   minima:signal_t;  

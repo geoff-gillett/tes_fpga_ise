@@ -97,3 +97,9 @@ docs/images/python/.ipynb_checkpoints/
 docs/images/python/bytestream
 docs/images/python/traces
 *.svg
+*.png
+*.bbl
+*.blg
+docs/images/python/data/bytestream
+docs/images/python/data/dump.vcd
+docs/images/python/data/traces
