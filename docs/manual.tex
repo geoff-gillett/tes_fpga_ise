@@ -123,7 +123,6 @@ by two critical currents.
   }
 \end{figure}
 
-
 \newpage
 
 To operate as a photon detector, the TES is cooled to approximately
@@ -161,7 +160,7 @@ temperature and current.
     due to the non-zero resistance. $\mathrm{V}_\mathrm{b}$ is adjusted to bring
     the TES to an operating point within the transition region with some
     quiescent current $\mathrm{I}_\mathrm{q}$. $\mathrm{I}_\mathrm{q}$ is stable
-    under small changes in temperature due to electro-thermal feedback (see
+    under small changes in temperature due to electrothermal feedback (see
     text).
   }
 \end{figure}
@@ -192,8 +191,10 @@ until there is enough energy to drive the TES into the normal conduction phase.
 At this point pulse depth saturates but energy information continues to be
 carried in the area and length of the pulse with
 reduced resolution\cite{2014JOSAB..31B..20L}.
-(TODO: summarise the results of that paper. Measure the system resolution,
-FPGA included, over the sensors dynamic range)
+(TODO: summarise the results of that paper.  Find and add quantitative values
+for the intrinsic energy resolution, time resolution jitter etc for latter
+comparison, with values measured with FPGA to understand how well the processing
+extracts the information)
 
 
 \begin{figure}[!hpbt]
@@ -241,33 +242,45 @@ FPGA included, over the sensors dynamic range)
 \clearpage
 
 \section{Processing the TES output signal}
---here
-The raw signal needs to be further processed to extract the detection
-energy -- equivalent to photon number for monochromatic
-light -- and the time the detection occurred. Ideally this information should be
-produced in near real time. In order to achieve this I designed a digital
-processing circuit implemented in a Field Programmable Gate Array (FPGA).  
+Experiments require time and number resolved detection information and 
+multiple channels, ideally in real time. \\
+Current techniques for processing \\
+FPGA blah blah \\
+
 
 \begin{figure}[!hpbt]
   \centering
   \includegraphics[width=\textwidth]{images/pipeline.png}
   \caption{
-    Processing pipeline; Top:TES output inverted and amplified. Middle:Baseline
-    correction removes low frequency noise. Bottom:Two stage digital filter,
+    Preparation for measurement - pre-processing pipeline; Top:TES output
+    inverted and amplified.
+    Middle:Baseline correction removes low frequency noise. 
+    Bottom:Two stage digital filter,
     stage 1 smooths the the signal removing high frequency noise, stage 2
     calculates a smooth derivative.
   }
   \label{fig:pipeline}
 \end{figure}
 
+\clearpage
+
 
 \subsection{Baseline Estimation}
+Low frequency baseline wander is removed by continuous tracking of the TES
+output signal with a Multi-channel Analyser (MCA). A MCA is a device that
+produces a histogram of its input. 
+
+signal unipolar nature simple averaging works but rate dependant, this less
+rate dependant.
+
+parameters: integration time,count threshold, average order, offset, threshold.
+
 
 \begin{figure}[!hpbt]
   \centering
   \includegraphics[width=\textwidth]{images/baselineestimation.png}
   \caption{
-    Baseline estimation.
+    Baseline estimation. 
   }
   \label{fig:baselineestimation}
 \end{figure}
