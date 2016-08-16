@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 14.7
-# Date: Wed Jun 22 10:52:52 2016
+# Date: Tue Aug 16 06:34:24 2016
 #
 ##############################################################
 #
@@ -43,7 +43,7 @@ CSET bestprecision=false
 CSET channel_sequence=Basic
 CSET clock_frequency=300.0
 CSET coefficient_buffer_type=Automatic
-CSET coefficient_file=/home/baldrik/TES_project/fpga_ise/teslib/IP_cores/lowpass.coe
+CSET coefficient_file=C:\TES_project\fpga_ise\teslib\IP_cores\smoother.coe
 CSET coefficient_fractional_bits=25
 CSET coefficient_reload=true
 CSET coefficient_sets=1
@@ -109,4 +109,4 @@ CSET zero_pack_factor=1
 MISC pkg_timestamp=2013-07-22T10:45:45Z
 # END Extra information
 GENERATE
-# CRC: e1058ff1
+# CRC: f5f69cc4
