@@ -103,3 +103,7 @@ docs/images/python/traces
 docs/images/python/data/bytestream
 docs/images/python/data/dump.vcd
 docs/images/python/data/traces
+docs/images/python/smootherdata/bytestream
+docs/images/python/smootherdata/dump.vcd
+docs/images/python/smootherdata/traces
+*.eps

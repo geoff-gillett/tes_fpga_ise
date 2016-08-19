@@ -68,6 +68,8 @@
 {\end{regfields}\end{minipage}\vspace{0.5\baselineskip}}
 
 \newcommand{\return}{\code{\textbackslash r}}
+%\newconnand{\subs}[2]{\ensuremath{\mathrm{#1}_\mathrm{#2}}}
+
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{.5\baselineskip}
@@ -115,7 +117,7 @@ by two critical currents.
     The transition region is a mixture of both the normal and superconducting
     phases, islands of normal phase penetrated by quantised flux encircled and
     screened by a supercurrent loop surrounded by superconducting phase. In
-    this region resistance is non-zero and dependent on vortex density?, a
+    this region resistance is non-zero and dependent on vortex density??, a
     function of both temperature and current. Above $\mathrm{I}_{\mathrm{c}_2}$
     the system is fully normal and it resistance has its usual weak
     dependence on temperature only. (TODO: check terminology and facts).
@@ -127,24 +129,23 @@ by two critical currents.
 
 To operate as a photon detector, the TES is cooled to approximately
 $100\,\mathrm{mK}$ well bellow its critical temperature 
-($\mathrm{T}_\mathrm{c}\sim\,150\,\mathrm{mK}$) and biased into the transition
-region between the two critical currents.
+($\mathrm{T}_\mathrm{c}\sim\,150\,\mathrm{mK}$) and electrically biased into the
+transition region between the two critical currents.
 In this region the TES supports a mixture of both superconducting and normal
-phases and has a non-zero resistance strongly? dependant on both electron
-temperature and current.
+phases and has a non-zero resistance which is strongly?? dependant on both
+electron temperature and current.
 
 \subsection{Biasing and Readout}
 
 \begin{figure}[!hpbt]
   \subfloat[Bias and readout cicuit]{%
      \includesvg[pretex=\relscale{0.5},width=0.5\textwidth]{circuit}
-%     \includesvg[width=0.8\textwidth]{circuit}
-      \label{fig:circuit}
+     \label{fig:circuit}
   }
-    \subfloat[TES biasing]{
-      \includesvg[width=0.5\textwidth]{sensorbias}
-      \label{fig:sensorbias}
-    }
+  \subfloat[TES biasing]{
+    \includesvg[width=0.5\textwidth]{sensorbias}
+    \label{fig:sensorbias}
+  }
   \caption{
     (a) The TES placed in parallel with a small shunt resistance forming a
     current divider biased by $\mathrm{V}_\mathrm{b}$. The sensor
@@ -208,7 +209,9 @@ extracts the information)
     energy and in the case of monochromatic light the number of photons
     detected.
     If enough energy is absorbed the TES will transition to the normal
-    conducting state and saturate the pulse depth.
+    conducting state and saturate the pulse depth. The left panel illustrates
+    the sensors trajectory in the superconducting phase diagram for different
+    event energies, the right sensor current vs time.
   }
   \label{fig:detection}
 \end{figure}
@@ -242,11 +245,22 @@ extracts the information)
 \clearpage
 
 \section{Processing the TES output signal}
-Experiments require time and number resolved detection information and 
-multiple channels, ideally in real time. \\
-Current techniques for processing \\
-FPGA blah blah \\
+After room temperature amplification, the signal is 
+digitised by a DC coupled 14 bit analogue to digital converter (ADC) with a
+$250$ Mhz sample rate. ADC output is processed by a Field programmable gate array (FPGA) which perform time and
+energy measurements on the detection pulses. The FPGA expects positive going pulses,
+and this can be  achieved by using an inverting amplifier or adjusting 
+$\mathrm{V}_\mathrm{f}$ (figure \ref{fig:circuit}) to give negative
+transduction gain. DC coupling allows adjustment of the DC offset of the signal
+giving full access $14$ bit dynamic range of the ADC.
 
+(TODO: compare other methods and FPGA approach, add a brief introduction to
+FPGAs).
+
+Prior to measurement a signal conditioning pipeline removes signal noise
+(figure \ref{fig:pipeline}), by first performing baseline correction then
+applying two stages of filtering using digital signal processing (DSP) 
+techniques.
 
 \begin{figure}[!hpbt]
   \centering
@@ -259,50 +273,157 @@ FPGA blah blah \\
     stage 1 smooths the the signal removing high frequency noise, stage 2
     calculates a smooth derivative.
   }
-  \label{fig:pipeline}
+  \label{fig:pipeline} 
 \end{figure}
 
-\clearpage
+\subsection{Baseline estimation and correction}
+Low frequency baseline wander is corrected by monitoring the distribution of the
+ADC output with a multi-channel analyser (MCA). 
 
 
-\subsection{Baseline Estimation}
-Low frequency baseline wander is removed by continuous tracking of the TES
-output signal with a Multi-channel Analyser (MCA). A MCA is a device that
-produces a histogram of its input. 
+A MCA is a circuit that captures the distribution of a signal by
+counting signal values in a memory over some integration period, each
+memory location representing a histogram bin. 
+The MCA I have designed
+also dynamically outputs the highest count and corresponding bin (most frequent
+bin), ie the peak of the the distribution, this forms the basis of the baseline
+estimation (figure \ref{fig:baselineestimation}). 
 
-signal unipolar nature simple averaging works but rate dependant, this less
-rate dependant.
+The estimation process is controlled by the following registers:
+\begin{itemize}
+  \item \code{baseline.offset}
+  \item \code{baseline.threshold}
+  \item \code{baseline.period}
+  \item \code{baseline.count\_threshold}
+  \item \code{baseline.average\_order}
+\end{itemize} 
 
-parameters: integration time,count threshold, average order, offset, threshold.
+To conserve FPGA resources the baseline MCA is constructed with $2^{11}$ bins
+covering one eighth of the dynamic range of the ADC, for correct operation the
+quiescent signal level must be centered in the range $-2^{10}$ to $2^{10}+1$. 
+The \code{baseline.offset} register is used to achieve this and its value is
+subtracted from each unsigned $14$ bit ADC sample producing a signed $15$ bit
+value. The register \code{baseline.threshold} sets an upper limit on values that
+will be recorded in the histogram and can exclude detection peaks from the
+baseline estimation.
+In order to capture the dynamics of the distribution the MCA counters must be
+periodically reset to zero, this is controlled by register
+\code{baseline.period}. During this period the 
+highest count and corresponding bin currently in the MCA are available. This
+most frequent bin is passed to an averaging circuit when it is \emph{new}, ie
+when either the bin or the count value change, and when the count is above 
+the value held in the \code{baseline.count\_threshold} register. The baseline
+estimate is a ($15.1$ bit) average over $2^{n}$ bin values , where $n$ is the
+value of the \code{baseline.average\_order} register. (TODO: Add a flowchart to
+describe this process clearly?)
 
+(TODO:Compare simple averaging over the integration time with the MCA
+technique, preliminary investigations showed that the uniploar nature of the
+signal caused the average to drift up as rate increased and the MCA performed
+better. I have never had enough data to a quantitative
+analysis. It maybe possible to remove the
+baseline MCA, save resources and simplify the circuit).
+
+(TODO: Establish where the baseline noise is coming from, my current hypothesis
+is that it must be LF noise on $\mathrm{V}_\mathrm{f}$ which should be more
+sensitive than $\mathrm{V}_\mathrm{b}$. The relative sensitivity could be
+calculated from a decent quantitative measurement of the SQUIDS
+$\mathrm{V}-\phi$ response. The only other interaction I can think of is
+stray flux at the squid, should check for cross talk at the SQUIDS.)
 
 \begin{figure}[!hpbt]
   \centering
   \includegraphics[width=\textwidth]{images/baselineestimation.png}
   \caption{
-    Baseline estimation. 
+    The baseline estimate is the most frequent value of the digitised signal.
+    The left panel shows the digitised signal with three MCA integration periods
+    highlighted, the right shows the three distributions corresponding to the
+    integration periods.
   }
   \label{fig:baselineestimation}
 \end{figure}
+
+\clearpage
+
+
+\subsection{Digital filtering}
+
+A linear time-invariant (LTI) system is completely represented by its impulse
+response, the system output is the convolution of the input and
+impulse response, so using a circuit that can convolve two signals it possible
+to emulate any LTI system. This is particularly useful in signal processing
+where the impulse response, called the filter kernel, is designed to emulate a
+filter with some desired frequency charateristics. 
+
+In digitised (discrete-time) systems convolution becomes a sum
+\begin{equation*}
+  y[n]=\sum_{k=0}^{N-1}h_k x[n-k]
+\end{equation*}
+ 
+where $x[n]$ is the input sequence, $y[n]$ the output and $c_k$ the kernel
+coefficients, for finite kernels convolution is reasonably straight
+forward to implement in hardware.
+
+\begin{figure}[!hpbt]
+  \centering 
+  \includesvg[width=0.8\textwidth]{systolicFIR}
+  \caption{
+    Schematic representation of a direct form finite impulse response (FIR)
+    filter using pipelined systolic multiply-accumulate architecture, the FPGA
+    contains dedicated DSP slices for easy implementation.
+    At the top is an $N$ tap delay line ($z^{-n}$ is the z-transform
+    representation of a delay by $n$). The output of each tap is multiplied by
+    its corresponding kernel coefficient and these partial products are added
+    together producing the output sample. 
+  }
+  \label{fig:FIR}
+\end{figure}
+
+The signal conditioning pipeline includes two $23$ tap FIR filters the first
+stage smooths the signal the second calculates the derivative. The kernels of
+both filters are re-loadable and can be updated without changes to the
+hardware, the default magnitude responses are shown in figure
+\ref{fig:filterresps}. (TODO: add description of reload procedure.)
+
+
+\begin{figure}[!hpbt]
+  \centering
+  \includesvg[width=\textwidth]{filter_resps}
+  \caption{
+    Magnitude responses of the default FIR filters, left smoother stage, right
+    differentiator stage.}
+  \label{fig:filterresps}
+\end{figure}
+
+\clearpage
+
+\subsection{Measurement}
+\subsubsection{Peak extraction}
+Two registers \code{slope\_threshold} and \code{pulse\_threshold} are used to
+control the measurement process and zero crossings of the slope establish the
+local extrema in the conditioned detection signal.
+When the slope makes a positive going crossing of \code{slope\_threshold} the
+detection signal between the previous minimum and the next maximum is
+considered a peak. A constant fraction circuit 
 
 
 \begin{figure}[!hpbt]
   \centering
   \includesvg[width=0.8\textwidth]{peakextraction}
   \caption{
-    peak extraction
+    Peak extraction
   }
   \label{fig:peakextraction}
 \end{figure}
 
-
-
-\subsection{DSP}
-(include quick description of DSP in general??)
-The DSP constists of two 23 tap FIR filters the first stage smooths the signal
-reducing noise the second stage calculates the first derivative of the smoothed
-signal.
-
+\begin{figure}[!hpbt]
+  \centering
+  \includesvg[width=0.8\textwidth]{pulsemeasurement}
+  \caption{
+    pulse measurement
+  }
+  \label{fig:pulsemeasurement}
+\end{figure}
 \subsection{Multi channel analyser}
 The multichannel analyser capture the distribution of the measurements
 \subsection{measurement}
