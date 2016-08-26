@@ -6,14 +6,18 @@
 \usepackage[T1]{fontenc}
 \usepackage{upquote}
 \usepackage{graphicx}
-\usepackage{svg}
 \usepackage{cite}
+\usepackage{svg}
 \setsvg{inkscape = inkscape -z -D}
 \setsvg{svgpath = images/}
 
 \usepackage{relsize}
 \usepackage{subfloat}
 \newcommand{\code}[1]{\texttt{#1}}
+\usepackage{bytefield}
+%\usepackage{register}
+\usepackage{bitpattern}
+\usepackage{mathdots}
 
 \newsavebox{\fieldname}
 \newlength{\fieldwidth}
@@ -245,14 +249,14 @@ extracts the information)
 \clearpage
 
 \section{Processing the TES output signal}
-After room temperature amplification, the signal is 
-digitised by a DC coupled 14 bit analogue to digital converter (ADC) with a
-$250$ Mhz sample rate. ADC output is processed by a Field programmable gate array (FPGA) which perform time and
-energy measurements on the detection pulses. The FPGA expects positive going pulses,
-and this can be  achieved by using an inverting amplifier or adjusting 
-$\mathrm{V}_\mathrm{f}$ (figure \ref{fig:circuit}) to give negative
-transduction gain. DC coupling allows adjustment of the DC offset of the signal
-giving full access $14$ bit dynamic range of the ADC.
+After room temperature amplification, the signal is digitised by a DC coupled 14
+bit analogue to digital converter (ADC) with a $250$ Mhz sample rate. ADC output
+is processed by a Field programmable gate array (FPGA) which perform time and
+energy measurements on the detection pulses. The FPGA expects positive going
+pulses, and this can be  achieved by using an inverting amplifier or adjusting
+$\mathrm{V}_\mathrm{f}$ (figure \ref{fig:circuit}) to give negative transduction
+gain. DC coupling allows adjustment of the DC offset of the signal giving full
+access $14$ bit dynamic range of the ADC.
 
 (TODO: compare other methods and FPGA approach, add a brief introduction to
 FPGAs).
@@ -345,7 +349,6 @@ stray flux at the squid, should check for cross talk at the SQUIDS.)
 
 \clearpage
 
-
 \subsection{Digital filtering}
 
 A linear time-invariant (LTI) system is completely represented by its impulse
@@ -385,7 +388,6 @@ both filters are re-loadable and can be updated without changes to the
 hardware, the default magnitude responses are shown in figure
 \ref{fig:filterresps}. (TODO: add description of reload procedure.)
 
-
 \begin{figure}[!hpbt]
   \centering
   \includesvg[width=\textwidth]{filter_resps}
@@ -397,15 +399,83 @@ hardware, the default magnitude responses are shown in figure
 
 \clearpage
 
-\subsection{Measurement}
-\subsubsection{Peak extraction}
+\section{Measurement}
+
+Detection pulses are converted into fixed length event structures for
+transmission to the host computer. Three event types peak pulse and area plus
+a tick event. Each event structure contains a $16$ bit relative
+time-stamp recording time elapsed since the last event, this time-stamp
+saturates after $131068$ ns. The tick event contains a $64$ bit time-stamp that
+effectively never saturates (2338 years), the time between tick events is set
+with the register \code{tick\_period} at setting of $65355$ enables a completely
+time resolved detection record.
+
+\bpLittleEndian
+\bpNumberBitsAbove
+%\bpNumberFieldsTwice
+%\bpSetTickHeight 0
+eFlags:
+\bitpattern[startBit=15]{PC}[4]R[1]C[3]{TT}[2]{HT}[2]{DT}[2]T[1]N[1]/
+
+\begin{itemize}
+  \item PC: peak count or peak number
+  \item R: height/time measurements are relative to the start point.
+  \item C: channel
+  \item TT: timing type
+  \item HT: height type
+  \item ET: detection type
+  \item T: is tick
+  \item N: new window
+\end{itemize}
+
+
+Detection Types:\\
+Peak event: \\
+\bitpattern[startBit=63]{height}[16][8]{rise time}[16][8]{eFlags}[16][8]
+{rTime}[16][8]/
+
+Area event: \\
+\bitpattern[startBit=63]{area}[32][16]{eFlags}[16][8]{rTime}[16][8]/
+
+Pulse event: \\
+\bitpattern[startBit=63]{size}[16][8]{plength}[16][8]{eFlags}[16][8]
+{rTime}[16][8]/
+\\
+\bitpattern[startBit=63,noBitNumbers]{area}[32][16]{pthresh}[16][8]
+{sThresh}[16][8]/
+\\
+\bitpattern[startBit=63,noBitNumbers]{height}[16][8]{minima}[16][8]
+{rise time}[16][8]{pTime}[16][8]/
+peak
+\\
+Number of slots set by \code{max\_peaks} register. $\vdots$
+\\
+\bitpattern[startBit=63,noBitNumbers]{height}[16][8]{minima}[16][8]
+{rise time}[16][8]{pTime}[16][8]/
+
+\clearpage
+
+Tick event:\\
+\bitpattern[startBit=63]{period}[32][16]{tFlags}[16][8]{rTime}[16][8]/
+\\
+\bitpattern[startBit=63,noBitNumbers]{full time-stamp}[64][32]/
+\\
+\bitpattern[startBit=63,noBitNumbers]{overflow and error flags}[64][32]/
+  
+\subsection{Peak extraction}
 Two registers \code{slope\_threshold} and \code{pulse\_threshold} are used to
 control the measurement process and zero crossings of the slope establish the
 local extrema in the conditioned detection signal.
 When the slope makes a positive going crossing of \code{slope\_threshold} the
-detection signal between the previous minimum and the next maximum is
-considered a peak. A constant fraction circuit 
-
+signal between the previous minimum and the next maximum is
+considered a peak. Three different heights can be recorded; the raw height $h$
+the difference between the maximum and minimum, a constant fraction of the raw
+height $(1-f)h$ where $f$ is the value in the \code{constant\_fraction}
+register and the integral of the slope between the zero crossings for the
+minimum and minimum. A time-stamp can be generated at $5$ points; the starting
+minimum, when the signal rises $fh$ above the minimum, when the slope crosses
+\code{slope\_threshold}, when the signal crosses \code{pulse\_threshold} and at
+the peak maximum.
 
 \begin{figure}[!hpbt]
   \centering
@@ -416,6 +486,7 @@ considered a peak. A constant fraction circuit
   \label{fig:peakextraction}
 \end{figure}
 
+
 \begin{figure}[!hpbt]
   \centering
   \includesvg[width=0.8\textwidth]{pulsemeasurement}
@@ -424,6 +495,14 @@ considered a peak. A constant fraction circuit
   }
   \label{fig:pulsemeasurement}
 \end{figure}
+
+\begin{figure}[!hpbt]
+  \centering 
+  \includesvg[pretex=\relscale{0.3},width=0.8\textwidth]{design}
+\end{figure}
+
+\clearpage
+
 \subsection{Multi channel analyser}
 The multichannel analyser capture the distribution of the measurements
 \subsection{measurement}
@@ -449,7 +528,7 @@ over a point to point connection.
 %   \includesvg[width=0.7\textwidth]{baselinecorrected}
 % \end{figure}
 
-\subsection{Registers}
+\section{Registers}
 
 
 \subsection{Low level serial protocol}

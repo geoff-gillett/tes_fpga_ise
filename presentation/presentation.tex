@@ -1,0 +1,794 @@
+\documentclass{beamer}
+
+\usepackage{svg}
+\setsvg{inkscape = inkscape -z -D}
+\setsvg{svgpath = ../docs/images/}
+\usepackage{relsize}
+\usepackage{subfloat}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{bitpattern}
+\usepackage{bytefield}
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+
+\title[TES Processor] % (optional, use only with long paper titles)
+{Real time processing of Transition edge sensor (TES) data}
+
+%\subtitle
+%{Include Only If Paper Has a Subtitle}
+
+\author[Geoff Gillett] % (optional, use only with lots of authors)
+{Geoff Gillett}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[The University of Queensland] % (optional, but mostly needed)
+{
+  ARC Centre of excellence for Engineered Quantum Systems\\
+  ARC Centre of excellence for Quantum Computing and Communication Technology\\
+  The University of Queensland}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[Thesis review 2016] % (optional, should be abbreviation of conference
+% name)
+{2016}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Physics/Engineering}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+% \AtBeginSubsection[]
+% {
+%   \begin{frame}<beamer>{Outline}
+%     \tableofcontents[currentsection,currentsubsection]
+%   \end{frame}
+% }
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents
+  % You might wish to add the option [pausesections]
+\end{frame}
+
+
+% Structuring a talk is a difficult task and the following structure
+% may not be suitable. Here are some rules that apply for this
+% solution: 
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+% - A conference audience is likely to know very little of what you
+%   are going to talk about. So *simplify*!
+% - In a 20min talk, getting the main ideas across is hard
+%   enough. Leave out details, even if it means being less precise than
+%   you think necessary.
+% - If you omit details that are vital to the proof/implementation,
+%   just say so once. Everybody will be happy with that.
+
+
+\section{TES Physics}
+\begin{frame}{Calorimeters}
+  \begin{figure}[!hpbt]
+    \centering
+    \includesvg[width=0.8\textwidth]{calorimeter}
+  \end{figure}
+  \vspace{-1 cm}
+  {\Tiny Lita \emph{et.al} Counting near-infrared
+  single-photons with 95\% efficiency. doi:10.1364/OE.16.003032}
+\end{frame}
+
+\begin{frame}{Type II superconductor}
+  \begin{figure}[!hpbt]
+    \centering
+    \includesvg[width=0.8\textwidth]{typeIIsuperconductor}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Biasing and Readout}
+  \begin{figure}[!hpbt]
+    \subfloat[Bias and readout cicuit]{%
+       \includesvg[pretex=\relscale{0.5},width=0.5\textwidth]{circuit}
+       \label{fig:circuit}
+    }
+    \subfloat[TES biasing]{
+      \includesvg[width=0.5\textwidth]{sensorbias}
+      \label{fig:sensorbias}
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Photon detection}
+  \begin{figure}[!hpbt]
+    \centering 
+    \includesvg[width=0.7\textwidth]{detection}
+  \end{figure}
+  \vspace{-0.8 cm}
+  {\Tiny Levine \emph{et.el.} Photon-number uncertainty in a superconducting 
+  transition edge sensor sensor beyond resolved-photon-number determination.  
+  doi:10.1364/JOSAB.31.000B20}
+\end{frame}
+  
+\section{Field Programmable Gate Array}
+\begin{frame}{Field Programmable Gate Array (FPGA)}
+  \begin{itemize}
+    \item Reconfigurable Digital Circuit
+    \item Array of resources RAM, DSP, LUT, Flip-flops etc
+    \item Circuit described using a Hardware Description language (HDL) 
+  \end{itemize}
+\end{frame}
+
+\section{Processor design}
+
+\subsection{Signal Conditioning}
+
+\begin{frame}{Signal Conditioning}
+  \begin{figure}[!hpbt]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../docs/images/pipeline.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Baseline Correction}
+  \begin{figure}[!hpbt]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../docs/images/baselineestimation.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Digital Filters}
+  Linear time-invariant (LTI) systems - output is convolution of input and impulse
+  response \\
+  \vspace{0.5cm}
+  Discrete convolution: $y[n]=\sum_{k=0}^{N-1}h_k x[n-k]$ \\
+  \begin{figure}[!hpbt]
+    \centering 
+    \includesvg[width=0.8\textwidth]{FIR}
+  \end{figure}
+  \begin{center}
+    Direct form Finite Impulse Response (FIR) filter
+  \end{center}
+\end{frame}
+
+\begin{frame}{Default Magnitude Responses}
+  \begin{figure}[!hpbt]
+    \subfloat[Smoother]{%
+       \includesvg[pretex=\relscale{0.5},width=0.5\textwidth]{lowpass_resp}
+    }
+    \subfloat[Differentiator]{
+      \includesvg[width=0.5\textwidth]{diff_resp}
+    }
+  \end{figure}
+\end{frame}
+
+\subsection{Measurement}
+
+\bpLittleEndian
+\bpNumberBitsAbove
+\bpSetTickHeight{1pt}
+\bpSetBitWidth{8pt}
+\renewcommand\bpFormatBitNumber[1]{{\Tiny\ttfamily\strut#1}}
+\renewcommand\bpFormatField[1]{{\tiny\ttfamily\strut#1}}
+
+\newcommand{\colorbitbox}[3]{%
+  \rlap{\bitbox{#2}{\color{#1}\rule{\width}{\height}}}%
+  \bitbox{#2}{#3}}
+
+\definecolor{lightred}{rgb}{1,0.7,0.71}
+
+\begin{frame}{Event stream}
+
+  {\scriptsize Peak event:} \\
+  \bitpattern[startBit=63]{height}[16][8]{rise time}[16][8]{eFlags}[16][8]
+  {rTime}[16][8]/
+  \\
+  {\scriptsize Area event:} \\
+  \bitpattern[startBit=63]{area}[32][16]{eFlags}[16][8]{rTime}[16][8]/
+  \\
+  {\scriptsize Pulse event:} \\
+  \bitpattern[startBit=63]{size}[16][8]{plength}[16][8]{eFlags}[16][8]
+  {rTime}[16][8]/
+  \\
+  \bitpattern[startBit=63,noBitNumbers]{area}[32][16]{pthresh}[16][8]
+  {sThresh}[16][8]/
+  \\
+  \bitpattern[startBit=63,noBitNumbers]{height}[16][8]{minima}[16][8]
+  {rise time}[16][8]{pTime}[16][8]/
+  {\scriptsize peak}
+  \\
+  \makebox[20 pt]{} {\tiny Number of peak slots set by \code{max\_peaks} register}
+  \bitpattern[startBit=63,noBitNumbers]{height}[16][8]{minima}[16][8]
+  {rise time}[16][8]{pTime}[16][8]/
+  \\
+  {\scriptsize Tick event:}\\
+  \bitpattern[startBit=63]{period}[32][16]{tFlags}[16][8]{rTime}[16][8]/
+  \bitpattern[startBit=63,noBitNumbers]{full time-stamp}[64][32]/
+  \bitpattern[startBit=63,noBitNumbers]{overflow and error flags}[64][32]/
+  \\
+\end{frame}
+
+\begin{frame}{Peak Extraction:Relative measurement flag-0}
+  \tiny{}
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \bitheader[endianness=big]{0-15} \\
+     %\vspace{-1mm}
+     \bitbox{4}{PN} 
+     \colorbitbox{lightred}{1}{R} 
+     \bitbox{3}{C} 
+     \bitbox{2}{TT} 
+     \bitbox{2}{HT} 
+     \bitbox{2}{DT} 
+     \bitbox{1}{T} 
+     \bitbox{1}{N}
+  \end{bytefield}
+  \raisebox{3 pt}{eFlags}
+  
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \\
+     %\vspace{-1mm}
+     \bitbox{4}{0} 
+     \colorbitbox{lightred}{1}{0} 
+     \bitbox{3}{0} 
+     \bitbox{2}{3} 
+     \bitbox{2}{0} 
+     \bitbox{2}{0} 
+     \bitbox{1}{0} 
+     \bitbox{1}{?} 
+  \end{bytefield}
+  
+  \vspace{-0.5cm}
+  
+  \begin{figure}[!hpbt]
+    \centering
+    \includesvg[width=0.7\textwidth]{peakextraction1}
+  \end{figure}
+  
+  \vspace{-0.5cm}
+  
+  \begin{center}
+    \bitpattern[startBit=63]{1761}[16][8]{134}[16][8]{eFlags}[16][8]
+    {0}[16][8]/
+  \end{center}
+\end{frame}
+
+\begin{frame}{Peak Extraction:Relative measurement flag-1}
+  \tiny{}
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \bitheader[endianness=big]{0-15} \\
+     %\vspace{-1mm}
+     \bitbox{4}{PN} 
+     \colorbitbox{lightred}{1}{R} 
+     \bitbox{3}{C} 
+     \bitbox{2}{TT} 
+     \bitbox{2}{HT} 
+     \bitbox{2}{DT} 
+     \bitbox{1}{T} 
+     \bitbox{1}{N}
+  \end{bytefield}
+  \raisebox{3 pt}{eFlags}
+  
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \\
+     %\vspace{-1mm}
+     \bitbox{4}{0} 
+     \colorbitbox{lightred}{1}{1} 
+     \bitbox{3}{0} 
+     \bitbox{2}{3} 
+     \bitbox{2}{0} 
+     \bitbox{2}{0} 
+     \bitbox{1}{0} 
+     \bitbox{1}{?} 
+  \end{bytefield}
+  
+  \vspace{-0.5cm}
+  
+  \begin{figure}[!hpbt]
+    \centering
+    \includesvg[width=0.7\textwidth]{peakextraction2}
+  \end{figure}
+  
+  \vspace{-0.5cm}
+  
+  \begin{center}
+    \bitpattern[startBit=63]{1814}[16][8]{134}[16][8]{eFlags}[16][8]
+    {0}[16][8]/
+  \end{center}
+\end{frame}
+
+
+\begin{frame}{Peak Extraction: Timing type-CF low}
+  \tiny{}
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \bitheader[endianness=big]{0-15} \\
+     %\vspace{-1mm}
+     \bitbox{4}{PN} 
+     \bitbox{1}{R} 
+     \bitbox{3}{C} 
+     \colorbitbox{lightred}{2}{TT} 
+     \bitbox{2}{HT} 
+     \bitbox{2}{DT} 
+     \bitbox{1}{T} 
+     \bitbox{1}{N}
+  \end{bytefield}
+  \raisebox{3 pt}{eFlags}
+  
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \\
+     %\vspace{-1mm}
+     \bitbox{4}{0} 
+     \bitbox{1}{1} 
+     \bitbox{3}{0} 
+     \colorbitbox{lightred}{2}{2} 
+     \bitbox{2}{0} 
+     \bitbox{2}{0} 
+     \bitbox{1}{0} 
+     \bitbox{1}{?} 
+  \end{bytefield}
+  
+  \vspace{-0.5cm}
+  
+  \begin{figure}[!hpbt]
+    \centering
+    \includesvg[width=0.7\textwidth]{peakextraction3}
+  \end{figure}
+  
+  \vspace{-0.5cm}
+  
+  \begin{center}
+    \bitpattern[startBit=63]{1622}[16][8]{97}[16][8]{eFlags}[16][8]
+    {+37}[16][8]/
+  \end{center}
+\end{frame}
+
+\begin{frame}{Peak Extraction: Timing type-slope crossing}
+  \tiny{}
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \bitheader[endianness=big]{0-15} \\
+     %\vspace{-1mm}
+     \bitbox{4}{PN} 
+     \bitbox{1}{R} 
+     \bitbox{3}{C} 
+     \colorbitbox{lightred}{2}{TT} 
+     \bitbox{2}{HT} 
+     \bitbox{2}{DT} 
+     \bitbox{1}{T} 
+     \bitbox{1}{N}
+  \end{bytefield}
+  \raisebox{3 pt}{eFlags}
+  
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \\
+     %\vspace{-1mm}
+     \bitbox{4}{0} 
+     \bitbox{1}{1} 
+     \bitbox{3}{0} 
+     \colorbitbox{lightred}{2}{1} 
+     \bitbox{2}{0} 
+     \bitbox{2}{0} 
+     \bitbox{1}{0} 
+     \bitbox{1}{?} 
+  \end{bytefield}
+  
+  \vspace{-0.5cm}
+  
+  \begin{figure}[!hpbt]
+    \centering
+    \includesvg[width=0.7\textwidth]{peakextraction4}
+  \end{figure}
+  
+  \vspace{-0.5cm}
+  
+  \begin{center}
+    \bitpattern[startBit=63]{1502}[16][8]{90}[16][8]{eFlags}[16][8]
+    {+44}[16][8]/
+  \end{center}
+\end{frame}
+
+\begin{frame}{Peak Extraction: Timing type-pulse crossing}
+  \tiny{}
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \bitheader[endianness=big]{0-15} \\
+     %\vspace{-1mm}
+     \bitbox{4}{PN} 
+     \bitbox{1}{R} 
+     \bitbox{3}{C} 
+     \colorbitbox{lightred}{2}{TT} 
+     \bitbox{2}{HT} 
+     \bitbox{2}{DT} 
+     \bitbox{1}{T} 
+     \bitbox{1}{N}
+  \end{bytefield}
+  \raisebox{3 pt}{eFlags}
+  
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \\
+     %\vspace{-1mm}
+     \bitbox{4}{0} 
+     \bitbox{1}{1} 
+     \bitbox{3}{0} 
+     \colorbitbox{lightred}{2}{0} 
+     \bitbox{2}{0} 
+     \bitbox{2}{0} 
+     \bitbox{1}{0} 
+     \bitbox{1}{?} 
+  \end{bytefield}
+  
+  \vspace{-0.5cm}
+  
+  \begin{figure}[!hpbt]
+    \centering
+    \includesvg[width=0.7\textwidth]{peakextraction5}
+  \end{figure}
+  
+  \vspace{-0.5cm}
+  
+  \begin{center}
+    \bitpattern[startBit=63]{1161}[16][8]{58}[16][8]{eFlags}[16][8]
+    {+76}[16][8]/
+  \end{center}
+\end{frame}
+
+\begin{frame}{Peak Extraction: Height type-CF high}
+  \tiny{}
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \bitheader[endianness=big]{0-15} \\
+     %\vspace{-1mm}
+     \bitbox{4}{PN} 
+     \bitbox{1}{R} 
+     \bitbox{3}{C} 
+     \bitbox{2}{TT} 
+     \colorbitbox{lightred}{2}{HT} 
+     \bitbox{2}{DT} 
+     \bitbox{1}{T} 
+     \bitbox{1}{N}
+  \end{bytefield}
+  \raisebox{3 pt}{eFlags}
+  
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \\
+     %\vspace{-1mm}
+     \bitbox{4}{0} 
+     \bitbox{1}{1} 
+     \bitbox{3}{0} 
+     \bitbox{2}{2} 
+     \colorbitbox{lightred}{2}{1} 
+     \bitbox{2}{0} 
+     \bitbox{1}{0} 
+     \bitbox{1}{?} 
+  \end{bytefield}
+  
+  \vspace{-0.5cm}
+  
+  \begin{figure}[!hpbt]
+    \centering
+    \includesvg[width=0.7\textwidth]{peakextraction6}
+  \end{figure}
+  
+  \vspace{-0.5cm}
+  
+  \begin{center}
+    \bitpattern[startBit=63]{1433}[16][8]{69}[16][8]{eFlags}[16][8]
+    {+37}[16][8]/
+  \end{center}
+\end{frame}
+
+\begin{frame}{Peak Extraction: Height type-slope integral}
+  \tiny{}
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \bitheader[endianness=big]{0-15} \\
+     %\vspace{-1mm}
+     \bitbox{4}{PN} 
+     \bitbox{1}{R} 
+     \bitbox{3}{C} 
+     \bitbox{2}{TT} 
+     \colorbitbox{lightred}{2}{HT} 
+     \bitbox{2}{DT} 
+     \bitbox{1}{T} 
+     \bitbox{1}{N}
+  \end{bytefield}
+  \raisebox{3 pt}{eFlags}
+  
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \\
+     %\vspace{-1mm}
+     \bitbox{4}{0} 
+     \bitbox{1}{1} 
+     \bitbox{3}{0} 
+     \bitbox{2}{2} 
+     \colorbitbox{lightred}{2}{2} 
+     \bitbox{2}{0} 
+     \bitbox{1}{0} 
+     \bitbox{1}{?} 
+  \end{bytefield}
+  
+  \vspace{-0.5cm}
+  
+  \begin{figure}[!hpbt]
+    \centering
+    \includesvg[width=0.7\textwidth]{peakextraction7}
+  \end{figure}
+  
+  \vspace{-0.5cm}
+  
+  \begin{center}
+    \bitpattern[startBit=63]{226.0}[16][8]{97}[16][8]{eFlags}[16][8]
+    {+37}[16][8]/
+  \end{center}
+\end{frame}
+
+\bpSetTickHeight{1pt}
+\bpSetBitWidth{8pt}
+\renewcommand\bpFormatBitNumber[1]{{\Tiny\ttfamily\strut#1}}
+\renewcommand\bpFormatField[1]{{\Tiny\ttfamily\strut#1}}
+\begin{frame}{Pulse Measurement}
+  \tiny{}
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \bitheader[endianness=big]{0-15} \\
+     %\vspace{-1mm}
+     \bitbox{4}{PN} 
+     \bitbox{1}{R} 
+     \bitbox{3}{C} 
+     \bitbox{2}{TT} 
+     \bitbox{2}{HT} 
+     \colorbitbox{lightred}{2}{DT} 
+     \bitbox{1}{T} 
+     \bitbox{1}{N}
+  \end{bytefield}
+  \raisebox{3 pt}{eFlags}
+  
+  \begin{bytefield}[bitheight={10pt},
+                    boxformatting={\centering\tiny},
+                    bitformatting={\TINY}]{16}
+     \\
+     %\vspace{-1mm}
+     \bitbox{4}{1} 
+     \bitbox{1}{1} 
+     \bitbox{3}{0} 
+     \bitbox{2}{2} 
+     \bitbox{2}{0} 
+     \colorbitbox{lightred}{2}{2} 
+     \bitbox{1}{0} 
+     \bitbox{1}{?} 
+  \end{bytefield}
+  
+  \vspace{-0.5cm}
+  \begin{figure}[!hpbt]
+    \centering
+    \includesvg[width=0.6\textwidth]{pulsemeasurement}
+  \end{figure}
+  \vspace{-0.5cm}
+  %{\Tiny Pulse event:} \\
+  \bitpattern[startBit=63]{size}[16][8]{plength}[16][8]{eFlags}[16][8]
+  {rTime}[16][8]/
+  \\
+  \bitpattern[startBit=63,noBitNumbers]{area}[32][16]{pthresh}[16][8]
+  {sThresh}[16][8]/
+  \\
+  \bitpattern[startBit=63,noBitNumbers]{height}[16][8]{minima}[16][8]
+  {rise time}[16][8]{pTime}[16][8]/
+  \\
+  \bitpattern[startBit=63,noBitNumbers]{height}[16][8]{minima}[16][8]
+  {rise time}[16][8]{pTime}[16][8]/
+\end{frame}
+
+\subsection{Infrastructure}
+
+\begin{frame}{Infrastructure}
+  \begin{figure}[!hpbt]
+    \centering 
+    \includesvg[pretex=\relscale{0.3},width=0.5\textwidth]{design}
+  \end{figure}
+\end{frame}
+
+\subsection{Status}
+
+\begin{frame}{Project status}
+  Very much still a work in progress
+  \begin{itemize}
+    \item Pre-amp board
+    \item field testing hardware
+    \item Host computer software
+  \end{itemize}
+  Thank You
+\end{frame}
+\end{document}
+
+
+
+\subsection{Previous Work}
+
+\begin{frame}{Make Titles Informative.}
+\end{frame}
+
+\begin{frame}{Make Titles Informative.}
+\end{frame}
+
+
+
+\section{Our Results/Contribution}
+
+\subsection{Main Results}
+
+\begin{frame}{Make Titles Informative.}
+\end{frame}
+
+\begin{frame}{Make Titles Informative.}
+\end{frame}
+
+\begin{frame}{Make Titles Informative.}
+\end{frame}
+
+
+\subsection{Basic Ideas for Proofs/Implementation}
+
+\begin{frame}{Make Titles Informative.}
+\end{frame}
+
+\begin{frame}{Make Titles Informative.}
+\end{frame}
+
+\begin{frame}{Make Titles Informative.}
+\end{frame}
+
+
+
+\section*{Summary}
+
+\begin{frame}{Summary}
+
+  % Keep the summary *very short*.
+  \begin{itemize}
+  \item
+    The \alert{first main message} of your talk in one or two lines.
+  \item
+    The \alert{second main message} of your talk in one or two lines.
+  \item
+    Perhaps a \alert{third message}, but not more than that.
+  \end{itemize}
+  
+  % The following outlook is optional.
+  \vskip0pt plus.5fill
+  \begin{itemize}
+  \item
+    Outlook
+    \begin{itemize}
+    \item
+      Something you haven't solved.
+    \item
+      Something else you haven't solved.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+% All of the following is optional and typically not needed. 
+\appendix
+\section<presentation>*{\appendixname}
+\subsection<presentation>*{For Further Reading}
+
+\begin{frame}[allowframebreaks]
+  \frametitle<presentation>{For Further Reading}
+    
+  \begin{thebibliography}{10}
+    
+  \beamertemplatebookbibitems
+  % Start with overview books.
+
+  \bibitem{Author1990}
+    A.~Author.
+    \newblock {\em Handbook of Everything}.
+    \newblock Some Press, 1990.
+ 
+    
+  \beamertemplatearticlebibitems
+  % Followed by interesting articles. Keep the list short. 
+
+  \bibitem{Someone2000}
+    S.~Someone.
+    \newblock On this and that.
+    \newblock {\em Journal of This and That}, 2(1):50--100,
+    2000.
+  \end{thebibliography}
+\end{frame}
+
+
+

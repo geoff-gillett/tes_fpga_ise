@@ -23,7 +23,7 @@ use work.functions.all;
 --! implemented as SDP BRAM
 --! actual delay is delay+2 due to BRAM latency
 --------------------------------------------------------------------------------
-entity RAM_delay is
+entity dynamic_RAM_delay is
 generic(
   DEPTH:integer:=2**10; 
   DATA_BITS:integer:=18
@@ -37,9 +37,9 @@ port (
   delay:in natural range 0 to DEPTH-1;
   delayed:out std_logic_vector(DATA_BITS-1 downto 0)
 );
-end entity RAM_delay;
+end entity dynamic_RAM_delay;
 --
-architecture ram of RAM_delay is
+architecture ram of dynamic_RAM_delay is
 -- ram signals
 subtype word is std_logic_vector(DATA_BITS-1 downto 0);
 type ram is array (0 to DEPTH-1) of word;

@@ -688,7 +688,7 @@ end process flagsReg;
 
 
 -- TODO make this break the delays up into 64 bit lots with a reg at the end 
-flagsCFDdelay:entity work.RAM_delay
+flagsCFDdelay:entity work.dynamic_RAM_delay
 generic map(
   DEPTH => CFD_DELAY_DEPTH,
   DATA_BITS => NUM_FLAGS
@@ -709,7 +709,9 @@ slope_pos_0xing_cfd <= to_boolean(flags_cfd_delay(1));
 -- FIXME make this a closest xing?
 slope_pos_thresh_xing_cfd <= to_boolean(flags_cfd_delay(0));
 
-signalCFDdelay:entity work.RAM_delay
+
+--TODO change to sdp_ram_delay
+signalCFDdelay:entity work.dynamic_RAM_delay
 generic map(
   DEPTH => CFD_DELAY_DEPTH,
   DATA_BITS => WIDTH
@@ -721,7 +723,7 @@ port map(
   delayed => filtered_cfd_delay
 );
 
-slopeCFDdelay:entity work.RAM_delay
+slopeCFDdelay:entity work.dynamic_RAM_delay
 generic map(
   DEPTH => CFD_DELAY_DEPTH,
   DATA_BITS => WIDTH
@@ -733,7 +735,7 @@ port map(
   delayed => slope_cfd_delay
 );
 
-rawCDFdelay:entity work.RAM_delay
+rawCDFdelay:entity work.dynamic_RAM_delay
 generic map(
   DEPTH => CFD_DELAY_DEPTH,
   DATA_BITS => WIDTH

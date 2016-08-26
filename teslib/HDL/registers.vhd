@@ -89,7 +89,8 @@ constant TIMING_D_BITS:integer:=ceilLog2(NUM_TIMING_D);
 function to_std_logic(t:timing_d;w:integer) return std_logic_vector;
 function to_timing_d(i:natural range 0 to NUM_TIMING_D-1) return timing_d;
 function to_timing_d(s:std_logic_vector) return timing_d;
-	
+
+--TODO add CFD_LOW?	
 type height_d is (
 	PEAK_HEIGHT_D,
 	CFD_HEIGHT_D,

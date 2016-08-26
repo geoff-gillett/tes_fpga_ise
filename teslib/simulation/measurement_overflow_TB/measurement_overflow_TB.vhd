@@ -131,7 +131,7 @@ begin
 	
 	--FIXME	move delay into measurement_unit so that it acts on the signal after
 	-- baseline
-	delay:entity work.RAM_delay
+	delay:entity work.variable_RAM_delay
   generic map(
     DEPTH     => 2**DELAY_BITS,
     DATA_BITS => ADC_BITS
