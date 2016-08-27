@@ -736,7 +736,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 		);
 
 	--TODO add reset??
-  delay:entity tes.variable_RAM_delay
+  delay:entity tes.dynamic_RAM_delay
   generic map(
     DEPTH => 2**DELAY_BITS,
     DATA_BITS => ADC_BITS

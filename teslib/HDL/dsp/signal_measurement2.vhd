@@ -19,14 +19,13 @@ use extensions.logic.all;
 use work.types.all;
 
 -- Assumes FRAC >= AREA_FRAC
---TODO handle for AREA_FRAC > FRAC
---TODO add closest xings
 
 entity signal_measurement2 is
 generic(
 	WIDTH:integer:=18;
-	--FRAC:integer:=3;
-	AREA_BITS:integer:=18+16
+	FRAC:integer:=3;
+	AREA_WIDTH:integer:=32;
+	AREA_FRAC:integer:=1
 );
 port (
   clk:in std_logic;
@@ -82,6 +81,21 @@ xing0 <= neg0 or pos0;
 
 first_closest <= diff_reg < diff;
 
+areaAcc:entity work.area_acc
+generic map(
+  WIDTH      => WIDTH,
+  FRAC       => 3,
+  AREA_WIDTH => AREA_WIDTH,
+  AREA_FRAC  => AREA_FRAC
+)
+port map(
+  clk => clk,
+  reset => reset,
+  xing => xing0,
+  sig => signal_in,
+  area => area
+);
+
 --FIXME could remove some register levels
 measurement:process(clk)
 begin
@@ -112,7 +126,7 @@ if rising_edge(clk) then
     signal_reg2 <= signal_reg;
 		signal_out <= signal_reg2;
 		
-    diff <= abs(signal_in);
+    diff <= abs(signal_in); -- = (not signal_in) + 1 if negative 
     diff_reg <= diff;
     
     pos_xing_next <= pos0 and not first_closest;
