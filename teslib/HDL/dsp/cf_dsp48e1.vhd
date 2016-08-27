@@ -32,7 +32,7 @@ signal a:std_logic_vector(29 downto 0);
 signal b:std_logic_vector(17 downto 0);
 signal p_int:std_logic_vector(47 downto 0);
 signal d:std_logic_vector(24 downto 0);
-signal round_up:std_ulogic;
+--signal round_up:std_ulogic;
 
 -- rounding pattern
 
@@ -100,7 +100,7 @@ port map (
   -- Control: 1-bit (each) output: Control Inputs/Status Bits
   OVERFLOW => open,             -- 1-bit output: Overflow in add/acc output
   PATTERNBDETECT => open, -- 1-bit output: Pattern bar detect output
-  PATTERNDETECT => round_up,   -- 1-bit output: Pattern detect output
+  PATTERNDETECT => open,   -- 1-bit output: Pattern detect output
   UNDERFLOW => open,           -- 1-bit output: Underflow in add/acc output
   -- Data: 4-bit (each) output: Data Ports
   CARRYOUT => open,             -- 4-bit output: Carry output

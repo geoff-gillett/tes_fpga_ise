@@ -21,7 +21,7 @@ signal area:signed(31 downto 0);
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.area_acc
+UUT:entity work.area_acc(DSPx2)
 generic map(
   WIDTH => WIDTH
 )
@@ -48,7 +48,7 @@ stimulus:process is
 begin
   wait for CLK_PERIOD;
   reset <= '0';
-  sig <= (17 => '0', others => '1');
+  sig <= (17 => '1', others => '0');
   wait for CLK_PERIOD*8;
   xing <= TRUE;
   wait for CLK_PERIOD;
@@ -57,7 +57,7 @@ begin
   xing <= TRUE;
   wait for CLK_PERIOD;
   xing <= FALSE;
-  wait for 16452 ns;
+  wait for 540816 ns;
   xing <= TRUE;
   wait for CLK_PERIOD;
   xing <= FALSE;
