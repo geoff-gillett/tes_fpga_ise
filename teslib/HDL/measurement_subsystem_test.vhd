@@ -157,7 +157,7 @@ muxstream_last <= muxstream.last(0);
 --------------------------------------------------------------------------------
 tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 
-  delay:entity work.variable_RAM_delay
+  delay:entity work.dynamic_RAM_delay
   generic map(
     DEPTH => 2**DELAY_BITS,
     DATA_BITS => ADC_BITS
