@@ -1,0 +1,5 @@
+INST "measurementSubsystem/enet" AREA_GROUP = "output";
+INST "measurementSubsystem/mca" AREA_GROUP = "output";
+INST "measurementSubsystem/mux" AREA_GROUP = "output";
+INST "emac" AREA_GROUP = "output";
+AREA_GROUP "output" RANGE=CLOCKREGION_X1Y1:CLOCKREGION_X1Y4;
