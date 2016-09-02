@@ -49,6 +49,7 @@ function to_std_logic(e:event_type_t) return std_logic_vector;
 function to_event_type_t(s:std_logic_vector) return event_type_t;
 function to_event_type_t(sb:streambus_t) return event_type_t;
 
+--FIXME reduce peak count to 3 bits
 ----------------------- event_flags_t - 16 bits---------------------------------
 --| 	first byte transmitted        ||          second byte transmitted        |
 --|    4     |      1       |   3   ||  2   	|   2    |    3       |     1    |

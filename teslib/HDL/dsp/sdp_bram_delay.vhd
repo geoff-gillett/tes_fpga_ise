@@ -56,7 +56,7 @@ begin
   end if;
 end process address;
   
-memory:process (clk)
+memory:process(clk)
 begin
   if rising_edge(clk) then
     RAM(to_integer(addr)) <= input;

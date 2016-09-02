@@ -48,13 +48,14 @@ port(
 	stage2_reload_last_missing:out std_logic;
  	stage2_reload_last_unexpected:out std_logic;
   -- output signals
+  sample_out:out signed(WIDTH-1 downto 0);
   stage1:out signed(WIDTH-1 downto 0);
   stage2:out signed(WIDTH-1 downto 0)
   
 );
 end entity two_stage_FIR;
 
-architecture order_23 of two_stage_FIR is
+architecture coregen of two_stage_FIR is
 --IP cores FIR compiler 6.3
 component stage1_fir_23
 port (
@@ -70,7 +71,7 @@ port (
   s_axis_reload_tlast:in std_logic;
   s_axis_reload_tdata:in std_logic_vector(31 downto 0);
   m_axis_data_tvalid:out std_logic;
-  m_axis_data_tdata:out std_logic_vector(23 downto 0);
+  m_axis_data_tdata:out std_logic_vector(47 downto 0);
   event_s_reload_tlast_missing:out std_logic;
   event_s_reload_tlast_unexpected:out std_logic
 );
@@ -90,15 +91,16 @@ port (
   s_axis_reload_tlast:in std_logic;
   s_axis_reload_tdata:in std_logic_vector(31 downto 0);
   m_axis_data_tvalid:out std_logic;
-  m_axis_data_tdata:out std_logic_vector(31 downto 0);
+  m_axis_data_tdata:out std_logic_vector(47 downto 0);
   event_s_reload_tlast_missing:out std_logic;
   event_s_reload_tlast_unexpected:out std_logic
 );
 end component;
 
-signal stage1_out,stage1_in:std_logic_vector(23 downto 0);
-signal stage2_out:std_logic_vector(31 downto 0);
-signal stage1_delayed:std_logic_vector(WIDTH-1 downto 0);
+signal stage1_in,stage2_in:std_logic_vector(23 downto 0);
+signal stage1_out,stage2_out:std_logic_vector(47 downto 0);
+signal stage1_d,stage1_data,stage2_data:std_logic_vector(WIDTH-1 downto 0);
+signal sample_d:std_logic_vector(WIDTH-1 downto 0);
 
 begin
 	
@@ -126,12 +128,27 @@ port map(
   event_s_reload_tlast_unexpected => stage1_reload_last_unexpected
 );
 
+stage1Round:entity work.saturate_round
+generic map(
+  WIDTH_IN => 48,
+  FRAC_IN => 28,
+  WIDTH_OUT => 18,
+  FRAC_OUT => 3
+)
+port map(
+  clk => clk,
+  reset => '0',
+  input => stage1_out,
+  output => stage1_data
+);
+
+stage2_in <= std_logic_vector(resize(signed(stage1_data),24));
 stage2FIRfilter:stage2_FIR_23
 port map(
   aclk => clk,
   s_axis_data_tvalid => '1',
   s_axis_data_tready => open,
-  s_axis_data_tdata => stage1_out,
+  s_axis_data_tdata => stage2_in,
   s_axis_config_tvalid => stage2_config_valid,
   s_axis_config_tready => stage2_config_ready,
   s_axis_config_tdata => stage2_config_data,
@@ -145,22 +162,48 @@ port map(
   event_s_reload_tlast_unexpected => stage2_reload_last_unexpected
 );
 
+stage2Round:entity work.saturate_round
+generic map(
+  WIDTH_IN => 48,
+  FRAC_IN => 28,
+  WIDTH_OUT => 18,
+  FRAC_OUT => 8
+)
+port map(
+  clk => clk,
+  reset => '0',
+  input => stage2_out,
+  output => stage2_data
+);
+
 --------------------------------------------------------------------------------
 -- delays to align outputs after FIR group delay
 --------------------------------------------------------------------------------
 
-stage1Delay:entity work.SREG_delay
+sampleDelay:entity work.sdp_bram_delay
 generic map(
-  DEPTH => 48,
-  DATA_BITS => WIDTH
+  DELAY => 94,
+  WIDTH => WIDTH
 )
 port map(
   clk => clk,
-  data_in => stage1_out(WIDTH-1 downto 0),
-  delay => 41,
-  delayed => stage1_delayed
+  input => std_logic_vector(sample_in),
+  delayed => sample_d
 );
-stage1 <= signed(stage1_delayed);
-stage2 <= signed(stage2_out(WIDTH-1 downto 0));
 
-end architecture order_23;
+stage1Delay:entity work.sdp_bram_delay
+generic map(
+  DELAY => 47,
+  WIDTH => WIDTH
+)
+port map(
+  clk => clk,
+  input => stage1_data,
+  delayed => stage1_d
+);
+
+sample_out <= signed(sample_d);
+stage1 <= signed(stage1_d);
+stage2 <= signed(stage2_data);
+
+end architecture coregen;

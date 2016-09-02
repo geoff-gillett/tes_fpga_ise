@@ -23,7 +23,7 @@ port (
   xing:in boolean;
   sig:in signed(WIDTH-1 downto 0);
   area:out signed(AREA_WIDTH-1 downto 0)
-);
+); 
 end entity area_acc;
 
 --saturating truncated with symmetric rounding towards 0
@@ -40,6 +40,7 @@ signal carry_in:std_ulogic;
 signal pbdetect:std_ulogic;
 signal pdetect:std_ulogic;
 signal saturated:std_logic;
+signal round_c:std_logic_vector(47 downto 0);
 
 
 constant OVERFLOW_VALUE:std_logic_vector(47 downto 0)
@@ -47,21 +48,30 @@ constant OVERFLOW_VALUE:std_logic_vector(47 downto 0)
 
 constant OVERFLOW_MASK:bit_vector(47 downto 0)
          :=to_bitvector(OVERFLOW_VALUE);
+
+constant ROUNDING:std_logic_vector(47 downto 0)
+         :=(FRAC-AREA_FRAC => '1', others => '0');
          
 begin
-  
-area <= signed(p_out(33 downto 2));
+
+--FIXME use generic  
+area <= signed(p_out(AREA_WIDTH+FRAC-AREA_FRAC-1 downto FRAC-AREA_FRAC));
 c <= std_logic_vector(resize(sig,48));
 
 assert WIDTH <= 18 
 report "maximum width is 18" severity ERROR;
 
-
 saturated <= not pdetect and not pbdetect;
-carry_in <= saturated and p_int(47);
-accum_opmode <= '0' & not xing_pipe(1) & "01100"; --stop accumulating at xing
-round_opmode <= '0' & saturated & saturated & "00" & 
+carry_in <= p_int(47);
+
+round_c <= OVERFLOW_VALUE when saturated='1' else 
+           ROUNDING when p_int(47)='1' else (others => '0');
+            
+accum_opmode <= '0' & not to_std_logic(xing) & "01100"; --stop accumulating at xing
+round_opmode <= "011"  & "00" & 
                  not saturated & not saturated;
+--round_opmode <= '0' & saturated & saturated & "00" & 
+--                 not saturated & not saturated;
 --round_opmode <= "0000011";
 
 saturate:process(clk)
@@ -227,13 +237,13 @@ port map (
   CARRYINSEL => "000",         -- 3-bit input: Carry select input
   CEINMODE => '0',             -- 1-bit input: Clock enable input for INMODEREG
   CLK => clk,                       -- 1-bit input: Clock input
-  INMODE => "10001",                 -- 5-bit input: INMODE control input
+  INMODE => "00001",                 -- 5-bit input: INMODE control input
   OPMODE => round_opmode,                 -- 7-bit input: Operation mode input
   RSTINMODE => reset,           -- 1-bit input: Reset input for INMODEREG
   -- Data: 30-bit (each) input: Data Ports
   A => p_int(47 downto 18),                           -- 30-bit input: A data input
   B => p_int(17 downto 0),                           -- 18-bit input: B data input
-  C => OVERFLOW_VALUE,                           -- 48-bit input: C data input
+  C => round_c,--OVERFLOW_VALUE,                           -- 48-bit input: C data input
   CARRYIN => carry_in,               -- 1-bit input: Carry input signal
   D => (others => '1'),                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs

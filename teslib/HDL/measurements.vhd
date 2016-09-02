@@ -27,7 +27,13 @@ type filtered_measurement_t is record
 	sample:signal_t;
 	area:area_t;
 	extrema:signal_t;
+	pos_0xing:boolean;
+	neg_0xing:boolean;
 	zero_xing:boolean;
+	pos_threshxing:boolean;
+	neg_threshxing:boolean;
+	xing_time:time_t;
+	zero_xing_time:time_t;
 end record;
 
 type slope_measurement_t is record
@@ -39,6 +45,15 @@ type slope_measurement_t is record
 	neg_0xing:boolean;
 	zero_xing:boolean;
 	pos_threshxing:boolean;
+	neg_threshxing:boolean;
+	xing_time:time_t;
+	zero_xing_time:time_t;
+end record;
+
+type threshold_measurement_t is record
+  pos_xing:boolean;
+  neg_xing:boolean;
+	xing_time:time_t;
 end record;
 
 type raw_measurement_t is record
@@ -55,7 +70,7 @@ type pulse_measurement_t is record
 	extrema:signal_t;
 	pos_threshxing:boolean;
 	neg_threshxing:boolean;
-	time:unsigned(RELATIVETIME_BITS-1 downto 0);
+	rise_time:unsigned(RELATIVETIME_BITS-1 downto 0);
 end record;
 	
 type measurement_t is record
@@ -93,6 +108,7 @@ end package measurements;
 
 package body measurements is
 
+--FIXME need to double the values
 function get_mca_values(m:measurement_t) return mca_value_array is
 variable va:mca_value_array(NUM_MCA_VALUE_D-1 downto 0);
 begin
@@ -104,7 +120,7 @@ begin
   va(5) := resize(m.slope.extrema,MCA_VALUE_BITS);
   va(6) := resize(m.pulse.area,MCA_VALUE_BITS);
   va(7) := resize(m.pulse.extrema,MCA_VALUE_BITS);
-  va(8) := resize(signed('0' & m.pulse.time),MCA_VALUE_BITS);
+  va(8) := resize(signed('0' & m.pulse.rise_time),MCA_VALUE_BITS);
   va(9) := resize(m.raw.sample,MCA_VALUE_BITS);
   va(10) := resize(m.raw.area,MCA_VALUE_BITS);
   va(11) := resize(m.raw.extrema,MCA_VALUE_BITS);
@@ -116,7 +132,8 @@ variable o:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
 begin
   o(0):='1';
   o(1):=to_std_logic(m.pulse.pos_threshxing);
-  o(2):=to_std_logic(m.filtered.zero_xing);
+  -- FIXME this needs to be changed need a zero_xing
+  o(2):=to_std_logic(m.filtered.pos_0xing);
   o(3):=to_std_logic(m.slope.zero_xing);
   o(4):=to_std_logic(m.slope.pos_threshxing);
   o(5):=to_std_logic(m.cfd_high);

@@ -24,6 +24,7 @@ generic(
 );
 port(
   clk:in std_logic;
+  reset:in std_logic;
   signal_in:in signed(WIDTH-1 downto 0);
   threshold:in signed(WIDTH-1 downto 0);
   
@@ -36,43 +37,48 @@ end entity closest_xing;
 architecture RTL of closest_xing is
 
 signal pos_int,neg_int,first_closest:boolean;
-signal diff,diff_reg:signed(WIDTH-1 downto 0);
 signal neg_xing_next,pos_xing_next:boolean;
 
-constant DEPTH:integer:=6;	
+constant DEPTH:integer:=3;	
 type pipe_t is array (natural range <>) of signed(WIDTH-1 downto 0);
-signal pipe:pipe_t(1 to DEPTH);
+signal pipe:pipe_t(1 to DEPTH):=(others => (others => '0'));
 signal dif0,dif1:signed(WIDTH-1 downto 0);
-signal xing:std_logic;
-signal dif_0,dif_was0:boolean;
+signal sign_change:std_logic;
+signal dif_is0,dif_was0:boolean;
 
 begin
-
+signal_out <= pipe(DEPTH);
 first_closest <= dif0 < dif1;
-xing <= dif0(WIDTH-1) xor dif1(WIDTH-1);
-pos_int <= (xing and dif1(WIDTH-1))='1';
-neg_int <= (xing='1' and dif1(WIDTH-1)='0') or (dif_0 and not dif_was0);
+sign_change <= not (dif0(WIDTH-1) xor dif1(WIDTH-1));
+pos_int <= (sign_change and dif1(WIDTH-1))='1' or 
+           (dif_is0 and not dif_was0 and dif0(WIDTH-1)='0');
+neg_int <= (sign_change='1' and dif1(WIDTH-1)='0') and not dif_was0;
 
 reg:process (clk) is
 begin
 	if rising_edge(clk) then
-	  
-	  pipe(1) <= signal_in;
-	  pipe(2 to DEPTH) <= pipe(1 to DEPTH-1);
-	  
-	  dif_0 <= signal_in=threshold;
-	  dif_was0 <= dif_0;
-	  
-	  dif0 <= threshold-signal_in; 
-	  dif1 <= pipe(1)-threshold;
-		
-		diff <= abs(threshold-signal_in);
-		diff_reg <= diff;
-		
-    pos_xing_next <= pos_int and not first_closest;
-    neg_xing_next <= neg_int and not first_closest;
-    pos <= (pos_int and first_closest) or pos_xing_next;
-    neg <= (neg_int and first_closest) or neg_xing_next;
+	  if reset='1' then
+	    pipe <= (others => (others => '0'));
+	    dif0 <= (others => '0');
+	    dif1 <= (others => '0');
+	    dif_is0 <= TRUE;
+	    dif_was0 <= TRUE;
+	  else
+      pipe(1) <= signal_in;
+      pipe(2 to DEPTH) <= pipe(1 to DEPTH-1);
+      
+      dif_is0 <= signal_in=threshold;
+      dif_was0 <= dif_is0;
+      
+      dif0 <= threshold-signal_in; 
+      dif1 <= pipe(1)-threshold;
+      
+      pos_xing_next <= pos_int and not first_closest;
+      neg_xing_next <= neg_int and first_closest;
+      pos <= (pos_int and first_closest) or pos_xing_next;
+      neg <= (neg_int and not first_closest) or neg_xing_next;
+      
+    end if;
 	end if;
 end process reg;
 end architecture RTL;

@@ -77,6 +77,7 @@ function to_detection_d(i:natural range 0 to NUM_DETECTION_D-1)
 return detection_d;
 
 -- the point the relative time-stamp is taken
+-- FIXME would be nice to add slope extrema
 type timing_d is (
 	PULSE_THRESH_TIMING_D,
 	SLOPE_THRESH_TIMING_D,
@@ -90,7 +91,7 @@ function to_std_logic(t:timing_d;w:integer) return std_logic_vector;
 function to_timing_d(i:natural range 0 to NUM_TIMING_D-1) return timing_d;
 function to_timing_d(s:std_logic_vector) return timing_d;
 
---TODO add CFD_LOW?	
+--TODO add CFD_LOW?	or extrema?
 type height_d is (
 	PEAK_HEIGHT_D,
 	CFD_HEIGHT_D,
@@ -391,6 +392,21 @@ end record;
 --    0	update_on_completion
 -- 		1 update_asap
 
+-- fir configuration
+type fir_control_in_t is record
+  config_data:std_logic_vector(7 downto 0);
+  config_valid:std_logic;
+  reload_data:std_logic_vector(31 downto 0);
+  reload_valid:std_logic;
+  reload_last:std_logic;
+end record;
+
+type fir_control_out_t is record
+  config_ready:std_logic;
+  reload_ready:std_logic;
+	reload_last_missing:std_logic;
+ 	reload_last_unexpected:std_logic;
+end record;
 
 constant HDL_VERSION_ADDR_BIT:integer:=0;
 constant MCA_CONTROL_REGISTER_ADDR_BIT:integer:=1;

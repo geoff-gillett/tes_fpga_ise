@@ -4,13 +4,13 @@ use ieee.numeric_std.all;
 
 use work.registers.all;
 
-entity measure_TB is
+entity CFD_unit_TB is
 generic(
   WIDTH:integer:=18
 );
-end entity measure_TB;
+end entity CFD_unit_TB;
 
-architecture testbench of measure_TB is
+architecture testbench of CFD_unit_TB is
 
 constant SIMWIDTH:integer:=6;
 
@@ -24,10 +24,12 @@ signal slope:signed(WIDTH-1 downto 0);
 signal raw_out:signed(WIDTH-1 downto 0);
 signal filtered_out:signed(WIDTH-1 downto 0);
 signal slope_out:signed(WIDTH-1 downto 0);
+signal sample_out:signed(WIDTH-1 downto 0);
 
 constant CLK_PERIOD:time:=4 ns;
 signal filtered:signed(WIDTH-1 downto 0);
 signal reg:channel_registers_t;
+signal rel2min,cfd_low,cfd_high,cfd_error:boolean;
   
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -57,11 +59,12 @@ FIR:entity work.two_stage_FIR
     stage2_reload_last => '0',
     stage2_reload_last_missing => open,
     stage2_reload_last_unexpected => open,
+    sample_out => sample_out,
     stage1 => filtered,
     stage2 => slope
   );
 
-UUT:entity work.measure
+UUT:entity work.CFD_unit
 generic map(
   WIDTH => WIDTH
 )
@@ -69,14 +72,18 @@ port map(
   clk => clk,
   reset1 => reset1,
   reset2 => reset2,
-  registers => reg,
-  raw => sig,
+  raw => sample_out,
   slope => slope,
   filtered => filtered,
+  constant_fraction => cf,
+  rel2min => rel2min,
+  cfd_low => cfd_low,
+  cfd_high => cfd_high,
+  cfd_error => cfd_error,
   raw_out => raw_out,
-  filtered_out => filtered_out,
-  slope_out => slope_out
-);  
+  slope_out => slope_out,
+  filtered_out => filtered_out
+);
 
 simulate:process(clk)
 begin
@@ -93,19 +100,20 @@ sig <= resize(sim,WIDTH);
 stimulus:process is
 begin
   --slope <= to_signed(-8,WIDTH);
-  --sig <= to_signed(0,WIDTH);
-  reg.capture.constant_fraction  <= (16 => '1', others => '0');
-  reg.capture.slope_threshold <= to_unsigned(10,WIDTH-1);
+  --sig <= to_signed(1,WIDTH);
+  cf  <= (16 => '1', others => '0');
+  rel2min <= TRUE;
+  --reg.capture.slope_threshold <= to_unsigned(10,WIDTH-1);
   wait for CLK_PERIOD;
   reset1 <= '0';
   wait for CLK_PERIOD*64;
   reset2 <= '0';
-  --slope <= to_signed(16,WIDTH);
   wait for CLK_PERIOD*64;
-  --sig <= to_signed(8000,WIDTH);
+  --sig <= to_signed(-8000,WIDTH);
+  wait for CLK_PERIOD;
+  --sig <= to_signed(8000*8,WIDTH);
   wait for CLK_PERIOD;
   --sig <= to_signed(0,WIDTH);
-  --slope <= to_signed(-8,WIDTH);
   wait;
 end process;
 

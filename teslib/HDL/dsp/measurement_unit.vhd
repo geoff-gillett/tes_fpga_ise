@@ -987,7 +987,7 @@ if rising_edge(clk) then
 	if reset = '1' then
 		pulse_extrema <= (others => '0');
 		pulse_area <= (others => '0');
- 		m.pulse.time <= (others => '0');
+ 		m.pulse.start_time <= (others => '0');
 		capture_cfd <= registers.capture;
 		m.peak_count <= (others => '0');
 	else
@@ -1026,12 +1026,12 @@ if rising_edge(clk) then
   	
   	time_overflow <= FALSE;	
   	if pulse_start_cfd then
-      m.pulse.time <= (others => '0');
+      m.pulse.start_time <= (others => '0');
     else
-      if m.pulse.time=to_unsigned(2**TIME_BITS-1,TIME_BITS) then
+      if m.pulse.start_time=to_unsigned(2**TIME_BITS-1,TIME_BITS) then
         time_overflow <= TRUE;
       else
-        m.pulse.time <= m.pulse.time+1;
+        m.pulse.start_time <= m.pulse.start_time+1;
       end if;
     end if;
   	
