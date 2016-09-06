@@ -23,6 +23,7 @@ use work.registers.all;
 
 package measurements is
 	
+
 type filtered_measurement_t is record
 	sample:signal_t;
 	area:area_t;
@@ -73,6 +74,15 @@ type pulse_measurement_t is record
 	rise_time:unsigned(RELATIVETIME_BITS-1 downto 0);
 end record;
 	
+type signal_measurement_t is record
+	sample:signal_t;
+	area:area_t;
+	extrema:signal_t;
+	pos_0xing:boolean;
+	neg_0xing:boolean;
+	zero_xing:boolean;
+end record;
+
 type measurement_t is record
 	raw:raw_measurement_t;
 	filtered:filtered_measurement_t;
@@ -96,6 +106,38 @@ type measurement_t is record
 	
 	peak_count:unsigned(PEAK_COUNT_BITS downto 0);
 	--pulse_time:unsigned(RELATIVETIME_BITS-1 downto 0);
+end record;
+
+type peak_state_t is (IDLE_S,ARMED_S);
+type pulse_state_t is (BELLOW_S,ABOVE_S);
+type measurements_t is record
+	raw:signal_measurement_t;
+	filtered:signal_measurement_t;
+	slope:signal_measurement_t;
+	
+  pulse_area:area_t;
+  pulse_length:time_t; --time since pulse_pos_Txing
+  pulse_time:time_t;
+  pulse_start:boolean;
+  
+  pulse_threshold_pos:boolean;
+  pulse_threshold_neg:boolean;
+  slope_threshold_pos:boolean;
+  slope_threshold_neg:boolean;
+  
+  above_area_threshold:boolean;
+  above_pulse_threshold:boolean;
+  
+	--time from trigger to height_valid
+  peak_time:time_t;
+  	
+	cfd_low:boolean; 
+	cfd_high:boolean;
+	cfd_error:boolean;
+	
+	peak_state:peak_state_t;
+	
+	peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 end record;
 
 type measurement_array is array (natural range <>)

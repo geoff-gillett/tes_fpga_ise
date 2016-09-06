@@ -6,7 +6,10 @@ library extensions;
 use extensions.boolean_vector.all;
 
 entity CFD_unit is
-generic(WIDTH:integer:=18);
+generic(
+  WIDTH:integer:=18;
+  CFD_DELAY:integer:=1027
+);
 port (
   clk:in std_logic;
   reset1:in std_logic;
@@ -31,7 +34,7 @@ end entity CFD_unit;
 
 architecture RTL of CFD_unit is
   
-constant RAW_CFD_DELAY:integer:=256;
+--constant RAW_CFD_DELAY:integer:=256;
 constant DEPTH:integer:=8;
 
 component cf_queue
@@ -114,10 +117,8 @@ port map(
   signal_in => slope,
   signal_out => open,
   threshold => (others => '0'),
-  pos => open,
-  neg => open,
-  pos_closest => min,
-  neg_closest => max
+  pos => min,
+  neg => max
 );
 
 cfCalc:entity work.constant_fraction
@@ -193,7 +194,7 @@ port map (
 
 rawDelay:entity work.sdp_bram_delay
 generic map(
-  DELAY => RAW_CFD_DELAY,
+  DELAY => CFD_DELAY,
   WIDTH => WIDTH
 )
 port map(
@@ -205,7 +206,7 @@ raw_out <= signed(raw_d);
 
 fiteredDelay:entity work.sdp_bram_delay
 generic map(
-  DELAY => RAW_CFD_DELAY-4,
+  DELAY => CFD_DELAY-5,
   WIDTH => WIDTH
 )
 port map(
@@ -216,7 +217,7 @@ port map(
 
 slopeDelay:entity work.sdp_bram_delay
 generic map(
-  DELAY => RAW_CFD_DELAY-7,
+  DELAY => CFD_DELAY-8,
   WIDTH => WIDTH
 )
 port map(

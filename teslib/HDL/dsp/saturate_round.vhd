@@ -46,15 +46,16 @@ constant OVERFLOW_MASK:bit_vector(47 downto 0)
          :=to_bitvector(OVERFLOW_VALUE);
 
 constant ROUNDING:std_logic_vector(47 downto 0)
-         :=(FRAC_IN-FRAC_OUT => '1', others => '0');
+         :=(FRAC_IN-FRAC_OUT-1 downto 0 => '1', others => '0');
+         
 begin
 
 assert WIDTH_IN <= 48
 report "maximum WIDTH_IN is 48" severity ERROR;
 assert WIDTH_OUT <= 48
 report "maximum WIDTH_OUT is 48" severity ERROR;
-assert FRAC_OUT <= FRAC_IN
-report "FRAC_OUT must be less that or equal to FRAC_OUT" 
+assert FRAC_OUT < FRAC_IN
+report "FRAC_OUT must be less than FRAC_in" 
 severity ERROR;
 
 --digitalGain:process (clk) is
@@ -74,7 +75,7 @@ severity ERROR;
 
 saturated <= not pdetect and not pbdetect;
 
-carry_in <= p_int(47);
+carry_in <= p_int(47) and saturated;
 --round_c <= ofl_value when saturated='1' else 
 --           round_constant when p_int(47)='1' else (others => '0');
 round_c <= OVERFLOW_VALUE when saturated='1' else 

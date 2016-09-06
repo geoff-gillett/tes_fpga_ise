@@ -41,21 +41,22 @@ architecture RTL of threshold_xing is
 signal pos_int,neg_int,first_closest,pos_reg,neg_reg:boolean;
 signal neg_xing_next,pos_xing_next:boolean;
 
-constant DEPTH:integer:=3;	
+constant DEPTH:integer:=4;	
 type pipe_t is array (natural range <>) of signed(WIDTH-1 downto 0);
 signal pipe:pipe_t(1 to DEPTH):=(others => (others => '0'));
-signal dif0,dif1:signed(WIDTH-1 downto 0);
-signal sign_change:std_logic;
+signal dif0,dif1,signal_int:signed(WIDTH downto 0);
 signal dif_is0,dif_was0:boolean;
+signal dif,abs0,abs1:signed(WIDTH downto 0);
 
 begin
 signal_out <= pipe(DEPTH);
-first_closest <= dif0 < dif1;
-sign_change <= not (dif0(WIDTH-1) xor dif1(WIDTH-1));
-pos_int <= ((sign_change='1' or dif_is0) and dif1(WIDTH-1)='1');-- or 
-           --(dif_is0 and dif1(WIDTH-1)='1');
-neg_int <= (sign_change='1' and dif1(WIDTH-1)='0') and not dif_was0;
 
+first_closest <= abs1 < abs0;
+pos_int <= dif0(WIDTH)='0' and dif1(WIDTH)='1';
+neg_int <= (dif0(WIDTH)='1' and dif1(WIDTH)='0' and not dif_was0) or
+           (dif1(WIDTH)='0' and (not dif_was0 and dif_is0));
+
+signal_int <= resize(signal_in,signal_in'length+1);
 reg:process (clk) is
 begin
 	if rising_edge(clk) then
@@ -63,22 +64,26 @@ begin
 	    pipe <= (others => (others => '0'));
 	    dif0 <= (others => '0');
 	    dif1 <= (others => '0');
+	    abs0 <= (others => '0');
+	    abs1 <= (others => '0');
 	    dif_is0 <= TRUE;
 	    dif_was0 <= TRUE;
 	  else
-      pipe(1) <= signal_in;
-      pipe(2 to DEPTH) <= pipe(1 to DEPTH-1);
+      pipe <= signal_in & pipe(1 to DEPTH-1);
       
-      dif_is0 <= signal_in=threshold;
+      dif_is0 <= dif = 0;
       dif_was0 <= dif_is0;
       
-      dif0 <= threshold-signal_in; 
-      dif1 <= pipe(1)-threshold;
+      dif <= signal_int - threshold; 
+      dif0 <= dif;
+      dif1 <= dif0;
+      abs0 <= abs(dif);
+      abs1 <= abs(dif0); 
       
       pos_xing_next <= pos_int and not first_closest;
-      neg_xing_next <= neg_int and first_closest;
+      neg_xing_next <= neg_int and not first_closest;
       pos_closest <= (pos_int and first_closest) or pos_xing_next;
-      neg_closest <= (neg_int and not first_closest) or neg_xing_next;
+      neg_closest <= (neg_int and first_closest) or neg_xing_next;
       pos_reg <= pos_int;
       neg_reg <= neg_int;
       pos <= pos_reg;

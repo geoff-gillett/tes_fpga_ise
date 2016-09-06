@@ -20,85 +20,80 @@ use extensions.logic.all;
 use work.types.all;
 
 -- Assumes FRAC >= AREA_FRAC
-
 entity signal_measurement2 is
 generic(
 	WIDTH:integer:=18;
 	FRAC:integer:=3;
+	WIDTH_OUT:integer:=16;
+	FRAC_OUT:integer:=1;
 	AREA_WIDTH:integer:=32;
-	AREA_FRAC:integer:=1
+	AREA_FRAC:integer:=1;
+	-- pipes are closest to crossing
+	CLOSEST:boolean:=FALSE 
 );
 port (
   clk:in std_logic;
   reset:in std_logic;
   signal_in:in signed(WIDTH-1 downto 0);
   threshold:in signed(WIDTH-1 downto 0);
-  signal_out:out signed(WIDTH-1 downto 0);
-  --TODO add closest for these
-  pos:out boolean;
-  neg:out boolean; 
-  xing_time:out unsigned(15 downto 0); 
+  
+  signal_out:out signed(WIDTH_OUT-1 downto 0);
+  pos_xing:out boolean;
+  neg_xing:out boolean;
+  xing:out boolean;
+  -- both area and extrema valid at zero_xing
   area:out signed(AREA_WIDTH-1 downto 0);
-  extrema:out signed(WIDTH-1 downto 0)
+  extrema:out signed(WIDTH_OUT-1 downto 0)
 );
 end entity signal_measurement2;
 
 architecture RTL of signal_measurement2 is
+  
 --FIXME add saturation check on area remove shifts and do them outside
-signal extrema_int:signed(WIDTH-1 downto 0);
-signal pos_xing,neg_xing,xing:boolean;
-signal signal_xing:signed(WIDTH-1 downto 0);
-signal time_int:unsigned(xing_time'left+1 downto 0);
+signal extreme_int:signed(WIDTH_OUT-1 downto 0);
+signal pos_x,neg_x,xing_int:boolean;
+signal signal_x:signed(WIDTH-1 downto 0);
+signal signal_r:std_logic_vector(WIDTH_OUT-1 downto 0);
 
 constant DEPTH:integer:=3;
-signal pos_pipe,neg_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
-type pipe_t is array (1 to DEPTH) of signed(signal_in'range);
-signal pipe:pipe_t:=(others => (others => '0'));
+signal pos_p,neg_p,xing_p:boolean_vector(1 to DEPTH):=(others => FALSE);
+signal pipe:signal_array(1 to DEPTH):=(others => (others => '0'));
 signal gt:boolean;
-signal extrema_0 :boolean;
---type pipeline is array (natural range <>) of signed(WIDTH-1 downto 0);
---signal pipe:pipeline(1 to PIPELINE_DEPTH);
+signal pos_c_xing:boolean;
+signal neg_c_xing:boolean;
+
+type extrema_state is (MAX_S,MIN_S);
+signal state:extrema_state;
 
 begin
-extrema <= extrema_int;
+extrema <= extreme_int;
 signal_out <= pipe(DEPTH);
-pos <= pos_pipe(DEPTH);
-neg <= neg_pipe(DEPTH);
-xing_time <= time_int(15 downto 0);
+pos_xing <= pos_p(DEPTH);
+neg_xing <= neg_p(DEPTH);
+xing <= xing_p(DEPTH);
 
-crossing:entity work.threshold_xing
+closestGen:if CLOSEST generate
+  xing_int <= pos_c_xing or neg_c_xing;
+end generate;
+
+notClosestGen:if not CLOSEST generate
+  xing_int <= pos_x or neg_x;
+end generate;
+
+round:entity work.saturate_round
 generic map(
-  WIDTH => WIDTH
+  WIDTH_IN  => WIDTH,
+  FRAC_IN   => FRAC,
+  WIDTH_OUT => WIDTH_OUT,
+  FRAC_OUT  => FRAC_OUT
 )
 port map(
-  clk => clk,
-  reset => reset,
-  signal_in => signal_in,
-  threshold => threshold,
-  signal_out => signal_xing,
-  pos => pos_xing,
-  neg => neg_xing
+  clk    => clk,
+  reset  => reset,
+  input  => std_logic_vector(signal_in),
+  output => signal_r
 );
-  
-pipeline:process (clk) is
-begin
-  if rising_edge(clk) then
-    if reset = '1' then
-      pos_pipe <= (others => FALSE);
-      neg_pipe <= (others => FALSE);
-      pipe <= (others => (others => '0'));
-    else
-      pos_pipe(1) <= pos_xing;
-      pos_pipe(2 to DEPTH) <= pos_pipe(1 to DEPTH-1);   
-      neg_pipe(1) <= neg_xing;
-      neg_pipe(2 to DEPTH) <= neg_pipe(1 to DEPTH-1);   
-      pipe(1) <= signal_xing;
-      pipe(2 to DEPTH) <= pipe(1 to DEPTH-1);   
-    end if;
-  end if;
-end process pipeline;
 
-xing <= pos_xing or neg_xing;
 areaAcc:entity work.area_acc(dspx2)
 generic map(
   WIDTH => WIDTH,
@@ -109,39 +104,77 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  xing => xing,
-  sig => signal_xing,
+  xing => xing_int,
+  sig => signal_x,
   area => area
 );
 
-gt <= pipe(DEPTH) > extrema_int; 
-extrema_0 <= extrema_int=0;
-measurement:process(clk)
+crossing:entity work.threshold_xing
+generic map(
+  WIDTH => WIDTH
+)
+port map(
+  clk => clk,
+  reset => reset,
+  signal_in => signal_in,
+  threshold => threshold,
+  signal_out => signal_x,
+  pos => pos_x,
+  neg => neg_x,
+  pos_closest => pos_c_xing,
+  neg_closest => neg_c_xing
+);
+
+pipeline:process(clk)
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      pos_p <= (others => FALSE);
+      neg_p <= (others => FALSE);
+      xing_p <= (others => FALSE);
+      pipe <= (others => (others => '0'));
+    else
+      if CLOSEST then
+        pos_p <= pos_c_xing & pos_p(1 to DEPTH-1);   
+        neg_p <= neg_c_xing & neg_p(1 to DEPTH-1);   
+      else
+        pos_p <= pos_x & pos_p(1 to DEPTH-1);   
+        neg_p <= neg_x & neg_p(1 to DEPTH-1);   
+      end if;
+      xing_p <= (pos_x or neg_x) & xing_p(1 to DEPTH-1);
+      pipe <= signed(signal_r) & pipe(1 to DEPTH-1);   
+    end if;
+  end if;
+end process pipeline;
+
+
+gt <= pipe(DEPTH) > extreme_int; 
+extremeMeas:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
-    extrema_int <= (others => '0');
-    time_int <= (0 => '1', others => '0');
+    extreme_int <= (others => '0');
+    state <= MAX_S; 
   else
-    
-    if pos_pipe(DEPTH) or neg_pipe(DEPTH) then
-      time_int <= (0 => '1', others => '0'); 
-      extrema_int <= pipe(DEPTH);
-    else
-      if time_int(16)='1' then
-        time_int <= (16 => '0', others => '1');
-      else
-        time_int <= time_int + 1;
-      end if;
-      if (extrema_int(WIDTH-1)='0' and gt) or 
-        (extrema_int(WIDTH-1)='1' and not gt) or extrema_0 then 
-        extrema_int <= pipe(DEPTH);
-      end if;
-      
+    if pos_p(DEPTH) then
+      state <= MAX_S;
+    elsif neg_p(DEPTH) then
+      state <= MIN_S;
     end if;
-  	
+    if xing_p(DEPTH) then
+      extreme_int <= pipe(DEPTH);
+    end if;
+    
+    if (state=MAX_S and gt) then
+      extreme_int <= pipe(DEPTH);
+    end if;
+    
+    if (state=MIN_S and not gt) then
+      extreme_int <= pipe(DEPTH);
+    end if;
+    
   end if;
 end if;
-end process measurement;
+end process extremeMeas;
 
 end architecture RTL;

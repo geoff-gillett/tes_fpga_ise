@@ -13,103 +13,87 @@ generic(
   WIDTH:integer:=18;
   FRAC:integer:=3;
   AREA_WIDTH:integer:=32;
-  AREA_FRAC:integer:=1
+  AREA_FRAC:integer:=1;
+  PEAK_COUNT_BITS:integer:=4;
+  CFD_DELAY:integer:=256
 );
 port (
   clk:in std_logic;
   reset1:in std_logic;
   reset2:in std_logic;
   
-  registers:in channel_registers_t;
-  --constant_fraction:in unsigned(16 downto 0);
+  --rel2min:in boolean; -- don't use set FALSE
+  slope_threshold:in unsigned(16 downto 0);
+  pulse_threshold:in unsigned(16 downto 0);
+  area_threshold:in unsigned(30 downto 0);
+  constant_fraction:in unsigned(16 downto 0);
   
   raw:in signed(WIDTH-1 downto 0);
   slope:in signed(WIDTH-1 downto 0);
   filtered:in signed(WIDTH-1 downto 0);
-  measurements:out measurement_t
+  measurements:out measurements_t
 );
 end entity measure;
 
 architecture RTL of measure is
 
-constant RAW_CFD_DELAY:integer:=196;
-constant RAW_FIR_DELAY:integer:=91;
-constant DEPTH:integer:=10;
-
-component cf_queue
-port (
-  clk:in std_logic;
-  srst:in std_logic;
-  din:in std_logic_vector(35 downto 0);
-  wr_en:in std_logic;
-  rd_en:in std_logic;
-  dout:out std_logic_vector(35 downto 0);
-  full:out std_logic;
-  empty:out std_logic
-);
-end component;
-
-type pipe is array (natural range <>) of signed(WIDTH-1 downto 0);
-
 -- pipelines to sync signals
-signal f_pipe:pipe(1 to DEPTH):=(others => (others => '0'));
-signal s_pipe:pipe(1 to DEPTH):=(others => (others => '0'));
-signal max_pipe,min_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
+signal cfd_low,cfd_high,cfd_error:boolean;
+signal slope_cfd,raw_cfd,filtered_cfd:signed(WIDTH-1 downto 0);
+signal m:measurements_t;
 
-signal min,max:boolean;
-signal raw_measurement,filtered_d,slope_d:std_logic_vector(WIDTH-1 downto 0);
+signal peak_state:peak_state_t;
 
-signal thresholds,q_dout:std_logic_vector(2*WIDTH-1 downto 0);
-signal cf_int:signed(WIDTH-1 downto 0):=(others => '0');
-signal cfd_low_threshold,cfd_high_threshold:signed(WIDTH-1 downto 0)
-       :=(others => '0');
-signal q_full,q_empty:std_logic;
-signal q_rd_en,q_wr_en:std_logic:='0';
+signal slope_pos_Txing,slope_neg_Txing:boolean;
+signal pulse_pos_Txing,pulse_neg_Txing:boolean;
+signal slope_x,filtered_x:signed(WIDTH-1 downto 0);
+signal filtered_reg,filtered_m:signed(WIDTH-1 downto 0);
+signal pulse_area_m:signed(31 downto 0);
+signal slope_pos_0xing,slope_neg_0xing:boolean;
+signal slope_threshold_s,pulse_threshold_s:signed(WIDTH-1 downto 0);
+signal area_threshold_s:signed(31 downto 0);
+signal above_area_threshold:boolean;
+signal pulse_time,peak_time,pulse_length:unsigned(16 downto 0);
+signal pulse_start:boolean;
 
---minimum sig value
-signal min_in:signed(WIDTH-1 downto 0):=(others => '0');
-signal min_out:signed(WIDTH-1 downto 0):=(others => '0');
-signal p:signed(WIDTH-1 downto 0);
-signal cfd_low,cfd_high:signed(WIDTH-1 downto 0);
-signal min_cfd:boolean;
-signal max_cfd:boolean;
+constant DEPTH:integer:=7;
+type pipe is array (1 to DEPTH) of signed(WIDTH-1 downto 0);
+signal raw_p:pipe;
+signal cfd_low_p:boolean_vector(1 to DEPTH);
+signal cfd_high_p:boolean_vector(1 to DEPTH);
+signal slope_pos_Txing_p,slope_neg_Txing_p:boolean_vector(1 to DEPTH);
+signal slope_pos_0xing_p,slope_neg_0xing_p:boolean_vector(1 to DEPTH);
+signal pulse_pos_Txing_p,pulse_neg_Txing_p:boolean_vector(1 to DEPTH);
+signal a_pulse_thresh_p:boolean_vector(1 to DEPTH);
 
-type CFDstate is (CFD_IDLE_S,CFD_ARMED_S,CFD_ERROR_S);
-signal cfd_state:CFDstate;
-signal slope_cfd:signed(WIDTH-1 downto 0);
-signal slope_pos_thresh_xing:boolean;
-signal cfd_low_xing,cfd_high_thresh_xing:boolean;
-signal slope_threshold:signed(WIDTH-1 downto 0);
-signal slope_measurement:signed(WIDTH-1 downto 0);
-signal filtered_measurement:signed(WIDTH-1 downto 0);
-
-signal m:measurement_t;
-signal start_int:boolean;
+signal pulse_area:signed(AREA_WIDTH-1 downto 0);
+signal peak_count:unsigned(PEAK_COUNT_BITS downto 0);
 
 begin
+measurements <= m;
 
---------------------------------------------------------------------------------
--- Constant fraction calculation
---------------------------------------------------------------------------------
-  
-inputPipelines:process(clk)
-begin
-  if rising_edge(clk) then
-    if reset1='1' then
-      f_pipe <= (others => (others => '0'));
-      s_pipe <= (others => (others => '0'));
-      max_pipe <= (others => FALSE);
-      min_pipe <= (others => FALSE);
-    else
-      f_pipe <= filtered & f_pipe(1 to DEPTH-1);
-      s_pipe <= slope & s_pipe(1 to DEPTH-1);
-      max_pipe <= max & max_pipe(1 to DEPTH-1);
-      min_pipe <= min & min_pipe(1 to DEPTH-1);
-    end if;
-  end if;
-end process inputPipelines;
-  
---latency 3
+CFD:entity work.CFD_unit
+generic map(
+  WIDTH => WIDTH,
+  CFD_DELAY => CFD_DELAY
+)
+port map(
+  clk => clk,
+  reset1 => reset1,
+  reset2 => reset2,
+  raw => raw,
+  slope => slope,
+  filtered => filtered,
+  constant_fraction => constant_fraction,
+  rel2min => FALSE,
+  cfd_low => cfd_low,
+  cfd_high => cfd_high,
+  cfd_error => cfd_error,
+  raw_out => raw_cfd,
+  slope_out => slope_cfd,
+  filtered_out => filtered_cfd
+);  
+
 slope0xing:entity work.threshold_xing
 generic map(
   WIDTH => WIDTH
@@ -117,208 +101,168 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  signal_in => slope,
+  signal_in => slope_cfd,
+  threshold => (others => '0'),
+  signal_out => slope_x,
+  pos => slope_pos_0xing,
+  neg => slope_neg_0xing
+);
+
+slope_threshold_s <= signed('0' & slope_threshold);
+slopeTxing:entity work.threshold_xing
+generic map(
+  WIDTH => WIDTH
+)
+port map(
+  clk => clk,
+  reset => reset1,
+  signal_in => slope_cfd,
+  threshold => slope_threshold_s,
   signal_out => open,
-  threshold => (others => '0'),
-  pos => open,
-  neg => open,
-  pos_closest => min,
-  neg_closest => max
+  pos => slope_pos_Txing,
+  neg => slope_neg_Txing
 );
 
-cfCalc:entity work.constant_fraction
-generic map(
-  WIDTH => WIDTH
-)
-port map(
-  clk => clk,
-  reset => reset2,
-  min => min_in,
-  cf => cf_int,
-  sig => f_pipe(4),
-  p => p -- constant fraction of the rise above minimum
-);
-
-cfReg:process(clk)
-begin
-  if rising_edge(clk) then
-    
-    if min then
-      min_in <= f_pipe(3);   --minima into cf pipeline
-      cf_int <= signed('0' & registers.capture.constant_fraction);
-    end if; 
-          
-    if min_pipe(4) then
-      min_out <= f_pipe(7); --minima at output of cf pipeline
-    end if;
-    
-    cfd_low <= p + min_out;
-    cfd_high <= f_pipe(8) - p;
-
-  end if;
-end process cfReg;
-
--- low & high thresholds for queue
---------------------------------------------------------------------------------
--- CFD delays
---------------------------------------------------------------------------------
--- queue thresholds at max
--- if full there is a problem 
--- need to make queue deep enough in relation to cf_delay so that it can never 
--- fill up
-
-assert q_full='0' 
-report "Threshold queue full" severity ERROR;
-
-thresholds <= std_logic_vector(cfd_low) & std_logic_vector(cfd_high);
-q_wr_en <= '1' when max_pipe(6) else '0';
-threshold_queue:cf_queue
-port map (
-  clk => clk,
-  srst => reset1,
-  din => thresholds,
-  wr_en => q_wr_en,
-  rd_en => q_rd_en,
-  dout => q_dout,
-  full => q_full,
-  empty => q_empty
-);
-
-rawDelay:entity work.sdp_bram_delay
-generic map(
-  DELAY => RAW_CFD_DELAY,
-  WIDTH => WIDTH
-)
-port map(
-  clk => clk,
-  input => std_logic_vector(raw),
-  delayed => raw_measurement
-);
-
-fiteredDelay:entity work.sdp_bram_delay
-generic map(
-  DELAY => RAW_CFD_DELAY-RAW_FIR_DELAY,
-  WIDTH => WIDTH
-)
-port map(
-  clk => clk,
-  input => std_logic_vector(filtered),
-  delayed => filtered_d
-);
-
-slopeDelay:entity work.sdp_bram_delay
-generic map(
-  DELAY => RAW_CFD_DELAY-RAW_FIR_DELAY-3,
-  WIDTH => WIDTH
-)
-port map(
-  clk => clk,
-  input => std_logic_vector(slope),
-  delayed => slope_d
-);
-
-cfdSlope0xing:entity work.threshold_xing
+pulse_threshold_s <= signed('0' & pulse_threshold);
+pulseTxing:entity work.threshold_xing
 generic map(
   WIDTH => WIDTH
 )
 port map(
   clk => clk,
   reset => reset1,
-  signal_in => signed(slope_d),
-  signal_out => slope_cfd,
-  threshold => (others => '0'),
-  pos => open,
-  neg => open,
-  pos_closest => min_cfd,
-  neg_closest => max_cfd
+  signal_in => filtered_cfd,
+  threshold => pulse_threshold_s,
+  signal_out => filtered_x,
+  pos => pulse_pos_Txing,
+  neg => pulse_neg_Txing
 );
 
-slope_threshold <= signed('0' & registers.capture.slope_threshold);
-SlopeThreshXing:entity work.threshold_xing
-generic map(
-  WIDTH => WIDTH
-)
-port map(
-  clk => clk,
-  reset => reset1,
-  signal_in => signed(slope_cfd),
-  signal_out => slope_measurement,
-  threshold => slope_threshold,
-  pos => open,
-  neg => open,
-  pos_closest => slope_pos_thresh_xing,
-  neg_closest => open
-);
+-- timing for peak event can only be minimum, cfd_low or slope_threshold
+-- timing for area and pulse can be pulse_threshold
+-- The issue is with pulse_event pTimes need negative values
+-- cfd_low can happen before pulse_threshold 
+-- solution replace sThresh slot in pulse_event with oTime (offset) to be 
+-- subtracted from rTime to get the time of the starting minima.
 
-CFDreg:process (clk) is
+-- TODO add rel2min code to subtract off minimum
+
+area_threshold_s <= signed('0' & area_threshold);
+pulseMeas:process(clk)
 begin
   if rising_edge(clk) then
     if reset1 = '1' then
-      q_rd_en <= '0';
+      peak_state <= IDLE_S;
+      pulse_time <= (others => '0');
+      peak_time <= (others => '0');
+      pulse_length <= (others => '0');
+      peak_count <= (others => '0');
     else
-      q_rd_en <= '0';
       
-      case cfd_state is 
+      raw_p <= raw_cfd & raw_p(1 to DEPTH-1);
+      cfd_low_p <= cfd_low & cfd_low_p(1 to DEPTH-1);
+      cfd_high_p <= cfd_high & cfd_high_p(1 to DEPTH-1);
+      slope_pos_Txing_p <= slope_pos_Txing & slope_pos_Txing_p(1 to DEPTH-1);
+      slope_neg_Txing_p <= slope_neg_Txing & slope_neg_Txing_p(1 to DEPTH-1);
+      slope_pos_0xing_p <= slope_pos_0xing & slope_pos_0xing_p(1 to DEPTH-1);
+      slope_neg_0xing_p <= slope_neg_0xing & slope_neg_0xing_p(1 to DEPTH-1);
+      pulse_pos_Txing_p <= pulse_pos_Txing & pulse_pos_Txing_p(1 to DEPTH-1);
+      pulse_neg_Txing_p <= pulse_neg_Txing & pulse_neg_Txing_p(1 to DEPTH-1);
+      
+      filtered_reg <= filtered_x;
+      filtered_m <= filtered_reg;
+      --slope_m <= slope_x;
+      
+      a_pulse_thresh_p 
+        <= (filtered_x >= pulse_threshold_s) & a_pulse_thresh_p(1 to DEPTH-1);
+      
+      pulse_start <= slope_pos_0xing_p(DEPTH-1) and 
+                     not a_pulse_thresh_p(DEPTH-1);
+                     
+      if slope_pos_0xing_p(DEPTH-1) and not a_pulse_thresh_p(DEPTH-1) then
+        pulse_time <= (others => '0');
+        peak_count <= (others => '0');
+      else
         
-      when CFD_IDLE_S =>
-        
-        if min_cfd then
-          if q_empty='1' then
-            cfd_state <= CFD_ERROR_S;
-            cfd_low_threshold <= signed(filtered_d);
-            cfd_high_threshold <= signed(filtered_d);
+        if slope_neg_0xing_p(DEPTH) then
+          if peak_count(PEAK_COUNT_BITS)='1' then
+            peak_count <= (others => '1');
           else
-            cfd_state <= CFD_ARMED_S;
-            cfd_low_threshold <= signed(q_dout(2*WIDTH-1 downto WIDTH));
-            cfd_high_threshold <= signed(q_dout(WIDTH-1 downto 0));
+            peak_count <= peak_count + 1;
           end if;
         end if;
-            
-      when CFD_ARMED_S | CFD_ERROR_S =>
-        if max_cfd then
-          cfd_state <= CFD_IDLE_S;
-          q_rd_en <= '1';
-        end if;         
         
-      end case;
+        if pulse_time(16)='1' then
+          pulse_time <= (others => '1');
+        else
+          pulse_time <= pulse_time + 1;
+        end if;
+        
+      end if;
+      
+      --above_area_threshold <= pulse_area >= area_threshold_s;
+      pulse_area_m <= pulse_area;
+      
+      if slope_pos_Txing_p(DEPTH-1) then
+        peak_state <= ARMED_S;
+      elsif slope_neg_0xing_p(DEPTH) then
+        peak_state <= IDLE_S;
+      end if;
+      
+      if pulse_pos_Txing_p(DEPTH-1) then
+        pulse_length <= (others => '0');
+      else
+        if pulse_length(16)='1' then
+          pulse_length <= (others => '1');
+        else
+          pulse_length <= pulse_length + 1;
+        end if;
+      end if;
+      
+      if slope_pos_0xing_p(DEPTH-1) then
+        peak_time <= (others => '0');
+      else
+        if peak_time(16)='1' then
+          peak_time <= (others => '1');
+        else
+          peak_time <= peak_time+1;
+        end if;
+      end if;
+      
     end if;
   end if;
-end process CFDreg;
+end process pulseMeas;
 
-cfdLowThreshXing:entity work.threshold_xing
+m.pulse_area <= pulse_area_m;
+m.pulse_length <= pulse_length(15 downto 0);
+m.pulse_time <= pulse_time(15 downto 0);
+m.pulse_start <= pulse_start;
+m.peak_time <= peak_time(15 downto 0);
+m.peak_state <= peak_state;
+m.peak_count <= peak_count(PEAK_COUNT_BITS-1 downto 0);
+m.cfd_high <= cfd_high_p(DEPTH);
+m.cfd_low <= cfd_low_p(DEPTH);
+m.above_area_threshold <= above_area_threshold;
+m.above_pulse_threshold <= a_pulse_thresh_p(DEPTH);
+m.pulse_threshold_pos <= pulse_pos_Txing_p(DEPTH);
+m.pulse_threshold_neg <= pulse_neg_Txing_p(DEPTH);
+m.slope_threshold_pos <= slope_pos_Txing_p(DEPTH);
+m.slope_threshold_neg <= slope_neg_Txing_p(DEPTH);
+
+pulseArea:entity work.area_acc
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  FRAC => FRAC,
+  AREA_WIDTH => AREA_WIDTH,
+  AREA_FRAC => AREA_FRAC
 )
 port map(
   clk => clk,
   reset => reset1,
-  signal_in => signed(filtered_d),
-  signal_out => filtered_measurement,
-  threshold => cfd_low_threshold,
-  pos => open,
-  neg => open,
-  pos_closest => cfd_low_xing,
-  neg_closest => open
+  xing => pulse_pos_Txing_p(2),
+  sig => filtered_m,
+  area => pulse_area
 );
-
-cfdHighThreshXing:entity work.threshold_xing
-generic map(
-  WIDTH => WIDTH
-)
-port map(
-  clk => clk,
-  reset => reset1,
-  signal_in => signed(filtered_d),
-  signal_out => open,
-  threshold => cfd_high_threshold,
-  pos => open,
-  neg => open,
-  pos_closest => cfd_high_thresh_xing,
-  neg_closest => open
-);
---------------------------------------------------------------------------------
--- Measurement
---------------------------------------------------------------------------------
 
 filteredMeas:entity work.signal_measurement2
 generic map(
@@ -330,12 +274,12 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  signal_in => filtered_measurement,
+  signal_in => filtered_x,
   threshold => (others => '0'),
   signal_out => m.filtered.sample,
-  pos => m.filtered.pos_0xing,
-  neg => m.filtered.neg_0xing,
-  xing_time => m.filtered.xing_time,
+  pos_xing => m.filtered.pos_0xing,
+  neg_xing => m.filtered.neg_0xing,
+  xing => m.filtered.zero_xing,
   area => m.filtered.area,
   extrema => m.filtered.extrema
 );
@@ -349,65 +293,35 @@ generic map(
 )
 port map(
   clk => clk,
-  reset => reset1,
-  signal_in => slope_measurement,
+  reset => reset2,
+  signal_in => slope_x,
   threshold => (others => '0'),
   signal_out => m.slope.sample,
-  pos => m.slope.pos_0xing,
-  neg => m.slope.neg_0xing,
-  xing_time => m.slope.xing_time,
+  pos_xing => m.slope.pos_0xing,
+  neg_xing => m.slope.neg_0xing,
+  xing => m.slope.zero_xing,
   area => m.slope.area,
   extrema => m.slope.extrema
 );
 
-
-startStop:process
-begin
-  case registers.capture.timing is
-  when PULSE_THRESH_TIMING_D =>
-    start_int <=  m.filtered.pos_threshxing;
-  when SLOPE_THRESH_TIMING_D =>
-    start_int <= m.slope.pos_threshxing;
-  when CFD_LOW_TIMING_D =>
-    start_int <= cfd_low_xing;
-    null;
-  when RISE_START_TIMING_D =>
-    start_int <= 
-    null;
-  end case;
-  
-end process startStop;
-
-
-
-pulseMeasurement:process(clk)
-begin
-  if rising_edge(clk) then
-    if reset1 = '1' then
-      
-    else
-    end if;
-  end if;
-end process pulseMeasurement;
-
---slopeMeas:entity work.signal_measurement2
---generic map(
---  WIDTH => WIDTH,
---  FRAC => FRAC,
---  AREA_WIDTH => AREA_WIDTH,
---  AREA_FRAC => AREA_FRAC
---)
---port map(
---  clk => clk,
---  reset => reset2,
---  signal_in => signed(slope_cfd),
---  threshold => signed('0' & registers.capture.slope_threshold),
---  signal_out => open,
---  pos => slope_pos,
---  neg => slope_neg,
---  time => slope_time,
---  area => area,
---  extrema => extrema
---);
+rawMeas:entity work.signal_measurement2
+generic map(
+  WIDTH => WIDTH,
+  FRAC => FRAC,
+  AREA_WIDTH => AREA_WIDTH,
+  AREA_FRAC => AREA_FRAC
+)
+port map(
+  clk => clk,
+  reset => reset2,
+  signal_in => raw_p(4),
+  threshold => (others => '0'),
+  signal_out => m.raw.sample,
+  pos_xing => m.raw.pos_0xing,
+  neg_xing => m.raw.neg_0xing,
+  xing => m.raw.zero_xing,
+  area => m.raw.area,
+  extrema => m.raw.extrema
+);
 
 end architecture RTL;

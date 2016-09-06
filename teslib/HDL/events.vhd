@@ -143,7 +143,7 @@ record
 	--rel_timestamp:time_t;
 	area:area_t;
 	pulse_threshold:unsigned(SIGNAL_BITS-1 downto 0);
-	slope_threshold:unsigned(SIGNAL_BITS-1 downto 0);
+	oTime:unsigned(SIGNAL_BITS-1 downto 0);
 end record;
 
 function to_streambus(
@@ -378,7 +378,7 @@ begin
 	when 1 =>
 		sb.data(63 downto 32) := set_endianness(p.area,endianness);
 		sb.data(31 downto 16) := set_endianness(p.pulse_threshold,endianness);
-		sb.data(15 downto 0) := set_endianness(p.slope_threshold,endianness);
+		sb.data(15 downto 0) := set_endianness(p.oTime,endianness);
 	when others =>
 		assert FALSE report "bad word number in pulse_detection_t to_streambus()"	
 						 		 severity ERROR;

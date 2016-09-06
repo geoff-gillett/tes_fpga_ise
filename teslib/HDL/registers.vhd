@@ -189,8 +189,7 @@ type capture_registers_t is record
 	area_threshold:area_t;
 	height:height_d;
 	threshold_rel2min:boolean;
-	cfd_rel2min:boolean; 
-	height_rel2min:boolean;
+	rel2min:boolean; 
 	timing:timing_d;
 	detection:detection_d;
 	full_trace:boolean;
@@ -606,8 +605,8 @@ begin
 	s(9 downto 8):=to_std_logic(r.height,2);
 	s(11 downto 10):=to_std_logic(r.trace0,2);
 	s(13 downto 12):=to_std_logic(r.trace1,2);
-	s(14):=to_std_logic(r.cfd_rel2min);
-	s(15):=to_std_logic(r.height_rel2min);
+	s(14):=to_std_logic(r.rel2min);
+	s(15):=to_std_logic(r.rel2min);
 	s(16):=to_std_logic(r.threshold_rel2min);
 	return s;
 end function; 
