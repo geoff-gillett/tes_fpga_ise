@@ -1147,7 +1147,7 @@ area_above_threshold
 detection_flags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
 detection_flags.event_type.detection <= capture_cfd.detection;
 detection_flags.event_type.tick <= FALSE;
-detection_flags.relative <= capture_cfd.height_rel2min;
+detection_flags.peak_overflow <= capture_cfd.height_rel2min;
 detection_flags.timing <= capture_cfd.timing;
 detection_flags.peak_count <= m.peak_count(PEAK_COUNT_BITS-1 downto 0)-1;
 detection_flags.height <= capture_cfd.height;
@@ -1169,7 +1169,7 @@ area_dump <= m.pulse.neg_threshxing and not m.pulse.area_above_threshold;
 --pulse event
 pulse_header.flags <= header_flags;
 pulse_header.slope_threshold <= header_slope_threshold;
-pulse_header.pulse_threshold <= header_pulse_threshold;
+pulse_header.reserved <= header_pulse_threshold;
 pulse_peak.height <= m.filtered.sample;
 pulse_peak_we(3) <= m.height_valid;
 pulse_peak.minima <= m.filtered.sample;
@@ -1822,7 +1822,6 @@ port map(
   address => frame_address_reg,
   chunk_we => frame_we_reg,
   free => framer_free,
-  --FIXME shouldn't length be 1 bit larger?
   length => frame_length_reg,
   commit => commit_frame_reg, 
   stream => eventstream,

@@ -5,32 +5,31 @@ use ieee.numeric_std.all;
 library extensions;
 use extensions.boolean_vector.all;
 
+use work.types.all;
 use work.registers.all;
+use work.events.all;
 use work.measurements.all;
 
 entity measure is
 generic(
+  CHANNEL:integer:=0;
   WIDTH:integer:=18;
   FRAC:integer:=3;
   AREA_WIDTH:integer:=32;
   AREA_FRAC:integer:=1;
-  PEAK_COUNT_BITS:integer:=4;
-  CFD_DELAY:integer:=256
+  CFD_DELAY:integer:=1027
 );
 port (
   clk:in std_logic;
   reset1:in std_logic;
   reset2:in std_logic;
   
-  --rel2min:in boolean; -- don't use set FALSE
-  slope_threshold:in unsigned(16 downto 0);
-  pulse_threshold:in unsigned(16 downto 0);
-  area_threshold:in unsigned(30 downto 0);
-  constant_fraction:in unsigned(16 downto 0);
+  regs:in capture_registers_t;
   
   raw:in signed(WIDTH-1 downto 0);
   slope:in signed(WIDTH-1 downto 0);
   filtered:in signed(WIDTH-1 downto 0);
+  
   measurements:out measurements_t
 );
 end entity measure;
@@ -42,19 +41,18 @@ signal cfd_low,cfd_high,cfd_error:boolean;
 signal slope_cfd,raw_cfd,filtered_cfd:signed(WIDTH-1 downto 0);
 signal m:measurements_t;
 
-signal peak_state:peak_state_t;
-
 signal slope_pos_Txing,slope_neg_Txing:boolean;
 signal pulse_pos_Txing,pulse_neg_Txing:boolean;
 signal slope_x,filtered_x:signed(WIDTH-1 downto 0);
 signal filtered_reg,filtered_m:signed(WIDTH-1 downto 0);
-signal pulse_area_m:signed(31 downto 0);
+signal pulse_area_m:signed(AREA_WIDTH-1 downto 0);
 signal slope_pos_0xing,slope_neg_0xing:boolean;
 signal slope_threshold_s,pulse_threshold_s:signed(WIDTH-1 downto 0);
-signal area_threshold_s:signed(31 downto 0);
+signal area_threshold_s:signed(AREA_WIDTH-1 downto 0);
 signal above_area_threshold:boolean;
-signal pulse_time,peak_time,pulse_length:unsigned(16 downto 0);
-signal pulse_start:boolean;
+--signal pulse_time,peak_time,pulse_length,rise_time:unsigned(16 downto 0);
+signal pulse_t_n,pulse_l_n,rise_t_n:unsigned(16 downto 0);
+--signal pulse_start:boolean;
 
 constant DEPTH:integer:=7;
 type pipe is array (1 to DEPTH) of signed(WIDTH-1 downto 0);
@@ -67,7 +65,8 @@ signal pulse_pos_Txing_p,pulse_neg_Txing_p:boolean_vector(1 to DEPTH);
 signal a_pulse_thresh_p:boolean_vector(1 to DEPTH);
 
 signal pulse_area:signed(AREA_WIDTH-1 downto 0);
-signal peak_count:unsigned(PEAK_COUNT_BITS downto 0);
+signal first_peak:boolean;
+signal max_peaks : unsigned(PEAK_COUNT_BITS downto 0);
 
 begin
 measurements <= m;
@@ -84,7 +83,7 @@ port map(
   raw => raw,
   slope => slope,
   filtered => filtered,
-  constant_fraction => constant_fraction,
+  constant_fraction => regs.constant_fraction,
   rel2min => FALSE,
   cfd_low => cfd_low,
   cfd_high => cfd_high,
@@ -108,7 +107,6 @@ port map(
   neg => slope_neg_0xing
 );
 
-slope_threshold_s <= signed('0' & slope_threshold);
 slopeTxing:entity work.threshold_xing
 generic map(
   WIDTH => WIDTH
@@ -123,7 +121,6 @@ port map(
   neg => slope_neg_Txing
 );
 
-pulse_threshold_s <= signed('0' & pulse_threshold);
 pulseTxing:entity work.threshold_xing
 generic map(
   WIDTH => WIDTH
@@ -138,25 +135,32 @@ port map(
   neg => pulse_neg_Txing
 );
 
--- timing for peak event can only be minimum, cfd_low or slope_threshold
--- timing for area and pulse can be pulse_threshold
--- The issue is with pulse_event pTimes need negative values
--- cfd_low can happen before pulse_threshold 
--- solution replace sThresh slot in pulse_event with oTime (offset) to be 
--- subtracted from rTime to get the time of the starting minima.
-
 -- TODO add rel2min code to subtract off minimum
 
-area_threshold_s <= signed('0' & area_threshold);
+pulse_t_n <= m.pulse_time+1;
+pulse_l_n <= m.pulse_length+1;
+rise_t_n <= m.rise_time+1;
 pulseMeas:process(clk)
 begin
   if rising_edge(clk) then
     if reset1 = '1' then
-      peak_state <= IDLE_S;
-      pulse_time <= (others => '0');
-      peak_time <= (others => '0');
-      pulse_length <= (others => '0');
-      peak_count <= (others => '0');
+      m.armed <= FALSE;
+      m.pulse_time <= (others => '0');
+      m.pulse_length <= (others => '0');
+      m.eflags.peak_count <= (others => '0');
+      m.eflags.peak_overflow <= FALSE;
+      m.peak_start <= FALSE;
+      m.event_start <= FALSE;
+      m.height_valid <= FALSE;
+      m.pulse_threshold_neg <= FALSE;
+      m.pulse_threshold_pos <= FALSE;
+      m.slope_threshold_neg <= FALSE;
+      m.slope_threshold_pos <= FALSE;
+      
+      first_peak <= TRUE;
+      pulse_threshold_s <= (WIDTH-1 => '0', others => '1');
+      slope_threshold_s <= (WIDTH-1 => '0', others => '1');
+      area_threshold_s <= (AREA_WIDTH => '0', others => '1');
     else
       
       raw_p <= raw_cfd & raw_p(1 to DEPTH-1);
@@ -171,61 +175,108 @@ begin
       
       filtered_reg <= filtered_x;
       filtered_m <= filtered_reg;
-      --slope_m <= slope_x;
       
+      --FIXME 
       a_pulse_thresh_p 
         <= (filtered_x >= pulse_threshold_s) & a_pulse_thresh_p(1 to DEPTH-1);
       
-      pulse_start <= slope_pos_0xing_p(DEPTH-1) and 
-                     not a_pulse_thresh_p(DEPTH-1);
-                     
+      m.pulse_start <= slope_pos_0xing_p(DEPTH-1) and 
+                       not a_pulse_thresh_p(DEPTH-1);
       if slope_pos_0xing_p(DEPTH-1) and not a_pulse_thresh_p(DEPTH-1) then
-        pulse_time <= (others => '0');
-        peak_count <= (others => '0');
+        m.eflags.peak_count <= (others => '0');
+        first_peak <= TRUE;
+        m.eflags.peak_overflow <= FALSE;
+        m.time_offset <= (others => '0');
+        m.rise_time <= (others => '0');
+        m.eflags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
+        m.eflags.event_type.detection <= regs.detection;
+        m.eflags.event_type.tick <= FALSE;
+        m.eflags.height <= regs.height;
+        m.eflags.new_window <= FALSE;
+        m.eflags.peak_overflow <= FALSE;
+        m.eflags.timing <= regs.timing;
+        m.size <= regs.max_peaks + 2;
+        max_peaks <= regs.max_peaks;
+        pulse_threshold_s <= signed('0' & regs.pulse_threshold);
+        slope_threshold_s <= signed('0' & regs.slope_threshold);
+        area_threshold_s <= signed('0' & regs.area_threshold);
       else
+
+        m.eflags.peak_overflow 
+          <= slope_neg_0xing_p(DEPTH-1) and m.eflags.peak_count=max_peaks;
         
-        if slope_neg_0xing_p(DEPTH) then
-          if peak_count(PEAK_COUNT_BITS)='1' then
-            peak_count <= (others => '1');
-          else
-            peak_count <= peak_count + 1;
-          end if;
+        if slope_neg_0xing_p(DEPTH) and not m.eflags.peak_overflow then
+          m.eflags.peak_count <= m.eflags.peak_count + 1;
+          first_peak <= FALSE;
         end if;
         
-        if pulse_time(16)='1' then
-          pulse_time <= (others => '1');
+        --FIXME this saturation is bad
+        if pulse_t_n(16)='1' then
+          m.pulse_time <= (others => '1');
         else
-          pulse_time <= pulse_time + 1;
+          m.pulse_time <= pulse_t_n(15 downto 0);
         end if;
         
       end if;
       
-      --above_area_threshold <= pulse_area >= area_threshold_s;
+      if rise_t_n(16)='1' then
+        m.rise_time <= (others => '0');
+      else
+        m.rise_time <= rise_t_n(15 downto 0);
+      end if;
+      
+      case m.eflags.timing is
+      when PULSE_THRESH_TIMING_D =>
+        m.peak_start <= pulse_pos_Txing_p(DEPTH-1);
+        m.event_start <= pulse_pos_Txing_p(DEPTH-1) and first_peak;
+        if pulse_pos_Txing_p(DEPTH-1) then
+          m.rise_time <= (others => '0');
+        end if;
+      when SLOPE_THRESH_TIMING_D =>
+        m.peak_start <= slope_pos_Txing_p(DEPTH-1);
+        m.event_start <= slope_pos_Txing_p(DEPTH-1) and first_peak;
+        if slope_pos_Txing_p(DEPTH-1) then
+          m.rise_time <= (others => '0');
+        end if;
+      when CFD_LOW_TIMING_D =>
+        m.peak_start <= cfd_low_p(DEPTH-1);
+        m.event_start <= cfd_low_p(DEPTH-1) and first_peak;
+        if cfd_low_p(DEPTH-1) then
+          m.rise_time <= (others => '0');
+        end if;
+      when RISE_START_TIMING_D =>
+        m.peak_start <= slope_pos_0xing_p(DEPTH-1);
+        m.event_start <= slope_pos_0xing_p(DEPTH-1) and first_peak;
+        if slope_pos_0xing_p(DEPTH-1) then
+          m.rise_time <= (others => '0');
+        end if;
+      end case;
+      
+      if m.eflags.height=CFD_HEIGHT_D then
+        m.height_valid <= cfd_high_p(DEPTH-1);
+      else
+        m.height_valid <= slope_neg_0xing_p(DEPTH-1);
+      end if;
+      
+      if m.event_start then
+        m.time_offset <= m.pulse_time;
+      end if;
+
       pulse_area_m <= pulse_area;
       
       if slope_pos_Txing_p(DEPTH-1) then
-        peak_state <= ARMED_S;
+        m.armed <= TRUE;
       elsif slope_neg_0xing_p(DEPTH) then
-        peak_state <= IDLE_S;
+        m.armed <= FALSE;
       end if;
       
       if pulse_pos_Txing_p(DEPTH-1) then
-        pulse_length <= (others => '0');
+        m.pulse_length <= (others => '0');
       else
-        if pulse_length(16)='1' then
-          pulse_length <= (others => '1');
+        if pulse_l_n(16)='1' then
+          m.pulse_length <= (others => '1');
         else
-          pulse_length <= pulse_length + 1;
-        end if;
-      end if;
-      
-      if slope_pos_0xing_p(DEPTH-1) then
-        peak_time <= (others => '0');
-      else
-        if peak_time(16)='1' then
-          peak_time <= (others => '1');
-        else
-          peak_time <= peak_time+1;
+          m.pulse_length <= pulse_l_n;
         end if;
       end if;
       
@@ -234,12 +285,6 @@ begin
 end process pulseMeas;
 
 m.pulse_area <= pulse_area_m;
-m.pulse_length <= pulse_length(15 downto 0);
-m.pulse_time <= pulse_time(15 downto 0);
-m.pulse_start <= pulse_start;
-m.peak_time <= peak_time(15 downto 0);
-m.peak_state <= peak_state;
-m.peak_count <= peak_count(PEAK_COUNT_BITS-1 downto 0);
 m.cfd_high <= cfd_high_p(DEPTH);
 m.cfd_low <= cfd_low_p(DEPTH);
 m.above_area_threshold <= above_area_threshold;

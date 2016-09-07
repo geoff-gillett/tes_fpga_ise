@@ -117,8 +117,18 @@ type measurements_t is record
 	
   pulse_area:area_t;
   pulse_length:time_t; --time since pulse_pos_Txing
-  pulse_time:time_t;
-  pulse_start:boolean;
+  pulse_start:boolean; --minima at start of pulse 
+  pulse_time:time_t;   --time since last pulse start
+  
+  --pulse time of timestamp valid after event start
+  time_offset:unsigned(15 downto 0); 
+  
+	peak_start:boolean; --peak timing point
+  rise_time:unsigned(15 downto 0);
+  
+  event_start:boolean; --peak_start and first peak in a pulse
+  eflags:detection_flags_t;
+  size:unsigned(15 downto 0);
   
   pulse_threshold_pos:boolean;
   pulse_threshold_neg:boolean;
@@ -127,17 +137,17 @@ type measurements_t is record
   
   above_area_threshold:boolean;
   above_pulse_threshold:boolean;
+  armed:boolean; 
   
-	--time from trigger to height_valid
-  peak_time:time_t;
+  height_valid:boolean;
+  height:signed(15 downto 0);
   	
 	cfd_low:boolean; 
 	cfd_high:boolean;
 	cfd_error:boolean;
 	
-	peak_state:peak_state_t;
-	
-	peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
+	--peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
+	--peak_overflow:boolean;
 end record;
 
 type measurement_array is array (natural range <>)

@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 library extensions;
 use extensions.boolean_vector.all;
 
-entity CFD_unit is
+entity CFD_unit2 is
 generic(
   WIDTH:integer:=18;
   CFD_DELAY:integer:=1027
@@ -20,7 +20,9 @@ port (
   filtered:in signed(WIDTH-1 downto 0);
   
   constant_fraction:in unsigned(16 downto 0);
-  rel2min:in boolean;
+  --rel2min:in boolean;
+  slope_threshold:in signed(WIDTH-1 downto 0);
+  pulse_threshold:in signed(WIDTH-1 downto 0);
   
   cfd_low:out boolean;
   cfd_high:out boolean;
@@ -30,9 +32,9 @@ port (
   slope_out:out signed(WIDTH-1 downto 0);
   filtered_out:out signed(WIDTH-1 downto 0)
 );
-end entity CFD_unit;
+end entity CFD_unit2;
 
-architecture RTL of CFD_unit is
+architecture RTL of CFD_unit2 is
   
 --constant RAW_CFD_DELAY:integer:=256;
 constant DEPTH:integer:=8;
@@ -62,7 +64,7 @@ signal min,max:boolean;
 signal raw_d,filtered_d,filtered_d_reg,slope_d
        :std_logic_vector(WIDTH-1 downto 0);
 
-signal thresholds,q_dout:std_logic_vector(2*WIDTH-1 downto 0);
+signal cf_data,q_dout:std_logic_vector(2*WIDTH-1 downto 0);
 signal cf_int:signed(WIDTH-1 downto 0):=(others => '0');
 signal cfd_low_threshold,cfd_high_threshold:signed(WIDTH-1 downto 0)
        :=(others => '0');
@@ -70,8 +72,6 @@ signal q_full,q_empty:std_logic;
 signal q_rd_en,q_wr_en:std_logic:='0';
 
 --minimum sig value
-signal min_in:signed(WIDTH-1 downto 0):=(others => '0');
-signal min_out:signed(WIDTH-1 downto 0):=(others => '0');
 signal p:signed(WIDTH-1 downto 0);
 signal cfd_low_int,cfd_high_int:signed(WIDTH-1 downto 0);
 signal min_cfd:boolean;
@@ -80,31 +80,22 @@ signal max_cfd:boolean;
 type CFDstate is (CFD_IDLE_S,CFD_ARMED_S,CFD_ERROR_S);
 signal cfd_state:CFDstate;
 signal slope_cfd:signed(WIDTH-1 downto 0);
-signal rel2min_reg:boolean;
+
+signal slope_pos_Txing_i : boolean;
+signal slope_neg_Txing_i : boolean;
+signal pulse_pos_Txing_i : boolean;
+signal pulse_neg_Txing_i : boolean;
+
+signal slope_i : signed(WIDTH-1 downto 0);
+signal filtered_i : signed(WIDTH-1 downto 0);
 
 begin
 
 --------------------------------------------------------------------------------
 -- Constant fraction calculation
 --------------------------------------------------------------------------------
-  
-inputPipelines:process(clk)
-begin
-  if rising_edge(clk) then
-    if reset1='1' then
-      f_pipe <= (others => (others => '0'));
-      s_pipe <= (others => (others => '0'));
-      max_pipe <= (others => FALSE);
-      min_pipe <= (others => FALSE);
-    else
-      f_pipe <= filtered & f_pipe(1 to DEPTH-1);
-      s_pipe <= slope & s_pipe(1 to DEPTH-1);
-      max_pipe <= max & max_pipe(1 to DEPTH-1);
-      min_pipe <= min & min_pipe(1 to DEPTH-1);
-    end if;
-  end if;
-end process inputPipelines;
-  
+--TODO change to queue only the cf_value not thresholds and add flags for 
+--armed and above pulse threshold -- idea is to minimise starts.
 --latency 3
 slope0xing:entity work.threshold_xing
 generic map(
@@ -120,6 +111,34 @@ port map(
   neg => max
 );
 
+slopeTxing:entity work.threshold_xing
+generic map(
+  WIDTH => WIDTH
+)
+port map(
+  clk => clk,
+  reset => reset1,
+  signal_in => slope,
+  signal_out => slope_i,
+  threshold => slope_threshold,
+  pos => slope_pos_Txing_i,
+  neg => slope_neg_Txing_i
+);
+
+pulseTxing:entity work.threshold_xing
+generic map(
+  WIDTH => WIDTH
+)
+port map(
+  clk => clk,
+  reset => reset1,
+  signal_in => filtered,
+  signal_out => filtered_i,
+  threshold => pulse_threshold,
+  pos => pulse_pos_Txing_i,
+  neg => pulse_neg_Txing_i
+);
+
 cfCalc:entity work.constant_fraction
 generic map(
   WIDTH => WIDTH
@@ -127,7 +146,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset2,
-  min => min_in,
+  min => (others => '0'),
   cf => cf_int,
   sig => f_pipe(4),
   p => p -- constant fraction of the rise above minimum
@@ -137,39 +156,34 @@ cfReg:process(clk)
 begin
   if rising_edge(clk) then
     if reset1='1' then
-      rel2min_reg <= FALSE;
+      cf_int <= (others => '0');
+      f_pipe <= (others => (others => '0'));
+      s_pipe <= (others => (others => '0'));
+      max_pipe <= (others => FALSE);
+      min_pipe <= (others => FALSE);
     else
-    
-      if min then
-        if rel2min then
-          min_in <= f_pipe(3);   --minima into cf pipeline
-        else
-          min_in <= (others => '0');
-        end if;
-        cf_int <= signed('0' & constant_fraction);
-        rel2min_reg <= rel2min; --FIXME add pipe
-      end if; 
-            
-      if min_pipe(4) then
-        if rel2min_reg then
-          min_out <= f_pipe(7); --minima at output of cf pipeline
-        else 
-          min_out <= (others => '0');
-        end if;
-      end if;
       
-      cfd_low_int <= p + min_out;
-      cfd_high_int <= f_pipe(8) - p;
-
+      f_pipe <= filtered & f_pipe(1 to DEPTH-1);
+      s_pipe <= slope & s_pipe(1 to DEPTH-1);
+      max_pipe <= max & max_pipe(1 to DEPTH-1);
+      min_pipe <= min & min_pipe(1 to DEPTH-1);
+            
+      if min then
+        cf_int <= signed('0' & constant_fraction);
+      end if; 
+      
+      
+      
+      
+      
     end if;
   end if;
 end process cfReg;
 
--- low & high thresholds for queue
 --------------------------------------------------------------------------------
 -- CFD delays
 --------------------------------------------------------------------------------
--- queue thresholds at max
+-- queue  at max
 -- if full there is a problem 
 -- need to make queue deep enough in relation to cf_delay so that it can never 
 -- fill up
@@ -177,13 +191,13 @@ end process cfReg;
 assert q_full='0' 
 report "Threshold queue full" severity ERROR;
 
-thresholds <= std_logic_vector(cfd_low_int) & std_logic_vector(cfd_high_int);
+cf_data <= std_logic_vector(cfd_low_int) & std_logic_vector(p);
 q_wr_en <= '1' when max_pipe(6) else '0';
-threshold_queue:cf_queue
+CFqueue:cf_queue
 port map (
   clk => clk,
   srst => reset1,
-  din => thresholds,
+  din => cf_data,
   wr_en => q_wr_en,
   rd_en => q_rd_en,
   dout => q_dout,
@@ -254,6 +268,7 @@ begin
       filtered_d_reg <= filtered_d;
       
       case cfd_state is 
+        
       when CFD_IDLE_S =>
         
         if min_cfd then
@@ -273,8 +288,8 @@ begin
           cfd_state <= CFD_IDLE_S;
           q_rd_en <= '1';
         end if;         
+        
       end case;
-      
     end if;
   end if;
 end process CFDreg;

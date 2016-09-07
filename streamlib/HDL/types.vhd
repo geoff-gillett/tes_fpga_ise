@@ -37,7 +37,7 @@ constant BUS_BITS:integer:=CHUNK_BITS*BUS_CHUNKS;
 -- data only bits of the bus
 constant BUS_DATABITS:integer:=CHUNK_DATABITS*BUS_CHUNKS;
 
---TODO remove the discard a last subtypes
+--TODO remove these discard a last subtypes
 subtype streambus_discard_t is boolean_vector(BUS_CHUNKS-1 downto 0);
 subtype streambus_last_t is boolean_vector(BUS_CHUNKS-1 downto 0);
 

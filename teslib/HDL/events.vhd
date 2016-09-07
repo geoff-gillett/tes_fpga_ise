@@ -27,6 +27,7 @@ package events is
 --constant FLAGS_POS:integer:=11;
 
 constant TICK_BUSWORDS:integer:=3;	-- must be 2 or 3
+--constant CHANNEL_BITS:integer:=3;
 --------------------------------------------------------------------------------
 --                            Event Types 
 --------------------------------------------------------------------------------
@@ -56,7 +57,7 @@ function to_event_type_t(sb:streambus_t) return event_type_t;
 --|peak_count|height_rel2min|channel||timing_d|height_d|event_type_t|new_window|
 type detection_flags_t is record 
 	peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0); 
-	relative:boolean; 
+	peak_overflow:boolean; 
 	height:height_d;
 	timing:timing_d;
 	channel:unsigned(CHANNEL_BITS-1 downto 0); 
@@ -85,7 +86,7 @@ function to_std_logic(f:tickflags_t) return std_logic_vector;
 --TODO make minima rise_time
 type peak_detection_t is record -- entire peak only event
   height:signal_t; 
-  minima:signal_t;  
+  rise_time:time_t;  
   flags:detection_flags_t; 
   rel_timestamp:time_t; -- 16
 end record;
@@ -131,8 +132,8 @@ function to_streambus(t:tick_event_t;w:natural range 0 to 2;endianness:string)
 return streambus_t;
 
 -----------------  pulse event - 16 byte header --------------------------------
---  | size | plength |   flags  |   time   |
---  |     area       | pthresh? | sthresh? |  
+--  | size | reserved |   flags  |   time   |
+--  |      area       |  length  |  offset  |  
 --  repeating 8 byte peak records (up to 16) for extra peaks.
 --  | height | minima | rise | time |
 type pulse_detection_t is
@@ -140,10 +141,8 @@ record
 	size:unsigned(SIZE_BITS-1 downto 0);
 	length:time_t;
 	flags:detection_flags_t;
-	--rel_timestamp:time_t;
 	area:area_t;
-	pulse_threshold:unsigned(SIGNAL_BITS-1 downto 0);
-	oTime:unsigned(SIGNAL_BITS-1 downto 0);
+	offset:unsigned(15 downto 0);
 end record;
 
 function to_streambus(
@@ -259,7 +258,7 @@ function to_std_logic(f:detection_flags_t) return std_logic_vector is
 begin    
 				 -- first transmitted byte
   slv(15 downto 12) := to_std_logic(f.peak_count);
-  slv(11) := to_std_logic(f.relative);
+  slv(11) := to_std_logic(f.peak_overflow);
   slv(10 downto 8) := to_std_logic(f.channel);
 				 -- second transmitted byte
   slv(7 downto 6) := to_std_logic(f.timing,2);
@@ -291,7 +290,7 @@ return	streambus_t is
 	variable sb:streambus_t;
 begin
   sb.data := set_endianness(e.height,endianness) &
-             set_endianness(e.minima,endianness) &
+             set_endianness(e.rise_time,endianness) &
              to_std_logic(e.flags) & 
              --ideally this should be '-' (don't care) but makes writing to
              --simulation data files harder
@@ -361,8 +360,8 @@ begin
 end function;
 
 -----------------  pulse event - 16 byte header --------------------------------
---  | size | plength |   flags  |   time   | --fixme size could be removed?
---  |     area       | pthresh? | sthresh? |  
+--  | size | reserved |   flags  |   time   | --fixme size could be removed?
+--  |     area        |  length  |  offset  |  
 --  repeating 8 byte peak records (up to 16) for extra peaks.
 --  | height | minima | rise | time |
 function to_streambus(p:pulse_detection_t;w:natural range 0 to 1;
@@ -377,8 +376,8 @@ begin
 		sb.data(15 downto 0) := (others => '0');
 	when 1 =>
 		sb.data(63 downto 32) := set_endianness(p.area,endianness);
-		sb.data(31 downto 16) := set_endianness(p.pulse_threshold,endianness);
-		sb.data(15 downto 0) := set_endianness(p.oTime,endianness);
+		sb.data(31 downto 16) := (others => '0'); 
+		sb.data(15 downto 0) := set_endianness(p.offset,endianness);
 	when others =>
 		assert FALSE report "bad word number in pulse_detection_t to_streambus()"	
 						 		 severity ERROR;
