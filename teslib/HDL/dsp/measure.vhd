@@ -93,6 +93,7 @@ port map(
   filtered_out => filtered_cfd
 );  
 
+-- replace with pipes
 slope0xing:entity work.threshold_xing
 generic map(
   WIDTH => WIDTH
@@ -210,7 +211,6 @@ begin
           first_peak <= FALSE;
         end if;
         
-        --FIXME this saturation is bad
         if pulse_t_n(16)='1' then
           m.pulse_time <= (others => '1');
         else

@@ -13,7 +13,7 @@ use extensions.logic.all;
 -- 
 -- cf is 17 signed fractional bits
 
-entity constant_fraction is
+entity cf_calc is
 generic(WIDTH:integer:=18); -- max 18
 port (
   clk:in std_logic;
@@ -23,16 +23,15 @@ port (
   sig:in signed(WIDTH-1 downto 0);
   p:out signed(WIDTH-1 downto 0)
 );
-end entity constant_fraction;
+end entity cf_calc;
 
-architecture wrapper of constant_fraction is
+architecture wrapper of cf_calc is
   
 -- DSP48E1 signals
 signal a:std_logic_vector(29 downto 0);
 signal b:std_logic_vector(17 downto 0);
-signal p_int,c:std_logic_vector(47 downto 0);
+signal p_int:std_logic_vector(47 downto 0);
 signal d:std_logic_vector(24 downto 0);
-
 --signal round_up:std_ulogic;
 
 -- rounding pattern
@@ -42,24 +41,10 @@ begin
 assert WIDTH <= 18 
 report "maximum width is 18" severity ERROR;
 
-c <= (15 downto 0 => '1', others => '0');
 a <= std_logic_vector(resize(min,a'length));
 d <= std_logic_vector(resize(sig,d'length));
 b <= std_logic_vector(resize(cf,b'length));
-p <= signed(p_int(WIDTH+16 downto WIDTH-1));
-
---carry_in <= 1 when round_up='1' else 0;
---round:process(clk)
---begin
---  if rising_edge(clk) then
---    if reset = '1' then
---      p_round <= (others => '0');
---    else
---      p_round <= signed(p_int(2*WIDTH-2 downto WIDTH-2)) + carry_in;
---    end if;
---  end if;
---end process round;
---p <= signed(p_int(2*WIDTH-2 downto WIDTH-1));
+p <= signed(p_int(WIDTH+16 downto 17));
 
 addMult:DSP48E1
 generic map (
@@ -70,11 +55,11 @@ generic map (
   USE_MULT => "MULTIPLY",            -- Select multiplier usage ("MULTIPLY", "DYNAMIC", or "NONE")
   -- Pattern Detector Attributes: Pattern Detection Configuration
   AUTORESET_PATDET => "NO_RESET",    -- "NO_RESET", "RESET_MATCH", "RESET_NOT_MATCH" 
-  MASK => X"FFFFFFFF0000",           -- 48-bit mask value for pattern detect (1=ignore)
-  PATTERN => X"00000000FFFF",        -- 48-bit pattern match for pattern detect
+  MASK => X"FFFFFFFE0000",           -- 48-bit mask value for pattern detect (1=ignore)
+  PATTERN => X"00000001FFFF",        -- 48-bit pattern match for pattern detect
   SEL_MASK => "MASK",                -- "C", "MASK", "ROUNDING_MODE1", "ROUNDING_MODE2" 
   SEL_PATTERN => "PATTERN",          -- Select pattern value ("PATTERN" or "C")
-  USE_PATTERN_DETECT => "NO_PATDET", -- Enable pattern detect ("PATDET" or "NO_PATDET")
+  USE_PATTERN_DETECT => "PATDET", -- Enable pattern detect ("PATDET" or "NO_PATDET")
   -- Register Control Attributes: Pipeline Register Configuration
   ACASCREG => 1,                     -- Number of pipeline stages between A/ACIN and ACOUT (0, 1 or 2)
   ADREG => 1,                        -- Number of pipeline stages for pre-adder (0 or 1)
@@ -115,16 +100,16 @@ port map (
   PCIN => (others => '0'),                     -- 48-bit input: P cascade input
   -- Control: 4-bit (each) input: Control Inputs/Status Bits
   ALUMODE => "0000",               -- 4-bit input: ALU control input
-  CARRYINSEL => "011",         -- 3-bit input: Carry select input
+  CARRYINSEL => "111",         -- 3-bit input: Carry select input
   CEINMODE => '0',             -- 1-bit input: Clock enable input for INMODEREG
   CLK => clk,                       -- 1-bit input: Clock input
   INMODE => "01101",                 -- 5-bit input: INMODE control input
-  OPMODE => "0110101",                 -- 7-bit input: Operation mode input
+  OPMODE => "0000101",                 -- 7-bit input: Operation mode input
   RSTINMODE => reset,           -- 1-bit input: Reset input for INMODEREG
   -- Data: 30-bit (each) input: Data Ports
-  A => a,                           -- 30-bit input: A data input
-  B => b,                           -- 18-bit input: B data input
-  C => c,                           -- 48-bit input: C data input
+  A => A,                           -- 30-bit input: A data input
+  B => B,                           -- 18-bit input: B data input
+  C => (others => '1'),                           -- 48-bit input: C data input
   CARRYIN => '0',               -- 1-bit input: Carry input signal
   D => D,                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs

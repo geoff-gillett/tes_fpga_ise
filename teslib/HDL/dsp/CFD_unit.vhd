@@ -54,7 +54,7 @@ type pipe is array (natural range <>) of signed(WIDTH-1 downto 0);
 
 -- pipelines to sync signals
 signal f_pipe:pipe(1 to DEPTH):=(others => (others => '0'));
-signal s_pipe:pipe(1 to DEPTH):=(others => (others => '0'));
+--signal s_pipe:pipe(1 to DEPTH):=(others => (others => '0'));
 signal s_out_pipe:pipe(1 to 4):=(others => (others => '0'));
 signal max_pipe,min_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 
@@ -93,12 +93,12 @@ begin
   if rising_edge(clk) then
     if reset1='1' then
       f_pipe <= (others => (others => '0'));
-      s_pipe <= (others => (others => '0'));
+      --s_pipe <= (others => (others => '0'));
       max_pipe <= (others => FALSE);
       min_pipe <= (others => FALSE);
     else
       f_pipe <= filtered & f_pipe(1 to DEPTH-1);
-      s_pipe <= slope & s_pipe(1 to DEPTH-1);
+      --s_pipe <= slope & s_pipe(1 to DEPTH-1);
       max_pipe <= max & max_pipe(1 to DEPTH-1);
       min_pipe <= min & min_pipe(1 to DEPTH-1);
     end if;
