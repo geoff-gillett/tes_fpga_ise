@@ -26,7 +26,7 @@ use work.types.all;
 use work.functions.all;
 --use work.events.all;
 
---TODO move all registers here
+--TODO rationalise all these packages.
 
 package registers is
 
@@ -38,7 +38,7 @@ constant BASELINE_BITS:integer:=10;
 constant BASELINE_TIMECONSTANT_BITS:integer:=32;
 constant BASELINE_COUNTER_BITS:integer:=18;
 constant BASELINE_MAX_AV_ORDER:integer:=6;
-constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=10;
+constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=4;
 constant DELAY_BITS:integer:=13;
 constant PEAK_COUNT_BITS:integer:=4;
 
@@ -59,6 +59,7 @@ constant TICK_LATENCY_BITS:integer:=32;
 constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=12;
 constant IODELAY_CONTROL_BITS:integer:=ADC_BITS+ADC_CHANNELS+2*ADC_CHIPS;
 
+constant AREA_WIDTH:integer:=32;
 -- Discrete Types --------------------------------------------------------------
 
 -- type of detection
@@ -82,7 +83,7 @@ type timing_d is (
 	PULSE_THRESH_TIMING_D,
 	SLOPE_THRESH_TIMING_D,
 	CFD_LOW_TIMING_D,
-	RISE_START_TIMING_D
+	CFD_HIGH_TIMING_D -- FIXME change to max_slope?
 );
 
 constant NUM_TIMING_D:integer:=timing_d'pos(timing_d'high)+1;
@@ -187,7 +188,7 @@ type capture_registers_t is record
 	constant_fraction:unsigned(CFD_BITS-2 downto 0);
 	pulse_threshold:unsigned(DSP_BITS-2 downto 0);
 	slope_threshold:unsigned(DSP_BITS-2 downto 0);
-	area_threshold:area_t;
+	area_threshold:unsigned(AREA_WIDTH-2 downto 0);
 	height:height_d;
 	threshold_rel2min:boolean;
 	rel2min:boolean; 

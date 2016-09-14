@@ -17,7 +17,6 @@ architecture RTL of frame_ram_TB is
   
 constant CLK_PERIOD:time:=4 ns;
 
-
 signal clk:std_logic:='1';
 signal reset:std_logic:='1';
 signal din:std_logic_vector(CHUNKS*CHUNK_BITS-1 downto 0);
@@ -84,22 +83,22 @@ commit <= FALSE;
 wait for 32*CLK_PERIOD;
 ready <= TRUE;
 wait for CLK_PERIOD;
-ready <= FALSE;
-wait for CLK_PERIOD;
-ready <= TRUE;
-wait for CLK_PERIOD;
-ready <= FALSE;
-wait for CLK_PERIOD;
-ready <= TRUE;
-wait for CLK_PERIOD;
-ready <= FALSE;
-wait for CLK_PERIOD;
-ready <= TRUE;
-wait for CLK_PERIOD;
-ready <= FALSE;
-wait for CLK_PERIOD;
-ready <= TRUE;
-wait for CLK_PERIOD;
+--ready <= FALSE;
+--wait for CLK_PERIOD;
+--ready <= TRUE;
+--wait for CLK_PERIOD;
+--ready <= FALSE;
+--wait for CLK_PERIOD;
+--ready <= TRUE;
+--wait for CLK_PERIOD;
+--ready <= FALSE;
+--wait for CLK_PERIOD;
+--ready <= TRUE;
+--wait for CLK_PERIOD;
+--ready <= FALSE;
+--wait for CLK_PERIOD;
+--ready <= TRUE;
+wait for CLK_PERIOD*20;
 commit <= TRUE;
 chunk_we <= (others => TRUE);
 wait;

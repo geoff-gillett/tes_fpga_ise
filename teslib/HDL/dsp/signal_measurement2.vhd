@@ -143,6 +143,7 @@ begin
       end if;
       xing_p <= (pos_x or neg_x) & xing_p(1 to DEPTH-1);
       pipe <= signed(signal_r) & pipe(1 to DEPTH-1);   
+      
     end if;
   end if;
 end process pipeline;

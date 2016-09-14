@@ -86,7 +86,7 @@ port map(
   low_falling => low_falling,
   high_rising => high_rising,
   high_falling => high_falling,
-  cfd_error => cfd_error,
+  cfd_error_int => cfd_error,
   raw_out => raw_out,
   slope_out => slope_out,
   filtered_out => filtered_out,

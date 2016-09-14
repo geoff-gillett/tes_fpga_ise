@@ -82,13 +82,12 @@ function to_std_logic(f:tickflags_t) return std_logic_vector;
 
 ---------------------------- peak event 8 bytes --------------------------------
 -- |   16   |   16   |  16   |  16  |
--- | height | minima | flags | time |
+-- | height |  rise  | flags | time |
 --TODO make minima rise_time
 type peak_detection_t is record -- entire peak only event
   height:signal_t; 
   rise_time:time_t;  
   flags:detection_flags_t; 
-  rel_timestamp:time_t; -- 16
 end record;
 
 function to_streambus(e:peak_detection_t;endianness:string) return streambus_t;	
@@ -158,7 +157,7 @@ record
 	height:signal_t;
 	minima:signal_t;
 	rise_time:time_t;
-	rel_timestamp:time_t;
+	timestamp:time_t;
 end record;
 
 function to_std_logic(p:pulse_peak_t;endianness:string) return std_logic_vector;
@@ -177,11 +176,12 @@ end record;
 
 function to_std_logic(f:trace_flags_t) return std_logic_vector;
 
+--FIXME make compatible with pulse header
 -----------------  trace event - 16 byte header --------------------------------
 --  |    16     |     16      |     16     |      16      |
 --  |   size    | trace_flags | det flags  |     time     |
 --  |  offset   | p thresh    |  s thresh  | pulse length | 
---  |   resvd   |    resvd    |           area            | 
+--  |   resvd   |    resvd    |           area            |  
 
 --  trace length only used if full_trace
 --  pulse length is pos thresh xing to neg xing
@@ -292,9 +292,7 @@ begin
   sb.data := set_endianness(e.height,endianness) &
              set_endianness(e.rise_time,endianness) &
              to_std_logic(e.flags) & 
-             --ideally this should be '-' (don't care) but makes writing to
-             --simulation data files harder
-             "0000000000000000"; -- replaced with rel_timestamp by mux
+             "----------------"; 
 	sb.discard := (others => FALSE);
 	sb.last := (0 => TRUE, others => FALSE);
 	return sb;
@@ -309,7 +307,7 @@ return	streambus_t is
 begin
   sb.data := set_endianness(a.area,endianness) &
              to_std_logic(a.flags) & 
-             "0000000000000000"; -- replaced with rel_timestamp by mux
+             "----------------"; -- replaced with rel_timestamp by mux
 	sb.discard := (others => FALSE);
 	sb.last := (0 => TRUE, others => FALSE);
 	return sb;
@@ -371,15 +369,15 @@ begin
 	case w is
 	when 0 =>
 		sb.data(63 downto 48) := set_endianness(p.size,endianness);
-		sb.data(47 downto 32) := set_endianness(p.length,endianness);
+		sb.data(47 downto 32) := (others => '-');
 		sb.data(31 downto 16) := to_std_logic(p.flags); 
-		sb.data(15 downto 0) := (others => '0');
+		sb.data(15 downto 0) := (others => '-');
 	when 1 =>
 		sb.data(63 downto 32) := set_endianness(p.area,endianness);
-		sb.data(31 downto 16) := (others => '0'); 
+		sb.data(31 downto 16) := set_endianness(p.length,endianness);
 		sb.data(15 downto 0) := set_endianness(p.offset,endianness);
 	when others =>
-		assert FALSE report "bad word number in pulse_detection_t to_streambus()"	
+		assert FALSE report "bad word number in pulse_detection_t to_streambus"	
 						 		 severity ERROR;
 	end case;
   sb.discard := (others => FALSE);
@@ -393,7 +391,7 @@ begin
 	return set_endianness(p.height,endianness) &
 	       set_endianness(p.minima,endianness) &
 	       set_endianness(p.rise_time,endianness) &
-	       set_endianness(p.rel_timestamp,endianness);
+	       set_endianness(p.timestamp,endianness);
 end function;
 
 function to_streambus(p:pulse_peak_t;last:boolean;endianness:string)

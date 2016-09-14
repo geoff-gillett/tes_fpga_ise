@@ -107,3 +107,4 @@ docs/images/python/smootherdata/bytestream
 docs/images/python/smootherdata/dump.vcd
 docs/images/python/smootherdata/traces
 *.eps
+*.older

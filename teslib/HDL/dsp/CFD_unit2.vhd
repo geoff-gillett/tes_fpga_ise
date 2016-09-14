@@ -4,6 +4,7 @@ use ieee.numeric_std.all;
 
 library extensions;
 use extensions.boolean_vector.all;
+use extensions.logic.all;
 
 entity CFD_unit2 is
 generic(
@@ -83,10 +84,12 @@ signal cfd_low_i,cfd_high_i:signed(WIDTH-1 downto 0);
 signal min_cfd:boolean;
 signal max_cfd:boolean;
 
-type CFDstate is (CFD_IDLE_S,CFD_ARMED_S,CFD_ERROR_S);
+type CFDstate is (BOOT_S,WAIT_S,INIT_S,IDLE_S,ARMED_S,ERROR_S);
 signal cfd_state:CFDstate;
-signal slope_cfd:signed(WIDTH-1 downto 0);
+constant INIT_COUNT_BITS:integer:=ceilLog2(CFD_DELAY-9);
+signal init_count:unsigned(INIT_COUNT_BITS-1 downto 0);
 
+signal slope_cfd:signed(WIDTH-1 downto 0);
 signal slope_pos_thresh:boolean;
 signal slope_neg_thresh:boolean;
 
@@ -95,7 +98,8 @@ signal armed,above:boolean;
 signal slope_threshold_int:signed(WIDTH-1 downto 0);
 signal pulse_threshold_int:signed(WIDTH-1 downto 0);
 signal valid_peak_int:boolean;
-signal q_error,q_reset:std_logic:='0';
+signal q_reset:std_logic:='0';
+signal q_error,cfd_error_int:boolean:=FALSE;
 
 signal min_p,max_p,valid_peak_p:boolean_vector(1 to DEPTH);
 
@@ -104,9 +108,6 @@ begin
 --------------------------------------------------------------------------------
 -- Constant fraction calculation
 --------------------------------------------------------------------------------
---TODO change to queue only the cf_value not thresholds and add flags for 
---armed and above pulse threshold -- idea is to minimise starts.
---latency 3
 slope0xing:entity work.threshold_xing
 generic map(
   WIDTH => WIDTH
@@ -161,7 +162,7 @@ begin
       cf_int <= (others => '0');
       slope_threshold_int <= (WIDTH-1 => '0', others => '1');
       pulse_threshold_int <= (WIDTH-1 => '0', others => '1');
-      q_error <= '0';
+      q_error <= FALSE;
     else
       
       f_pipe <= filtered & f_pipe(1 to DEPTH-1);
@@ -189,15 +190,16 @@ begin
       cfd_high_i <= f_pipe(5) - p;
       
       --FIXME need a reset signal to be sent to end of delay 
-      q_error <= '0';
+      q_error <= FALSE;
       q_wr_en <= '0';
-      if slope_neg_p(1) then
+      if slope_neg_p(1) and 
+         (cfd_state/=BOOT_S or cfd_state/=INIT_S or cfd_state/=WAIT_S) then
         if q_full='0' then
           q_wr_en <= '1';
-          q_error <= '0';
+          q_error <= FALSE;
         else
-          q_wr_en <= '1';
-          q_error <= '0';
+          q_wr_en <= '0';
+          q_error <= TRUE;
         end if;
       end if;
      
@@ -222,7 +224,7 @@ cf_data(2*WIDTH-2 downto WIDTH)
   <= std_logic_vector(cfd_high_i(WIDTH-1 downto 1));
 cf_data(2*WIDTH-1) <= to_std_logic(above);
 
-q_reset <= q_error or reset1;
+q_reset <= '1' when cfd_state=BOOT_S else '0';
 CFqueue:cf_queue
 port map (
   clk => clk,
@@ -285,13 +287,15 @@ port map(
   neg_closest => max_cfd
 );
 
-CFDreg:process (clk) is
+CFDFSM:process (clk) is
 begin
   if rising_edge(clk) then
     if reset1 = '1' then
       q_rd_en <= '0';
       filtered_d_reg <= (others => '0');
       s_out_pipe <= (others => (others => '0'));
+      cfd_state <= BOOT_S;
+      cfd_error_int <= TRUE;
     else
       s_out_pipe <= slope_cfd & s_out_pipe(1 to DEPTH-1);
       filtered_d_reg <= filtered_d;
@@ -301,17 +305,33 @@ begin
       valid_peak_p <= valid_peak_int & valid_peak_p(1 to DEPTH-1);
       
       case cfd_state is 
-        
-      when CFD_IDLE_S =>
-        
-        if min_cfd then
+      when BOOT_S => 
+        init_count <= to_unsigned(CFD_DELAY-10,INIT_COUNT_BITS); 
+        cfd_state <= WAIT_S; 
+        cfd_error_int <= TRUE;
+      when WAIT_S =>  -- wait for min at start of delay
+        if slope_pos then
+          cfd_state <= INIT_S;
+        end if;
+      when INIT_S => -- wait for min to traverse delay
+        if init_count=0 then
+          cfd_state <= IDLE_S;
+          cfd_error_int <= FALSE;
+        else
+          init_count <= init_count-1;
+        end if;
+      when IDLE_S => -- normal operation
+        if q_error then
+          cfd_state <= BOOT_S;
+        elsif min_cfd then
           if q_empty='1' then
-            cfd_state <= CFD_ERROR_S;
+            cfd_state <= ERROR_S;
             cfd_low_threshold <= signed(filtered_d);
             cfd_high_threshold <= signed(filtered_d);
             valid_peak_int <= FALSE;
+            cfd_error_int <= TRUE;
           else
-            cfd_state <= CFD_ARMED_S;
+            cfd_state <= ARMED_S;
             cfd_low_threshold <= signed(q_dout(2*WIDTH-2 downto WIDTH) & '0');
             cfd_high_threshold <= signed(q_dout(WIDTH-2 downto 0) & '0');
             valid_peak_int <= ((q_dout(2*WIDTH-1) and q_dout(WIDTH-1))='1');
@@ -320,21 +340,24 @@ begin
             
       --TODO check this works on error
       q_rd_en <= '0';
-      when CFD_ARMED_S | CFD_ERROR_S =>
-        if max_cfd then
-          cfd_state <= CFD_IDLE_S;
+      when ARMED_S | ERROR_S =>
+        if q_error then
+          cfd_state <= BOOT_S;
+        elsif max_cfd then
+          cfd_error_int <= FALSE;
+          cfd_state <= IDLE_S;
           q_rd_en <= '1';
         end if;         
         
       end case;
+      valid_peak <= valid_peak_p(2) and not cfd_error_int;
     end if;
   end if;
-end process CFDreg;
-cfd_error <= cfd_state=CFD_ERROR_S;
+end process CFDFSM;
+cfd_error <= cfd_error_int;
 slope_out <= s_out_pipe(4);
 max <= max_p(4);
 min <= min_p(4);
-valid_peak <= valid_peak_p(3);
 
 cfdLowThreshXing:entity work.threshold_xing
 generic map(
