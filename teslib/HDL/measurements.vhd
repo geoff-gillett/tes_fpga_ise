@@ -108,8 +108,8 @@ type measurement_t is record
 	--pulse_time:unsigned(RELATIVETIME_BITS-1 downto 0);
 end record;
 
-type peak_state_t is (IDLE_S,ARMED_S);
-type pulse_state_t is (BELLOW_S,ABOVE_S);
+--type peak_state_t is (IDLE_S,ARMED_S);
+--type pulse_state_t is (BELLOW_S,ABOVE_S);
 type measurements_t is record
 	raw:signal_measurement_t;
 	filtered:signal_measurement_t;
@@ -117,19 +117,23 @@ type measurements_t is record
 	
   pulse_area:area_t;
   pulse_length:time_t; --time since pulse_pos_Txing
-  pulse_start:boolean; --minima at start of pulse only if valid
   pulse_time:time_t;   --time since last pulse start
+  
+  pulse_start:boolean; --minima at start of pulse
+  peak_start:boolean; --minima at start of pulse
   
   --pulse time of timestamp valid after event start
   time_offset:unsigned(15 downto 0); 
   
   valid_peak:boolean;
-	peak_start:boolean; --peak timing point only if valid
+	stamp_peak:boolean; --peak timing point
+  stamp_pulse:boolean; --peak_start and first peak in a pulse
   rise_time:unsigned(15 downto 0);
+  max_slope:boolean;
   
-  event_start:boolean; --peak_start and first peak in a pulse
   eflags:detection_flags_t;
   size:unsigned(15 downto 0);
+  
   -- actually max peaks -1
   max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
   last_peak:boolean;
@@ -147,14 +151,11 @@ type measurements_t is record
   has_armed:boolean;
   
   height_valid:boolean;
-  --height:signed(15 downto 0);
   	
 	cfd_low:boolean; 
 	cfd_high:boolean;
 	cfd_error:boolean;
 	
-	--peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
-	--peak_overflow:boolean;
 end record;
 
 type measurement_array is array (natural range <>)

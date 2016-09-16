@@ -83,7 +83,7 @@ type timing_d is (
 	PULSE_THRESH_TIMING_D,
 	SLOPE_THRESH_TIMING_D,
 	CFD_LOW_TIMING_D,
-	CFD_HIGH_TIMING_D -- FIXME change to max_slope?
+	SLOPE_MAX_TIMING_D -- FIXME change to max_slope?
 );
 
 constant NUM_TIMING_D:integer:=timing_d'pos(timing_d'high)+1;

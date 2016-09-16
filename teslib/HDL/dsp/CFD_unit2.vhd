@@ -28,7 +28,8 @@ port (
   low_rising:out boolean; 
   low_falling:out boolean; 
   high_rising:out boolean; 
-  high_falling:out boolean; 
+  high_falling:out boolean;
+  max_slope:out boolean; 
   cfd_error:out boolean;
   
   raw_out:out signed(WIDTH-1 downto 0);
@@ -49,10 +50,10 @@ component cf_queue
 port (
   clk:in std_logic;
   srst:in std_logic;
-  din:in std_logic_vector(35 downto 0);
+  din:in std_logic_vector(53 downto 0);
   wr_en:in std_logic;
   rd_en:in std_logic;
-  dout:out std_logic_vector(35 downto 0);
+  dout:out std_logic_vector(53 downto 0);
   full:out std_logic;
   empty:out std_logic
 );
@@ -71,7 +72,7 @@ signal slope_pos,slope_neg:boolean;
 signal raw_d,filtered_d,filtered_d_reg,slope_d
        :std_logic_vector(WIDTH-1 downto 0);
 
-signal cf_data,q_dout:std_logic_vector(2*WIDTH-1 downto 0);
+signal cf_data,q_dout:std_logic_vector(3*WIDTH-1 downto 0);
 signal cf_int:signed(WIDTH-1 downto 0):=(others => '0');
 signal cfd_low_threshold,cfd_high_threshold:signed(WIDTH-1 downto 0)
        :=(others => '0');
@@ -102,6 +103,7 @@ signal q_reset:std_logic:='0';
 signal q_error,cfd_error_int:boolean:=FALSE;
 
 signal min_p,max_p,valid_peak_p:boolean_vector(1 to DEPTH);
+signal max_slope_int,max_slope_threshold:signed(WIDTH-1 downto 0);
 
 begin
 
@@ -184,6 +186,14 @@ begin
         armed <= FALSE;
       end if;
       
+      if slope_pos then
+        max_slope_int <= slope_i;
+      else
+        if slope_i > max_slope_int then
+          max_slope_int <= slope_i;
+        end if;
+      end if;
+      
       above <= f_pipe(5) >= pulse_threshold_int;
       
       cfd_low_i <= p;
@@ -223,6 +233,7 @@ cf_data(WIDTH-1) <= to_std_logic(armed);
 cf_data(2*WIDTH-2 downto WIDTH) 
   <= std_logic_vector(cfd_high_i(WIDTH-1 downto 1));
 cf_data(2*WIDTH-1) <= to_std_logic(above);
+cf_data(3*WIDTH-1 downto 2*WIDTH) <= std_logic_vector(max_slope_int);
 
 q_reset <= '1' when cfd_state=BOOT_S else '0';
 CFqueue:cf_queue
@@ -281,10 +292,10 @@ port map(
   signal_in => signed(slope_d),
   signal_out => slope_cfd,
   threshold => (others => '0'),
-  pos => open,
-  neg => open,
-  pos_closest => min_cfd,
-  neg_closest => max_cfd
+  pos => min_cfd,
+  neg => max_cfd,
+  pos_closest => open,
+  neg_closest => open
 );
 
 CFDFSM:process (clk) is
@@ -328,12 +339,14 @@ begin
             cfd_state <= ERROR_S;
             cfd_low_threshold <= signed(filtered_d);
             cfd_high_threshold <= signed(filtered_d);
+            max_slope_threshold <= signed(slope_cfd);
             valid_peak_int <= FALSE;
             cfd_error_int <= TRUE;
           else
             cfd_state <= ARMED_S;
             cfd_low_threshold <= signed(q_dout(2*WIDTH-2 downto WIDTH) & '0');
             cfd_high_threshold <= signed(q_dout(WIDTH-2 downto 0) & '0');
+            max_slope_threshold <= signed(q_dout(3*WIDTH-1 downto 2*WIDTH));
             valid_peak_int <= ((q_dout(2*WIDTH-1) and q_dout(WIDTH-1))='1');
           end if;
         end if;
@@ -355,9 +368,25 @@ begin
   end if;
 end process CFDFSM;
 cfd_error <= cfd_error_int;
-slope_out <= s_out_pipe(4);
+--slope_out <= s_out_pipe(4); --FIXME can remove pipe?
 max <= max_p(4);
 min <= min_p(4);
+
+slopeMax:entity work.threshold_xing
+generic map(
+  WIDTH => WIDTH
+)
+port map(
+  clk => clk,
+  reset => reset1,
+  signal_in => signed(slope_cfd),
+  signal_out => slope_out,
+  threshold => max_slope_threshold,
+  pos => max_slope,
+  neg => open,
+  pos_closest => open,
+  neg_closest => open
+);
 
 cfdLowThreshXing:entity work.threshold_xing
 generic map(

@@ -32,7 +32,7 @@ signal low_rising,high_rising,low_falling,high_falling,cfd_error:boolean;
 signal constant_fraction:signed(WIDTH-1 downto 0);
 signal slope_threshold:signed(WIDTH-1 downto 0);
 signal pulse_threshold:signed(WIDTH-1 downto 0);
-signal max,min,valid_peak:boolean;
+signal max,min,valid_peak,max_slope:boolean;
   
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -86,7 +86,8 @@ port map(
   low_falling => low_falling,
   high_rising => high_rising,
   high_falling => high_falling,
-  cfd_error_int => cfd_error,
+  max_slope => max_slope,
+  cfd_error => cfd_error,
   raw_out => raw_out,
   slope_out => slope_out,
   filtered_out => filtered_out,

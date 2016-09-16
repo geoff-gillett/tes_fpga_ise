@@ -129,9 +129,9 @@ begin
   reg.slope_threshold <= to_unsigned(20,WIDTH-1);
   reg.pulse_threshold <= to_unsigned(80,WIDTH-1);
   reg.area_threshold <= to_unsigned(1000,AREA_WIDTH-1);
-  reg.max_peaks <= to_unsigned(2,PEAK_COUNT_BITS);
+  reg.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
   reg.detection <= PULSE_DETECTION_D;
-  reg.timing <= SLOPE_THRESH_TIMING_D;
+  reg.timing <= SLOPE_MAX_TIMING_D;
   reg.height <= CFD_HEIGHT_D;
   wait for CLK_PERIOD;
   reset1 <= '0';

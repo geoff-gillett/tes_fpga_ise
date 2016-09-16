@@ -207,7 +207,7 @@ begin
       else
         nextstate <= REG1_S;
         reg1_w <= TRUE;
-        read_next <= not two_pending;-- and not empty;
+        read_next <= not two_pending and not empty;
       end if;
     else
       read_next <= not empty;-- and not empty_commit;

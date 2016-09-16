@@ -73,7 +73,6 @@ function to_std_logic(f:detection_flags_t) return std_logic_vector;
 -- | 0 | events_lost  | tick_lost | type_flags |0|
 
 type tickflags_t is record 
-	--mux_overflow:boolean;
 	tick_lost:boolean;
 	event_type:event_type_t; 
 end record;
@@ -98,7 +97,6 @@ function to_streambus(e:peak_detection_t;endianness:string) return streambus_t;
 type area_detection_t is record
 	area:area_t; 
 	flags:detection_flags_t; 
-	--rel_timestamp:time_t; 
 end record;
 
 function to_streambus(a:area_detection_t;endianness:string) return streambus_t;

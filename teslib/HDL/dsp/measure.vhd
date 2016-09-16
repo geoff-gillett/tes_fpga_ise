@@ -55,8 +55,7 @@ signal pulse_t_n,pulse_l_n,rise_t_n:unsigned(16 downto 0);
 constant DEPTH:integer:=13;
 type pipe is array (1 to DEPTH) of signed(WIDTH-1 downto 0);
 signal raw_p:pipe;
-signal cfd_low_p:boolean_vector(1 to DEPTH);
-signal cfd_high_p:boolean_vector(1 to DEPTH);
+signal cfd_low_p,cfd_high_p,max_slope_p:boolean_vector(1 to DEPTH);
 signal slope_pos_Txing_p,slope_neg_Txing_p:boolean_vector(1 to DEPTH);
 signal slope_pos_0xing_p,slope_neg_0xing_p:boolean_vector(1 to DEPTH);
 signal pulse_pos_Txing_p,pulse_neg_Txing_p:boolean_vector(1 to DEPTH);
@@ -69,9 +68,8 @@ signal first_peak:boolean;
 signal constant_fraction:signed(WIDTH-1 downto 0);
 signal slope_threshold:signed(WIDTH-1 downto 0);
 signal pulse_threshold:signed(WIDTH-1 downto 0);
-signal valid_peak:boolean;
-signal peak_count_n:unsigned(PEAK_COUNT_BITS downto 0);
-signal peak_count:unsigned(PEAK_COUNT_BITS downto 0);
+signal valid_peak,max_slope_cfd:boolean;
+signal peak_count_n,peak_count:unsigned(PEAK_COUNT_BITS downto 0);
 
 --
 --signal raw_sample,slope_sample,filtered_sample:signed(WIDTH-1 downto 0);
@@ -106,6 +104,7 @@ port map(
   low_falling => open,
   high_rising => cfd_high,
   high_falling => open,
+  max_slope => max_slope_cfd,
   cfd_error => cfd_error,
   raw_out => raw_cfd,
   slope_out => slope_cfd,
@@ -174,8 +173,8 @@ begin
       --peak_count_n <= (0 => '1',others => '0');
       m.eflags.peak_overflow <= FALSE;
       m.eflags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
-      m.peak_start <= FALSE;
-      m.event_start <= FALSE;
+      m.stamp_peak <= FALSE;
+      m.stamp_pulse <= FALSE;
       m.height_valid <= FALSE;
       
       pulse_t_n <= (0 => '1',others => '0');
@@ -189,6 +188,7 @@ begin
     else
       
       raw_p <= raw_cfd & raw_p(1 to DEPTH-1);
+      max_slope_p <= max_slope_cfd & max_slope_p(1 to DEPTH-1);
       cfd_low_p <= cfd_low & cfd_low_p(1 to DEPTH-1);
       cfd_high_p <= cfd_high & cfd_high_p(1 to DEPTH-1);
       valid_peak_p <= valid_peak & valid_peak_p(1 to DEPTH-1);
@@ -205,15 +205,15 @@ begin
       a_pulse_thresh_p 
         <= (filtered_x >= pulse_threshold_s) & a_pulse_thresh_p(1 to DEPTH-1);
      
---      pulse_t_n <= ('0' & m.pulse_time) + 1;
---      pulse_l_n <= ('0' & m.pulse_length) + 1;
---      rise_t_n <= ('0' & m.rise_time) + 1;
       peak_count_n <= peak_count + 1;
       
       -- minima at start of pulse  
       m.pulse_start <= slope_pos_0xing_p(DEPTH-1) and 
                        not a_pulse_thresh_p(DEPTH-1);
+      m.peak_start <= slope_pos_0xing_p(DEPTH-1);
+      
       if slope_pos_0xing_p(DEPTH-1) and not a_pulse_thresh_p(DEPTH-1) then
+        
         first_peak <= TRUE;
         peak_count <= (others => '0');
         peak_count_n <= (0 => '1',others => '0');
@@ -233,6 +233,11 @@ begin
         m.eflags.peak_overflow <= FALSE;
         m.eflags.timing <= registers.timing;
         m.last_peak <= registers.max_peaks=0;
+        m.max_peaks <= registers.max_peaks;
+        pulse_threshold_s <= signed('0' & registers.pulse_threshold);
+        slope_threshold_s <= signed('0' & registers.slope_threshold);
+        area_threshold_s <= signed('0' & registers.area_threshold);
+        
         if registers.detection=PULSE_DETECTION_D or 
            registers.detection=TRACE_DETECTION_D then
           m.size <= resize(registers.max_peaks + 3, 16);
@@ -244,10 +249,7 @@ begin
           m.peak_address <= (others => '0');
           m.size <= (0 => '1',others => '0');
         end if;
-        m.max_peaks <= registers.max_peaks;
-        pulse_threshold_s <= signed('0' & registers.pulse_threshold);
-        slope_threshold_s <= signed('0' & registers.slope_threshold);
-        area_threshold_s <= signed('0' & registers.area_threshold);
+        
       else
 
         if slope_neg_0xing_p(DEPTH) then
@@ -287,33 +289,32 @@ begin
       
       case m.eflags.timing is
       when PULSE_THRESH_TIMING_D =>
-        m.peak_start <= pulse_pos_Txing_p(DEPTH-1) and valid_peak;
-        m.event_start
-          <= pulse_pos_Txing_p(DEPTH-1) and first_peak and valid_peak;
+        m.stamp_peak <= pulse_pos_Txing_p(DEPTH-1);
+        m.stamp_pulse
+          <= pulse_pos_Txing_p(DEPTH-1) and first_peak;
         if pulse_pos_Txing_p(DEPTH-1) then
           m.rise_time <= (others => '0');
         end if;
 
       when SLOPE_THRESH_TIMING_D =>
-        m.peak_start <= slope_pos_Txing_p(DEPTH-1);
-        m.event_start 
+        m.stamp_peak <= slope_pos_Txing_p(DEPTH-1);
+        m.stamp_pulse 
           <= slope_pos_Txing_p(DEPTH-1) and first_peak;
         if slope_pos_Txing_p(DEPTH-1) then
           m.rise_time <= (others => '0');
         end if;
 
       when CFD_LOW_TIMING_D =>
-        m.peak_start <= cfd_low_p(DEPTH-1) and valid_peak;
-        m.event_start <= cfd_low_p(DEPTH-1) and first_peak;
+        m.stamp_peak <= cfd_low_p(DEPTH-1);
+        m.stamp_pulse <= cfd_low_p(DEPTH-1) and first_peak;
         if cfd_low_p(DEPTH-1) then
           m.rise_time <= (others => '0');
         end if;
         
-      when CFD_HIGH_TIMING_D =>
-        m.peak_start <= cfd_high_p(DEPTH-1);
-        m.event_start 
-          <=cfd_high_p(DEPTH-1) and first_peak;
-        if cfd_high_p(DEPTH-1) then
+      when SLOPE_MAX_TIMING_D =>
+        m.stamp_peak <= max_slope_p(DEPTH-1);
+        m.stamp_pulse <= max_slope_p(DEPTH-1) and first_peak;
+        if max_slope_p(DEPTH-1) then
           m.rise_time <= (others => '0');
         end if;
       end case;
@@ -324,7 +325,7 @@ begin
         m.height_valid <= slope_neg_0xing_p(DEPTH-1);
       end if;
       
-      if m.event_start then
+      if m.stamp_pulse then
         m.time_offset <= m.pulse_time;
       end if;
 
@@ -362,6 +363,7 @@ end process pulseMeas;
 m.valid_peak <= valid_peak_p(DEPTH);
 m.cfd_high <= cfd_high_p(DEPTH);
 m.cfd_low <= cfd_low_p(DEPTH);
+m.max_slope <= max_slope_p(DEPTH);
 m.eflags.peak_count <= peak_count(PEAK_COUNT_BITS-1 downto 0);
 m.above_pulse_threshold <= a_pulse_thresh_p(DEPTH);
 m.pulse_threshold_pos <= pulse_pos_Txing_p(DEPTH);

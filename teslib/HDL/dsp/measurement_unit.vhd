@@ -945,7 +945,7 @@ begin
   when CFD_LOW_TIMING_D =>
   	trigger_cfd <= cfd_low;
   	
-  when CFD_HIGH_TIMING_D =>
+  when SLOPE_MAX_TIMING_D =>
   	trigger_cfd <= event_start_cfd;
   	
 	end case;
