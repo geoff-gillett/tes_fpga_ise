@@ -20,8 +20,8 @@ use extensions.logic.all;
 library streamlib;
 use streamlib.types.all;
 
-use work.adc.all;
-use work.dsptypes.all;
+--use work.adc.all;
+--use work.dsptypes.all;
 use work.types.all;
 use work.functions.all;
 --use work.events.all;
@@ -179,7 +179,7 @@ type baseline_registers_t is record
 	timeconstant:unsigned(BASELINE_TIMECONSTANT_BITS-1 downto 0);
 	threshold:unsigned(BASELINE_BITS-2 downto 0);
 	count_threshold:unsigned(BASELINE_COUNTER_BITS-1 downto 0);
-	average_order:natural range 0 to BASELINE_MAX_AV_ORDER;
+	new_only:boolean;
 end record;
 
 type capture_registers_t is record
@@ -616,8 +616,8 @@ end function;
 function baseline_flags(r:baseline_registers_t) return std_logic_vector is
 	variable s:std_logic_vector(AXI_DATA_BITS-1 downto 0):=(others => '0');
 begin
-	s(2 downto 0) := to_std_logic(r.average_order,3);
-	s(4) := to_std_logic(r.subtraction);
+	s(0) := to_std_logic(r.new_only);
+	s(1) := to_std_logic(r.subtraction);
 	return s;
 end function;
 

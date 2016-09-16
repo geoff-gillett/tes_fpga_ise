@@ -114,6 +114,7 @@ type measurements_t is record
 	raw:signal_measurement_t;
 	filtered:signal_measurement_t;
 	slope:signal_measurement_t;
+	baseline:signal_t;
 	
   pulse_area:area_t;
   pulse_length:time_t; --time since pulse_pos_Txing

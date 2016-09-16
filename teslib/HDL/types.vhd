@@ -29,9 +29,9 @@ constant AXI_EXOKAY:std_logic_vector(1 downto 0):="01";
 --------------------------------------------------------------------------------
 constant ENDIANNESS:string:="LITTLE";
 -- bits in a native ADC sample
+constant ADC_BITS:integer:=14;
 constant ADC_CHIPS:integer:=4;
 constant ADC_CHIP_CHANNELS:integer:=2;
-constant ADC_BITS:integer:=14;
 constant ADC_CHANNELS:integer:=ADC_CHIPS*ADC_CHIP_CHANNELS;
 -- There are 2**CHANNEL_BITS channels
 constant CHANNEL_BITS:integer:=3; 
@@ -40,6 +40,11 @@ constant CHANNELS:integer:=2**CHANNEL_BITS;
 constant TIMESTAMP_BITS:integer:=64; 
 -- Bits in a relative ADC sample (sample_t)
 constant SAMPLE_BITS:integer:=ADC_BITS+1;
+-- DSP internal
+constant DSP_BITS:integer:=18;
+constant DSP_FRAC:integer:=3;
+constant CFD_BITS:integer:=18;
+constant CFD_FRAC:integer:=17;
 -- Bits in a processed sample
 constant SIGNAL_BITS:integer:=16;
 constant SIGNAL_FRAC:integer:=1;
@@ -57,7 +62,9 @@ constant AXI_DATA_BITS:integer:=32;
 constant AXI_ADDRESS_BITS:integer:=32;
 constant REGISTER_ADDRESS_BITS:integer:=24;
 constant REGISTER_DATA_BITS:integer:=32;
--- 
+-- raw adc types
+subtype adc_sample_t is std_logic_vector(ADC_BITS-1 downto 0);
+type adc_sample_array is array(natural range <>) of adc_sample_t;
 -- DSP processed samples
 subtype signal_t is signed(SIGNAL_BITS-1 downto 0);
 -- array of DSP processed samples

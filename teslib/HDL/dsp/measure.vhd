@@ -15,6 +15,8 @@ generic(
   CHANNEL:natural:=0;
   WIDTH:natural:=18;
   FRAC:natural:=3;
+  WIDTH_OUT:natural:=16;
+  FRAC_OUT:natural:=1;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
   CFD_DELAY:natural:=1027
@@ -375,6 +377,8 @@ filteredMeas:entity work.signal_measurement2
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
+	WIDTH_OUT => WIDTH_OUT,
+	FRAC_OUT => FRAC_OUT,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC
 )
@@ -395,6 +399,8 @@ slopeMeas:entity work.signal_measurement2
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
+	WIDTH_OUT => WIDTH_OUT,
+	FRAC_OUT => FRAC_OUT,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC
 )
@@ -415,6 +421,8 @@ rawMeas:entity work.signal_measurement2
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
+	WIDTH_OUT => WIDTH_OUT,
+	FRAC_OUT => FRAC_OUT,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC
 )

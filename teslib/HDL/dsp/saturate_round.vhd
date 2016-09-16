@@ -10,7 +10,7 @@ use unisim.vcomponents.DSP48E1;
 entity saturate_round is
 generic(
   WIDTH_IN:integer:=48; -- max 48
-  FRAC_IN:integer:=28;
+  FRAC_IN:integer:=25;
   WIDTH_OUT:integer:=18;
   FRAC_OUT:integer:=3
 ); 
@@ -28,7 +28,7 @@ architecture RTL of saturate_round is
 -- DSP48E1 signals
 signal a:std_logic_vector(29 downto 0);
 signal b:std_logic_vector(17 downto 0);
-signal p_int,p_out,ab,pshift:std_logic_vector(47 downto 0);
+signal p_int,p_out,ab:std_logic_vector(47 downto 0);
 signal round_opmode:std_logic_vector(6 downto 0);
 signal carry_in:std_ulogic;
 signal pbdetect:std_ulogic;
@@ -50,13 +50,10 @@ constant ROUNDING:std_logic_vector(47 downto 0)
          
 begin
 
-assert WIDTH_IN <= 48
-report "maximum WIDTH_IN is 48" severity ERROR;
-assert WIDTH_OUT <= 48
-report "maximum WIDTH_OUT is 48" severity ERROR;
-assert FRAC_OUT < FRAC_IN
-report "FRAC_OUT must be less than FRAC_in" 
-severity ERROR;
+assert WIDTH_IN <= 48 report "maximum WIDTH_IN is 48" severity ERROR;
+assert WIDTH_OUT <= 48 report "maximum WIDTH_OUT is 48" severity ERROR;
+assert FRAC_OUT < FRAC_IN 
+report "FRAC_OUT must be less than FRAC_in" severity ERROR;
 
 --digitalGain:process (clk) is
 --begin
