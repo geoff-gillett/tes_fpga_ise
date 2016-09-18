@@ -224,11 +224,11 @@ port map (
   CARRYOUT => open,             -- 4-bit output: Carry output
   P => p_out,                           -- 48-bit output: Primary data output
   -- Cascade: 30-bit (each) input: Cascade Ports
-  ACIN => (others => '1'),                     -- 30-bit input: A cascade data input
-  BCIN => (others => '1'),                     -- 18-bit input: B cascade input
+  ACIN => (others => '0'),                     -- 30-bit input: A cascade data input
+  BCIN => (others => '0'),                     -- 18-bit input: B cascade input
   CARRYCASCIN => '0',       -- 1-bit input: Cascade carry input
   MULTSIGNIN => '0',         -- 1-bit input: Multiplier sign input
-  PCIN => (others => '1'),                     -- 48-bit input: P cascade input
+  PCIN => (others => '0'),                     -- 48-bit input: P cascade input
   -- Control: 4-bit (each) input: Control Inputs/Status Bits
   ALUMODE => "0000",               -- 4-bit input: ALU control input
   CARRYINSEL => "000",         -- 3-bit input: Carry select input

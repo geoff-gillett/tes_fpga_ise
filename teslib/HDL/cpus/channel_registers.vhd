@@ -46,8 +46,6 @@ use extensions.logic.all;
 
 use work.types.all;
 use work.functions.all;
-use work.adc.all;
-use work.dsptypes.all;
 use work.registers.all;
 --use work.events.all;
 
@@ -137,7 +135,6 @@ if rising_edge(clk) then
 		reg.baseline.timeconstant <= DEFAULT_BL_TIMECONSTANT;
 		reg.baseline.threshold <= DEFAULT_BL_THRESHOLD;
 		reg.baseline.count_threshold <= DEFAULT_BL_COUNT_THRESHOLD;
-		reg.baseline.average_order <= DEFAULT_BL_AVERAGE_ORDER;
 		reg.capture.max_peaks <= DEFAULT_MAX_PEAKS;
 		reg.capture.constant_fraction <= DEFAULT_CONSTANT_FRACTION;
 		reg.capture.pulse_threshold <= DEFAULT_PULSE_THRESHOLD;
@@ -146,8 +143,6 @@ if rising_edge(clk) then
 		reg.capture.area_threshold <= DEFAULT_AREA_THRESHOLD;
 		reg.capture.height <= DEFAULT_HEIGHT;
 		reg.capture.threshold_rel2min <= DEFAULT_THRESHOLD_REL2MIN;
-		reg.capture.height_rel2min <= DEFAULT_HEIGHT_REL2MIN;
-		reg.capture.cfd_rel2min <= DEFAULT_CFD_REL2MIN;
 		reg.capture.timing <= DEFAULT_TIMING;
 		reg.capture.detection <= DEFAULT_DETECTION;
 		reg.capture.trace0 <= DEFAULT_TRACE0;
@@ -167,8 +162,6 @@ if rising_edge(clk) then
       	reg.capture.height <= to_height_d(data(9 downto 8));
       	reg.capture.trace0 <= to_trace_d(data(11 downto 10));
       	reg.capture.trace1 <= to_trace_d(data(13 downto 12));
-      	reg.capture.cfd_rel2min <= to_boolean(data(14));
-      	reg.capture.height_rel2min <= to_boolean(data(15));
       	reg.capture.threshold_rel2min <= to_boolean(data(16));
       end if;
       if address(PULSE_THRESHOLD_ADDR_BIT)='1' then
@@ -185,7 +178,7 @@ if rising_edge(clk) then
       end if;
       if address(AREA_THRESHOLD_ADDR_BIT)='1' then
       	reg.capture.area_threshold 
-      		<= signed(data(AREA_BITS-1 downto 0)); 
+      		<= unsigned(data(AREA_BITS-2 downto 0)); 
       end if;
       if address(DELAY_ADDR_BIT)='1' then
       	reg.capture.delay <= unsigned(data(DELAY_BITS-1 downto 0)); 
@@ -206,8 +199,6 @@ if rising_edge(clk) then
         	<= unsigned(data(BASELINE_COUNTER_BITS-1 downto 0)); 
       end if;
       if address(BL_FLAGS_ADDR_BIT)='1' then
-        reg.baseline.average_order 
-        	<= to_integer(unsigned(data(2 downto 0))); 
         reg.baseline.subtraction <= to_boolean(data(4));
       end if;
       if address(INPUT_SEL_ADDR_BIT)='1' then

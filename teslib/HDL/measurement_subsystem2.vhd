@@ -33,20 +33,13 @@ use streamlib.types.all;
 use work.types.all;
 use work.functions.all;
 use work.registers.all;
-use work.adc.all;
 use work.measurements.all;
-use work.dsptypes.all;
 
 entity measurement_subsystem2 is
 generic(
   DSP_CHANNELS:integer:=2;
-  EVENT_FRAMER_ADDRESS_BITS:integer:=11;
-	ENET_FRAMER_ADDRESS_BITS:integer:=14;
-	MCA_ADDRESS_BITS:integer:=14;
-  MIN_TICKPERIOD:integer:=2**TIME_BITS;
-	ENDIANNESS:string:="LITTLE";
-	PACKET_GEN:boolean:=FALSE;
-	TICK_TEST:boolean:=TRUE
+	ENDIAN:string:="LITTLE";
+	PACKET_GEN:boolean:=FALSE
 );
 port(
   clk:in std_logic;
@@ -61,26 +54,14 @@ port(
   channel_reg:in channel_register_array(DSP_CHANNELS-1 downto 0);
   global_reg:in global_registers_t;
   
-  filter_config_data:in config_array(DSP_CHANNELS-1 downto 0);
-  filter_config_valid:in std_logic_vector(DSP_CHANNELS-1 downto 0);
-  filter_config_ready:out std_logic_vector(DSP_CHANNELS-1 downto 0);
-  filter_data:in coef_array(DSP_CHANNELS-1 downto 0);
-  filter_valid:in std_logic_vector(DSP_CHANNELS-1 downto 0);
-  filter_ready:out std_logic_vector(DSP_CHANNELS-1 downto 0);
-  filter_last:in std_logic_vector(DSP_CHANNELS-1 downto 0);
-  filter_last_missing:out std_logic_vector(DSP_CHANNELS-1 downto 0);
-  filter_last_unexpected:out std_logic_vector(DSP_CHANNELS-1 downto 0);
-  dif_config_data:in config_array(DSP_CHANNELS-1 downto 0);
-  dif_config_valid:in std_logic_vector(DSP_CHANNELS-1 downto 0);
-  dif_config_ready:out std_logic_vector(DSP_CHANNELS-1 downto 0);
-  dif_data:in coef_array(DSP_CHANNELS-1 downto 0);
-  dif_valid:in std_logic_vector(DSP_CHANNELS-1 downto 0);
-  dif_ready:out std_logic_vector(DSP_CHANNELS-1 downto 0);
-  dif_last:in std_logic_vector(DSP_CHANNELS-1 downto 0);
-  dif_last_missing:out std_logic_vector(DSP_CHANNELS-1 downto 0);
-  dif_last_unexpected:out std_logic_vector(DSP_CHANNELS-1 downto 0);
+  filter_config:in fir_ctl_in_array(DSP_CHANNELS-1 downto 0);
+  filter_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
+  slope_config:in fir_ctl_in_array(DSP_CHANNELS-1 downto 0);
+  slope_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
+  baseline_config:in fir_ctl_in_array(DSP_CHANNELS-1 downto 0);
+  baseline_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
   
-  measurements:out measurement_array(DSP_CHANNELS-1 downto 0);
+  measurements:out measurements_array(DSP_CHANNELS-1 downto 0);
   
   ethernetstream:out streambus_t;
   ethernetstream_valid:out boolean;
@@ -121,8 +102,8 @@ signal mcastream_valid,mca_valid:boolean;
 signal mcastream_ready,mca_ready:boolean;
 
 signal eventstreams:streambus_array(DSP_CHANNELS-1 downto 0);
-signal eventstreams_valid,events_valid:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal eventstreams_ready,events_ready:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal eventstream_valids,events_valid:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal eventstream_readys,events_ready:boolean_vector(DSP_CHANNELS-1 downto 0);
 
 signal muxstream:streambus_t;
 signal muxstream_valid:boolean;
@@ -156,54 +137,30 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     delayed => adc_delayed(c)
   );
 
-	measurement:entity work.measurement_unit
+  processingChannel:entity work.channel
   generic map(
-    FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
     CHANNEL => c,
-    ENDIANNESS => ENDIANNESS
+    ENDIAN => ENDIAN
   )
   port map(
     clk => clk,
-    reset => reset2,
-    adc_sample => samples(c),
+    reset1 => reset1,
+    reset2 => reset2,
+    adc_sample => adc_delayed(c),
     registers => channel_reg(c),
-    filter_config_data => filter_config_data(c),
-    filter_config_valid => filter_config_valid(c),
-    filter_config_ready => filter_config_ready(c),
-    filter_reload_data => filter_data(c),
-    filter_reload_valid => filter_valid(c),
-    filter_reload_ready => filter_ready(c),
-    filter_reload_last => filter_last(c),
-    filter_reload_last_missing => filter_last_missing(c),
-    filter_reload_last_unexpected => filter_last_unexpected(c),
-    dif_config_data => dif_config_data(c),
-    dif_config_valid => dif_config_valid(c),
-    dif_config_ready => dif_config_ready(c),
-    dif_reload_data => dif_data(c),
-    dif_reload_valid => dif_valid(c),
-    dif_reload_ready => dif_ready(c),
-    dif_reload_last => dif_last(c),
-    dif_reload_last_missing => dif_last_missing(c),
-    dif_reload_last_unexpected => dif_last_unexpected(c),
-    measurements => measurements(c),
-    mca_value_select => value_sel_reg(c),
-    mca_trigger_select => trigger_select,
-    mca_value => mca_values(c),
-    mca_value_valid => mca_value_valids(c),
-    mux_full => mux_full,
+    stage1_config => filter_config(c),
+    stage1_events => filter_events(c),
+    stage2_config => slope_config(c),
+    stage2_events => slope_events(c),
+    baseline_config => baseline_config(c),
+    baseline_events => baseline_events(c),
     start => starts(c),
-    dump => dumps(c),
     commit => commits(c),
-    cfd_error => cfd_errors(c),
-    time_overflow => time_overflows(c),
-    peak_overflow => peak_overflows(c),
-    framer_overflow => framer_overflows(c),
-    mux_overflow => mux_overflows(c),
-    measurement_overflow => measurement_overflows(c),
-    baseline_underflow => baseline_errors(c),
-    eventstream => eventstreams(c),
-    valid => eventstreams_valid(c),
-    ready => eventstreams_ready(c)
+    dump => dumps(c),
+    measurements => measurements(c),
+    stream => eventstreams(c),
+    valid => eventstream_valids(c),
+    ready => eventstream_readys(c)
   );
   
   valueReg:process(clk)
@@ -215,40 +172,16 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   end process valueReg;
   
 end generate tesChannel;
---------------------------------------------------------------------------------
---
---------------------------------------------------------------------------------
-tickTest:if TICK_TEST generate
-  events_valid <= (others => FALSE);
-  eventstreams_ready <= (others => FALSE);
-  mcastream_ready <= FALSE;
-  mca_valid <= FALSE;
-  event_starts <= (others => FALSE);
-  event_commits <= (others => FALSE);
-  event_dumps <= (others => FALSE);
-end generate tickTest;
 
-
-noTickTest:if not TICK_TEST generate
-  events_valid <= eventstreams_valid;
-  eventstreams_ready <= events_ready;
-  mca_valid <= mcastream_valid;
-  mcastream_ready <= mca_ready;
-  event_starts <= starts;
-  event_commits <= commits;
-  event_dumps <= dumps;
-end generate noTickTest;
+--------------------------------------------------------------------------------
+-- 
+--------------------------------------------------------------------------------
 
 mux:entity work.eventstream_mux
 generic map(
   --CHANNEL_BITS => CHANNEL_BITS,
   CHANNELS => DSP_CHANNELS,
-  TIME_BITS => TIME_BITS,
-  TIMESTAMP_BITS => TIMESTAMP_BITS,
-  TICKPERIOD_BITS => TICK_PERIOD_BITS,
-  MIN_TICKPERIOD => MIN_TICKPERIOD,
-  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
-  ENDIANNESS => ENDIANNESS
+  ENDIANNESS => ENDIAN
 )
 port map(
   clk => clk,
@@ -327,7 +260,7 @@ port map(
 enet:entity work.ethernet_framer
 generic map(
   MTU_BITS => MTU_BITS,
-  FRAMER_ADDRESS_BITS => ENET_FRAMER_ADDRESS_BITS,
+  FRAMER_ADDRESS_BITS => ETHERNET_FRAMER_ADDRESS_BITS,
   DEFAULT_MTU => DEFAULT_MTU,
   DEFAULT_TICK_LATENCY => DEFAULT_TICK_LATENCY,
   ENDIANNESS => ENDIANNESS

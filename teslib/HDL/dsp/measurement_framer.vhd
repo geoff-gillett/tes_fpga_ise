@@ -23,11 +23,13 @@ port (
   clk:in std_logic;
   reset:in std_logic;
   
+  measurements:in measurements_t;
   --signals to MUX
   start:out boolean;
   commit:out boolean;
   dump:out boolean;
-  measurements:in measurements_t;
+  overflow:out boolean;
+  error:out boolean;
   
   stream:out streambus_t;
   valid:out boolean;
@@ -47,7 +49,7 @@ signal pulse_peak,pulse_p_reg:pulse_peak_t;
 signal pulse_peak_we,pulse_p_we_reg:boolean_vector(CHUNKS-1 downto 0);
 
 signal height:signal_t;
-signal started,commit_frame,overflow,error:boolean;
+signal started,commit_frame,overflow_int,error_int:boolean;
 signal frame_word:streambus_t;
 signal frame_we:boolean_vector(CHUNKS-1 downto 0);
 signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
@@ -59,6 +61,8 @@ signal pulse_p_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
   
 begin
 m <= measurements;
+overflow <= overflow_int;
+error <= error_int;
 
 --TODO move this into measure.vhd?
 height_mux:process(m.filtered.sample,
@@ -116,8 +120,8 @@ begin
       start <= FALSE;
       commit_frame <= FALSE;
       dump <= FALSE;
-      overflow <= FALSE;
-      error <= FALSE;
+      overflow_int <= FALSE;
+      error_int <= FALSE;
       frame_we <= (others => FALSE);
       address <= m.peak_address;
       frame_length <= resize(m.size,FRAMER_ADDRESS_BITS+1);
@@ -133,7 +137,7 @@ begin
           if m.armed and m.above_pulse_threshold and not framer_full then
             commit_frame <= TRUE; -- can't be full if started 
           else
-            overflow <= framer_full;
+            overflow_int <= framer_full;
             dump <= started or (m.stamp_peak and m.valid_peak);
           end if;
         end if;
@@ -141,7 +145,7 @@ begin
         frame_word <= to_streambus(peak,ENDIAN);
         if m.height_valid then
           if framer_full then
-            overflow <= TRUE;
+            overflow_int <= TRUE;
             dump <= started or (m.stamp_peak and m.valid_peak);
           else
             frame_we <= (others => TRUE);
@@ -162,7 +166,7 @@ begin
             commit_frame <= TRUE; 
             frame_we <= (others => TRUE);
           else
-            overflow <= framer_full;
+            overflow_int <= framer_full;
             dump <= started or (m.stamp_pulse and m.valid_peak);
           end if;
         end if;
@@ -183,7 +187,7 @@ begin
         --header0 can't be dumped yet
         if m.pulse_start and m.valid_peak then
           if framer_full then
-            overflow <= TRUE;
+            overflow_int <= TRUE;
             dumped <= TRUE;
             dump <= started or (m.stamp_pulse and m.valid_peak);
             pulse_started <= FALSE;
@@ -218,13 +222,13 @@ begin
               frame_we <= (others => TRUE);
               commit_frame <= TRUE; 
             else
-              error <= TRUE;
+              error_int <= TRUE;
               dump <= (started or (m.stamp_pulse and m.valid_peak)) 
                        and not dumped;
             end if;
           else
             dump <= (started or (m.stamp_pulse and m.valid_peak));
-            overflow <= TRUE;
+            overflow_int <= TRUE;
           end if;
         elsif unaryOr(pulse_p_we_reg) and pulse_started then
           address <= pulse_p_address;
@@ -241,7 +245,7 @@ begin
           address <= clear_address;
           clear_address <= clear_address-1;
           frame_word.data <= (others => '-');
-          frame_word.last <= (0 => clear_last);
+          frame_word.last <= (0 => clear_last, others => FALSE);
           frame_word.discard <= (others => FALSE);
           frame_we <= (others => TRUE);
           clear_last <= FALSE;

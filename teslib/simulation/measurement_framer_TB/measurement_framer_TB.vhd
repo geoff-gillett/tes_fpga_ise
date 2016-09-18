@@ -92,6 +92,7 @@ generic map(
   CFD_DELAY => CFD_DELAY
 )
 port map(
+  baseline => (others => '0'),
   clk => clk,
   reset1 => reset1,
   reset2 => reset2,

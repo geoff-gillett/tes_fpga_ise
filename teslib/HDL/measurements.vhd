@@ -158,6 +158,8 @@ type measurements_t is record
 	cfd_error:boolean;
 	
 end record;
+type measurements_array is array (natural range <>)
+		 of measurements_t;
 
 type measurement_array is array (natural range <>)
 		 of measurement_t;

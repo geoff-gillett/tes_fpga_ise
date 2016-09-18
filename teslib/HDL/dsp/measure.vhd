@@ -28,6 +28,7 @@ port (
   
   registers:in capture_registers_t;
   
+  baseline:in signed(WIDTH-1 downto 0);
   raw:in signed(WIDTH-1 downto 0);
   slope:in signed(WIDTH-1 downto 0);
   filtered:in signed(WIDTH-1 downto 0);
@@ -372,6 +373,7 @@ m.pulse_threshold_pos <= pulse_pos_Txing_p(DEPTH);
 m.pulse_threshold_neg <= pulse_neg_Txing_p(DEPTH);
 m.slope_threshold_pos <= slope_pos_Txing_p(DEPTH);
 m.slope_threshold_neg <= slope_neg_Txing_p(DEPTH);
+m.baseline <= resize(baseline,SIGNAL_BITS);
 
 filteredMeas:entity work.signal_measurement2
 generic map(

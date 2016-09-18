@@ -7,8 +7,15 @@ use std.textio.all;
 
 
 package debug is
+
+type natural_file is file of natural;
+type int_file is file of integer;
   
 function hexstr2vec(str:string) return std_logic_vector;
+function to_0(slv:std_logic_vector) return std_logic_vector;
+function to_0(u:unsigned) return unsigned;
+function to_0(s:signed) return signed;
+  
 end package debug;
 
 package body debug is
@@ -56,4 +63,28 @@ begin
 	end loop;
 	return slv;
 end function;
+
+function to_0(slv:std_logic_vector) return std_logic_vector is
+variable result:std_logic_vector(slv'range);
+begin
+  for i in slv'range loop
+    if slv(i) = '1' then
+      result(i):='1';
+    else
+      result(i):='0';
+    end if; 
+    end loop;
+  return result;
+end function;
+
+function to_0(s:signed) return signed is
+begin
+  return signed(to_0(std_logic_vector(s)));
+end function;
+
+function to_0(u:unsigned) return unsigned is
+begin
+  return unsigned(to_0(std_logic_vector(u)));
+end function;
+
 end package body debug;

@@ -11,12 +11,10 @@ use extensions.logic.all;
 use work.registers.all;
 use work.measurements.all;
 use work.types.all;
---use work.adc.all;
 
 entity channel is
 generic(
-  CHANNEL:integer:=0;
-  FRAMER_ADDRESS_BITS:integer:=11;
+  CHANNEL:natural:=0;
   ENDIAN:string:="LITTLE"
 );
 port (
@@ -27,12 +25,12 @@ port (
   adc_sample:in adc_sample_t;
   registers:in channel_registers_t;
   
-  stage1_FIR_ctl:in fir_control_in_t;
-  stage1_FIR_events:out fir_control_out_t;
-  stage2_FIR_ctl:in fir_control_in_t;
-  stage2_FIR_events:out fir_control_out_t;
-  baseline_av_ctl:in fir_control_in_t;
-  baseline_av_events:out fir_control_out_t;
+  stage1_config:in fir_control_in_t;
+  stage1_events:out fir_control_out_t;
+  stage2_config:in fir_control_in_t;
+  stage2_events:out fir_control_out_t;
+  baseline_config:in fir_control_in_t;
+  baseline_events:out fir_control_out_t;
   
   --mux signals
   start:out boolean;
@@ -42,7 +40,7 @@ port (
   measurements:out measurements_t;
   stream:out streambus_t;
   valid:out boolean;
-  ready:out boolean
+  ready:in boolean
 );
 end entity channel;
 
@@ -53,6 +51,7 @@ signal m:measurements_t;
 signal sample:sample_t;
 signal baseline_estimate:signed(DSP_BITS-1 downto 0);
 signal range_error:boolean;
+
 begin
 measurements <= m;
   
@@ -66,16 +65,18 @@ end process sampleoffset;
 
 baselineEstimator:entity work.baseline_estimator2
 generic map(
-  BASELINE_BITS => 11,
+  BASELINE_BITS => BASELINE_BITS,
   COUNTER_BITS => 18,
   TIMECONSTANT_BITS => 32,
-  OUT_BITS => 18
+  OUT_BITS => DSP_BITS
 )
 port map(
   clk => clk,
   reset => reset1,
   sample => sample,
   sample_valid => TRUE,
+  av_config => baseline_config,
+  av_events => baseline_events,
   timeconstant => registers.baseline.timeconstant,
   threshold => registers.baseline.threshold,
   count_threshold => registers.baseline.count_threshold,
@@ -83,7 +84,6 @@ port map(
   baseline_estimate => baseline_estimate,
   range_error => range_error
 );
-m.baseline <= baseline_estimate;
 
 baselineSubraction:process(clk)
 begin
@@ -96,36 +96,22 @@ if rising_edge(clk) then
 end if;
 end process baselineSubraction;
 
-FIR:entity work.two_stage_FIR
+FIR:entity work.two_stage_FIR2
 generic map(
   WIDTH => DSP_BITS
 )
 port map(
   clk => clk,
   sample_in => sample_in,
-  stage1_config_data => stage1_config_data,
-  stage1_config_valid => stage1_config_valid,
-  stage1_config_ready => stage1_config_ready,
-  stage1_reload_data  => stage1_reload_data,
-  stage1_reload_valid => stage1_reload_valid,
-  stage1_reload_ready => stage1_reload_ready,
-  stage1_reload_last => stage1_reload_last,
-  stage1_reload_last_missing => stage1_reload_last_missing,
-  stage1_reload_last_unexpected => stage1_reload_last_unexpected,
-  stage2_config_data => stage2_config_data,
-  stage2_config_valid => stage2_config_valid,
-  stage2_config_ready => stage2_config_ready,
-  stage2_reload_data => stage2_reload_data,
-  stage2_reload_valid => stage2_reload_valid,
-  stage2_reload_ready => stage2_reload_ready,
-  stage2_reload_last => stage2_reload_last,
-  stage2_reload_last_missing => stage2_reload_last_missing,
-  stage2_reload_last_unexpected => stage2_reload_last_unexpected,
+  stage1_config => stage1_config,
+  stage1_events => stage1_events,
+  stage2_config => stage2_config,
+  stage2_events => stage2_events,
   sample_out => raw,
   stage1 => filtered,
   stage2 => slope
 );
-  
+
 measure:entity work.measure
 generic map(
   CHANNEL => CHANNEL,
@@ -142,6 +128,7 @@ port map(
   reset1 => reset1,
   reset2 => reset2,
   registers => registers.capture,
+  baseline => baseline_estimate,
   raw => raw,
   slope => slope,
   filtered => filtered,
@@ -150,7 +137,7 @@ port map(
 
 framer:entity work.measurement_framer
 generic map(
-  FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS,
+  FRAMER_ADDRESS_BITS => MEASUREMENT_FRAMER_ADDRESS_BITS,
   ENDIAN => ENDIAN
 )
 port map(

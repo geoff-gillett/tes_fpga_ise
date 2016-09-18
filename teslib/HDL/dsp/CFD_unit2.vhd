@@ -9,7 +9,7 @@ use extensions.logic.all;
 entity CFD_unit2 is
 generic(
   WIDTH:integer:=18;
-  CFD_DELAY:integer:=1027
+  CFD_DELAY:integer:=1026
 );
 port (
   clk:in std_logic;

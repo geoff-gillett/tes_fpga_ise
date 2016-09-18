@@ -34,11 +34,12 @@ package registers is
 --constant CHANNEL_BITS:integer:=3;
 
 -- field sizes
-constant BASELINE_BITS:integer:=10;
+constant BASELINE_BITS:integer:=11;
 constant BASELINE_TIMECONSTANT_BITS:integer:=32;
 constant BASELINE_COUNTER_BITS:integer:=18;
 constant BASELINE_MAX_AV_ORDER:integer:=6;
-constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=4;
+constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=11;
+constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=12;
 constant DELAY_BITS:integer:=13;
 constant PEAK_COUNT_BITS:integer:=4;
 
@@ -56,7 +57,6 @@ constant MTU_BITS:integer:=16;
 constant TICK_PERIOD_BITS:integer:=32;
 constant MIN_TICK_PERIOD:integer:=2**16;
 constant TICK_LATENCY_BITS:integer:=32;
-constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=12;
 constant IODELAY_CONTROL_BITS:integer:=ADC_BITS+ADC_CHANNELS+2*ADC_CHIPS;
 
 constant AREA_WIDTH:integer:=32;
@@ -289,7 +289,8 @@ constant DEFAULT_SLOPE_THRESHOLD:unsigned(DSP_BITS-2 downto 0)
 				 :=to_unsigned(2,DSP_BITS-SLOPE_FRAC-1) & to_unsigned(0,SLOPE_FRAC);
 constant DEFAULT_CONSTANT_FRACTION:unsigned(CFD_BITS-2 downto 0)
 				 :=to_unsigned((2**(CFD_BITS-1))/5,CFD_BITS-1); --20%
-constant DEFAULT_AREA_THRESHOLD:area_t:=to_signed(10000,AREA_BITS);
+constant DEFAULT_AREA_THRESHOLD:unsigned(AREA_BITS-2 downto 0)
+         :=to_unsigned(10000,AREA_BITS-1);
 constant DEFAULT_DELAY:unsigned(DELAY_BITS-1 downto 0)
          :=to_unsigned(2**(DELAY_BITS-1),DELAY_BITS);
 constant DEFAULT_BL_OFFSET:adc_sample_t
@@ -405,9 +406,12 @@ end record;
 type fir_control_out_t is record
   config_ready:std_logic;
   reload_ready:std_logic;
-	reload_last_missing:std_logic;
- 	reload_last_unexpected:std_logic;
+	last_missing:std_logic;
+ 	last_unexpected:std_logic;
 end record;
+
+type fir_ctl_in_array is array (natural range <>) of fir_control_in_t;
+type fir_ctl_out_array is array (natural range <>) of fir_control_out_t;
 
 constant HDL_VERSION_ADDR_BIT:integer:=0;
 constant MCA_CONTROL_REGISTER_ADDR_BIT:integer:=1;
