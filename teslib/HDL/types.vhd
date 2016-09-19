@@ -93,6 +93,8 @@ type registeraddress_array is array (natural range <>) of register_address_t;
 type slv_32_array is array (natural range <>) of 
 		 unsigned(32 downto 0);
 
+subtype ddr_sample is std_logic_vector(ADC_BITS/2-1 downto 0);
+type ddr_sample_array is array(natural range <>) of ddr_sample;
 -- FIR config data
 end package types;
 

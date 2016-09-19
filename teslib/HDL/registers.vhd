@@ -128,11 +128,11 @@ type mca_value_d is (
   MCA_SLOPE_AREA_D,
   MCA_SLOPE_EXTREMA_D,
   MCA_PULSE_AREA_D, -- the area between threshold crossings
-  MCA_PULSE_EXTREMA_D, -- the maximum between threshold xings
-  MCA_PULSE_TIME_D, -- make this start at minima
   MCA_RAW_SIGNAL_D,
   MCA_RAW_AREA_D,
-  MCA_RAW_EXTREMA_D
+  MCA_RAW_EXTREMA_D,
+  MCA_PULSE_LENGTH_D, -- the maximum between threshold xings
+  MCA_RISE_TIME_D -- make this start at minima
 );
 
 constant NUM_MCA_VALUE_D:integer:=mca_value_d'pos(mca_value_d'high)+1;										
@@ -147,15 +147,17 @@ function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector;
 type mca_trigger_d is (
 	DISABLED_MCA_TRIGGER_D, -- no select bits set
 	CLOCK_MCA_TRIGGER_D,
-  FILTERED_XING_MCA_TRIGGER_D, --FIXME this usefull? change to height?
+  PULSE_THRESHOLD_POS_MCA_TRIGGER_D, --FIXME this usefull? change to height?
+  PULSE_THRESHOLD_NEG_MCA_TRIGGER_D, --FIXME this usefull? change to height?
   FILTERED_0XING_MCA_TRIGGER_D,
   SLOPE_0XING_MCA_TRIGGER_D,
-  SLOPE_XING_MCA_TRIGGER_D,
+  RAW_0XING_MCA_TRIGGER_D,
+  SLOPE_THRESHOLD_MCA_TRIGGER_D,
   CFD_HIGH_MCA_TRIGGER_D,
   CFD_LOW_MCA_TRIGGER_D,
-  MAXIMA_MCA_TRIGGER_D, -- peak
-  MINIMA_MCA_TRIGGER_D, --peak start minima
-  RAW_0XING_MCA_TRIGGER_D 
+  MAX_SLOPE_MCA_TRIGGER_D,
+  SLOPE_POS_0XING_MCA_TRIGGER_D, --peak start minima
+  SLOPE_NEG_0XING_MCA_TRIGGER_D
   --TODO add minima or maxima
   -- there are two slots left
 );
@@ -190,8 +192,8 @@ type capture_registers_t is record
 	slope_threshold:unsigned(DSP_BITS-2 downto 0);
 	area_threshold:unsigned(AREA_WIDTH-2 downto 0);
 	height:height_d;
-	threshold_rel2min:boolean;
-	rel2min:boolean; 
+	--threshold_rel2min:boolean;
+	--rel2min:boolean; 
 	timing:timing_d;
 	detection:detection_d;
 	full_trace:boolean;
@@ -611,9 +613,9 @@ begin
 	s(9 downto 8):=to_std_logic(r.height,2);
 	s(11 downto 10):=to_std_logic(r.trace0,2);
 	s(13 downto 12):=to_std_logic(r.trace1,2);
-	s(14):=to_std_logic(r.rel2min);
-	s(15):=to_std_logic(r.rel2min);
-	s(16):=to_std_logic(r.threshold_rel2min);
+	--s(14):=to_std_logic(r.rel2min);
+	--s(15):=to_std_logic(r.rel2min);
+	--s(16):=to_std_logic(r.threshold_rel2min);
 	return s;
 end function; 
 

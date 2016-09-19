@@ -24,7 +24,6 @@ generic(
 port (
   clk:in std_logic;
   reset1:in std_logic;
-  reset2:in std_logic;
   
   registers:in capture_registers_t;
   
@@ -96,7 +95,6 @@ generic map(
 port map(
   clk => clk,
   reset1 => reset1,
-  reset2 => reset2,
   raw => raw,
   slope => slope,
   filtered => filtered,
@@ -408,7 +406,7 @@ generic map(
 )
 port map(
   clk => clk,
-  reset => reset2,
+  reset => reset1,
   signal_in => slope_x,
   threshold => (others => '0'),
   signal_out => m.slope.sample,
@@ -430,7 +428,7 @@ generic map(
 )
 port map(
   clk => clk,
-  reset => reset2,
+  reset => reset1,
   signal_in => raw_p(4),
   threshold => (others => '0'),
   signal_out => m.raw.sample,

@@ -36,7 +36,7 @@ use tes.functions.all;
 use tes.registers.all;
 use tes.measurements.all;
 
-entity ml605_enet_test is
+entity ml605_v6emac is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=12;
@@ -44,9 +44,7 @@ generic(
   CHIP_CHANNELS:integer:=2;
   ADC_BITS:integer:=14;
   DSP_CHANNELS:integer:=2;
-  EVENT_FRAMER_ADDRESS_BITS:integer:=11;
-  ENET_FRAMER_ADDRESS_BITS:integer:=11;
-  MIN_TICKPERIOD:integer:=2**TIME_BITS;
+  ENDIAN:string:="LITTLE";
   PACKET_GEN:boolean:=FALSE
 );
 port(
@@ -120,9 +118,9 @@ port(
   frame_error:out std_logic;
   frame_errorn:out std_logic
 );
-end entity ml605_enet_test;
+end entity ml605_v6emac;
 
-architecture RTL of ml605_enet_test is
+architecture RTL of ml605_v6emac is
 	
 --------------------------------------------------------------------------------
 -- Constants
@@ -193,7 +191,7 @@ attribute S:string;
 --------------------------------------------------------------------------------
 signal global_reset_boot_clk,IO_clk,signal_clk,axi_clk,boot_clk:std_logic;
 signal reset0,reset1,reset2:std_logic;
-signal reset1_sclk,reset2_sclk:std_logic;
+signal reset0_sclk,reset1_sclk,reset2_sclk:std_logic;
 signal reset0_refclk:std_logic;
 signal reset1_ioclk,reset2_ioclk:std_logic;
 
@@ -284,26 +282,8 @@ attribute S of channel_registers:signal is "TRUE";
 --signal adc_delayed:adc_sample_array(DSP_CHANNELS-1 downto 0);
 
 -- DSP coefficient reload
-signal filter_config_data:config_array(DSP_CHANNELS-1 downto 0);
-signal filter_config_valid:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal filter_config_ready:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal filter_data:coef_array(DSP_CHANNELS-1 downto 0);
-signal filter_valid:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal filter_ready:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal filter_last:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal filter_last_missing:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal filter_last_unexpected:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal dif_config_data:config_array(DSP_CHANNELS-1 downto 0);
-signal dif_config_valid:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal dif_config_ready:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal dif_data:coef_array(DSP_CHANNELS-1 downto 0);
-signal dif_valid:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal dif_ready:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal dif_last:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal dif_last_missing:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal dif_last_unexpected:std_logic_vector(DSP_CHANNELS-1 downto 0);
 										 
-signal measurements:measurement_array(DSP_CHANNELS-1 downto 0);
+signal measurements:measurements_array(DSP_CHANNELS-1 downto 0);
 
 -- MCA
 type value_sel_array is array (natural range <>) of 
@@ -343,6 +323,7 @@ signal bytestream_int:std_logic_vector(8 downto 0);
 --attribute KEEP of reset0_ioclk,reset1_ioclk,reset2_ioclk:signal is "TRUE";
 --attribute KEEP of fmc108_mmcm_locked:signal is "TRUE";
 
+
 --------------------------------------------------------------------------------
 attribute iob:string;
 attribute iob of ADC_spi_ce_n:signal is "TRUE";
@@ -366,6 +347,10 @@ attribute MARK_DEBUG:string;
 --attribute MARK_DEBUG of reset0,reset1,reset2:signal is DEBUG;
 --attribute MARK_DEBUG of reset0_ioclk,reset1_ioclk,reset2_ioclk:signal is DEBUG;
 attribute MARK_DEBUG of reset2_sclk:signal is DEBUG;
+signal filter_config,slope_config,baseline_config:
+       fir_ctl_in_array(DSP_CHANNELS-1 downto 0);
+signal filter_events,slope_events,baseline_events:
+       fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
 --attribute MARK_DEBUG of onboard_mmcm_locked:signal is DEBUG;
 --attribute MARK_DEBUG of fmc108_mmcm_locked:signal is DEBUG;
 --attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
@@ -702,7 +687,7 @@ end process adcEnable;
 --------------------------------------------------------------------------------
 tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 
-	registers:entity tes.channel_registers
+	registers:entity tes.channel_registers2
   generic map(
     CHANNEL => c
   )
@@ -716,25 +701,13 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     axis_done => axis_done(c),
     axis_error => axis_error(c),
     registers => channel_registers(c),
-    filter_config_data => filter_config_data(c),
-    filter_config_valid => filter_config_valid(c),
-    filter_config_ready => filter_config_ready(c),
-    filter_data => filter_data(c),
-    filter_valid => filter_valid(c),
-    filter_ready => filter_ready(c),
-    filter_last => filter_last(c),
-    filter_last_missing => filter_last_missing(c),
-    filter_last_unexpected => filter_last_unexpected(c),
-    dif_config_data => dif_config_data(c),
-    dif_config_valid => dif_config_valid(c),
-    dif_config_ready => dif_config_ready(c), --differentiator_config_ready,
-    dif_data => dif_data(c),
-    dif_valid => dif_valid(c),
-    dif_ready => dif_ready(c),
-    dif_last => dif_last(c),
-    dif_last_missing => dif_last_missing(c),
-    dif_last_unexpected => dif_last_unexpected(c)
-  );
+    filter_config => filter_config(c),
+    filter_events => filter_events(c),
+    slope_config => slope_config(c),
+    slope_events => slope_events(c),
+    baseline_config => baseline_config(c),
+    baseline_events => baseline_events(c)
+  ); 
   
   regWriteSync:entity tes.sync_2FF
   port map(
@@ -757,68 +730,6 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     axis_error => axis_error(c)
   );
 
---  inputSel:entity tes.input_sel
---  generic map(
---    CHANNELS => CHANNELS,
---    PIPE_DEPTH => 2
---  )
---  port map(
---    clk => signal_clk,
---    reset => reset0,
---    inputs => fifo_dout,
---    sel => channel_registers(c).capture.adc_select,
---    output => adc_samples(c)
---  );
-
---	measurement:entity tes.measurement_unit
---  generic map(
---    FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
---    CHANNEL => c,
---    ENDIANNESS => ENDIANNESS
---  )
---  port map(
---    clk => signal_clk,
---    reset => reset0,
---    adc_sample => adc_delayed(c),
---    registers => channel_registers(c),
---    filter_config_data => filter_config_data(c),
---    filter_config_valid => filter_config_valid(c),
---    filter_config_ready => filter_config_ready(c),
---    filter_reload_data => filter_data(c),
---    filter_reload_valid => filter_valid(c),
---    filter_reload_ready => filter_ready(c),
---    filter_reload_last => filter_last(c),
---    filter_reload_last_missing => filter_last_missing(c),
---    filter_reload_last_unexpected => filter_last_unexpected(c),
---    dif_config_data => dif_config_data(c),
---    dif_config_valid => dif_config_valid(c),
---    dif_config_ready => dif_config_ready(c),
---    dif_reload_data => dif_data(c),
---    dif_reload_valid => dif_valid(c),
---    dif_reload_ready => dif_ready(c),
---    dif_reload_last => dif_last(c),
---    dif_reload_last_missing => dif_last_missing(c),
---    dif_reload_last_unexpected => dif_last_unexpected(c),
---    measurements => measurements(c),
---    mca_value_select => value_sel_reg(c),
---    mca_trigger_select => trigger_select,
---    mca_value => mca_values(c),
---    mca_value_valid => mca_value_valids(c),
---    mux_full => mux_full,
---    start => starts(c),
---    dump => dumps(c),
---    commit => commits(c),
---    cfd_error => cfd_errors(c),
---    time_overflow => time_overflows(c),
---    peak_overflow => peak_overflows(c),
---    framer_overflow => framer_overflows(c),
---    mux_overflow => mux_overflows(c),
---    measurement_overflow => measurement_overflows(c),
---    baseline_underflow => baseline_errors(c),
---    eventstream => eventstreams(c),
---    valid => eventstreams_valid(c),
---    ready => eventstreams_ready(c)
---  );
   
   valueReg:process(signal_clk)
   begin
@@ -831,171 +742,31 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 end generate tesChannel;
 --------------------------------------------------------------------------------
 
-measurementSubsystem:entity tes.measurement_subsystem_test
-  generic map(
-    DSP_CHANNELS => DSP_CHANNELS,
-    EVENT_FRAMER_ADDRESS_BITS => EVENT_FRAMER_ADDRESS_BITS,
-    ENET_FRAMER_ADDRESS_BITS => ENET_FRAMER_ADDRESS_BITS,
-    MCA_ADDRESS_BITS => MCA_ADDRESS_BITS,
-    MIN_TICKPERIOD => MIN_TICKPERIOD,
-    ENDIANNESS => ENDIANNESS,
-    PACKET_GEN => PACKET_GEN
-  )
-  port map(
-    clk => signal_clk,
-    --reset0 => reset0,
-    reset1 => reset1_sclk,
-    reset2 => reset2_sclk,
-    mca_initialising => open,
-    samples => adc_samples,
-    channel_reg => channel_registers,
-    global_reg => global,
-    filter_config_data => filter_config_data,
-    filter_config_valid => filter_config_valid,
-    filter_config_ready => filter_config_ready,
-    filter_data => filter_data,
-    filter_valid => filter_valid,
-    filter_ready => filter_ready,
-    filter_last => filter_last,
-    filter_last_missing => filter_last_missing,
-    filter_last_unexpected => filter_last_unexpected,
-    dif_config_data => dif_config_data,
-    dif_config_valid => dif_config_valid,
-    dif_config_ready => dif_config_ready,
-    dif_data => dif_data,
-    dif_valid => dif_valid,
-    dif_ready => dif_ready,
-    dif_last => dif_last,
-    dif_last_missing => dif_last_missing,
-    dif_last_unexpected => dif_last_unexpected,
-    measurements => measurements,
-    ethernetstream => ethernetstream,
-    ethernetstream_valid => ethernetstream_valid,
-    ethernetstream_ready => ethernetstream_ready
-  );
-
---mux:entity tes.eventstream_mux
---generic map(
---  --CHANNEL_BITS => CHANNEL_BITS,
---  CHANNELS => DSP_CHANNELS,
---  TIME_BITS => TIME_BITS,
---  TIMESTAMP_BITS => TIMESTAMP_BITS,
---  TICKPERIOD_BITS => TICK_PERIOD_BITS,
---  MIN_TICKPERIOD => MIN_TICKPERIOD,
---  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
---  ENDIANNESS => ENDIANNESS
---)
---port map(
---  clk => signal_clk,
---  reset => reset0,
---  start => starts,
---  commit => commits,
---  dump => dumps,
---  instreams => eventstreams,
---  instream_valids => eventstreams_valid,
---  instream_readys => eventstreams_ready,
---  full => mux_full,
---  tick_period => global.tick_period,
---  window => global.window,
---  cfd_errors => cfd_errors,
---  framer_overflows => framer_overflows,
---  mux_overflows => mux_overflows,
---  measurement_overflows => measurement_overflows,
---  peak_overflows => peak_overflows,
---  time_overflows => time_overflows,
---  baseline_underflows => baseline_errors,
---  muxstream => muxstream,
---  valid => muxstream_valid,
---  ready => muxstream_ready
---);
-
---mcaChanSel:entity tes.mca_channel_selector
---generic map(
---  CHANNELS => DSP_CHANNELS,
---  VALUE_BITS   => MCA_VALUE_BITS
---)
---port map(
---  clk => signal_clk,
---  reset => reset0,
---  channel_select => channel_select,
---  values => mca_values_reg,
---  valids => mca_value_valids,
---  value => mca_value,
---  valid => mca_value_valid
---);
-
---mca:entity tes.mca_unit
---generic map(
---  CHANNELS => DSP_CHANNELS,
---  ADDRESS_BITS => MCA_ADDRESS_BITS,
---  COUNTER_BITS => MCA_COUNTER_BITS,
---  VALUE_BITS => MCA_VALUE_BITS,
---  TOTAL_BITS => MCA_TOTAL_BITS,
---  TICKCOUNT_BITS => MCA_TICKCOUNT_BITS,
---  TICKPERIOD_BITS => TICK_PERIOD_BITS,
---  MIN_TICK_PERIOD => MIN_TICK_PERIOD,
---  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
---  ENDIANNESS => ENDIANNESS
---)
---port map(
---  clk => signal_clk,
---  reset => reset0,
---  initialising => open,
---  --TODO remove redundant register port
---  update_asap => global.mca.update_asap,
---  --TODO remove redundant register port
---  update_on_completion => global.mca.update_on_completion,
---  updated => updated, --TODO implement CPU interupt
---  registers => global.mca,
---  --TODO remove redundant register port
---  tick_period => global.tick_period,
---  channel_select => channel_select,
---  value_select => value_select,
---  trigger_select => trigger_select,
---  value => mca_value,
---  value_valid => mca_value_valid,
---  stream => mcastream,
---  valid => mcastream_valid,
---  ready => mcastream_ready
---);
-
---noTestGen:if not ENET_TEST generate
---  enet:entity tes.ethernet_framer
---  generic map(
---    MTU_BITS => MTU_BITS,
---    FRAMER_ADDRESS_BITS => ETHERNET_FRAMER_ADDRESS_BITS,
---    DEFAULT_MTU => DEFAULT_MTU,
---    DEFAULT_TICK_LATENCY => DEFAULT_TICK_LATENCY,
---    ENDIANNESS => ENDIANNESS
---  )
---  port map(
---    clk => signal_clk,
---    reset => reset0,
---    mtu => global.mtu,
---    tick_latency => global.tick_latency,
---    eventstream => muxstream,
---    eventstream_valid => muxstream_valid,
---    eventstream_ready => muxstream_ready,
---    mcastream => mcastream,
---    mcastream_valid => mcastream_valid,
---    mcastream_ready => mcastream_ready,
---    ethernetstream => ethernetstream,
---    ethernetstream_valid => ethernetstream_valid,
---    ethernetstream_ready => ethernetstream_ready
---  );
---end generate noTestgen;
-
---enetTestGen:if ENET_TEST generate
---  packetGen:entity tes.packet_generator
---  port map(
---    clk    => signal_clk,
---    reset  => reset0,
---    period => global.tick_period,
---    stream => ethernetstream,
---    ready  => ethernetstream_ready,
---    valid  => ethernetstream_valid
---  );
---end generate enetTestGen;
+measurementSubsystem:entity tes.measurement_subsystem2
+generic map(
+  DSP_CHANNELS => DSP_CHANNELS,
+  ENDIAN => ENDIAN,
+  PACKET_GEN => PACKET_GEN
+)
+port map(
+  clk => signal_clk,
+  reset1 => reset1_sclk,
+  reset2 => reset2_sclk,
+  mca_initialising => open,
+  samples => adc_samples,
+  channel_reg => channel_registers,
+  global_reg => global,
+  filter_config => filter_config,
+  filter_events => filter_events,
+  slope_config => slope_config,
+  slope_events => slope_events,
+  baseline_config => baseline_config,
+  baseline_events => baseline_events,
+  measurements => measurements,
+  ethernetstream => ethernetstream,
+  ethernetstream_valid => ethernetstream_valid,
+  ethernetstream_ready => ethernetstream_ready
+);
 
 cdc_din <= '0' & ethernetstream.data(63 downto 56) &
            '0' & ethernetstream.data(55 downto 48) &
@@ -1046,7 +817,7 @@ bytestream_last <= bytestream_int(8)='1';
 
 emac:entity work.v6_emac_v2_3
 port map(
-  global_reset_IO_clk => reset2_ioclk,
+  global_reset_IO_clk => reset1_ioclk,
   IO_clk => io_clk,
   s_axi_aclk => axi_clk,
   refclk_bufg => ref_clk,
@@ -1108,6 +879,12 @@ port map(
 --  input => reset0,
 --  output => reset0_sclk
 --);
+reset0SiganlSync:entity tes.sync_2FF
+port map(
+  out_clk => signal_clk,
+  input => reset0,
+  output => reset0_sclk
+);
 
 reset1SiganlSync:entity tes.sync_2FF
 port map(
@@ -1116,26 +893,27 @@ port map(
   output => reset1_sclk
 );
 
-debugReset:process(signal_clk) is
-begin
-  if rising_edge(signal_clk) then
-    if reset2_sclk_sync = '1' then
-      reset_debug_count <= (others => '0');
-      reset2_sclk <= '1';
-    else
-      reset_debug_count <= reset_debug_count+1;
-      if reset_debug_count(33)='1' then
-        reset2_sclk <= '0';
-      end if;
-    end if;
-  end if;
-end process debugReset;
+--debugReset:process(signal_clk) is
+--begin
+--  if rising_edge(signal_clk) then
+--    if reset2_sclk_sync = '1' then
+--      reset_debug_count <= (others => '0');
+--      reset2_sclk <= '1';
+--    else
+--      reset_debug_count <= reset_debug_count+1;
+--      if reset_debug_count(33)='1' then
+--        reset2_sclk <= '0';
+--      end if;
+--    end if;
+--  end if;
+--end process debugReset;
 
 reset2SiganlSync:entity tes.sync_2FF
 port map(
   out_clk => signal_clk,
   input => reset2,
-  output => reset2_sclk_sync
+--  output => reset2_sclk_sync
+  output => reset2_sclk
 );
 
 reset0RefSync:entity tes.sync_2FF

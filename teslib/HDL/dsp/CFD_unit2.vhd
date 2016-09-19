@@ -14,7 +14,6 @@ generic(
 port (
   clk:in std_logic;
   reset1:in std_logic;
-  reset2:in std_logic;
   
   raw:in signed(WIDTH-1 downto 0);
   slope:in signed(WIDTH-1 downto 0);
@@ -144,7 +143,7 @@ generic map(
 )
 port map(
   clk => clk,
-  reset => reset2,
+  reset => reset1,
   min => (others => '0'),
   cf => cf_int,
   sig => f_pipe(1),

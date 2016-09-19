@@ -21,6 +21,7 @@ use streamlib.types.all;
 
 use work.events.all;
 use work.types.all;
+use work.registers.all;
 --use work.functions.all;
 
 entity tickstream is
@@ -84,6 +85,7 @@ begin
 tick <= tick_int;
 tick_event.rel_timestamp <= (others => '-');
 tick_event.flags.event_type.tick <= TRUE;
+tick_event.flags.event_type.detection <= PEAK_DETECTION_D;
 
 timestamp <= time_stamp;
 

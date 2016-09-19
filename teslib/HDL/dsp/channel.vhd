@@ -126,7 +126,6 @@ generic map(
 port map(
   clk => clk,
   reset1 => reset1,
-  reset2 => reset2,
   registers => registers.capture,
   baseline => baseline_estimate,
   raw => raw,
