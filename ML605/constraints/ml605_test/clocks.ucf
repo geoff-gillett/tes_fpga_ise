@@ -43,9 +43,9 @@ NET "adc_clk_n[0]" LOC = AF21;
 # LOCs for ADC clock BUFRs
 #-------------------------------------------------------------------------------
 #INST "adcClks[0].adcClkBufr" LOC = BUFR_X1Y0;
-INST "adcClkBufr[1].bufr" LOC = BUFR_X1Y1;
-INST "adcClkBufr[2].bufr" LOC = BUFR_X1Y2;
-INST "adcClkBufr[3].bufr" LOC = BUFR_X1Y3;
+INST "adcClkBufr[1].adcBufr" LOC = BUFR_X1Y1;
+INST "adcClkBufr[2].adcBufr" LOC = BUFR_X1Y2;
+INST "adcClkBufr[3].adcBufr" LOC = BUFR_X1Y3;
 
 NET "adc_clk_p[0]" TNM_NET = "adc_chip0_clk";
 TIMESPEC TS_adc_chip0_clk = PERIOD "adc_chip0_clk" 4 ns HIGH 50 %;

@@ -112,7 +112,7 @@ port map(
   stage2 => slope
 );
 
-measure:entity work.measure
+measure:entity work.measure2
 generic map(
   CHANNEL => CHANNEL,
   WIDTH => DSP_BITS,
@@ -134,7 +134,7 @@ port map(
   measurements => m
 );
 
-framer:entity work.measurement_framer
+framer:entity work.measurement_framer2
 generic map(
   FRAMER_ADDRESS_BITS => MEASUREMENT_FRAMER_ADDRESS_BITS,
   ENDIAN => ENDIAN

@@ -19,14 +19,13 @@ architecture testbench of saturate_round_TB is
 signal clk:std_logic:='1';
 signal reset:std_logic:='1';
 constant CLK_PERIOD:time:=4 ns;
-signal gain: natural range 0 to 3;
 signal input:std_logic_vector(WIDTH_IN-1 downto 0);
 signal output:std_logic_vector(WIDTH_OUT-1 downto 0);
 
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.saturate_round
+UUT:entity work.saturate_round2
 generic map(
   WIDTH_IN => WIDTH_IN,
   FRAC_IN => FRAC_IN,
@@ -43,7 +42,6 @@ port map(
 
 stimulus:process is
 begin
-  gain <= 0;
   input <= (others => '0'); 
   wait for CLK_PERIOD;
   reset <= '0';
@@ -58,7 +56,6 @@ begin
   wait for CLK_PERIOD;
   input <= (47 downto 30 => '1', 19 => '1',others => '0'); 
   wait for CLK_PERIOD;
-  gain <= 1;
   wait;
 end process stimulus;
 

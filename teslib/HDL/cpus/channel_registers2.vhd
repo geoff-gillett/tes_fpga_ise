@@ -192,8 +192,8 @@ if rising_edge(clk) then
         reg.baseline.subtraction <= to_boolean(data(1));
       end if;
       if address(INPUT_SEL_ADDR_BIT)='1' then
-      	reg.capture.adc_select <= data(CHANNELS-1 downto 0);
-      	reg.capture.invert <= data(CHANNELS)='1';
+      	reg.capture.adc_select <= data(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
+      	reg.capture.invert <= data(ADC_CHIPS*ADC_CHIP_CHANNELS)='1';
       end if;
       if address(FILTER_CONFIG_ADDR_BIT)='1' then
       	--TODO implement

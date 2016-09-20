@@ -104,7 +104,7 @@ pulse.length <= m.pulse_length;
 pulse.offset <= m.time_offset;
 pulse.area <= m.pulse_area;
 
-framer_full <= framer_free < m.size;
+--framer_full <= framer_free < m.size;
 cleared <= clear_address < m.peak_address;
 
 commit <= commit_frame;
@@ -117,6 +117,7 @@ begin
       dump <= FALSE;
       pulse_started <= FALSE;
     else
+      
       start <= FALSE;
       commit_frame <= FALSE;
       dump <= FALSE;
@@ -186,7 +187,10 @@ begin
         
         --header0 can't be dumped yet
         if m.pulse_start and m.valid_peak then
-          if framer_full then
+          
+          framer_full <= framer_free < m.size;
+          
+          if framer_free <= m.size then
             overflow_int <= TRUE;
             dumped <= TRUE;
             dump <= started or (m.stamp_pulse and m.valid_peak);

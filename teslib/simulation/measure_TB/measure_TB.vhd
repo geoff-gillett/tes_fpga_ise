@@ -64,7 +64,7 @@ port map(
   stage2 => slope
 );
 
-UUT:entity work.measure
+UUT:entity work.measure2
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -75,9 +75,9 @@ generic map(
 port map(
   clk => clk,
   reset1 => reset1,
-  reset2 => reset2,
   --rel2min => rel2min, 
   registers => reg,
+  baseline => (others => '0'),
   
   raw => raw,
   slope => slope,

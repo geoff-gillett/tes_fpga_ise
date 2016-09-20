@@ -40,10 +40,7 @@ entity ml605_v6emac is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=12;
-  ADC_CHIPS:integer:=4;
-  CHIP_CHANNELS:integer:=2;
-  ADC_BITS:integer:=14;
-  DSP_CHANNELS:integer:=2;
+  DSP_CHANNELS:integer:=4;
   ENDIAN:string:="LITTLE";
   PACKET_GEN:boolean:=FALSE
 );
@@ -85,8 +82,8 @@ port(
   adc_clk_p:in std_logic_vector(ADC_CHIPS-1 downto 0);
   adc_clk_n:in std_logic_vector(ADC_CHIPS-1 downto 0);
   -- ADS62P49 LVDS samples
-  adc_data_p:in ddr_sample_array(ADC_CHIPS*CHIP_CHANNELS-1 downto 0);
-  adc_data_n:in ddr_sample_array(ADC_CHIPS*CHIP_CHANNELS-1 downto 0);
+  adc_data_p:in ddr_sample_array(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
+  adc_data_n:in ddr_sample_array(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
 
   phy_resetn:out std_logic;
   gmii_txd:out std_logic_vector(7 downto 0);
@@ -125,7 +122,7 @@ architecture RTL of ml605_v6emac is
 --------------------------------------------------------------------------------
 -- Constants
 --------------------------------------------------------------------------------
-constant ADC_CHANNELS:integer:=ADC_CHIPS*CHIP_CHANNELS;
+constant ADC_CHANNELS:integer:=ADC_CHIPS*ADC_CHIP_CHANNELS;
 constant SPI_CHANNELS:integer:=ADC_CHIPS+1; -- +1 for AD9510
 
 --------------------------------------------------------------------------------
@@ -234,7 +231,7 @@ attribute shreg_extract:string;
 attribute shreg_extract of adc_pipes:signal is "NO";
 attribute shreg_extract of adc_dout_pipe:signal is "NO";
 
-signal adc_samples:adc_sample_array(DSP_CHANNELS-1 downto 0);
+signal adc_samples:adc_sample_array(ADC_CHANNELS-1 downto 0);
 signal fifo_dout:adc_sample_array(ADC_CHANNELS-1 downto 0);
 --attribute S of adc_samples:signal is "TRUE";
 
@@ -337,8 +334,6 @@ attribute iob of AD9510_spi_mosi:signal is "TRUE";
 attribute iob of spi_miso:signal is "TRUE";
 --------------------------------------------------------------------------------
 --debug
-signal reset2_sclk_sync:std_logic;
-signal reset_debug_count:unsigned(34 downto 0);
 
 constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
@@ -547,13 +542,14 @@ adcClkBufr:for chip in ADC_CHIPS-1 downto 1 generate
     i  => adc_clk_delayed(chip),
     o  => adc_clk(chip)
   );
+  
 end generate;
 
 -- instantiate input buffers, iodelays, DDR to SDR components and CDC FIFOs
 -- for each ADC DDR data line.
 adcChip:for chip in 0 to ADC_CHIPS-1 generate
 	begin
-  chan:for chan in 0 to CHIP_CHANNELS-1 generate
+  chan:for chan in 0 to ADC_CHIP_CHANNELS-1 generate
   begin
     ddrBit:for bit in 0 to ADC_BITS/2-1 generate
   	begin
@@ -564,9 +560,9 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
         IOSTANDARD => "LVDS_25"
       )
       port map(
-        O => adc_ddr(chip*CHIP_CHANNELS+chan)(bit),
-        I => adc_data_p(chip*CHIP_CHANNELS+chan)(bit),
-        IB => adc_data_n(chip*CHIP_CHANNELS+chan)(bit)
+        O => adc_ddr(chip*ADC_CHIP_CHANNELS+chan)(bit),
+        I => adc_data_p(chip*ADC_CHIP_CHANNELS+chan)(bit),
+        IB => adc_data_n(chip*ADC_CHIP_CHANNELS+chan)(bit)
       );
       
       -- adjustable delay for each data channel
@@ -578,14 +574,14 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
       )
       port map(
         cntvalueout => open,
-        dataout => adc_ddr_delay(chip*CHIP_CHANNELS+chan)(bit),
+        dataout => adc_ddr_delay(chip*ADC_CHIP_CHANNELS+chan)(bit),
         c => signal_clk,
         ce => '0', --iodelay_ce(chip*ADC_CHIP_CHANNELS+chan)(bit),
         cinvctrl => '0',
         clkin => '0',
         cntvaluein => to_std_logic(to_unsigned(DEFAULT_IODELAY_VALUE,5)),
         datain => '0',
-        idatain => adc_ddr(chip*CHIP_CHANNELS+chan)(bit),
+        idatain => adc_ddr(chip*ADC_CHIP_CHANNELS+chan)(bit),
         inc => '0',--iodelay_inc(chip*ADC_CHIP_CHANNELS+chan)(bit),
         odatain => '0',
         rst => '0',
@@ -596,11 +592,11 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
      	iddrInst:iddr
         generic map(DDR_CLK_EDGE => "SAME_EDGE_PIPELINED")
         port map(
-          q1 => adc_sdr(chip*CHIP_CHANNELS+chan)(2*bit),
-          q2 => adc_sdr(chip*CHIP_CHANNELS+chan)(2*bit+1),
+          q1 => adc_sdr(chip*ADC_CHIP_CHANNELS+chan)(2*bit),
+          q2 => adc_sdr(chip*ADC_CHIP_CHANNELS+chan)(2*bit+1),
           c => adc_clk(chip),
           ce => '1',
-          d => adc_ddr_delay(chip*CHIP_CHANNELS+chan)(bit),
+          d => adc_ddr_delay(chip*ADC_CHIP_CHANNELS+chan)(bit),
           r => '0',
           s => '0'
         );
@@ -609,10 +605,10 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
     inPipe:process(adc_clk(chip))
     begin
     	if rising_edge(adc_clk(chip)) then
-  			adc_pipes(chip*CHIP_CHANNELS+chan)(1) 
-  			  <= adc_sdr(chip*CHIP_CHANNELS+chan);
-  			adc_pipes(chip*CHIP_CHANNELS+chan)(2 to ADCPIPE_DEPTH) 
-  				<= adc_pipes(chip*CHIP_CHANNELS+chan)(1 to ADCPIPE_DEPTH-1);
+  			adc_pipes(chip*ADC_CHIP_CHANNELS+chan)(1) 
+  			  <= adc_sdr(chip*ADC_CHIP_CHANNELS+chan);
+  			adc_pipes(chip*ADC_CHIP_CHANNELS+chan)(2 to ADCPIPE_DEPTH) 
+  				<= adc_pipes(chip*ADC_CHIP_CHANNELS+chan)(1 to ADCPIPE_DEPTH-1);
     	end if;
     end process inPipe;
     
@@ -623,12 +619,12 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
       wr_clk => adc_clk(chip),
       rst => fifo_reset_chipclk(chip),
       rd_clk => signal_clk,
-      din => adc_pipes(chip*CHIP_CHANNELS+chan)(ADCPIPE_DEPTH),--adc_sdr(chip*ADC_CHIP_CHANNELS+chan),
+      din => adc_pipes(chip*ADC_CHIP_CHANNELS+chan)(ADCPIPE_DEPTH),--adc_sdr(chip*ADC_CHIP_CHANNELS+chan),
       wr_en => '1',
-      rd_en => fifo_rd_en(chip*CHIP_CHANNELS+chan),
-      dout => fifo_dout(chip*CHIP_CHANNELS+chan),
+      rd_en => fifo_rd_en(chip*ADC_CHIP_CHANNELS+chan),
+      dout => fifo_dout(chip*ADC_CHIP_CHANNELS+chan),
       full => open,
-      empty => fifo_empty(chip*CHIP_CHANNELS+chan)
+      empty => fifo_empty(chip*ADC_CHIP_CHANNELS+chan)
     );
    
   end generate chan;
@@ -642,7 +638,7 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
         <= adc_dout_pipe(ADCPIPE_DEPTH-2 downto 0);
   	end if;
   end process adcPipe;
-  adc_samples <= adc_dout_pipe(ADCPIPE_DEPTH-1)(DSP_CHANNELS-1 downto 0);
+  adc_samples <= adc_dout_pipe(ADCPIPE_DEPTH-1)(ADC_CHANNELS-1 downto 0);
   
  	resetSync:entity tes.sync_2FF
   generic map(
@@ -879,14 +875,14 @@ port map(
 --  input => reset0,
 --  output => reset0_sclk
 --);
-reset0SiganlSync:entity tes.sync_2FF
+reset0SignalSync:entity tes.sync_2FF
 port map(
   out_clk => signal_clk,
   input => reset0,
   output => reset0_sclk
 );
 
-reset1SiganlSync:entity tes.sync_2FF
+reset1SignalSync:entity tes.sync_2FF
 port map(
   out_clk => signal_clk,
   input => reset1,
@@ -908,7 +904,7 @@ port map(
 --  end if;
 --end process debugReset;
 
-reset2SiganlSync:entity tes.sync_2FF
+reset2SignalSync:entity tes.sync_2FF
 port map(
   out_clk => signal_clk,
   input => reset2,

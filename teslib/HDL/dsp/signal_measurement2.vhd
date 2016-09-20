@@ -55,7 +55,7 @@ signal pos_x,neg_x,xing_int:boolean;
 signal signal_x:signed(WIDTH-1 downto 0);
 signal signal_r:std_logic_vector(WIDTH_OUT-1 downto 0);
 
-constant DEPTH:integer:=3;
+constant DEPTH:integer:=5;
 signal pos_p,neg_p,xing_p:boolean_vector(1 to DEPTH):=(others => FALSE);
 signal pipe:signal_array(1 to DEPTH):=(others => (others => '0'));
 signal gt:boolean;
@@ -68,9 +68,9 @@ signal state:extrema_state;
 begin
 extrema <= extreme_int;
 signal_out <= pipe(DEPTH);
-pos_xing <= pos_p(DEPTH);
-neg_xing <= neg_p(DEPTH);
-xing <= xing_p(DEPTH);
+pos_xing <= pos_p(DEPTH-1);
+neg_xing <= neg_p(DEPTH-1);
+xing <= xing_p(DEPTH-1);
 
 closestGen:if CLOSEST generate
   xing_int <= pos_c_xing or neg_c_xing;
@@ -80,7 +80,8 @@ notClosestGen:if not CLOSEST generate
   xing_int <= pos_x or neg_x;
 end generate;
 
-round:entity work.saturate_round
+-- saturation handled in FIR
+round:entity work.round
 generic map(
   WIDTH_IN  => WIDTH,
   FRAC_IN   => FRAC,
@@ -88,13 +89,14 @@ generic map(
   FRAC_OUT  => FRAC_OUT
 )
 port map(
-  clk    => clk,
-  reset  => reset,
-  input  => std_logic_vector(signal_in),
-  output => signal_r
+  clk      => clk,
+  reset    => reset,
+  saturate => '0',
+  input    => std_logic_vector(signal_in),
+  output   => signal_r
 );
 
-areaAcc:entity work.area_acc(dspx2)
+areaAcc:entity work.area_acc2
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -143,13 +145,12 @@ begin
       end if;
       xing_p <= (pos_x or neg_x) & xing_p(1 to DEPTH-1);
       pipe <= signed(signal_r) & pipe(1 to DEPTH-1);   
-      
     end if;
   end if;
 end process pipeline;
 
-
-gt <= pipe(DEPTH) > extreme_int; 
+--FIXME check extrema
+gt <= pipe(DEPTH-1) > extreme_int; 
 extremeMeas:process(clk)
 begin
 if rising_edge(clk) then
@@ -157,21 +158,21 @@ if rising_edge(clk) then
     extreme_int <= (others => '0');
     state <= MAX_S; 
   else
-    if pos_p(DEPTH) then
+    if pos_p(DEPTH-1) then
       state <= MAX_S;
-    elsif neg_p(DEPTH) then
+    elsif neg_p(DEPTH-1) then
       state <= MIN_S;
     end if;
-    if xing_p(DEPTH) then
-      extreme_int <= pipe(DEPTH);
+    if xing_p(DEPTH-1) then
+      extreme_int <= pipe(DEPTH-1);
     end if;
     
     if (state=MAX_S and gt) then
-      extreme_int <= pipe(DEPTH);
+      extreme_int <= pipe(DEPTH-1);
     end if;
     
     if (state=MIN_S and not gt) then
-      extreme_int <= pipe(DEPTH);
+      extreme_int <= pipe(DEPTH-1);
     end if;
     
   end if;

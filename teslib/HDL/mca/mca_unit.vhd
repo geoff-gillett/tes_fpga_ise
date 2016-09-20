@@ -217,7 +217,6 @@ begin
 end function;
 
 --debug
-constant DEBUG:string:="TRUE";
 
 function to_std_logic(s:controlFSMstate;w:integer) return std_logic_vector is
 begin
@@ -232,8 +231,8 @@ end function;
 signal control_state_v:std_logic_vector(1 downto 0);
 signal stream_state_v:std_logic_vector(2 downto 0);
 
+constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
-
 attribute MARK_DEBUG of update_asap:signal is DEBUG;
 attribute MARK_DEBUG of control_state_v:signal is DEBUG;
 attribute MARK_DEBUG of stream_state_v:signal is DEBUG;
@@ -241,9 +240,8 @@ attribute MARK_DEBUG of mca_axi_valid:signal is DEBUG;
 attribute MARK_DEBUG of mca_axi_ready:signal is DEBUG;
 attribute MARK_DEBUG of tick_count:signal is DEBUG;
 
-
 begin
---
+  
 --------------------------------------------------------------------------------
 -- Control processes and FSM
 --------------------------------------------------------------------------------

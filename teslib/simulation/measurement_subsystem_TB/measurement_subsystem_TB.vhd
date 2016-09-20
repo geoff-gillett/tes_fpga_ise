@@ -119,7 +119,6 @@ generic map(
 )
 port map(
   clk => sample_clk,
-  reset0 => reset0,
   reset1 => reset1,
   reset2 => reset2,
   mca_initialising => mca_initialising,

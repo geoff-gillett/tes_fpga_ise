@@ -34,11 +34,10 @@ port(
   stage1_events:out fir_control_out_t;
   stage2_config:in fir_control_in_t;
   stage2_events:out fir_control_out_t;
-  -- output signals
+
   sample_out:out signed(WIDTH-1 downto 0);
   stage1:out signed(WIDTH-1 downto 0);
   stage2:out signed(WIDTH-1 downto 0)
-  
 );
 end entity two_stage_FIR2;
 
@@ -115,7 +114,7 @@ port map(
   event_s_reload_tlast_unexpected => stage1_events.last_unexpected
 );
 
-stage1Round:entity work.saturate_round
+stage1Round:entity work.saturate_round2
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 28,
@@ -149,7 +148,7 @@ port map(
   event_s_reload_tlast_unexpected => stage2_events.last_unexpected
 );
 
-stage2Round:entity work.saturate_round
+stage2Round:entity work.saturate_round2
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 28,

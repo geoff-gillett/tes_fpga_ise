@@ -192,16 +192,15 @@ type capture_registers_t is record
 	slope_threshold:unsigned(DSP_BITS-2 downto 0);
 	area_threshold:unsigned(AREA_WIDTH-2 downto 0);
 	height:height_d;
-	--threshold_rel2min:boolean;
-	--rel2min:boolean; 
 	timing:timing_d;
 	detection:detection_d;
 	full_trace:boolean;
 	trace0:trace_d;
 	trace1:trace_d;
 	delay:unsigned(DELAY_BITS-1 downto 0);
-	adc_select:std_logic_vector(CHANNELS-1 downto 0);
+	adc_select:std_logic_vector(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
 	invert:boolean;
+	stream_enable:boolean;
 end record;
 
 type channel_registers_t is record

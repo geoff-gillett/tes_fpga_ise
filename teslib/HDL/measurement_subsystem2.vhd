@@ -48,7 +48,7 @@ port(
   
   mca_initialising:out boolean;
   
-  samples:in adc_sample_array(DSP_CHANNELS-1 downto 0);
+  samples:in adc_sample_array(ADC_CHANNELS-1 downto 0);
   
   channel_reg:in channel_register_array(DSP_CHANNELS-1 downto 0);
   global_reg:in global_registers_t;
@@ -71,7 +71,7 @@ end entity measurement_subsystem2;
 
 architecture RTL of measurement_subsystem2 is
 	
-signal adc_delayed:adc_sample_array(DSP_CHANNELS-1 downto 0);
+signal adc_delayed,adc_mux:adc_sample_array(DSP_CHANNELS-1 downto 0);
 
 -- MCA
 --type value_sel_array is array (natural range <>) of 
@@ -125,6 +125,17 @@ measurements <= m;
 --------------------------------------------------------------------------------
 tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 
+  inputMux:entity work.input_mux
+  generic map(
+    CHANNELS => ADC_CHIPS*ADC_CHIP_CHANNELS
+  )
+  port map(
+    clk => clk,
+    samples_in => samples,
+    sel => channel_reg(c).capture.adc_select,
+    sample_out => adc_mux(c)
+  );
+
   delay:entity work.dynamic_RAM_delay
   generic map(
     DEPTH => 2**DELAY_BITS,
@@ -132,7 +143,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   )
   port map(
     clk => clk,
-    data_in => samples(c),
+    data_in => adc_mux(c),
     delay => to_integer(channel_reg(c).capture.delay),
     delayed => adc_delayed(c)
   );

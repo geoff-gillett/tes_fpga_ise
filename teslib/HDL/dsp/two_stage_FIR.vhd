@@ -128,10 +128,11 @@ port map(
   event_s_reload_tlast_unexpected => stage1_reload_last_unexpected
 );
 
-stage1Round:entity work.saturate_round
+
+stage1Round:entity work.saturate_round2
 generic map(
   WIDTH_IN => 48,
-  FRAC_IN => 25,
+  FRAC_IN => 28,
   WIDTH_OUT => 18,
   FRAC_OUT => 3
 )
@@ -162,10 +163,10 @@ port map(
   event_s_reload_tlast_unexpected => stage2_reload_last_unexpected
 );
 
-stage2Round:entity work.saturate_round
+stage2Round:entity work.saturate_round2
 generic map(
   WIDTH_IN => 48,
-  FRAC_IN => 25,
+  FRAC_IN => 28,
   WIDTH_OUT => 18,
   FRAC_OUT => 8
 )
