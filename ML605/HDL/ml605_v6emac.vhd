@@ -40,7 +40,7 @@ entity ml605_v6emac is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=12;
-  DSP_CHANNELS:integer:=4;
+  DSP_CHANNELS:integer:=2;
   ENDIAN:string:="LITTLE";
   PACKET_GEN:boolean:=FALSE
 );
@@ -228,8 +228,8 @@ type adc_pipeline is array (ADCPIPE_DEPTH-1 downto 0)
 signal adc_dout_pipe:adc_pipeline;
 
 attribute shreg_extract:string;
-attribute shreg_extract of adc_pipes:signal is "NO";
-attribute shreg_extract of adc_dout_pipe:signal is "NO";
+attribute shreg_extract of adc_pipes:signal is "no";
+attribute shreg_extract of adc_dout_pipe:signal is "no";
 
 signal adc_samples:adc_sample_array(ADC_CHANNELS-1 downto 0);
 signal fifo_dout:adc_sample_array(ADC_CHANNELS-1 downto 0);

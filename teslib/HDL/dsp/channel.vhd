@@ -48,7 +48,7 @@ architecture RTL of channel is
   
 signal sample_in,raw,filtered,slope:signed(DSP_BITS-1 downto 0);
 signal m:measurements_t;
-signal sample:sample_t;
+signal sample,sample_inv:sample_t;
 signal baseline_estimate:signed(DSP_BITS-1 downto 0);
 signal range_error:boolean;
 
@@ -58,8 +58,12 @@ measurements <= m;
 sampleoffset:process(clk)
 begin
 if rising_edge(clk) then
-	sample <= signed('0' & adc_sample) - 
-						signed('0' & registers.baseline.offset);
+  if registers.capture.invert then
+	 sample_inv <= -signed('0' & adc_sample); 
+  else
+	 sample_inv <= signed('0' & adc_sample); 
+  end if;
+	sample <= sample_inv - signed('0' & registers.baseline.offset);
 end if;
 end process sampleoffset;
 

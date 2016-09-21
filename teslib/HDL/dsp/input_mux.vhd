@@ -69,6 +69,7 @@ bitGen:for b in ADC_BITS-1 downto 0 generate
       sel => s,
       output => output(b)
     );
+    
 end generate bitGen;
   
 end architecture RTL;

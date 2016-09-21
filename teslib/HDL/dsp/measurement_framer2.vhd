@@ -24,6 +24,7 @@ port (
   reset:in std_logic;
   
   measurements:in measurements_t;
+  
   --signals to MUX
   start:out boolean;
   commit:out boolean;

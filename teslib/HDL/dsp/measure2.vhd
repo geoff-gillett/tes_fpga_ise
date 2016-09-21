@@ -50,9 +50,7 @@ signal filtered_reg,filtered_m:signed(WIDTH-1 downto 0);
 signal slope_pos_0xing_cfd,slope_neg_0xing_cfd:boolean;
 signal slope_threshold_s,pulse_threshold_s:signed(WIDTH-1 downto 0);
 signal area_threshold_s:signed(AREA_WIDTH-1 downto 0);
---signal pulse_time,peak_time,pulse_length,rise_time:unsigned(16 downto 0);
 signal pulse_t_n,pulse_l_n,rise_t_n:unsigned(16 downto 0);
---signal pulse_start:boolean;
 
 constant DEPTH:integer:=13;
 type pipe is array (1 to DEPTH) of signed(WIDTH-1 downto 0);
@@ -72,14 +70,6 @@ signal slope_threshold:signed(WIDTH-1 downto 0);
 signal pulse_threshold:signed(WIDTH-1 downto 0);
 signal valid_peak,max_slope_cfd:boolean;
 signal peak_count_n,peak_count:unsigned(PEAK_COUNT_BITS downto 0);
-
---
---signal raw_sample,slope_sample,filtered_sample:signed(WIDTH-1 downto 0);
---signal raw_pos_0xing,slope_pos_0xing,filtered_pos_0xing:boolean;
---signal raw_neg_0xing,slope_neg_0xing,filtered_neg_0xing:boolean;
---signal raw_zero_xing,slope_zero_xing,filtered_zero_xing:boolean;
---signal raw_area,slope_area,filtered_area:signed(AREA_WIDTH-1 downto 0);
---signal raw_extrema,slope_extrema,filtered_extrema:signed(WIDTH-1 downto 0);
 
 begin
 measurements <= m;
@@ -158,9 +148,6 @@ port map(
   area => pulse_area
 );
 
---pulse_t_n <= ('0' & m.pulse_time) + 1;
---pulse_l_n <= ('0' & m.pulse_length) + 1;
---rise_t_n <= ('0' & m.rise_time) + 1;
 pulseMeas:process(clk)
 begin
   if rising_edge(clk) then

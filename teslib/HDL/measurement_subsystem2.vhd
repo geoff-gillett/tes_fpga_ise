@@ -112,17 +112,36 @@ signal mux_full:boolean;
 signal mux_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal measurement_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 
+signal m:measurements_array(DSP_CHANNELS-1 downto 0);
+signal c_reg:channel_register_array(DSP_CHANNELS-1 downto 0);
+signal g_reg:global_registers_t;
+
+signal tick_period_mux,tick_period_mca:unsigned(TICK_PERIOD_BITS-1 downto 0);
+attribute equivalent_register_removal:string;
+attribute equivalent_register_removal of tick_period_mux,tick_period_mca:signal
+          is "no";
+          
 -- test signals
 signal framestream:streambus_t;
 signal framestream_valid:boolean;
 signal framestream_ready:boolean;
-signal m:measurements_array(DSP_CHANNELS-1 downto 0);
 
 begin
 measurements <= m;
 --------------------------------------------------------------------------------
 -- processing channels
 --------------------------------------------------------------------------------
+-- helps timing and P&R
+chanReg:process(clk)
+begin
+  if rising_edge(clk) then
+    c_reg <= channel_reg;
+    tick_period_mux <= global_reg.tick_period;
+    tick_period_mca <= global_reg.tick_period;
+    g_reg <= global_reg;
+  end if;
+end process chanReg;
+
 tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 
   inputMux:entity work.input_mux
@@ -132,7 +151,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   port map(
     clk => clk,
     samples_in => samples,
-    sel => channel_reg(c).capture.adc_select,
+    sel => c_reg(c).capture.adc_select,
     sample_out => adc_mux(c)
   );
 
@@ -144,7 +163,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   port map(
     clk => clk,
     data_in => adc_mux(c),
-    delay => to_integer(channel_reg(c).capture.delay),
+    delay => to_integer(c_reg(c).capture.delay),
     delayed => adc_delayed(c)
   );
 
@@ -158,7 +177,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     reset1 => reset1,
     reset2 => reset2,
     adc_sample => adc_delayed(c),
-    registers => channel_reg(c),
+    registers => c_reg(c),
     stage1_config => filter_config(c),
     stage1_events => filter_events(c),
     stage2_config => slope_config(c),
@@ -219,8 +238,8 @@ port map(
   instream_valids => eventstream_valids,
   instream_readys => eventstream_readys,
   full => mux_full,
-  tick_period => global_reg.tick_period,
-  window => global_reg.window,
+  tick_period => g_reg.tick_period,
+  window => g_reg.window,
   cfd_errors => cfd_errors,
   framer_overflows => framer_overflows,
   mux_overflows => mux_overflows,
@@ -266,13 +285,13 @@ port map(
   reset => reset1,
   initialising => mca_initialising,
   --TODO remove redundant register port
-  update_asap => global_reg.mca.update_asap,
+  update_asap => g_reg.mca.update_asap,
   --TODO remove redundant register port
-  update_on_completion => global_reg.mca.update_on_completion,
+  update_on_completion => g_reg.mca.update_on_completion,
   updated => updated, --TODO implement CPU interupt
-  registers => global_reg.mca,
+  registers => g_reg.mca,
   --TODO remove redundant register port
-  tick_period => global_reg.tick_period,
+  tick_period => g_reg.tick_period,
   channel_select => channel_select,
   value_select => value_select,
   trigger_select => trigger_select,
@@ -295,7 +314,7 @@ port map(
   clk => clk,
   reset => reset1,
   mtu => global_reg.mtu,
-  tick_latency => global_reg.tick_latency,
+  tick_latency => g_reg.tick_latency,
   eventstream => muxstream,
   eventstream_valid => muxstream_valid,
   eventstream_ready => muxstream_ready,
@@ -313,12 +332,13 @@ noPacketGen:if not PACKET_GEN generate
   framestream_ready <= ethernetstream_ready;
 end generate noPacketGen;
 
+-- test packet generator for debuging ethernet problems
 packetGen:if PACKET_GEN generate
   packetGen:entity work.packet_generator
   port map(
     clk => clk,
     reset => reset1,
-    period => global_reg.tick_period,
+    period => g_reg.tick_period,
     stream => ethernetstream,
     ready => ethernetstream_ready,
     valid => ethernetstream_valid
