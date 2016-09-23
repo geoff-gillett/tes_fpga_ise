@@ -127,11 +127,11 @@ type mca_value_d is (
   MCA_SLOPE_SIGNAL_D, -- the output of the dsp differentiator
   MCA_SLOPE_AREA_D,
   MCA_SLOPE_EXTREMA_D,
-  MCA_PULSE_AREA_D, -- the area between threshold crossings
   MCA_RAW_SIGNAL_D,
   MCA_RAW_AREA_D,
   MCA_RAW_EXTREMA_D,
-  MCA_PULSE_LENGTH_D, -- the maximum between threshold xings
+  MCA_PULSE_AREA_D, -- the area between threshold crossings
+  MCA_PULSE_LENGTH_D, -- the time between threshold xings
   MCA_RISE_TIME_D -- make this start at minima
 );
 
@@ -158,11 +158,7 @@ type mca_trigger_d is (
   MAX_SLOPE_MCA_TRIGGER_D,
   SLOPE_POS_0XING_MCA_TRIGGER_D, --peak start minima
   SLOPE_NEG_0XING_MCA_TRIGGER_D
-  --TODO add minima or maxima
-  -- there are two slots left
 );
--- FIXME need trigger for pulse area FILTERED_NEG_XING
--- 
 
 constant NUM_MCA_TRIGGER_D:integer:=mca_trigger_d'pos(mca_trigger_d'high)+1;
 constant MCA_TRIGGER_D_BITS:integer:=ceilLog2(NUM_MCA_TRIGGER_D);

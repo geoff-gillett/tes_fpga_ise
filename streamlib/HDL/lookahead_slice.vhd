@@ -31,10 +31,10 @@ end entity lookahead_slice;
 --
 architecture RTL of lookahead_slice is
 --
-signal lookahead_int,stream_reg:std_logic_vector(WIDTH-1 downto 0);
-signal valid_int,lookahead_valid_int,reg_ready:boolean;
+signal lookahead_int,stream_reg,stream_reg2:std_logic_vector(WIDTH-1 downto 0);
+signal valid_int,lookahead_valid_int,reg_ready,reg2_ready:boolean;
 signal input_handshake,output_handshake,shift:boolean;
-signal reg_valid:boolean;
+signal reg_valid,reg2_valid:boolean;
 
 begin
 --ready_out <= reg_ready;
@@ -59,6 +59,21 @@ port map(
   stream_in => stream_in,
   ready_out => ready_out,
   valid_in  => valid_in,
+  stream => stream_reg2,
+  ready => reg2_ready,
+  valid => reg2_valid
+);
+
+inputReg2:entity work.stream_register
+generic map(
+  WIDTH => WIDTH
+)
+port map(
+  clk => clk,
+  reset => reset,
+  stream_in => stream_reg2,
+  ready_out => reg2_ready,
+  valid_in  => reg2_valid,
   stream => stream_reg,
   ready => reg_ready,
   valid => reg_valid

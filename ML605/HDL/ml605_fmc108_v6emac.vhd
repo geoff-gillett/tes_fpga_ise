@@ -40,7 +40,7 @@ entity ml605_fmc108_v6emac is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=12;
-  DSP_CHANNELS:integer:=2;
+  DSP_CHANNELS:integer:=4;
   ENDIAN:string:="LITTLE";
   PACKET_GEN:boolean:=FALSE
 );

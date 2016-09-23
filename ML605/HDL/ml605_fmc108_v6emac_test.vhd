@@ -209,12 +209,12 @@ signal adc_clk_delayed:std_logic_vector(ADC_CHIPS-1 downto 0);
 --------------------------------------------------------------------------------
 -- ADC signals
 signal adc_ddr,adc_ddr_delay:ddr_sample_array(ADC_CHANNELS-1 downto 0);
-signal adc_sdr:adc_sample_array(ADC_CHANNELS-1 downto 0);
+signal adc_sdr,adc_sdr_reg:adc_sample_array(ADC_CHANNELS-1 downto 0);
 
 signal fifo_reset:std_logic;
 signal fifo_reset_chipclk:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
-signal fifo_valid:std_logic_vector(ADC_CHANNELS-1 downto 0);
+signal fifo_valid,enables_valid:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal fifo_rd_en:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal enables_reg,enables_reg2:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
@@ -283,13 +283,13 @@ attribute S of channel_registers:signal is "TRUE";
 signal measurements:measurements_array(DSP_CHANNELS-1 downto 0);
 
 -- MCA
-type value_sel_array is array (natural range <>) of 
-  std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
+--type value_sel_array is array (natural range <>) of 
+--  std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
   
-signal value_select:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
-signal value_sel_reg:value_sel_array(CHANNELS-1 downto 0);
+--signal value_select:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
+--signal value_sel_reg:value_sel_array(CHANNELS-1 downto 0);
 
-signal mca_values,mca_values_reg:mca_value_array(DSP_CHANNELS-1 downto 0);
+--signal mca_values,mca_values_reg:mca_value_array(DSP_CHANNELS-1 downto 0);
 
 -- ethernet
 signal ethernetstream:streambus_t;
@@ -332,20 +332,29 @@ attribute iob of AD9510_spi_mosi:signal is "TRUE";
 --attribute iob of ADC_spi_miso:signal is "TRUE";
 --attribute iob of AD9510_spi_miso:signal is "TRUE";
 attribute iob of spi_miso:signal is "TRUE";
---------------------------------------------------------------------------------
---debug
 
-constant DEBUG:string:="FALSE";
-attribute MARK_DEBUG:string;
---signal test_counter:unsigned(15 downto 0):=(others => '0');
---attribute MARK_DEBUG of test_counter:signal is DEBUG;
---attribute MARK_DEBUG of reset0,reset1,reset2:signal is DEBUG;
---attribute MARK_DEBUG of reset0_ioclk,reset1_ioclk,reset2_ioclk:signal is DEBUG;
-attribute MARK_DEBUG of reset2_sclk:signal is DEBUG;
 signal filter_config,slope_config,baseline_config:
        fir_ctl_in_array(DSP_CHANNELS-1 downto 0);
 signal filter_events,slope_events,baseline_events:
        fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
+--------------------------------------------------------------------------------
+--debug
+signal adc_sample0:adc_sample_t;
+signal adc_enable:boolean_vector(ADC_CHANNELS-1 downto 0);
+
+constant DEBUG:string:="TRUE";
+attribute MARK_DEBUG:string;
+attribute MARK_DEBUG of fifo_reset:signal is DEBUG;
+attribute MARK_DEBUG of enables_reg2:signal is DEBUG;
+attribute MARK_DEBUG of adc_sample0:signal is DEBUG;
+attribute MARK_DEBUG of fifo_valid:signal is DEBUG;
+attribute MARK_DEBUG of adc_enable:signal is DEBUG;
+
+--signal test_counter:unsigned(15 downto 0):=(others => '0');
+--attribute MARK_DEBUG of test_counter:signal is DEBUG;
+--attribute MARK_DEBUG of reset0,reset1,reset2:signal is DEBUG;
+--attribute MARK_DEBUG of reset0_ioclk,reset1_ioclk,reset2_ioclk:signal is DEBUG;
+--attribute MARK_DEBUG of reset2_sclk:signal is DEBUG;
 --attribute MARK_DEBUG of onboard_mmcm_locked:signal is DEBUG;
 --attribute MARK_DEBUG of fmc108_mmcm_locked:signal is DEBUG;
 --attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
@@ -361,6 +370,8 @@ signal filter_events,slope_events,baseline_events:
 --signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
 begin
+adc_sample0 <= adc_samples(0);
+adc_enable <= to_boolean(global.adc_enable);
 
 --test:process(signal_clk)
 --begin
@@ -602,15 +613,13 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
         );
     end generate ddrBit;
     
---    inPipe:process(adc_clk(chip))
---    begin
---    	if rising_edge(adc_clk(chip)) then
---  			adc_pipes(chip*ADC_CHIP_CHANNELS+chan)(1) 
---  			  <= adc_sdr(chip*ADC_CHIP_CHANNELS+chan);
---  			adc_pipes(chip*ADC_CHIP_CHANNELS+chan)(2 to ADCPIPE_DEPTH) 
---  				<= adc_pipes(chip*ADC_CHIP_CHANNELS+chan)(1 to ADCPIPE_DEPTH-1);
---    	end if;
---    end process inPipe;
+    inPipe:process(adc_clk(chip))
+    begin
+    	if rising_edge(adc_clk(chip)) then
+  			adc_sdr_reg(chip*ADC_CHIP_CHANNELS+chan)
+  			  <= adc_sdr(chip*ADC_CHIP_CHANNELS+chan);
+    	end if;
+    end process inPipe;
     
     -- this fifo crosses from the individual chip clk domains the the common 
     -- signal_clk domain.
@@ -619,7 +628,7 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
       wr_clk => adc_clk(chip),
       rst => fifo_reset_chipclk(chip),
       rd_clk => signal_clk,
-      din => adc_sdr(chip*ADC_CHIP_CHANNELS+chan),
+      din => adc_sdr_reg(chip*ADC_CHIP_CHANNELS+chan),
 --      din => adc_pipes(chip*ADC_CHIP_CHANNELS+chan)(ADCPIPE_DEPTH),--adc_sdr(chip*ADC_CHIP_CHANNELS+chan),
       wr_en => '1',
       rd_en => fifo_rd_en(chip*ADC_CHIP_CHANNELS+chan),
@@ -630,16 +639,6 @@ adcChip:for chip in 0 to ADC_CHIPS-1 generate
    
   end generate chan;
   
-  adcPipe:process(signal_clk)
-  begin
-  	if rising_edge(signal_clk) then
-      fifo_valid <= not fifo_empty;
---      adc_dout_pipe(0) <= fifo_dout;
---      adc_dout_pipe(ADCPIPE_DEPTH-1 downto 1) 
---        <= adc_dout_pipe(ADCPIPE_DEPTH-2 downto 0);
-      adc_samples <= fifo_dout;
-  	end if;
-  end process adcPipe;
 --  adc_samples <= adc_dout_pipe(ADCPIPE_DEPTH-1)(ADC_CHANNELS-1 downto 0);
   
  	resetSync:entity tes.sync_2FF
@@ -656,7 +655,7 @@ end generate adcChip;
 -- control is via adc_enables
 -- When enable changes pulse FIFO reset and wait till all enabled FIFOs are 
 -- not empty before asserting setting rd_en
-adcEnable:process(signal_clk)
+adcEnable:process(signal_clk) --FIXME move this into generate?
 begin
   if rising_edge(signal_clk) then
     if reset2_sclk = '1' then
@@ -664,14 +663,21 @@ begin
       fifo_reset <= '1';
       fifo_rd_en <= (others => '0');
     else
+      fifo_valid <= not fifo_empty;
       enables_reg <= global.adc_enable;
       enables_reg2 <= enables_reg;
+      if unaryOr(enables_reg) then
+        enables_valid <= (fifo_valid and enables_reg);
+      else
+        enables_valid <= (others => '0');
+      end if;
+      adc_samples <= fifo_dout;
       if (enables_reg2 /= enables_reg) then
         fifo_reset <= '1';
         fifo_rd_en <= (others => '0');
       else
         fifo_reset <= '0';
-        if fifo_valid=enables_reg2 then 
+        if enables_valid = enables_reg2 then 
         	fifo_rd_en <= enables_reg2;
         else
         	fifo_rd_en <= (others  => '0'); 
@@ -728,20 +734,19 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     axis_done => axis_done(c),
     axis_error => axis_error(c)
   );
-
   
-  valueReg:process(signal_clk)
-  begin
-    if rising_edge(signal_clk) then
-      value_sel_reg(c) <= value_select; 
-      mca_values_reg(c) <= mca_values(c); --can meet timing without this
-    end if;
-  end process valueReg;
+--  valueReg:process(signal_clk)
+--  begin
+--    if rising_edge(signal_clk) then
+--      value_sel_reg(c) <= value_select; 
+--      mca_values_reg(c) <= mca_values(c); --can meet timing without this
+--    end if;
+--  end process valueReg;
   
 end generate tesChannel;
 --------------------------------------------------------------------------------
 
-measurementSubsystem:entity tes.measurement_subsystem2
+measurementSubsystem:entity tes.measurement_subsystem3
 generic map(
   DSP_CHANNELS => DSP_CHANNELS,
   ENDIAN => ENDIAN,
@@ -872,12 +877,6 @@ port map(
   output => global_write
 );
 
---reset0syncS:entity tes.sync_2FF
---port map(
---  out_clk => signal_clk,
---  input => reset0,
---  output => reset0_sclk
---);
 reset0SignalSync:entity tes.sync_2FF
 port map(
   out_clk => signal_clk,
@@ -891,21 +890,6 @@ port map(
   input => reset1,
   output => reset1_sclk
 );
-
---debugReset:process(signal_clk) is
---begin
---  if rising_edge(signal_clk) then
---    if reset2_sclk_sync = '1' then
---      reset_debug_count <= (others => '0');
---      reset2_sclk <= '1';
---    else
---      reset_debug_count <= reset_debug_count+1;
---      if reset_debug_count(33)='1' then
---        reset2_sclk <= '0';
---      end if;
---    end if;
---  end if;
---end process debugReset;
 
 reset2SignalSync:entity tes.sync_2FF
 port map(

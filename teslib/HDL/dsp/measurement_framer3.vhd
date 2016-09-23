@@ -74,6 +74,7 @@ signal clear_addr :unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal max,last_peak:boolean;
 signal stamp_peak_ovfl:boolean;
 signal has_armed,above_area_threshold:boolean;
+signal clear_address_m1:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
   
 begin
 m <= measurements;
@@ -162,7 +163,6 @@ peak.flags <= flags;
 
 area.flags <= flags; 
 area.area <= pulse_area;
-cleared <= clear_address < m.peak_address;
 
 commit <= commit_event;
 frame:process(clk)
@@ -253,6 +253,8 @@ begin
         --header0 can't be dumped yet
         if pulse_start then
           clear_address <= clear_addr;
+          clear_address_m1 <= clear_addr-1;
+          cleared <= FALSE;
           clear_last <= TRUE;
           
           if framer_full then
@@ -305,7 +307,9 @@ begin
           frame_word <= to_streambus(pulse_peak,last_peak,ENDIAN);
         elsif not cleared and pulse_started then
           address <= clear_address;
-          clear_address <= clear_address-1;
+          clear_address <= clear_address_m1;
+          clear_address_m1 <= clear_address_m1-1;
+          cleared <= clear_address_m1 < m.peak_address;
           frame_word.data <= (others => '-');
           frame_word.last <= (0 => clear_last, others => FALSE);
           frame_word.discard <= (others => FALSE);

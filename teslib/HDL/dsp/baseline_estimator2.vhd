@@ -183,7 +183,7 @@ PORT MAP (
 );
 
 -- FIXME only need the rounding stage
-round:entity work.saturate_round
+round:entity work.saturate_round2
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 25,

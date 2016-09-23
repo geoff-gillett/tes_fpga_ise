@@ -47,10 +47,10 @@
                     ;-----------------------------------------------------------
                     ;
  ;write_adc_enables: OUTPUTK RESET_TIER2, RESET_CO_PORT ;reset2 high
- write_adc_enables: CALL write_register          ; write new adc_enables 
+ ;write_adc_enables: ;CALL write_register          ; write new adc_enables 
                     ;JUMP send_response           ; returns to caller
                     ;
-                    LOAD s6, value0              ; save the new adc_enables
+ write_adc_enables: LOAD s6, value0              ; save the new adc_enables
                     LOAD value0, 00           
                     CALL write_register          ; enables off
                     LOAD s4, s6

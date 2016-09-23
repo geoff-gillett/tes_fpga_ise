@@ -27,7 +27,7 @@ port (
 end entity input_mux;
 
 architecture RTL of input_mux is
-constant DEPTH:integer:=3;
+constant DEPTH:integer:=4;
 
 type pipelines is array (1 to DEPTH) of 
      adc_sample_array(CHANNELS-1 downto 0);

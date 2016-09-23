@@ -80,9 +80,17 @@ signal adc_delayed,adc_mux:adc_sample_array(DSP_CHANNELS-1 downto 0);
 signal value_select:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
 
 signal trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
-signal mca_values,mca_values_reg:mca_value_array(DSP_CHANNELS-1 downto 0);
+signal mca_values:mca_value_array(DSP_CHANNELS-1 downto 0);
+constant VALUE_PIPE_DEPTH:integer:=3;
+type value_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
+     mca_value_array(DSP_CHANNELS-1 downto 0);
+signal value_pipe:value_pipe_t;
+type value_valid_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
+     boolean_vector(DSP_CHANNELS-1 downto 0);
+signal value_valid_pipe:value_valid_pipe_t;
+
 signal mca_value_valids:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal mca_value_valids_reg:boolean_vector(DSP_CHANNELS-1 downto 0);
+--signal mca_value_valids_reg:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal dumps:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal commits:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal starts:boolean_vector(DSP_CHANNELS-1 downto 0);
@@ -120,17 +128,35 @@ signal tick_period_mux,tick_period_mca:unsigned(TICK_PERIOD_BITS-1 downto 0);
 attribute equivalent_register_removal:string;
 attribute equivalent_register_removal of tick_period_mux,tick_period_mca:signal
           is "no";
-          
--- test signals
+
 signal framestream:streambus_t;
 signal framestream_valid:boolean;
 signal framestream_ready:boolean;
 
+-- test signals
+signal adc_delayed0,adc_mux0:adc_sample_t;
+signal adc_select:std_logic_vector(ADC_CHANNELS-1 downto 0);
+
+constant DEBUG:string:="TRUE";
+attribute MARK_DEBUG:string;
+attribute MARK_DEBUG of mca_value:signal is DEBUG;
+attribute MARK_DEBUG of mca_value_valid:signal is DEBUG;
+attribute MARK_DEBUG of value_select:signal is DEBUG;
+attribute MARK_DEBUG of channel_select:signal is DEBUG;
+attribute MARK_DEBUG of adc_mux0:signal is DEBUG;
+attribute MARK_DEBUG of adc_delayed0:signal is DEBUG;
+attribute MARK_DEBUG of adc_select:signal is DEBUG;
+
 begin
-measurements <= m;
+--test signals------------------------------------------------------------------  
+ adc_delayed0 <= adc_delayed(0);
+ adc_mux0 <= adc_mux(0);
+ adc_select <= c_reg(0).capture.adc_select;
 --------------------------------------------------------------------------------
 -- processing channels
 --------------------------------------------------------------------------------
+measurements <= m;
+
 -- helps timing and P&R
 chanReg:process(clk)
 begin
@@ -167,7 +193,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     delayed => adc_delayed(c)
   );
 
-  processingChannel:entity work.channel
+  processingChannel:entity work.channel2
   generic map(
     CHANNEL => c,
     ENDIAN => ENDIAN
@@ -178,6 +204,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     reset2 => reset2,
     adc_sample => adc_delayed(c),
     registers => c_reg(c),
+    event_enable => to_boolean(g_reg.channel_enable(c)),
     stage1_config => filter_config(c),
     stage1_events => filter_events(c),
     stage2_config => slope_config(c),
@@ -211,13 +238,29 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   
 end generate tesChannel;
 
-valueReg:process(clk)
+mcaPipe:process(clk)
 begin
   if rising_edge(clk) then
-    mca_values_reg <= mca_values; --can't meet timing without this
-    mca_value_valids_reg <= mca_value_valids;
+    value_pipe <= mca_values & value_pipe(1 to VALUE_PIPE_DEPTH-1);
+    value_valid_pipe 
+      <= mca_value_valids & value_valid_pipe(1 to VALUE_PIPE_DEPTH-1);
   end if;
-end process valueReg;
+end process mcaPipe;
+
+mcaChanSel:entity work.mca_channel_selector
+generic map(
+  CHANNELS => DSP_CHANNELS,
+  VALUE_BITS   => MCA_VALUE_BITS
+)
+port map(
+  clk => clk,
+  reset => reset1,
+  channel_select => channel_select,
+  values => value_pipe(VALUE_PIPE_DEPTH),
+  valids => value_valid_pipe(VALUE_PIPE_DEPTH),
+  value => mca_value,
+  valid => mca_value_valid
+);
 --------------------------------------------------------------------------------
 -- 
 --------------------------------------------------------------------------------
@@ -250,21 +293,6 @@ port map(
   muxstream => muxstream,
   valid => muxstream_valid,
   ready => muxstream_ready
-);
-
-mcaChanSel:entity work.mca_channel_selector
-generic map(
-  CHANNELS => DSP_CHANNELS,
-  VALUE_BITS   => MCA_VALUE_BITS
-)
-port map(
-  clk => clk,
-  reset => reset1,
-  channel_select => channel_select,
-  values => mca_values_reg,
-  valids => mca_value_valids_reg,
-  value => mca_value,
-  valid => mca_value_valid
 );
 
 mca:entity work.mca_unit

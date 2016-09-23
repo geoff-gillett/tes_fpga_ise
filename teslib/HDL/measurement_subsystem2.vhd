@@ -100,9 +100,9 @@ signal mcastream:streambus_t;
 signal mcastream_valid:boolean;
 signal mcastream_ready:boolean;
 
-signal eventstreams:streambus_array(DSP_CHANNELS-1 downto 0);
-signal eventstream_valids:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal eventstream_readys:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal eventstreams,estream:streambus_array(DSP_CHANNELS-1 downto 0);
+signal eventstream_valids,estream_valid:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal eventstream_readys,estream_ready:boolean_vector(DSP_CHANNELS-1 downto 0);
 
 signal muxstream:streambus_t;
 signal muxstream_valid:boolean;
@@ -188,11 +188,23 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     commit => commits(c),
     dump => dumps(c),
     measurements => m(c),
-    stream => eventstreams(c),
-    valid => eventstream_valids(c),
-    ready => eventstream_readys(c)
+    stream => estream(c),
+    valid => estream_valid(c),
+    ready => estream_ready(c)
   );
   
+  chanReg:entity streamlib.streambus_register_slice
+  port map(
+    clk => clk,
+    reset => reset1,
+    stream_in => estream(c),
+    ready_out => estream_ready(c),
+    valid_in => estream_valid(c),
+    stream => eventstreams(c),
+    ready => eventstream_readys(c),
+    valid => eventstream_valids(c)
+  );  
+    
   valueMux:entity work.mca_value_selector2
   generic map(
     VALUE_BITS => MCA_VALUE_BITS,
