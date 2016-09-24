@@ -136,26 +136,32 @@ signal framestream_ready:boolean;
 -- test signals
 signal adc_delayed0,adc_mux0:adc_sample_t;
 signal adc_select:std_logic_vector(ADC_CHANNELS-1 downto 0);
+signal raw_sample:signal_t;
 
 constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
 attribute MARK_DEBUG of mca_value:signal is DEBUG;
 attribute MARK_DEBUG of mca_value_valid:signal is DEBUG;
-attribute MARK_DEBUG of value_select:signal is DEBUG;
-attribute MARK_DEBUG of channel_select:signal is DEBUG;
+--attribute MARK_DEBUG of value_select:signal is DEBUG;
+--attribute MARK_DEBUG of channel_select:signal is DEBUG;
 attribute MARK_DEBUG of adc_mux0:signal is DEBUG;
-attribute MARK_DEBUG of adc_delayed0:signal is DEBUG;
+--attribute MARK_DEBUG of adc_delayed0:signal is DEBUG;
 attribute MARK_DEBUG of adc_select:signal is DEBUG;
+attribute MARK_DEBUG of raw_sample:signal is DEBUG;
+
+
 
 begin
 --test signals------------------------------------------------------------------  
  adc_delayed0 <= adc_delayed(0);
  adc_mux0 <= adc_mux(0);
  adc_select <= c_reg(0).capture.adc_select;
+ raw_sample <= m(0).raw.sample;
 --------------------------------------------------------------------------------
 -- processing channels
 --------------------------------------------------------------------------------
 measurements <= m;
+
 
 -- helps timing and P&R
 chanReg:process(clk)

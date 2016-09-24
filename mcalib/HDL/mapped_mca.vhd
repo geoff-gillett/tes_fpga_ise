@@ -79,6 +79,12 @@ signal bin_value:unsigned(VALUE_BITS-1 downto 0);
 signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to 3);
 signal overflowed,overflow,underflow,underflowed:boolean;
 
+-- debug
+constant DEBUG:string:="TRUE";
+attribute mark_debug:string;
+attribute mark_debug of bin:signal is DEBUG;
+attribute mark_debug of bin_n_reg:signal is DEBUG;
+
 begin
 	
 can_swap <= can_swap_int;

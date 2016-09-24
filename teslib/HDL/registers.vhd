@@ -289,10 +289,10 @@ constant DEFAULT_CONSTANT_FRACTION:unsigned(CFD_BITS-2 downto 0)
 constant DEFAULT_AREA_THRESHOLD:unsigned(AREA_BITS-2 downto 0)
          :=to_unsigned(10000,AREA_BITS-1);
 constant DEFAULT_DELAY:unsigned(DELAY_BITS-1 downto 0)
-         :=to_unsigned(2**(DELAY_BITS-1),DELAY_BITS);
+         :=to_unsigned(0,DELAY_BITS);
 constant DEFAULT_BL_OFFSET:adc_sample_t
-         :=std_logic_vector(to_unsigned(260,ADC_BITS));
-constant DEFAULT_BL_SUBTRACTION:boolean:=TRUE;
+         :=std_logic_vector(to_unsigned(0,ADC_BITS));
+constant DEFAULT_BL_SUBTRACTION:boolean:=FALSE;
 constant DEFAULT_BL_TIMECONSTANT:unsigned(BASELINE_TIMECONSTANT_BITS-1 downto 0)
 				 :=to_unsigned(2**16,BASELINE_TIMECONSTANT_BITS);
 constant DEFAULT_BL_THRESHOLD:unsigned(BASELINE_BITS-2 downto 0)

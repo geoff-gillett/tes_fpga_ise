@@ -39,7 +39,8 @@ use tes.measurements.all;
 entity ml605_fmc108_v6emac_test is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
-  DEFAULT_IODELAY_VALUE:integer:=12;
+  DEFAULT_IODELAY_VALUE:integer:=24;
+  DEFAULT_CLK_IODELAY_VALUE:integer:=0;
   DSP_CHANNELS:integer:=2;
   ENDIAN:string:="LITTLE";
   PACKET_GEN:boolean:=FALSE
@@ -340,15 +341,15 @@ signal filter_events,slope_events,baseline_events:
 --------------------------------------------------------------------------------
 --debug
 signal adc_sample0:adc_sample_t;
-signal adc_enable:boolean_vector(ADC_CHANNELS-1 downto 0);
+--signal adc_enable:boolean_vector(ADC_CHANNELS-1 downto 0);
 
 constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
-attribute MARK_DEBUG of fifo_reset:signal is DEBUG;
-attribute MARK_DEBUG of enables_reg2:signal is DEBUG;
+--attribute MARK_DEBUG of fifo_reset:signal is DEBUG;
+--attribute MARK_DEBUG of enables_reg2:signal is DEBUG;
 attribute MARK_DEBUG of adc_sample0:signal is DEBUG;
-attribute MARK_DEBUG of fifo_valid:signal is DEBUG;
-attribute MARK_DEBUG of adc_enable:signal is DEBUG;
+--attribute MARK_DEBUG of fifo_valid:signal is DEBUG;
+--attribute MARK_DEBUG of adc_enable:signal is DEBUG;
 
 --signal test_counter:unsigned(15 downto 0):=(others => '0');
 --attribute MARK_DEBUG of test_counter:signal is DEBUG;
@@ -371,7 +372,7 @@ attribute MARK_DEBUG of adc_enable:signal is DEBUG;
 
 begin
 adc_sample0 <= adc_samples(0);
-adc_enable <= to_boolean(global.adc_enable);
+--adc_enable <= to_boolean(global.adc_enable);
 
 --test:process(signal_clk)
 --begin
@@ -524,7 +525,7 @@ adcClkBufr:for chip in ADC_CHIPS-1 downto 1 generate
   generic map(
     DELAY_SRC => "I",
     IDELAY_TYPE => "VARIABLE",
-    IDELAY_VALUE => DEFAULT_IODELAY_VALUE
+    IDELAY_VALUE => DEFAULT_CLK_IODELAY_VALUE
   )
   port map(
     cntvalueout => open,
@@ -533,7 +534,7 @@ adcClkBufr:for chip in ADC_CHIPS-1 downto 1 generate
     ce => '0',--iodelay_clk_ce(chip),
     cinvctrl => '0',
     clkin => '0',
-    cntvaluein => to_std_logic(to_unsigned(DEFAULT_IODELAY_VALUE,5)),
+    cntvaluein => to_std_logic(to_unsigned(DEFAULT_CLK_IODELAY_VALUE,5)),
     datain => '0',
     idatain => adc_clk_bufds(chip),
     inc => '0',--iodelay_clk_inc(chip),

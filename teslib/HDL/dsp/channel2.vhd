@@ -53,6 +53,12 @@ signal sample,sample_inv:sample_t;
 signal baseline_estimate:signed(DSP_BITS-1 downto 0);
 signal range_error:boolean;
 
+--debug 
+constant DEBUG:string:="TRUE";
+attribute mark_debug:string;
+attribute mark_debug of sample:signal is DEBUG;
+attribute mark_debug of sample_in:signal is DEBUG;
+
 begin
 measurements <= m;
   

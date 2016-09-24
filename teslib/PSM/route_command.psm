@@ -20,13 +20,13 @@
                     ;
                     ;   0C		Channel
                     ;
-                    ;   01    General registers
+                    ;   10    General registers
                     ;
-                    ;   02    SPI
+                    ;   20    SPI
                     ;         LSB:SPI address
                     ;         2nd LSB: SPI channel select
                     ;
-                    ;  	03    AXI lite bus (NOT IMPLEMENTED)
+                    ;  	30    AXI lite bus (NOT IMPLEMENTED)
                     ;
                     ;-----------------------------------------------------------
      route_command: COMPARE address3, 10
