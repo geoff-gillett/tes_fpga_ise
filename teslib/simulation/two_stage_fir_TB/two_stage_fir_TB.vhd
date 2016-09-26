@@ -15,7 +15,6 @@ use ieee.numeric_std.all;
 --
 use work.types.all;
 use work.registers.all;
-use work.dsptypes.all;
 
 entity two_stage_fir_TB is
 generic(
@@ -31,6 +30,8 @@ signal reset:std_logic:='1';
 constant CLK_PERIOD:time:=4 ns;
 signal adc_sample:signed(WIDTH-1 downto 0);
 signal stage1,stage2,sample_out:signed(WIDTH-1 downto 0);
+signal stage1_config:fir_control_in_t;
+signal stage2_config:fir_control_in_t;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -42,24 +43,10 @@ generic map(
 port map(
   clk => clk,
   sample_in => adc_sample,
-  stage1_config_data => (others => '0'),
-  stage1_config_valid => '0',
-  stage1_config_ready => open,
-  stage1_reload_data => (others => '0'),
-  stage1_reload_valid => '0',
-  stage1_reload_ready => open,
-  stage1_reload_last => '0',
-  stage1_reload_last_missing => open,
-  stage1_reload_last_unexpected => open,
-  stage2_config_data => (others => '0'),
-  stage2_config_valid => '0',
-  stage2_config_ready => open,
-  stage2_reload_data => (others => '0'),
-  stage2_reload_valid => '0',
-  stage2_reload_ready => open,
-  stage2_reload_last => '0',
-  stage2_reload_last_missing => open,
-  stage2_reload_last_unexpected => open,
+  stage1_config => stage1_config,
+  stage1_events => open,
+  stage2_config => stage2_config,
+  stage2_events => open,
   sample_out => sample_out,
   stage1 => stage1,
   stage2 => stage2
@@ -67,12 +54,23 @@ port map(
 
 stimulus:process is
 begin
+stage1_config.config_data <= (others => '0');
+stage1_config.config_valid <= '0';
+stage1_config.reload_data <= (others => '0');
+stage1_config.reload_last <= '0';
+stage1_config.reload_valid <= '0';
+stage2_config.config_data <= (others => '0');
+stage2_config.config_valid <= '0';
+stage2_config.reload_data <= (others => '0');
+stage2_config.reload_last <= '0';
+stage2_config.reload_valid <= '0';
+
 adc_sample <= (others => '0');
 wait for CLK_PERIOD;
 reset <= '0';
 wait for CLK_PERIOD*64;
-adc_sample <= to_signed(8000*8,WIDTH);
-wait for CLK_PERIOD*32;
+adc_sample <= (WIDTH-1 => '0', others => '1');
+wait for CLK_PERIOD*1;
 adc_sample <= (others => '0');
 wait;
 end process stimulus;

@@ -75,7 +75,7 @@ if rising_edge(clk) then
 end if;
 end process sampleoffset;
 
-baselineEstimator:entity work.baseline_estimator2
+baselineEstimator:entity work.baseline_estimator
 generic map(
   BASELINE_BITS => BASELINE_BITS,
   COUNTER_BITS => 18,

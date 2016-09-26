@@ -19,6 +19,7 @@ use extensions.logic.all;
 
 use work.types.all;
 use work.functions.all;
+use work.registers.all;
 
 -- stage1 output w=48 f=28
 -- stage2 output w=48 f=28
@@ -29,29 +30,14 @@ generic(
 port(
   clk:in std_logic;
   sample_in:in signed(WIDTH-1 downto 0);
-  stage1_config_data:in std_logic_vector(7 downto 0);
-  stage1_config_valid:in std_logic;
-  stage1_config_ready:out std_logic;
-  stage1_reload_data:in std_logic_vector(31 downto 0);
-  stage1_reload_valid:in std_logic;
-  stage1_reload_ready:out std_logic;
-  stage1_reload_last:in std_logic;
-	stage1_reload_last_missing:out std_logic;
- 	stage1_reload_last_unexpected:out std_logic;
-  stage2_config_data:in std_logic_vector(7 downto 0);
-  stage2_config_valid:in std_logic;
-  stage2_config_ready:out std_logic;
-  stage2_reload_data:in std_logic_vector(31 downto 0);
-  stage2_reload_valid:in std_logic;
-  stage2_reload_ready:out std_logic;
-  stage2_reload_last:in std_logic;
-	stage2_reload_last_missing:out std_logic;
- 	stage2_reload_last_unexpected:out std_logic;
-  -- output signals
+  stage1_config:in fir_control_in_t;
+  stage1_events:out fir_control_out_t;
+  stage2_config:in fir_control_in_t;
+  stage2_events:out fir_control_out_t;
+
   sample_out:out signed(WIDTH-1 downto 0);
   stage1:out signed(WIDTH-1 downto 0);
   stage2:out signed(WIDTH-1 downto 0)
-  
 );
 end entity two_stage_FIR;
 
@@ -115,21 +101,20 @@ port map(
   s_axis_data_tvalid => '1',
   s_axis_data_tready => open,
   s_axis_data_tdata => stage1_in,
-  s_axis_config_tvalid => stage1_config_valid,
-  s_axis_config_tready => stage1_config_ready,
-  s_axis_config_tdata => stage1_config_data,
-  s_axis_reload_tvalid => stage1_reload_valid,
-  s_axis_reload_tready => stage1_reload_ready,
-  s_axis_reload_tlast => stage1_reload_last,
-  s_axis_reload_tdata => stage1_reload_data,
+  s_axis_config_tvalid => stage1_config.config_valid,
+  s_axis_config_tready => stage1_events.config_ready,
+  s_axis_config_tdata => stage1_config.config_data,
+  s_axis_reload_tvalid => stage1_config.reload_valid,
+  s_axis_reload_tready => stage1_events.reload_ready,
+  s_axis_reload_tlast => stage1_config.reload_last,
+  s_axis_reload_tdata => stage1_config.reload_data,
   m_axis_data_tvalid => open,
   m_axis_data_tdata => stage1_out,
-  event_s_reload_tlast_missing => stage1_reload_last_missing,
-  event_s_reload_tlast_unexpected => stage1_reload_last_unexpected
+  event_s_reload_tlast_missing => stage1_events.last_missing,
+  event_s_reload_tlast_unexpected => stage1_events.last_unexpected
 );
 
-
-stage1Round:entity work.saturate_round2
+stage1Round:entity work.round
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 28,
@@ -143,27 +128,27 @@ port map(
   output => stage1_data
 );
 
-stage2_in <= std_logic_vector(resize(signed(stage1_data),24));
+stage2_in <= resize(signed(stage1_data),24);
 stage2FIRfilter:stage2_FIR_23
 port map(
   aclk => clk,
   s_axis_data_tvalid => '1',
   s_axis_data_tready => open,
   s_axis_data_tdata => stage2_in,
-  s_axis_config_tvalid => stage2_config_valid,
-  s_axis_config_tready => stage2_config_ready,
-  s_axis_config_tdata => stage2_config_data,
-  s_axis_reload_tvalid => stage2_reload_valid,
-  s_axis_reload_tready => stage2_reload_ready,
-  s_axis_reload_tlast => stage2_reload_last,
-  s_axis_reload_tdata => stage2_reload_data,
+  s_axis_config_tvalid => stage2_config.config_valid,
+  s_axis_config_tready => stage2_events.config_ready,
+  s_axis_config_tdata => stage2_config.config_data,
+  s_axis_reload_tvalid => stage2_config.reload_valid,
+  s_axis_reload_tready => stage2_events.reload_ready,
+  s_axis_reload_tlast => stage2_config.reload_last,
+  s_axis_reload_tdata => stage2_config.reload_data,
   m_axis_data_tvalid => open,
   m_axis_data_tdata => stage2_out,
-  event_s_reload_tlast_missing => stage2_reload_last_missing,
-  event_s_reload_tlast_unexpected => stage2_reload_last_unexpected
+  event_s_reload_tlast_missing => stage2_events.last_missing,
+  event_s_reload_tlast_unexpected => stage2_events.last_unexpected
 );
 
-stage2Round:entity work.saturate_round2
+stage2Round:entity work.round
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 28,
@@ -183,7 +168,7 @@ port map(
 
 sampleDelay:entity work.sdp_bram_delay
 generic map(
-  DELAY => 94,
+  DELAY => 92,
   WIDTH => WIDTH
 )
 port map(
@@ -194,7 +179,7 @@ port map(
 
 stage1Delay:entity work.sdp_bram_delay
 generic map(
-  DELAY => 47,
+  DELAY => 46,
   WIDTH => WIDTH
 )
 port map(

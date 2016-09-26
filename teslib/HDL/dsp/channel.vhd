@@ -24,6 +24,7 @@ port (
   
   adc_sample:in adc_sample_t;
   registers:in channel_registers_t;
+  event_enable:in boolean;
   
   stage1_config:in fir_control_in_t;
   stage1_events:out fir_control_out_t;
@@ -52,6 +53,13 @@ signal sample,sample_inv:sample_t;
 signal baseline_estimate:signed(DSP_BITS-1 downto 0);
 signal range_error:boolean;
 
+--debug
+
+constant DEBUG:string:="FALSE";
+attribute mark_debug:string;
+attribute mark_debug of sample:signal is DEBUG;
+attribute mark_debug of sample_in:signal is DEBUG;
+
 begin
 measurements <= m;
   
@@ -67,7 +75,7 @@ if rising_edge(clk) then
 end if;
 end process sampleoffset;
 
-baselineEstimator:entity work.baseline_estimator2
+baselineEstimator:entity work.baseline_estimator
 generic map(
   BASELINE_BITS => BASELINE_BITS,
   COUNTER_BITS => 18,
@@ -100,7 +108,7 @@ if rising_edge(clk) then
 end if;
 end process baselineSubraction;
 
-FIR:entity work.two_stage_FIR2
+FIR:entity work.two_stage_FIR
 generic map(
   WIDTH => DSP_BITS
 )
@@ -116,7 +124,7 @@ port map(
   stage2 => slope
 );
 
-measure:entity work.measure2
+measure:entity work.measure
 generic map(
   CHANNEL => CHANNEL,
   WIDTH => DSP_BITS,
@@ -138,7 +146,7 @@ port map(
   measurements => m
 );
 
-framer:entity work.measurement_framer2
+framer:entity work.measurement_framer
 generic map(
   FRAMER_ADDRESS_BITS => MEASUREMENT_FRAMER_ADDRESS_BITS,
   ENDIAN => ENDIAN
@@ -146,6 +154,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset2,
+  enable => event_enable,
   start => start,
   commit => commit,
   dump => dump,

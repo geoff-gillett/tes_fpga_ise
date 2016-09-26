@@ -79,7 +79,7 @@ neg_out <= neg_pipe(DEPTH);
 signal_out <= pipe(DEPTH);
 
 
-UUT:entity work.area_acc3
+UUT:entity work.area_acc
 generic map(
   WIDTH => WIDTH
 )
