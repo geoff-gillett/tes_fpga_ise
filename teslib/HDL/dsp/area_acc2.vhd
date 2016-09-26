@@ -55,7 +55,7 @@ begin
 
 --FIXME use generic  
 area <= signed(p_out(AREA_WIDTH+FRAC-AREA_FRAC-1 downto FRAC-AREA_FRAC));
-c <= std_logic_vector(resize(sig,48));
+c <= resize(sig,48);
 
 assert WIDTH <= 18 
 report "maximum width is 18" severity ERROR;

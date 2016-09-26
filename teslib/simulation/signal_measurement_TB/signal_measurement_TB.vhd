@@ -32,11 +32,13 @@ signal neg_0xing:boolean;
 signal zero_xing:boolean;
 signal extrema:signed(WIDTH_OUT-1 downto 0);
 
+constant SIM_WIDTH:natural:=4;
+signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
 begin
   
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.signal_measurement2
+UUT:entity work.signal_measurement3
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -59,41 +61,25 @@ port map(
   extrema => extrema
 );
 
+sim:process(clk)
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      sim_count <= (others => '0');
+    else
+      sim_count <= sim_count+1;
+    end if;
+  end if;
+end process sim;
+signal_in <= to_signed(-8,WIDTH) when sim_count(SIM_WIDTH-1)='1' else
+             to_signed(8,WIDTH);
+             
 stimulus:process is
 begin
 threshold <= to_signed(0,WIDTH);
-signal_in <= (17 downto 17 => '0', others => '1');
 wait for CLK_PERIOD;
 reset <= '0';
-wait for CLK_PERIOD*8;
-signal_in <= (17 downto 17 => '1', others => '0');
-wait for CLK_PERIOD*8;
-signal_in <= to_signed(0,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(1,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(-1,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(8,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(-8,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(1,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(8,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(0,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(-8,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(-16,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(8,WIDTH);
-wait for CLK_PERIOD;
-signal_in <= to_signed(-9,WIDTH);
-
 wait;
-  
 end process stimulus;
 
 

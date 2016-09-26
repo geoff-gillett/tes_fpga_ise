@@ -553,7 +553,7 @@ port map(
 mca_axi_ready <= buff_full='0';
 
 buff_din <= to_std_logic(mca_axi_last) & 
-  set_endianness(resize(unsigned(mca_axi_stream),32), ENDIANNESS);
+  set_endianness(resize(mca_axi_stream,32), ENDIANNESS);
   
 buff_wr_en <= to_std_logic(mca_axi_valid);  
 

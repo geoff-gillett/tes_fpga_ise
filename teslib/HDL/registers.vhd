@@ -34,7 +34,7 @@ package registers is
 --constant CHANNEL_BITS:integer:=3;
 
 -- field sizes
-constant BASELINE_BITS:integer:=11;
+constant BASELINE_BITS:integer:=12;
 constant BASELINE_TIMECONSTANT_BITS:integer:=32;
 constant BASELINE_COUNTER_BITS:integer:=18;
 constant BASELINE_MAX_AV_ORDER:integer:=6;
@@ -334,8 +334,6 @@ type mca_registers_t is record
 end record;
 
 -- Other global registers ------------------------------------------------------
-
-
 
 -- Types -----------------------------------------------------------------------
 

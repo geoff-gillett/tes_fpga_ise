@@ -233,16 +233,16 @@ variable o:std_logic_vector(NUM_MCA_TRIGGER_D-1 downto 0);
 begin
   o(0):='1';
   o(1):=to_std_logic(m.pulse_threshold_pos);
-  o(1):=to_std_logic(m.pulse_threshold_neg);
-  o(2):=to_std_logic(m.filtered.zero_xing);
-  o(3):=to_std_logic(m.slope.zero_xing);
-  o(4):=to_std_logic(m.raw.zero_xing);
-  o(5):=to_std_logic(m.slope_threshold_pos);
-  o(6):=to_std_logic(m.cfd_high);
-  o(7):=to_std_logic(m.cfd_low);
-  o(8):=to_std_logic(m.max_slope);
-  o(9):=to_std_logic(m.slope.pos_0xing);
-  o(10):=to_std_logic(m.slope.neg_0xing);
+  o(2):=to_std_logic(m.pulse_threshold_neg);
+  o(3):=to_std_logic(m.filtered.zero_xing);
+  o(4):=to_std_logic(m.slope.zero_xing);
+  o(5):=to_std_logic(m.raw.zero_xing);
+  o(6):=to_std_logic(m.slope_threshold_pos);
+  o(7):=to_std_logic(m.cfd_high);
+  o(8):=to_std_logic(m.cfd_low);
+  o(9):=to_std_logic(m.max_slope);
+  o(10):=to_std_logic(m.slope.pos_0xing);
+  o(11):=to_std_logic(m.slope.neg_0xing);
   return o;
 end function;
 

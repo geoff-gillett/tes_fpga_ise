@@ -35,7 +35,7 @@ use work.functions.all;
 use work.registers.all;
 use work.measurements.all;
 
-entity measurement_subsystem3 is
+entity measurement_subsystem4 is
 generic(
   DSP_CHANNELS:integer:=2;
 	ENDIAN:string:="LITTLE";
@@ -67,9 +67,9 @@ port(
   ethernetstream_ready:in boolean
   
 );
-end entity measurement_subsystem3;
+end entity measurement_subsystem4;
 
-architecture RTL of measurement_subsystem3 is
+architecture RTL of measurement_subsystem4 is
 	
 signal adc_delayed,adc_mux:adc_sample_array(DSP_CHANNELS-1 downto 0);
 

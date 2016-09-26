@@ -23,7 +23,7 @@ use work.registers.all;
 
 -- stage1 output w=48 f=28
 -- stage2 output w=48 f=28
-entity two_stage_FIR2 is
+entity two_stage_FIRf is
 generic(
 	WIDTH:integer:=18
 );
@@ -39,9 +39,9 @@ port(
   stage1:out signed(WIDTH-1 downto 0);
   stage2:out signed(WIDTH-1 downto 0)
 );
-end entity two_stage_FIR2;
+end entity two_stage_FIRf;
 
-architecture coregen of two_stage_FIR2 is
+architecture coregen of two_stage_FIRf is
 --IP cores FIR compiler 6.3
 component stage1_fir_23
 port (

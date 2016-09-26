@@ -54,7 +54,6 @@ signal sel,trigger_sel:std_logic_vector(11 downto 0);
 begin
 
 values <= get_mca_values(measurements);
-
 measurementMuxGen:for b in 0 to VALUE_BITS-1 generate
 begin
   inputGen:for m in 0 to NUM_VALUES-1 generate

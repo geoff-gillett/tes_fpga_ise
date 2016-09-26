@@ -55,6 +55,8 @@ function reshape(u:unsigned;in_frac,width,frac:integer) return unsigned;
 function reshape(s:signed;in_frac,width,frac:integer) return signed;
 
 function resize(slv:std_logic_vector;w:natural) return std_logic_vector;
+function resize(s:signed;w:natural) return std_logic_vector;
+function resize(u:unsigned;w:natural) return std_logic_vector;
 	
 end package logic;
 
@@ -185,17 +187,36 @@ begin
 	end if;
 end function;
 
--- assumes downto 0
+-- FIXME remove this?
 function resize(slv:std_logic_vector;w:natural) return std_logic_vector is
-variable o:std_logic_vector(w-1 downto 0) := (others => '0');
 begin
-	if slv'length >= w then
-		o := slv(w-1 downto 0); --FIXME this fails, why?
-	else
-		o(slv'length-1 downto 0) := slv;
-	end if;
-	return o;
+  return resize(unsigned(slv),w);
 end function;
+
+function resize(s:signed;w:natural) return std_logic_vector is
+  variable o:signed(w-1 downto 0);
+begin
+  o:=resize(s,w);
+  return std_logic_vector(o);
+end function;
+
+function resize(u:unsigned;w:natural) return std_logic_vector is
+  variable o:unsigned(w-1 downto 0);
+begin
+  o:=resize(u,w);
+  return std_logic_vector(o);
+end function;
+--function resize(slv:std_logic_vector;w:natural) return std_logic_vector is
+--variable o:std_logic_vector(w-1 downto 0) := (others => '0');
+--begin
+--  
+--	if slv'length >= w then
+--		o := slv(w-1 downto 0); --FIXME this fails, why?
+--	else
+--		o(slv'length-1 downto 0) := slv;
+--	end if;
+--	return o;
+--end function;
 
 --function resize(slv:std_logic_vector;w:natural) return std_logic_vector is
 --variable o:std_logic_vector(w-1 downto 0) := (others => '0');

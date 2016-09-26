@@ -12,7 +12,7 @@ use work.registers.all;
 use work.measurements.all;
 use work.types.all;
 
-entity channel2 is
+entity channel3 is
 generic(
   CHANNEL:natural:=0;
   ENDIAN:string:="LITTLE"
@@ -43,9 +43,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity channel2;
+end entity channel3;
 
-architecture RTL of channel2 is
+architecture RTL of channel3 is
   
 signal sample_in,raw,filtered,slope:signed(DSP_BITS-1 downto 0);
 signal m:measurements_t;

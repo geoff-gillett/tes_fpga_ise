@@ -19,13 +19,6 @@ use extensions.logic.all;
 library streamlib;
 use streamlib.types.all;
 
-
---! Adds value mapping to bins to basic MCA (MCA.vhd).
---FIXME comments out of date
---FIXME the whole MCA hierarchy is pretty confusing the second time around
--- Note: need swap buffer on first can swap to initialise everything.
--- 
-
 entity mapped_mca2 is
 generic(
   ADDRESS_BITS:integer:=14;
@@ -68,6 +61,15 @@ port (
   last:out boolean
 );
 end entity mapped_mca2;
+
+-- TODO use DSP to round into bins using bin_n
+-- Always want 0 to be a bin edge
+-- -3.0 -2.5 -2.0 -1.5 -1.0 -0.5    0  0.5  1.0  1.5  2.0  2.5  3.0
+--|         |         |          |         |         |         |
+
+-- Trouble with symmetric rounding is zero gets twice the bin width
+-- 0 is rare if using the 18.3 values
+-- truncation works?
 
 architecture RTL of mapped_mca2 is
 	

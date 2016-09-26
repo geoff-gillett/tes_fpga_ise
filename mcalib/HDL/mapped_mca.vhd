@@ -83,7 +83,8 @@ signal overflowed,overflow,underflow,underflowed:boolean;
 constant DEBUG:string:="TRUE";
 attribute mark_debug:string;
 attribute mark_debug of bin:signal is DEBUG;
-attribute mark_debug of bin_n_reg:signal is DEBUG;
+attribute mark_debug of bin_valid:signal is DEBUG;
+--attribute mark_debug of bin_n_reg:signal is DEBUG;
 
 begin
 	

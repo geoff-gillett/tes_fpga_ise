@@ -5,83 +5,75 @@ use ieee.numeric_std.all;
 library unisim;
 use unisim.vcomponents.DSP48E1;
 
+library extensions;
+use extensions.logic.all;
+
 --TODO this is only used after fir stages, write own fir stage instead of 
 -- using coregen could save 1 DSP slice by incorporating saturate slice into FIR
-entity round is
+
+entity round2 is
 generic(
   WIDTH_IN:integer:=48; -- max 48
   FRAC_IN:integer:=28;
   WIDTH_OUT:integer:=18;
-  FRAC_OUT:integer:=3
+  FRAC_OUT:integer:=3;
+  TOWARDS_INF:boolean:=TRUE
 ); 
 port(
   clk:in std_logic;
   reset:in std_logic;
-  saturate:in std_logic;
   input:in std_logic_vector(WIDTH_IN-1 downto 0);
   output:out std_logic_vector(WIDTH_OUT-1 downto 0)
 );
-end entity round;
+end entity round2;
 
-architecture dsp48e of round is  
+architecture dsp48e of round2 is  
 
 -- DSP48E1 signals
-signal in_reg:std_logic_vector(WIDTH_IN-1 downto 0);
 signal a:std_logic_vector(29 downto 0);
 signal b:std_logic_vector(17 downto 0);
 signal p_out,ab:std_logic_vector(47 downto 0);
-signal round_opmode:std_logic_vector(6 downto 0);
-signal carry_in:std_ulogic;
---signal saturated:std_logic;
-signal round_c:std_logic_vector(47 downto 0);
-
---signal ofl_value,round_constant:std_logic_vector(47 downto 0);
---signal ofl_mask:bit_vector(47 downto 0);
-
-constant OVERFLOW_VALUE:std_logic_vector(47 downto 0)
-         :=(WIDTH_OUT+FRAC_IN-FRAC_OUT-2 downto 0 => '1', others => '0');
 
 constant OVERFLOW_MASK:bit_vector(47 downto 0)
-         :=to_bitvector(OVERFLOW_VALUE);
+         :=(WIDTH_OUT-FRAC_OUT+FRAC_IN-2 downto 0 => '1', others => '0');
 
 constant ROUNDING:std_logic_vector(47 downto 0)
-         :=(FRAC_IN-FRAC_OUT-1 downto 0 => '1', others => '0');
+         :=(FRAC_IN-FRAC_OUT-2 downto 0 => '1', others => '0');
          
-begin
+signal carryin:std_logic;
+signal pat:std_ulogic;
+signal patb:std_ulogic;
+signal saturate:std_logic;
 
+begin
+  
 assert WIDTH_IN <= 48 report "maximum WIDTH_IN is 48" severity ERROR;
 assert WIDTH_OUT <= 48 report "maximum WIDTH_OUT is 48" severity ERROR;
 assert FRAC_OUT < FRAC_IN 
 report "FRAC_OUT must be less than FRAC_in" severity ERROR;
 
-ab <= std_logic_vector(resize(signed(in_reg),48));
+--carryin_sel <= "101" when TOWARDS_INF else "111";
+carryin <= (not input(WIDTH_IN-1)) when TOWARDS_INF else input(WIDTH_IN-1);
+saturate <= not (pat xor patb);
+
+ab <= resize(signed(input),48);
 a <= ab(47 downto 18);
 b <= ab(17 downto 0);
 
-output <= p_out(WIDTH_OUT+FRAC_IN-FRAC_OUT-1 downto FRAC_IN-FRAC_OUT);
-
-reg:process(clk)
+outputReg:process (clk) is
 begin
   if rising_edge(clk) then
-    if reset='1' then
-      round_c <= (others => '0');
-      round_opmode <= "0110000";
-      in_reg <= (others => '0');
-      carry_in <= '0';
+    if reset = '1' then
+      output <= (others => '0'); 
     else
-      if saturate = '1' then
-        round_c <= OVERFLOW_VALUE;
-      elsif input(WIDTH_IN-1)='1' then 
-        round_c <= ROUNDING;  
-      else 
-        round_c <= (others => '0');
+      if saturate='1' then 
+        output <= (WIDTH_OUT-1 => p_out(47), others => not p_out(47));
+      else
+        output <= p_out(WIDTH_OUT+FRAC_IN-FRAC_OUT-1 downto FRAC_IN-FRAC_OUT);
       end if;
-      carry_in <= input(WIDTH_IN-1) and saturate;
-      round_opmode <= "011"  & "00" & not saturate & not saturate; --FIXME is this correct?
-      in_reg <= input; 
     end if;
   end if;
-end process reg;
+end process outputReg;
 
 round:DSP48E1
 generic map (
@@ -123,8 +115,8 @@ port map (
   PCOUT => open,                   -- 48-bit output: Cascade output
   -- Control: 1-bit (each) output: Control Inputs/Status Bits
   OVERFLOW => open,             -- 1-bit output: Overflow in add/acc output
-  PATTERNBDETECT => open, -- 1-bit output: Pattern bar detect output
-  PATTERNDETECT => open,   -- 1-bit output: Pattern detect output
+  PATTERNBDETECT => patb, -- 1-bit output: Pattern bar detect output
+  PATTERNDETECT => pat,   -- 1-bit output: Pattern detect output
   UNDERFLOW => open,           -- 1-bit output: Underflow in add/acc output
   -- Data: 4-bit (each) output: Data Ports
   CARRYOUT => open,             -- 4-bit output: Carry output
@@ -140,14 +132,14 @@ port map (
   CARRYINSEL => "000",         -- 3-bit input: Carry select input
   CEINMODE => '0',             -- 1-bit input: Clock enable input for INMODEREG
   CLK => clk,                       -- 1-bit input: Clock input
-  INMODE => "00001",                 -- 5-bit input: INMODE control input
-  OPMODE => round_opmode,                 -- 7-bit input: Operation mode input
+  INMODE => "00000",                 -- 5-bit input: INMODE control input
+  OPMODE => "0110011",                 -- 7-bit input: Operation mode input
   RSTINMODE => reset,           -- 1-bit input: Reset input for INMODEREG
   -- Data: 30-bit (each) input: Data Ports
   A => a,                           -- 30-bit input: A data input
   B => b,                           -- 18-bit input: B data input
-  C => round_c,--OVERFLOW_VALUE,                           -- 48-bit input: C data input
-  CARRYIN => carry_in,               -- 1-bit input: Carry input signal
+  C => ROUNDING,--OVERFLOW_VALUE,                           -- 48-bit input: C data input
+  CARRYIN => carryin,               -- 1-bit input: Carry input signal
   D => (others => '1'),                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs
   CEA1 => '1',                     -- 1-bit input: Clock enable input for 1st stage AREG
