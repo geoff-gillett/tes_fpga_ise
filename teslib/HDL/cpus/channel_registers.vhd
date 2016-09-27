@@ -75,28 +75,12 @@ port (
   
 	registers:out channel_registers_t;
 
-  filter_config_data:out std_logic_vector(CONFIG_WIDTH-1 downto 0);
-  filter_config_valid:out std_logic;
-  filter_config_ready:in std_logic;
-  -- coefficients are 25 bits all fractional 
-  -- the register uses bit 31 as AXI stream last
-  filter_data:out std_logic_vector(COEF_WIDTH-1 downto 0); 
-  filter_valid:out std_logic;
-  filter_ready:in std_logic;
-  filter_last:out std_logic;
-  filter_last_missing:in std_logic;
-  filter_last_unexpected:in std_logic;
-  
-  dif_config_data:out std_logic_vector(CONFIG_WIDTH-1 downto 0);
-  dif_config_valid:out std_logic;
-  dif_config_ready:in std_logic;
-  
-  dif_data:out std_logic_vector(COEF_WIDTH-1 downto 0);
-  dif_valid:out std_logic;
-  dif_ready:in std_logic;
-  dif_last:out std_logic;
-  dif_last_missing:in std_logic;
-  dif_last_unexpected:in std_logic
+  filter_config:out fir_control_in_t;
+  filter_events:in fir_control_out_t;
+  slope_config:out fir_control_in_t;
+  slope_events:in fir_control_out_t;
+  baseline_config:out fir_control_in_t;
+  baseline_events:in fir_control_out_t
 );
 end entity channel_registers;
 --
@@ -123,8 +107,13 @@ signal value_int:register_data_t;
 -- FIXME huh???
 begin 
 -- value is read by the cpu in the io_clk domain
-
+-- TODO implement baseline FIR controls
 registers <= reg;
+baseline_config.config_data <= (others => '0');
+baseline_config.config_valid <= '0';
+baseline_config.reload_data <= (others => '0');
+baseline_config.reload_last <= '0';
+baseline_config.reload_valid <= '0';
 
 regWrite:process(clk) 
 begin
@@ -142,7 +131,7 @@ if rising_edge(clk) then
 		reg.capture.slope_threshold <= DEFAULT_SLOPE_THRESHOLD;
 		reg.capture.area_threshold <= DEFAULT_AREA_THRESHOLD;
 		reg.capture.height <= DEFAULT_HEIGHT;
-		reg.capture.threshold_rel2min <= DEFAULT_THRESHOLD_REL2MIN;
+		--reg.capture.threshold_rel2min <= DEFAULT_THRESHOLD_REL2MIN;
 		reg.capture.timing <= DEFAULT_TIMING;
 		reg.capture.detection <= DEFAULT_DETECTION;
 		reg.capture.trace0 <= DEFAULT_TRACE0;
@@ -162,7 +151,7 @@ if rising_edge(clk) then
       	reg.capture.height <= to_height_d(data(9 downto 8));
       	reg.capture.trace0 <= to_trace_d(data(11 downto 10));
       	reg.capture.trace1 <= to_trace_d(data(13 downto 12));
-      	reg.capture.threshold_rel2min <= to_boolean(data(16));
+      	--reg.capture.threshold_rel2min <= to_boolean(data(16));
       end if;
       if address(PULSE_THRESHOLD_ADDR_BIT)='1' then
         reg.capture.pulse_threshold 
@@ -199,11 +188,12 @@ if rising_edge(clk) then
         	<= unsigned(data(BASELINE_COUNTER_BITS-1 downto 0)); 
       end if;
       if address(BL_FLAGS_ADDR_BIT)='1' then
-        reg.baseline.subtraction <= to_boolean(data(4));
+        reg.baseline.new_only <= to_boolean(data(0));
+        reg.baseline.subtraction <= to_boolean(data(1));
       end if;
       if address(INPUT_SEL_ADDR_BIT)='1' then
-      	reg.capture.adc_select <= data(CHANNELS-1 downto 0);
-      	reg.capture.invert <= data(CHANNELS)='1';
+      	reg.capture.adc_select <= data(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
+      	reg.capture.invert <= data(ADC_CHIPS*ADC_CHIP_CHANNELS)='1';
       end if;
       if address(FILTER_CONFIG_ADDR_BIT)='1' then
       	--TODO implement
@@ -270,12 +260,14 @@ begin
 		else
 			if filter_go='1' then
 				filter_error_reg <= '0';
-			elsif filter_last_missing='1' or filter_last_unexpected='1' then
+			elsif filter_events.last_missing='1' or 
+			      filter_events.last_unexpected='1' then
 				filter_error_reg <= '1';
 			end if; 
 			if dif_go='1' then
 				dif_error_reg <= '0';
-			elsif dif_last_missing='1' or dif_last_unexpected='1' then
+			elsif slope_events.last_missing='1' or 
+			      slope_events.last_unexpected='1' then
 				dif_error_reg <= '1';
 			end if;
 		end if;
@@ -314,11 +306,12 @@ port map(
   go => filter_go,
   done => filter_done,
   axi_data => filter_data_int,
-  axi_valid => filter_valid,
-  axi_ready => filter_ready
+  axi_valid => filter_config.reload_valid,
+  axi_ready => filter_events.reload_ready
 );
-filter_data <= resize(filter_data_int(COEF_BITS-1 downto 0), COEF_WIDTH);
-filter_last <= filter_data_int(COEF_BITS);
+filter_config.reload_data 
+  <= resize(filter_data_int(COEF_BITS-1 downto 0), COEF_WIDTH);
+filter_config.reload_last <= filter_data_int(COEF_BITS);
 
 filter_config_go <= write and address(FILTER_CONFIG_ADDR_BIT);
 filterConfig:entity work.axi_wr_chan
@@ -329,9 +322,9 @@ port map(
   reg_value => data(CONFIG_BITS-1 downto 0),
   go => filter_config_go,
   done => filter_config_done,
-  axi_data => filter_config_data,
-  axi_valid => filter_config_valid,
-  axi_ready => filter_config_ready
+  axi_data => filter_config.config_data,
+  axi_valid => filter_config.config_valid,
+  axi_ready => filter_events.config_ready
 );
 
 dif_go <= write and address(DIFFERENTIATOR_RELOAD_ADDR_BIT);
@@ -344,12 +337,12 @@ port map(
   go => dif_go,
   done => dif_done,
   axi_data => dif_data_int,
-  axi_valid => dif_valid,
-  axi_ready => dif_ready
+  axi_valid => slope_config.reload_valid,
+  axi_ready => slope_events.reload_ready
 );
-dif_data 
+slope_config.reload_data 
 	<= resize(dif_data_int(COEF_BITS-1 downto 0), COEF_WIDTH);
-dif_last <= dif_data_int(COEF_BITS);
+slope_config.reload_last <= dif_data_int(COEF_BITS);
 
 dif_config_go <= write and address(DIFFERENTIATOR_CONFIG_ADDR_BIT);
 difConfig:entity work.axi_wr_chan
@@ -360,8 +353,8 @@ port map(
   reg_value => data(CONFIG_BITS-1 downto 0),
   go => dif_config_go,
   done => dif_config_done,
-  axi_data => dif_config_data,
-  axi_valid => dif_config_valid,
-  axi_ready => dif_config_ready
+  axi_data => slope_config.config_data,
+  axi_valid => slope_config.config_valid,
+  axi_ready => slope_events.config_ready
 );
 end architecture RTL;

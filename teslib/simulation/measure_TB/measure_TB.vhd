@@ -16,12 +16,9 @@ end entity measure_TB;
 
 architecture testbench of measure_TB is
 
-constant SIMWIDTH:integer:=8;
 
 signal clk:std_logic:='1';
-signal reset1,reset2:std_logic:='1';
-signal sig:signed(WIDTH-1 downto 0);
-signal sim:signed(SIMWIDTH-1 downto 0);
+signal reset:std_logic:='1';
 
 signal slope:signed(WIDTH-1 downto 0);
 signal raw:signed(WIDTH-1 downto 0);
@@ -30,6 +27,13 @@ constant CLK_PERIOD:time:=4 ns;
 signal filtered:signed(WIDTH-1 downto 0);
 
 signal reg:capture_registers_t;
+signal stage1_config:fir_control_in_t;
+signal stage2_config:fir_control_in_t;
+signal adc_sample:signed(WIDTH-1 downto 0);
+
+constant SIM_WIDTH:natural:=6;
+signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
+signal squaresig:signed(WIDTH-1 downto 0);
   
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -40,31 +44,17 @@ generic map(
 )
 port map(
   clk => clk,
-  sample_in => sig,
-  stage1_config_data => (others => '0'),
-  stage1_config_valid => '0',
-  stage1_config_ready => open,
-  stage1_reload_data => (others => '0'),
-  stage1_reload_valid => '0',
-  stage1_reload_ready => open,
-  stage1_reload_last => '0',
-  stage1_reload_last_missing => open,
-  stage1_reload_last_unexpected => open,
-  stage2_config_data => (others => '0'),
-  stage2_config_valid => '0',
-  stage2_config_ready => open,
-  stage2_reload_data => (others => '0'),
-  stage2_reload_valid => '0',
-  stage2_reload_ready => open,
-  stage2_reload_last => '0',
-  stage2_reload_last_missing => open,
-  stage2_reload_last_unexpected => open,
+  sample_in => adc_sample,
+  stage1_config => stage1_config,
+  stage1_events => open,
+  stage2_config => stage2_config,
+  stage2_events => open,
   sample_out => raw,
-  stage1 => filtered,
-  stage2 => slope
+  stage1 => slope,
+  stage2 => filtered
 );
 
-UUT:entity work.measure2
+UUT:entity work.measure
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -74,8 +64,7 @@ generic map(
 )
 port map(
   clk => clk,
-  reset1 => reset1,
-  --rel2min => rel2min, 
+  reset1 => reset,
   registers => reg,
   baseline => (others => '0'),
   
@@ -85,22 +74,33 @@ port map(
   measurements => open
 );
 
-simulate:process(clk)
+simsquare:process (clk) is
 begin
   if rising_edge(clk) then
-    if reset1 = '1' then
-      sim <= to_signed(-16,SIMWIDTH);
+    if reset = '1' then
+      sim_count <= (others => '0');
     else
-      sim <= sim + 1;
+      sim_count <= sim_count+1;
     end if;
   end if;
-end process simulate;
-sig <= resize(sim,WIDTH);
+end process simsquare;
+squaresig <= (WIDTH-1 => '1', others => '0') when sim_count(SIM_WIDTH-1)='1' 
+             else (WIDTH-1 => '0', others => '1');
+adc_sample <= squaresig;
 
 stimulus:process is
 begin
-  --slope <= to_signed(-8,WIDTH);
-  --sig <= to_signed(0,WIDTH);
+  stage1_config.config_data <= (others => '0');
+  stage1_config.config_valid <= '0';
+  stage1_config.reload_data <= (others => '0');
+  stage1_config.reload_last <= '0';
+  stage1_config.reload_valid <= '0';
+  stage2_config.config_data <= (others => '0');
+  stage2_config.config_valid <= '0';
+  stage2_config.reload_data <= (others => '0');
+  stage2_config.reload_last <= '0';
+  stage2_config.reload_valid <= '0';
+  
   reg.constant_fraction  <= (16 => '1', others => '0');
   reg.slope_threshold <= to_unsigned(20,WIDTH-1);
   reg.pulse_threshold <= to_unsigned(80,WIDTH-1);
@@ -110,13 +110,7 @@ begin
   reg.timing <= SLOPE_THRESH_TIMING_D;
   reg.height <= CFD_HEIGHT_D;
   wait for CLK_PERIOD;
-  reset1 <= '0';
-  wait for CLK_PERIOD*64;
-  reset2 <= '0';
-  wait for CLK_PERIOD*64;
-  --sig <= to_signed(32000,WIDTH);
-  wait for CLK_PERIOD;
-  --sig <= to_signed(0,WIDTH);
+  reset <= '0';
   wait;
 end process;
 

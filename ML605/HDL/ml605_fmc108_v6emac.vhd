@@ -693,7 +693,7 @@ end process adcEnable;
 --------------------------------------------------------------------------------
 tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 
-	registers:entity tes.channel_registers2
+	registers:entity tes.channel_registers
   generic map(
     CHANNEL => c
   )
