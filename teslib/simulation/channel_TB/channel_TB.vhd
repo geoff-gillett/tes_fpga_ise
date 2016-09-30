@@ -47,14 +47,19 @@ signal ready:boolean;
 signal clk_count:integer:=0;
 file stream_file:natural_file;
 file trace_file:int_file;
+signal event_enable:boolean;
+
+constant SIM_WIDTH:natural:=7;
+signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
+signal squaresig:adc_sample_t;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
   
-UUT:entity work.channel
+UUT:entity work.channel2
 generic map(
   CHANNEL => CHANNEL,
-  ENDIAN => ENDIAN
+  ENDIAN  => ENDIAN
 )
 port map(
   clk => clk,
@@ -62,6 +67,7 @@ port map(
   reset2 => reset2,
   adc_sample => adc_sample,
   registers => registers,
+  event_enable => event_enable,
   stage1_config => stage1_config,
   stage1_events => stage1_events,
   stage2_config => stage2_config,
@@ -123,7 +129,7 @@ while not endfile(sample_file) loop
   read(file_line, str_sample);
   sample_in:=hexstr2vec(str_sample);
   wait until rising_edge(clk);
-  adc_sample <= resize(sample_in, ADC_BITS);
+  --adc_sample <= resize(sample_in, ADC_BITS);
   if clk_count mod 10000 = 0 then
     report "clk " & integer'image(clk_count);
   end if;
@@ -131,6 +137,21 @@ while not endfile(sample_file) loop
 end loop;
 wait;
 end process stimulusFile;
+
+simsquare:process (clk) is
+begin
+  if rising_edge(clk) then
+    if reset1 = '1' then
+      sim_count <= (others => '0');
+    else
+      sim_count <= sim_count+1;
+    end if;
+  end if;
+end process simsquare;
+squaresig <= std_logic_vector(to_unsigned(100,ADC_BITS))
+             when sim_count(SIM_WIDTH-1)='1' 
+             else std_logic_vector(to_unsigned(1000,ADC_BITS));
+adc_sample <= squaresig;
 
 stimulus:process
 begin
@@ -149,21 +170,23 @@ baseline_config.config_valid <= '0';
 baseline_config.reload_data <= (others => '0');
 baseline_config.reload_last <= '0';
 baseline_config.reload_valid <= '0';
-registers.baseline.offset <= std_logic_vector(to_unsigned(260,ADC_BITS));
-registers.baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
+registers.baseline.offset <= std_logic_vector(to_unsigned(400,ADC_BITS));
+registers.baseline.count_threshold <= to_unsigned(20,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
 registers.baseline.new_only <= TRUE;
 registers.baseline.subtraction <= TRUE;
-registers.baseline.timeconstant <= to_unsigned(2**16,32);
+registers.baseline.timeconstant <= to_unsigned(2**12,32);
 
-registers.capture.constant_fraction  <= (16 => '1', others => '0');
+registers.capture.constant_fraction  <= (14 => '1', others => '0');
 registers.capture.slope_threshold <= to_unsigned(0,DSP_BITS-1);
 registers.capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1);
-registers.capture.area_threshold <= to_unsigned(10000,AREA_WIDTH-1);
+registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
-registers.capture.detection <= PULSE_DETECTION_D;
-registers.capture.timing <= SLOPE_MAX_TIMING_D;
+registers.capture.detection <= PEAK_DETECTION_D;
+registers.capture.timing <= CFD_LOW_TIMING_D;
 registers.capture.height <= CFD_HEIGHT_D;
+
+event_enable <= TRUE;
 
 wait for CLK_PERIOD;
 reset1 <= '0';

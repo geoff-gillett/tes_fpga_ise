@@ -111,7 +111,7 @@ reset1 <= '0' after 10*IO_CLK_PERIOD;
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
 bytestream_ready <= TRUE after 2*IO_CLK_PERIOD;
 
-UUT:entity work.measurement_subsystem2
+UUT:entity work.measurement_subsystem
 generic map(
   DSP_CHANNELS => CHANNELS,
   ENDIAN => ENDIAN,

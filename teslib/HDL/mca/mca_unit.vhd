@@ -155,8 +155,8 @@ constant MCA_PROTOCOL_HEADER_WORDS:integer:=5; --FIXME why are these needed
 type mca_flags_t is record  -- 32 bits
 	value:mca_value_d; --4
 	trigger:mca_trigger_d; --4
-	bin_n:unsigned(MCA_BIN_N_BITS-1 downto 0); --4
-	channel:unsigned(MCA_CHANNEL_WIDTH-1 downto 0); --4
+	bin_n:unsigned(MCA_BIN_N_BITS-1 downto 0); --5
+	channel:unsigned(MCA_CHANNEL_WIDTH-1 downto 0); --3
 end record;
 
 function to_std_logic(f:mca_flags_t) return std_logic_vector is
@@ -193,7 +193,7 @@ begin
 	when 1 =>
 		return to_std_logic(h.flags) &
 					 set_endianness(h.most_frequent,e) &
-					 to_std_logic(0,32); -- reserved
+					 to_std_logic(0,32); -- reserved TODO this could be period
 	when 2 =>
 		return set_endianness(h.total,e);
 	when 3 =>

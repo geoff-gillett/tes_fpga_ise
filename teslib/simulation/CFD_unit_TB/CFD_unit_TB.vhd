@@ -111,7 +111,7 @@ begin
 end process simsquare;
 squaresig <= (WIDTH-1 => '1', others => '0') when sim_count(SIM_WIDTH-1)='1' 
              else (WIDTH-1 => '0', others => '1');
-adc_sample <= squaresig;
+--adc_sample <= squaresig;
 stimulus:process is
 begin
   stage1_config.config_data <= (others => '0');
@@ -129,13 +129,17 @@ begin
   pulse_threshold <= (others => '0');
   slope_threshold <= (others => '0');
   
-  --adc_sample <= (WIDTH-1 => '0', others => '0');
+  adc_sample <= (WIDTH-1 => '0', others => '0');
   wait for CLK_PERIOD;
   reset <= '0';
   wait for CLK_PERIOD*64;
-  --adc_sample <= (WIDTH-1 => '0', others => '1');
+  adc_sample <= (WIDTH-1 => '1', others => '0');
   wait for CLK_PERIOD;
-  --adc_sample <= (WIDTH-1 => '0', others => '0');
+  adc_sample <= (WIDTH-1 => '0', others => '0');
+  wait for CLK_PERIOD*64;
+  adc_sample <= (WIDTH-1 => '0', others => '1');
+  wait for CLK_PERIOD;
+  adc_sample <= (WIDTH-1 => '0', others => '0');
   wait;
 end process;
 

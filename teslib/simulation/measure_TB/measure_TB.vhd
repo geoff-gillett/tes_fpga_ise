@@ -31,7 +31,7 @@ signal stage1_config:fir_control_in_t;
 signal stage2_config:fir_control_in_t;
 signal adc_sample:signed(WIDTH-1 downto 0);
 
-constant SIM_WIDTH:natural:=6;
+constant SIM_WIDTH:natural:=7;
 signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
 signal squaresig:signed(WIDTH-1 downto 0);
   
@@ -50,8 +50,8 @@ port map(
   stage2_config => stage2_config,
   stage2_events => open,
   sample_out => raw,
-  stage1 => slope,
-  stage2 => filtered
+  stage1 => filtered,
+  stage2 => slope
 );
 
 UUT:entity work.measure
@@ -84,8 +84,9 @@ begin
     end if;
   end if;
 end process simsquare;
-squaresig <= (WIDTH-1 => '1', others => '0') when sim_count(SIM_WIDTH-1)='1' 
-             else (WIDTH-1 => '0', others => '1');
+squaresig <= (WIDTH-1 downto WIDTH-3 => '1', others => '0') 
+             when sim_count(SIM_WIDTH-1)='1' 
+             else (WIDTH-1 downto WIDTH-3 => '0', others => '1');
 adc_sample <= squaresig;
 
 stimulus:process is
@@ -109,8 +110,13 @@ begin
   reg.detection <= PEAK_DETECTION_D;
   reg.timing <= SLOPE_THRESH_TIMING_D;
   reg.height <= CFD_HEIGHT_D;
+--  adc_sample <= (WIDTH-1  => '0', others => '0');
   wait for CLK_PERIOD;
   reset <= '0';
+  wait for CLK_PERIOD*32;
+--  adc_sample <= (WIDTH-1  => '0', others => '1');
+  wait for CLK_PERIOD;
+--  adc_sample <= (WIDTH-1  => '0', others => '0');
   wait;
 end process;
 

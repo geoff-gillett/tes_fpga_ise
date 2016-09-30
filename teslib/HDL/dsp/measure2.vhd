@@ -10,7 +10,7 @@ use work.registers.all;
 use work.events.all;
 use work.measurements.all;
 
-entity measure is
+entity measure2 is
 generic(
   CHANNEL:natural:=0;
   WIDTH:natural:=18;
@@ -34,9 +34,9 @@ port (
   
   measurements:out measurements_t
 );
-end entity measure;
+end entity measure2;
 
-architecture RTL of measure is
+architecture RTL of measure2 is
 
 -- pipelines to sync signals
 signal cfd_low,cfd_high,cfd_error:boolean;
