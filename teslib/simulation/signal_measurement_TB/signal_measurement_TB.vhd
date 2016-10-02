@@ -32,13 +32,14 @@ signal neg_0xing:boolean;
 signal zero_xing:boolean;
 signal extrema:signed(WIDTH_OUT-1 downto 0);
 
-constant SIM_WIDTH:natural:=4;
+constant SIM_WIDTH:natural:=7;
 signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
+signal squaresig:signed(WIDTH-1 downto 0);
 begin
   
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.signal_measurement3
+UUT:entity work.signal_measurement
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -61,7 +62,7 @@ port map(
   extrema => extrema
 );
 
-sim:process(clk)
+simsquare:process (clk) is
 begin
   if rising_edge(clk) then
     if reset = '1' then
@@ -70,9 +71,12 @@ begin
       sim_count <= sim_count+1;
     end if;
   end if;
-end process sim;
-signal_in <= to_signed(-8,WIDTH) when sim_count(SIM_WIDTH-1)='1' else
-             to_signed(8,WIDTH);
+end process simsquare;
+squaresig <= to_signed(-800,WIDTH)
+             when sim_count(SIM_WIDTH-1)='1' 
+             else to_signed(800,WIDTH);
+               
+signal_in <= squaresig;
              
 stimulus:process is
 begin

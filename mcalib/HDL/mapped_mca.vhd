@@ -80,7 +80,7 @@ signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to 3);
 signal overflowed,overflow,underflow,underflowed:boolean;
 
 -- debug
-constant DEBUG:string:="TRUE";
+constant DEBUG:string:="FALSE";
 attribute mark_debug:string;
 attribute mark_debug of bin:signal is DEBUG;
 attribute mark_debug of bin_valid:signal is DEBUG;

@@ -186,6 +186,7 @@ begin
 end function;
 --------------------------------------------------------------------------------
 --signals for vcd dump (simulation only)
+--synthesis translate_off
 attribute keep:string;
 attribute S:string;
 signal arbiter_state_v:std_logic_vector(1 downto 0);
@@ -202,7 +203,6 @@ begin
   return to_std_logic(frameFSMstate'pos(s),w);
 end function;
 
---synthesis translate_off
 signal framer_word_v:std_logic_vector(BUS_DATABITS-1 downto 0);
 signal commit_v:std_logic;
 signal framer_we_v:std_logic_vector(BUS_CHUNKS-1 downto 0);
@@ -217,8 +217,8 @@ signal mca_s_ready_v,mca_s_valid_v,mca_s_last_v:std_logic;
 constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
 
-attribute MARK_DEBUG of arbiter_state_v:signal is DEBUG;
-attribute MARK_DEBUG of frame_state_v:signal is DEBUG;
+--attribute MARK_DEBUG of arbiter_state_v:signal is DEBUG;
+--attribute MARK_DEBUG of frame_state_v:signal is DEBUG;
 attribute MARK_DEBUG of framer_free:signal is DEBUG;
 attribute MARK_DEBUG of frame_free:signal is DEBUG;
 --attribute MARK_DEBUG of reset:signal is DEBUG;
@@ -228,9 +228,9 @@ attribute MARK_DEBUG of frame_free:signal is DEBUG;
 begin
 --------------------------------------------------------------------------------
 --simulation only (for VCD dump)
+--synthesis translate_off
 arbiter_state_v <= to_std_logic(arbiter_state,2);
 frame_state_v <= to_std_logic(frame_state,3);
---synthesis translate_off
 framer_word_v <= framer_word.data;
 commit_v <= to_std_logic(commit_frame);
 framer_we_v <= to_std_logic(framer_we);

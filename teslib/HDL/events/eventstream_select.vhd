@@ -37,7 +37,7 @@ end entity eventstream_select;
 
 architecture combinatorial of eventstream_select is
 	
-type input_array is array(0 to BUS_BITS-1) of std_logic_vector(11 downto 0);
+type input_array is array(BUS_BITS-1 downto 0) of std_logic_vector(11 downto 0);
 signal mux_inputs:input_array;
 signal valid_int:std_logic;
 signal input_streamvectors:streamvector_array(CHANNELS-1 downto 0);
@@ -49,7 +49,7 @@ mux_valid <= to_boolean(valid_int);
 mux_stream <= to_streambus(mux_streamvector);
 input_streamvectors <= to_std_logic(instreams);	
 sel_int <= resize(sel,12);
-muxGen:for bit in 0 to BUS_BITS-1 generate
+muxGen:for bit in BUS_BITS-1 downto 0 generate
 begin
 	-- transpose streamvector_array 
 	chanGen:for chan in 0 to CHANNELS-1 generate

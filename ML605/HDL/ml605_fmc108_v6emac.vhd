@@ -183,7 +183,7 @@ port (
 end component;
 
 
-attribute S:string;
+--attribute S:string;
 --------------------------------------------------------------------------------
 -- Clock and reset signals
 --------------------------------------------------------------------------------
@@ -273,7 +273,7 @@ signal axis_done:std_logic_vector(DSP_CHANNELS-1 downto 0);
 signal axis_error:std_logic_vector(DSP_CHANNELS-1 downto 0);
 
 signal channel_registers:channel_register_array(DSP_CHANNELS-1 downto 0);
-attribute S of channel_registers:signal is "TRUE";
+--attribute S of channel_registers:signal is "TRUE";
 --------------------------------------------------------------------------------
 -- processing channel signals
 --------------------------------------------------------------------------------
@@ -296,10 +296,10 @@ signal measurements:measurements_array(DSP_CHANNELS-1 downto 0);
 signal ethernetstream:streambus_t;
 signal ethernetstream_valid:boolean;
 signal ethernetstream_ready:boolean;
-signal bytestream:std_logic_vector(7 downto 0);
+--signal bytestream:std_logic_vector(7 downto 0);
 signal bytestream_valid:boolean;
 signal bytestream_ready:std_logic;
-signal bytestream_last:boolean;
+--signal bytestream_last:boolean;
 signal cdc_din:std_logic_vector(71 downto 0);
 signal cdc_wr_en:std_logic;
 signal cdc_rd_en:std_logic;
@@ -817,8 +817,8 @@ port map(
   valid => bytestream_valid
 );
 
-bytestream <= bytestream_int(7 downto 0);
-bytestream_last <= bytestream_int(8)='1';
+--bytestream <= bytestream_int(7 downto 0);
+--bytestream_last <= bytestream_int(8)='1';
 
 emac:entity work.v6_emac_v2_3
 port map(

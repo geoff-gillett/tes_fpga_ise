@@ -46,7 +46,7 @@ signal m:measurements_t;
 signal slope_pos_Txing,slope_neg_Txing:boolean;
 signal pulse_pos_Txing,pulse_neg_Txing:boolean;
 signal slope_x,filtered_x:signed(WIDTH-1 downto 0);
-signal filtered_reg,filtered_m:signed(WIDTH-1 downto 0);
+signal filtered_reg,filtered_reg2,filtered_m:signed(WIDTH-1 downto 0);
 signal slope_pos_0xing_cfd,slope_neg_0xing_cfd:boolean;
 signal slope_threshold_s,pulse_threshold_s:signed(WIDTH-1 downto 0);
 signal area_threshold_s:signed(AREA_WIDTH-1 downto 0);
@@ -143,8 +143,8 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  xing => pulse_pos_Txing_p(2),
-  sig => filtered_m,  --FIXME why _m? and not _x? to align area at output?
+  xing => pulse_pos_Txing_p(3),
+  sig => filtered_m,  
   area => pulse_area
 );
 
@@ -186,7 +186,8 @@ begin
       pulse_neg_Txing_p <= pulse_neg_Txing & pulse_neg_Txing_p(1 to DEPTH-1);
       
       filtered_reg <= filtered_x;
-      filtered_m <= filtered_reg;
+      filtered_reg2 <= filtered_reg;
+      filtered_m <= filtered_reg2;
       
       a_pulse_thresh_p 
         <= (filtered_x >= pulse_threshold_s) & a_pulse_thresh_p(1 to DEPTH-1);
@@ -358,8 +359,8 @@ m.cfd_low <= cfd_low_p(DEPTH);
 m.max_slope <= max_slope_p(DEPTH);
 m.eflags.peak_count <= peak_count(PEAK_COUNT_BITS-1 downto 0);
 m.above_pulse_threshold <= a_pulse_thresh_p(DEPTH);
-m.pulse_threshold_pos <= pulse_pos_Txing_p(DEPTH);
-m.pulse_threshold_neg <= pulse_neg_Txing_p(DEPTH);
+m.pulse_threshold_pos <= pulse_pos_Txing_p(DEPTH-5);
+m.pulse_threshold_neg <= pulse_neg_Txing_p(DEPTH-5);
 m.slope_threshold_pos <= slope_pos_Txing_p(DEPTH);
 m.slope_threshold_neg <= slope_neg_Txing_p(DEPTH);
 m.baseline <= resize(baseline,SIGNAL_BITS);
