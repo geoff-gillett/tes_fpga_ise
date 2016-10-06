@@ -122,11 +122,13 @@ if rising_edge(clk) then
 end if;
 end process controlRegisters;
 
+--FIXME this can be improved
 --------------------------------------------------------------------------------
 -- processing pipeline
 --------------------------------------------------------------------------------
 --swap+1
-underflowed <= to_0IfX(value) <= to_0IfX(lowest_value_reg);
+--underflowed <= to_0IfX(value) <= to_0IfX(lowest_value_reg);
+underflowed <= to_0IfX(value) < to_0IfX(lowest_value_reg);
 valueOffset:process (clk)
 constant MIN:signed(VALUE_BITS-1 downto 0):=(VALUE_BITS-1 => '1',others => '0');
 begin

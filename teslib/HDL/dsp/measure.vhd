@@ -52,7 +52,7 @@ signal slope_threshold_s,pulse_threshold_s:signed(WIDTH-1 downto 0);
 signal area_threshold_s:signed(AREA_WIDTH-1 downto 0);
 signal pulse_t_n,pulse_l_n,rise_t_n:unsigned(16 downto 0);
 
-constant DEPTH:integer:=13;
+constant DEPTH:integer:=12;
 type pipe is array (1 to DEPTH) of signed(WIDTH-1 downto 0);
 signal raw_p:pipe;
 signal cfd_low_p,cfd_high_p,max_slope_p:boolean_vector(1 to DEPTH);
@@ -194,6 +194,9 @@ begin
      
       peak_count_n <= peak_count + 1;
       
+      m.pulse_area <= pulse_area; 
+      m.above_area_threshold <= pulse_area >= area_threshold_s;
+      
       -- minima at start of pulse  
       m.pulse_start <= slope_pos_0xing_p(DEPTH-1) and 
                        not a_pulse_thresh_p(DEPTH-1);
@@ -233,6 +236,7 @@ begin
             ('0' & registers.max_peaks)+2,MEASUREMENT_FRAMER_ADDRESS_BITS
           );
         else
+          m.last_address  <= (others => '0');
           m.peak_address <= (others => '0');
           m.size <= (0 => '1',others => '0');
         end if;
@@ -240,7 +244,7 @@ begin
       else
         
         -- maxima
-        if slope_neg_0xing_p(DEPTH) then
+        if slope_neg_0xing_p(DEPTH-1) then
           if peak_count > ('0' & m.max_peaks) then 
             m.eflags.peak_overflow <= TRUE;
           else
@@ -248,7 +252,7 @@ begin
             peak_count <= peak_count_n;
             peak_count_n <= peak_count_n + 1;
             if m.eflags.event_type.detection=PULSE_DETECTION_D or
-               m.eflags.event_type.detection=TRACE_DETECTION_D then
+              m.eflags.event_type.detection=TRACE_DETECTION_D then
               m.peak_address <= resize(  --FIXME  use peak_addr_n minimise bits
                 peak_count_n+2,MEASUREMENT_FRAMER_ADDRESS_BITS
               );
@@ -277,19 +281,19 @@ begin
       
       case m.eflags.timing is
       when PULSE_THRESH_TIMING_D =>
-        m.stamp_peak <= pulse_pos_Txing_p(DEPTH-1);
+        m.stamp_peak <= pulse_pos_Txing_p(DEPTH-4);
         m.stamp_pulse
-          <= pulse_pos_Txing_p(DEPTH-1) and first_peak;
-        if pulse_pos_Txing_p(DEPTH-1) then
+          <= pulse_pos_Txing_p(DEPTH-4) and first_peak;
+        if pulse_pos_Txing_p(DEPTH-4) then
           rise_t_n <= (0 => '1',others => '0');
           m.rise_time <= (others => '0');
         end if;
 
       when SLOPE_THRESH_TIMING_D =>
-        m.stamp_peak <= slope_pos_Txing_p(DEPTH-1);
+        m.stamp_peak <= slope_pos_Txing_p(DEPTH-5);
         m.stamp_pulse 
-          <= slope_pos_Txing_p(DEPTH-1) and first_peak;
-        if slope_pos_Txing_p(DEPTH-1) then
+          <= slope_pos_Txing_p(DEPTH-5) and first_peak;
+        if slope_pos_Txing_p(DEPTH-5) then
           rise_t_n <= (0 => '1',others => '0');
           m.rise_time <= (others => '0');
         end if;
@@ -322,8 +326,6 @@ begin
         m.time_offset <= m.pulse_time;
       end if;
 
-      m.pulse_area <= pulse_area;
-      m.above_area_threshold <= pulse_area >= area_threshold_s;
       
       if slope_pos_Txing_p(DEPTH-1) then
         m.armed <= TRUE;
@@ -340,6 +342,7 @@ begin
       
       if pulse_pos_Txing_p(DEPTH-1) then
         m.pulse_length <= (others => '0');
+        pulse_l_n <= (0 => '1', others => '0');
       else
         if pulse_l_n(16)='1' then
           m.pulse_length <= (others => '1');
@@ -358,11 +361,11 @@ m.cfd_high <= cfd_high_p(DEPTH);
 m.cfd_low <= cfd_low_p(DEPTH);
 m.max_slope <= max_slope_p(DEPTH);
 m.eflags.peak_count <= peak_count(PEAK_COUNT_BITS-1 downto 0);
-m.above_pulse_threshold <= a_pulse_thresh_p(DEPTH);
-m.pulse_threshold_pos <= pulse_pos_Txing_p(DEPTH-5);
-m.pulse_threshold_neg <= pulse_neg_Txing_p(DEPTH-5);
-m.slope_threshold_pos <= slope_pos_Txing_p(DEPTH);
-m.slope_threshold_neg <= slope_neg_Txing_p(DEPTH);
+m.above_pulse_threshold <= a_pulse_thresh_p(DEPTH-4);
+m.pulse_threshold_pos <= pulse_pos_Txing_p(DEPTH-4);
+m.pulse_threshold_neg <= pulse_neg_Txing_p(DEPTH-4);
+m.slope_threshold_pos <= slope_pos_Txing_p(DEPTH-4);
+m.slope_threshold_neg <= slope_neg_Txing_p(DEPTH-4);
 m.baseline <= resize(baseline,SIGNAL_BITS);
 
 filteredMeas:entity work.signal_measurement

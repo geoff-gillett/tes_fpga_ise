@@ -222,9 +222,9 @@ end package events;
 --------------------------------------------------------------------------------
 package body events is
 
-------------------------- event_type_t - 4 bits --------------------------------
---         2       | 1  |    1     |
--- detection_type_d|tick|new_window|
+------------------------- event_type_t - 3 bits --------------------------------
+--         2       | 1  |
+-- detection_type_d|tick|
 function to_std_logic(e:event_type_t) return std_logic_vector is
 begin
 	return to_std_logic(e.detection,2) &

@@ -102,10 +102,10 @@ begin
   stage2_config.reload_last <= '0';
   stage2_config.reload_valid <= '0';
   
-  reg.constant_fraction  <= (16 => '1', others => '0');
+  reg.constant_fraction  <= (16 => '0', others => '0');
   reg.slope_threshold <= to_unsigned(0,WIDTH-1);
   reg.pulse_threshold <= to_unsigned(0,WIDTH-1);
-  reg.area_threshold <= to_unsigned(1600,AREA_WIDTH-1);
+  reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
   reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS+1);
   reg.detection <= PEAK_DETECTION_D;
   reg.timing <= SLOPE_THRESH_TIMING_D;
