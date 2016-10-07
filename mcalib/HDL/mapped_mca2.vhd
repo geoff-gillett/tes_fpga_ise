@@ -19,11 +19,19 @@ use extensions.logic.all;
 library streamlib;
 use streamlib.types.all;
 
+
+
+--! Adds value mapping to bins to basic MCA (MCA.vhd).
+--FIXME comments out of date
+--FIXME the whole MCA hierarchy is pretty confusing the second time around
+-- Note: need swap buffer on first can swap to initialise everything.
+-- 
+
 entity mapped_mca2 is
 generic(
   ADDRESS_BITS:integer:=14;
   TOTAL_BITS:integer:=64;
-  VALUE_BITS:integer:=28;
+  VALUE_BITS:integer:=32;
   COUNTER_BITS:integer:=32
 );
 port (
@@ -62,15 +70,6 @@ port (
 );
 end entity mapped_mca2;
 
--- TODO use DSP to round into bins using bin_n
--- Always want 0 to be a bin edge
--- -3.0 -2.5 -2.0 -1.5 -1.0 -0.5    0  0.5  1.0  1.5  2.0  2.5  3.0
---|         |         |          |         |         |         |
-
--- Trouble with symmetric rounding is zero gets twice the bin width
--- 0 is rare if using the 18.3 values
--- truncation works?
-
 architecture RTL of mapped_mca2 is
 	
 signal bin,last_bin_reg,last_bin_temp:unsigned(ADDRESS_BITS-1 downto 0);
@@ -80,6 +79,13 @@ signal lowest_value_reg,offset_value:signed(VALUE_BITS-1 downto 0);
 signal bin_value:unsigned(VALUE_BITS-1 downto 0);
 signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to 3);
 signal overflowed,overflow,underflow,underflowed:boolean;
+
+-- debug
+constant DEBUG:string:="FALSE";
+attribute mark_debug:string;
+attribute mark_debug of bin:signal is DEBUG;
+attribute mark_debug of bin_valid:signal is DEBUG;
+--attribute mark_debug of bin_n_reg:signal is DEBUG;
 
 begin
 	
@@ -117,11 +123,16 @@ if rising_edge(clk) then
 end if;
 end process controlRegisters;
 
+--FIXME this can be improved
 --------------------------------------------------------------------------------
 -- processing pipeline
 --------------------------------------------------------------------------------
+--binWidth:entity tes.r
+
+
 --swap+1
-underflowed <= to_0IfX(value) <= to_0IfX(lowest_value_reg);
+--underflowed <= to_0IfX(value) <= to_0IfX(lowest_value_reg);
+underflowed <= value < lowest_value_reg;
 valueOffset:process (clk)
 constant MIN:signed(VALUE_BITS-1 downto 0):=(VALUE_BITS-1 => '1',others => '0');
 begin
