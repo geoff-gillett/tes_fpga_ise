@@ -5,6 +5,9 @@ use ieee.numeric_std.all;
 library extensions;
 use extensions.boolean_vector.all;
 
+library dsp;
+use dsp.types.all;
+
 use work.types.all;
 use work.registers.all;
 use work.events.all;
@@ -77,7 +80,7 @@ constant_fraction <= signed('0' & registers.constant_fraction);
 slope_threshold <= signed('0' & registers.slope_threshold);
 pulse_threshold <= signed('0' & registers.pulse_threshold);
 
-CFD:entity work.CFD_unit
+CFD:entity dsp.CFD_unit
 generic map(
   WIDTH => WIDTH,
   CFD_DELAY => CFD_DELAY
@@ -105,7 +108,7 @@ port map(
   valid_peak => valid_peak
 );
 
-slopeTxing:entity work.threshold_xing
+slopeTxing:entity dsp.threshold_xing
 generic map(
   WIDTH => WIDTH
 )
@@ -119,7 +122,7 @@ port map(
   neg => slope_neg_Txing
 );
 
-pulseTxing:entity work.threshold_xing
+pulseTxing:entity dsp.threshold_xing
 generic map(
   WIDTH => WIDTH
 )
@@ -133,7 +136,7 @@ port map(
   neg => pulse_neg_Txing
 );
 
-pulseArea:entity work.area_acc
+pulseArea:entity dsp.area_acc
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,

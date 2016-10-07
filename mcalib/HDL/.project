@@ -3,6 +3,7 @@
 	<name>MCA_library</name>
 	<comment></comment>
 	<projects>
+		<project>DSP_library</project>
 		<project>extensions</project>
 		<project>stream_library</project>
 	</projects>

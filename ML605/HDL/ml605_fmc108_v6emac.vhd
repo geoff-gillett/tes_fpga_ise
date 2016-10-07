@@ -30,6 +30,9 @@ library mcalib;
 library streamlib;
 use streamlib.types.all;
 
+library dsp;
+use dsp.types.all;
+
 library tes;
 use tes.types.all;
 use tes.functions.all;

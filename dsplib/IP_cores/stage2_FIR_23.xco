@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 14.7
-# Date: Tue Aug 16 06:34:24 2016
+# Date: Sat Sep 17 03:37:09 2016
 #
 ##############################################################
 #
@@ -43,7 +43,7 @@ CSET bestprecision=false
 CSET channel_sequence=Basic
 CSET clock_frequency=300.0
 CSET coefficient_buffer_type=Automatic
-CSET coefficient_file=C:\TES_project\fpga_ise\teslib\IP_cores\smoother.coe
+CSET coefficient_file=c:\TES_project\fpga_ise\teslib\IP_cores\differentiator.coe
 CSET coefficient_fractional_bits=25
 CSET coefficient_reload=true
 CSET coefficient_sets=1
@@ -53,7 +53,7 @@ CSET coefficient_width=25
 CSET coefficientsource=COE_File
 CSET coefficientvector=6,0,-4,-3,5,6,-6,-13,7,44,64,44,7,-13,-6,6,5,-3,-4,0,6
 CSET columnconfig=23
-CSET component_name=stage1_FIR_23
+CSET component_name=stage2_FIR_23
 CSET data_buffer_type=Automatic
 CSET data_fractional_bits=3
 CSET data_has_tlast=Not_Required
@@ -83,8 +83,8 @@ CSET number_channels=1
 CSET number_paths=1
 CSET optimization_goal=Speed
 CSET output_buffer_type=Automatic
-CSET output_rounding_mode=Symmetric_Rounding_to_Zero
-CSET output_width=23
+CSET output_rounding_mode=Full_Precision
+CSET output_width=48
 CSET passband_max=0.5
 CSET passband_min=0.0
 CSET pattern_list=P4-0,P4-1,P4-2,P4-3,P4-4
@@ -109,4 +109,4 @@ CSET zero_pack_factor=1
 MISC pkg_timestamp=2013-07-22T10:45:45Z
 # END Extra information
 GENERATE
-# CRC: f5f69cc4
+# CRC: 898c7421

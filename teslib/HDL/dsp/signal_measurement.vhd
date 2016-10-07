@@ -17,6 +17,9 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
+library dsp;
+use dsp.types.all;
+
 use work.types.all;
 
 -- Assumes FRAC >= AREA_FRAC
@@ -81,7 +84,7 @@ notClosestGen:if not CLOSEST generate
 end generate;
 
 -- saturation handled in FIR
-round:entity work.round
+round:entity dsp.round
 generic map(
   WIDTH_IN  => WIDTH,
   FRAC_IN   => FRAC,
@@ -95,7 +98,7 @@ port map(
   output => signal_r
 );
 
-areaAcc:entity work.area_acc
+areaAcc:entity dsp.area_acc
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -110,7 +113,7 @@ port map(
   area => area
 );
 
-crossing:entity work.threshold_xing
+crossing:entity dsp.threshold_xing
 generic map(
   WIDTH => WIDTH
 )

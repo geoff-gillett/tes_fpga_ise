@@ -30,6 +30,9 @@ library mcalib;
 library streamlib;
 use streamlib.types.all;
 
+library dsp;
+use dsp.types.all;
+
 use work.types.all;
 use work.functions.all;
 use work.registers.all;

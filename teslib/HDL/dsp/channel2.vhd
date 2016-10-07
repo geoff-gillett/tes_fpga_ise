@@ -8,6 +8,9 @@ use streamlib.types.all;
 library extensions;
 use extensions.logic.all;
 
+library dsp;
+use dsp.types.all;
+
 use work.registers.all;
 use work.measurements.all;
 use work.types.all;
@@ -109,7 +112,7 @@ if rising_edge(clk) then
 end if;
 end process baselineSubraction;
 
-FIR:entity work.two_stage_FIR
+FIR:entity dsp.two_stage_FIR
 generic map(
   WIDTH => DSP_BITS
 )

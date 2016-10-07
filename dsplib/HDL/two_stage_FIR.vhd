@@ -17,9 +17,9 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
+--use work.types.all;
+--use work.functions.all;
 use work.types.all;
-use work.functions.all;
-use work.registers.all;
 
 -- stage1 output w=48 f=28
 -- stage2 output w=48 f=28

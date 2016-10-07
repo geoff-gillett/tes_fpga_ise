@@ -15,6 +15,9 @@ use ieee.numeric_std.all;
 library extensions;
 use extensions.boolean_vector.all;
 
+library dsp;
+use dsp.types.all;
+
 use work.functions.all;
 use work.types.all;
 use work.registers.all;
@@ -183,7 +186,7 @@ PORT MAP (
 );
 
 -- FIXME only need the rounding stage
-round:entity work.round
+round:entity dsp.round
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 25,

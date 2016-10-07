@@ -16,7 +16,6 @@ use ieee.numeric_std.all;
 library extensions;
 use extensions.logic.all;
 
-use work.functions.all;
 
 entity threshold_xing is
 generic(

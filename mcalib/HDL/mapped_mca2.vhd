@@ -19,6 +19,7 @@ use extensions.logic.all;
 library streamlib;
 use streamlib.types.all;
 
+library dsp;
 
 
 --! Adds value mapping to bins to basic MCA (MCA.vhd).
@@ -127,7 +128,20 @@ end process controlRegisters;
 --------------------------------------------------------------------------------
 -- processing pipeline
 --------------------------------------------------------------------------------
---binWidth:entity tes.r
+binWidth:entity dsp.round
+generic map(
+  WIDTH_IN => VALUE_BITS,
+  FRAC_IN => 0,
+  WIDTH_OUT => ADDRESS_BITS,
+  FRAC_OUT => FRAC_OUT,
+  TOWARDS_INF => FALSE
+)
+port map(
+  clk => clk,
+  reset => reset,
+  input => input,
+  output => output
+);
 
 
 --swap+1

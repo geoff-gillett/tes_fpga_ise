@@ -44,8 +44,11 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
+library dsp;
+use dsp.types.all;
+
 use work.types.all;
-use work.functions.all;
+--use work.functions.all;
 use work.registers.all;
 --use work.events.all;
 

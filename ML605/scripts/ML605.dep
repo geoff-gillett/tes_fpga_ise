@@ -5,6 +5,7 @@
 ../../extensions extensions
 ../../streamlib streamlib
 ../../mcalib mcalib
+../../dsplib dsp
 
 ../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/v6_emac_v2_3_0_block.vhd 
 ../IP_cores/v6_emac_v2_3_0/v6_emac_v2_3_0/example_design/v6_emac_v2_3_0_fifo_block.vhd 

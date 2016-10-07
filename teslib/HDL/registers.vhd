@@ -389,24 +389,6 @@ end record;
 --    0	update_on_completion
 -- 		1 update_asap
 
--- fir configuration
-type fir_control_in_t is record
-  config_data:std_logic_vector(7 downto 0);
-  config_valid:std_logic;
-  reload_data:std_logic_vector(31 downto 0);
-  reload_valid:std_logic;
-  reload_last:std_logic;
-end record;
-
-type fir_control_out_t is record
-  config_ready:std_logic;
-  reload_ready:std_logic;
-	last_missing:std_logic;
- 	last_unexpected:std_logic;
-end record;
-
-type fir_ctl_in_array is array (natural range <>) of fir_control_in_t;
-type fir_ctl_out_array is array (natural range <>) of fir_control_out_t;
 
 constant HDL_VERSION_ADDR_BIT:integer:=0;
 constant MCA_CONTROL_REGISTER_ADDR_BIT:integer:=1;
