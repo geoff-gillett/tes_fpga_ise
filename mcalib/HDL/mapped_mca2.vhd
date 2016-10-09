@@ -76,10 +76,15 @@ architecture RTL of mapped_mca2 is
 signal bin,last_bin_reg,last_bin_temp:unsigned(ADDRESS_BITS-1 downto 0);
 signal bin_n_reg,bin_n_temp:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal bin_valid,swap_int,swapping,MCA_can_swap,can_swap_int,just_reset:boolean;
-signal lowest_value_reg,offset_value:signed(VALUE_BITS-1 downto 0);
+signal lowest_value_reg,offset:signed(VALUE_BITS-1 downto 0);
+signal offset_value:std_logic_vector(VALUE_BITS-1 downto 0);
 signal bin_value:unsigned(VALUE_BITS-1 downto 0);
 signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to 3);
 signal overflowed,overflow,underflow,underflowed:boolean;
+
+--constant ONES:signed(VALUE_BITS-1 downto 0):=(others => '1');
+signal low:signed(VALUE_BITS-1 downto 0);
+signal hist_nm1:natural range 0 to VALUE_BITS-1;
 
 -- debug
 constant DEBUG:string:="FALSE";
@@ -128,36 +133,55 @@ end process controlRegisters;
 --------------------------------------------------------------------------------
 -- processing pipeline
 --------------------------------------------------------------------------------
-binWidth:entity dsp.round
+-- changes
+
+-- want to map lowest value to bin=1
+-- last_bin not necessarily power of 2
+-- if underflowed <= 0
+-- offset_value <=  offset_value-lowest_value
+-- do rounding
+-- 
+-- highest value = lowest_value + (2**bin_n)*(last_bin-2) 
+-- need this to be overflow
+
+-- make last_bin = 2*n-1 
+-- n=0 single count 
+-- n=1  | < lowest_value | >= lowest_value |
+-- n=2  |< L | >=L <2**bin_n+L | >= 2**bin_n+L < 2*(2**
+--         0 |        1        |       2     
+
+-- try to use natural underflow and overflow of dynamic round
+-- replace last_bin with hist_n create reg for hist_n-1
+-- last_bin <= 2**hist_n-1, ie not (last_bin(hist_n) <= '1')
+-- want to map lowest value to 10...01 
+-- FIXME replace bin_n with reg representing hist_n-1 called hist_nm1
+--swap+1
+--underflowed <= to_0IfX(value) <= to_0IfX(lowest_value_reg);
+underflowed <= value < lowest_value_reg;
+valueOffset:process (clk)
+constant ONES:signed(VALUE_BITS-2 downto 0):=(others => '1');
+begin
+  if rising_edge(clk) then
+    low <= shift_left(ONES,hist_nm1) & '1';
+    offset <= lowest_value_reg+low;
+    offset_value <= std_logic_vector(value-offset);
+  end if;
+end process valueOffset;
+
+binWidth:entity dsp.dynamic_round
 generic map(
   WIDTH_IN => VALUE_BITS,
-  FRAC_IN => 0,
   WIDTH_OUT => ADDRESS_BITS,
-  FRAC_OUT => FRAC_OUT,
   TOWARDS_INF => FALSE
 )
 port map(
   clk => clk,
   reset => reset,
-  input => input,
-  output => output
+  msb => msb,
+  point => point,
+  input => offset_value,
+  output => bin
 );
-
-
---swap+1
---underflowed <= to_0IfX(value) <= to_0IfX(lowest_value_reg);
-underflowed <= value < lowest_value_reg;
-valueOffset:process (clk)
-constant MIN:signed(VALUE_BITS-1 downto 0):=(VALUE_BITS-1 => '1',others => '0');
-begin
-  if rising_edge(clk) then
-    if underflowed then
-      offset_value <= MIN;
-    else
-      offset_value <= value-lowest_value_reg+MIN;
-    end if;
-  end if;
-end process valueOffset;
 
 --swap+2
 valueBin:process(clk)
@@ -170,6 +194,7 @@ if rising_edge(clk) then
   bin_value <= shift_right(ordered,to_integer(to_0IfX(bin_n_reg)));
 end if;
 end process valueBin;
+
 --swap+3
 overflowed <= to_0IfX(bin_value) >= resize(to_0IfX(last_bin_reg),VALUE_BITS);
 underflow <= to_0IfX(bin_value)=0;
