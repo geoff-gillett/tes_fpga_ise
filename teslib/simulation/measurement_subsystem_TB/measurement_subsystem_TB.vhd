@@ -22,6 +22,9 @@ use extensions.logic.all;
 library streamlib;
 use streamlib.types.all;
 
+library dsp;
+use dsp.types.all;
+
 use work.types.all;
 use work.registers.all;
 use work.events.all;
@@ -311,7 +314,7 @@ begin
 end process clkCount;
 
 stimulusFile:process
-	file sample_file:text is in "../input_signals/double_peak";
+	file sample_file:text is in "../input_signals/short";
 	variable file_line:line; -- text line buffer 
 	variable str_sample:string(4 downto 1);
 	variable sample_in:std_logic_vector(15 downto 0);

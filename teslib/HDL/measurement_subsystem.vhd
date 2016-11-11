@@ -141,20 +141,22 @@ signal adc_delayed0,adc_mux0:adc_sample_t;
 signal adc_select:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal raw_sample,filtered_sample:signal_t;
 signal filtered_0xing,raw_0xing:boolean;
+signal peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 
 constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
-attribute MARK_DEBUG of mca_value:signal is DEBUG;
-attribute MARK_DEBUG of mca_value_valid:signal is DEBUG;
-attribute MARK_DEBUG of value_select:signal is DEBUG;
-attribute MARK_DEBUG of channel_select:signal is DEBUG;
+--attribute MARK_DEBUG of mca_value:signal is DEBUG;
+--attribute MARK_DEBUG of mca_value_valid:signal is DEBUG;
+--attribute MARK_DEBUG of value_select:signal is DEBUG;
+--attribute MARK_DEBUG of channel_select:signal is DEBUG;
 --attribute MARK_DEBUG of adc_mux0:signal is DEBUG;
 --attribute MARK_DEBUG of adc_delayed0:signal is DEBUG;
 --attribute MARK_DEBUG of adc_select:signal is DEBUG;
-attribute MARK_DEBUG of raw_sample:signal is DEBUG;
-attribute MARK_DEBUG of filtered_sample:signal is DEBUG;
-attribute MARK_DEBUG of raw_0xing:signal is DEBUG;
-attribute MARK_DEBUG of filtered_0xing:signal is DEBUG;
+--attribute MARK_DEBUG of raw_sample:signal is DEBUG;
+--attribute MARK_DEBUG of filtered_sample:signal is DEBUG;
+--attribute MARK_DEBUG of raw_0xing:signal is DEBUG;
+--attribute MARK_DEBUG of filtered_0xing:signal is DEBUG;
+attribute MARK_DEBUG of peak_count:signal is DEBUG;
 
 begin
 --test signals------------------------------------------------------------------  
@@ -170,7 +172,7 @@ begin
 -- processing channels
 --------------------------------------------------------------------------------
 measurements <= m;
-
+peak_count <= m(0).eflags.peak_count;
 --TODO expose the .3 signals to mca 
 -- move selectors inside
 

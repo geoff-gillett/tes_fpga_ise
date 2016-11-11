@@ -34,7 +34,6 @@ port (
   raw:in signed(WIDTH-1 downto 0);
   slope:in signed(WIDTH-1 downto 0);
   filtered:in signed(WIDTH-1 downto 0);
-  
   measurements:out measurements_t
 );
 end entity measure;
@@ -73,6 +72,11 @@ signal slope_threshold:signed(WIDTH-1 downto 0);
 signal pulse_threshold:signed(WIDTH-1 downto 0);
 signal valid_peak,max_slope_cfd:boolean;
 signal peak_count_n,peak_count:unsigned(PEAK_COUNT_BITS downto 0);
+
+
+constant DEBUG:string:="FALSE";
+attribute MARK_DEBUG:string;
+attribute MARK_DEBUG of peak_count:signal is DEBUG;
 
 begin
 measurements <= m;
@@ -195,7 +199,7 @@ begin
       a_pulse_thresh_p 
         <= (filtered_x >= pulse_threshold_s) & a_pulse_thresh_p(1 to DEPTH-1);
      
-      peak_count_n <= peak_count + 1;
+      --peak_count_n <= peak_count + 1; --FIXME why here
       
       m.pulse_area <= pulse_area; 
       m.above_area_threshold <= pulse_area >= area_threshold_s;
@@ -329,10 +333,8 @@ begin
         m.time_offset <= m.pulse_time;
       end if;
 
-      
       if slope_pos_Txing_p(DEPTH-1) then
         m.armed <= TRUE;
-        m.has_armed <= TRUE;
       elsif slope_neg_0xing_p(DEPTH) then
         m.armed <= FALSE;
       end if;

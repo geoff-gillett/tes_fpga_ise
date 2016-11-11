@@ -75,7 +75,17 @@ signal max,last_peak:boolean;
 signal stamp_peak_ovfl:boolean;
 signal has_armed,above_area_threshold:boolean;
 signal clear_address_m1:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal above_pulse_threshold:boolean;
+signal armed:boolean;
   
+constant DEBUG:string:="TRUE";
+attribute MARK_DEBUG:string;
+attribute MARK_DEBUG of height:signal is DEBUG;
+attribute MARK_DEBUG of rise_time:signal is DEBUG;
+attribute MARK_DEBUG of commit_event:signal is DEBUG;
+attribute MARK_DEBUG of above_pulse_threshold:signal is DEBUG;
+attribute MARK_DEBUG of armed:signal is DEBUG;
+
 begin
 m <= measurements;
 overflow <= overflow_int;
@@ -113,6 +123,8 @@ begin
         height <= height_mux;
         rise_time <= m.rise_time;
         height_addr <= m.peak_address;
+        above_pulse_threshold <= m.above_pulse_threshold;
+        armed <= m.armed;
       end if;
       
       stamp_peak <= m.stamp_peak and m.valid_peak and enable;
@@ -131,7 +143,13 @@ begin
       end if;
       
       stamp_pulse <= m.stamp_pulse and m.valid_peak and enable; 
-      max <= m.slope.neg_0xing;
+      
+      if m.slope.neg_0xing then
+        max <= TRUE;
+        flags <= m.eflags;
+      else
+        max <= FALSE;
+      end if;
       
       pulse_end <= m.pulse_threshold_neg;
       if m.pulse_threshold_neg then
@@ -196,7 +214,8 @@ begin
         
         if max then 
           started <= FALSE;
-          if m.armed and m.above_pulse_threshold and not framer_full and
+          --if m.armed and m.above_pulse_threshold and not framer_full and
+          if armed and above_pulse_threshold and not framer_full and
              (started or stamp_peak) then
             commit_event <= TRUE; 
           else

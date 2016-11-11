@@ -289,7 +289,7 @@ return	streambus_t is
 begin
   sb.data := set_endianness(e.height,endianness) &
              set_endianness(e.rise_time,endianness) &
-             to_std_logic(e.flags) & 
+             to_std_logic(e.flags) & --FIXME set endianess 
              "----------------"; 
 	sb.discard := (others => FALSE);
 	sb.last := (0 => TRUE, others => FALSE);
