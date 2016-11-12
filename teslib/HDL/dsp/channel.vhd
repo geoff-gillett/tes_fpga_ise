@@ -58,10 +58,10 @@ signal range_error:boolean;
 
 --debug
 
-constant DEBUG:string:="FALSE";
-attribute mark_debug:string;
-attribute mark_debug of sample:signal is DEBUG;
-attribute mark_debug of sample_in:signal is DEBUG;
+--constant DEBUG:string:="FALSE";
+--attribute MARK_DEBUG:string;
+--attribute MARK_DEBUG of sample:signal is DEBUG;
+--attribute MARK_DEBUG of sample_in:signal is DEBUG;
 
 begin
 measurements <= m;

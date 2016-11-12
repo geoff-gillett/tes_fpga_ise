@@ -18,7 +18,7 @@ use extensions.logic.all;
 
 use work.types.all;
 use work.functions.all;
-use work.adc.all;
+--use work.adc.all;
 use work.registers.all;
 
 entity global_registers is

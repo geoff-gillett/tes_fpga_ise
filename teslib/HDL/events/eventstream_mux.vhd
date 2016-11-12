@@ -111,23 +111,23 @@ end function;
 --------------------------------------------------------------------------------
 -- debug
 --------------------------------------------------------------------------------
-constant DEBUG:string:="FALSE";
-signal tick_s_last,tick_s_ready,tick_s_valid:boolean;
+--constant DEBUG:string:="FALSE";
+--signal tick_s_last,tick_s_ready,tick_s_valid:boolean;
 --signal muxstream_out_last:boolean;
-attribute S:string;
+--attribute S:string;
 
-attribute MARK_DEBUG:string;
-attribute MARK_DEBUG of arb_state_v:signal is DEBUG;
---attribute MARK_DEBUG of valids:signal is DEBUG;
---attribute MARK_DEBUG of readys:signal is DEBUG;
-attribute MARK_DEBUG of tick_s_last,tick_s_ready,tick_s_valid:signal is DEBUG;
---attribute MARK_DEBUG of sel:signal is DEBUG;
-attribute MARK_DEBUG of tick:signal is DEBUG;
+--attribute MARK_DEBUG:string;
+--attribute MARK_DEBUG of arb_state_v:signal is DEBUG;
+----attribute MARK_DEBUG of valids:signal is DEBUG;
+----attribute MARK_DEBUG of readys:signal is DEBUG;
+--attribute MARK_DEBUG of tick_s_last,tick_s_ready,tick_s_valid:signal is DEBUG;
+----attribute MARK_DEBUG of sel:signal is DEBUG;
+--attribute MARK_DEBUG of tick:signal is DEBUG;
 
 begin
-tick_s_last <= streams(0).last(0);
-tick_s_valid <= valids(0);
-tick_s_ready <= readys(0);
+--tick_s_last <= streams(0).last(0);
+--tick_s_valid <= valids(0);
+--tick_s_ready <= readys(0);
 --muxstream_out_last <= muxstream_out.last(0);
 arb_state_v <= to_std_logic(arb_state,3);
 valid <= valid_out;

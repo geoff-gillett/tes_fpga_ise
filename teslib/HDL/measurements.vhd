@@ -151,6 +151,7 @@ type measurements_t is record
   armed:boolean; 
   has_armed:boolean;
   
+  height:signal_t; 
   height_valid:boolean;
   	
 	cfd_low:boolean; 

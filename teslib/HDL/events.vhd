@@ -54,7 +54,7 @@ function to_event_type_t(sb:streambus_t) return event_type_t;
 ----------------------- event_flags_t - 16 bits---------------------------------
 --| 	first byte transmitted        ||          second byte transmitted        |
 --|    4     |      1       |   3   ||  2   	|   2    |    3       |     1    |
---|peak_count|height_rel2min|channel||timing_d|height_d|event_type_t|new_window|
+--|peak_count| peak_overflow|channel||timing_d|height_d|event_type_t|new_window|
 type detection_flags_t is record 
 	peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0); 
 	peak_overflow:boolean; 

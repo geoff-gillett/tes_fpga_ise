@@ -18,7 +18,7 @@ use extensions.boolean_vector.all;
 use extensions.logic.all;
 
 use work.types.all;
-use work.adc.all;
+--use work.adc.all;
 
 entity input_sel is
 generic(

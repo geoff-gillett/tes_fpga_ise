@@ -37,6 +37,7 @@ use work.types.all;
 use work.functions.all;
 use work.registers.all;
 use work.measurements.all;
+use work.events.all;
 
 entity measurement_subsystem is
 generic(
@@ -136,14 +137,21 @@ signal framestream:streambus_t;
 signal framestream_valid:boolean;
 signal framestream_ready:boolean;
 
+--------------------------------------------------------------------------------
 -- test signals
-signal adc_delayed0,adc_mux0:adc_sample_t;
-signal adc_select:std_logic_vector(ADC_CHANNELS-1 downto 0);
-signal raw_sample,filtered_sample:signal_t;
-signal filtered_0xing,raw_0xing:boolean;
-signal peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
+--------------------------------------------------------------------------------
+--signal adc_delayed0,adc_mux0:adc_sample_t;
+--signal adc_select:std_logic_vector(ADC_CHANNELS-1 downto 0);
+--signal raw_sample,filtered_sample:signal_t;
+--signal filtered_0xing,raw_0xing:boolean;
+--signal peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 
-constant DEBUG:string:="TRUE";
+signal flags:std_logic_vector(15 downto 0);
+signal height_valid:boolean;
+signal height:signal_t;
+signal rise_time:time_t;
+
+constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
 --attribute MARK_DEBUG of mca_value:signal is DEBUG;
 --attribute MARK_DEBUG of mca_value_valid:signal is DEBUG;
@@ -156,23 +164,32 @@ attribute MARK_DEBUG:string;
 --attribute MARK_DEBUG of filtered_sample:signal is DEBUG;
 --attribute MARK_DEBUG of raw_0xing:signal is DEBUG;
 --attribute MARK_DEBUG of filtered_0xing:signal is DEBUG;
-attribute MARK_DEBUG of peak_count:signal is DEBUG;
+--attribute MARK_DEBUG of peak_count:signal is DEBUG;
+attribute MARK_DEBUG of flags:signal is DEBUG;
+attribute MARK_DEBUG of height_valid:signal is DEBUG;
+attribute MARK_DEBUG of height:signal is DEBUG;
 
 begin
---test signals------------------------------------------------------------------  
+--------------------------------------------------------------------------------
+--test signals
+--------------------------------------------------------------------------------
  --adc_delayed0 <= adc_delayed(0);
  --adc_mux0 <= adc_mux(0);
  --adc_select <= c_reg(0).capture.adc_select;
- raw_sample <= m(0).raw.sample;
- filtered_sample <= m(0).filtered.sample;
- raw_0xing <= m(0).raw.zero_xing;
- filtered_0xing <= m(0).filtered.zero_xing;
+-- raw_sample <= m(0).raw.sample;
+-- filtered_sample <= m(0).filtered.sample;
+-- raw_0xing <= m(0).raw.zero_xing;
+-- filtered_0xing <= m(0).filtered.zero_xing;
+ --peak_count <= m(0).eflags.peak_count;
+ flags <= to_std_logic(m(0).eflags);
+ height_valid <= m(0).height_valid;
+ height <= m(0).height;
+ rise_time <= m(0).rise_time;
  
 --------------------------------------------------------------------------------
 -- processing channels
 --------------------------------------------------------------------------------
 measurements <= m;
-peak_count <= m(0).eflags.peak_count;
 --TODO expose the .3 signals to mca 
 -- move selectors inside
 

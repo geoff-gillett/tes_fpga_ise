@@ -74,9 +74,9 @@ signal valid_peak,max_slope_cfd:boolean;
 signal peak_count_n,peak_count:unsigned(PEAK_COUNT_BITS downto 0);
 
 
-constant DEBUG:string:="FALSE";
-attribute MARK_DEBUG:string;
-attribute MARK_DEBUG of peak_count:signal is DEBUG;
+--constant DEBUG:string:="FALSE";
+--attribute MARK_DEBUG:string;
+--attribute MARK_DEBUG of peak_count:signal is DEBUG;
 
 begin
 measurements <= m;
@@ -214,6 +214,7 @@ begin
          
         first_peak <= TRUE;
         peak_count <= (others => '0');
+        m.eflags.peak_count <= (others => '0');
         peak_count_n <= (0 => '1',others => '0');
         m.last_peak <= FALSE;
         m.time_offset <= (others => '0');
@@ -258,6 +259,7 @@ begin
             m.last_peak <= peak_count_n=('0' & m.max_peaks);
             peak_count <= peak_count_n;
             peak_count_n <= peak_count_n + 1;
+            m.eflags.peak_count <= peak_count(PEAK_COUNT_BITS-1 downto 0);
             if m.eflags.event_type.detection=PULSE_DETECTION_D or
               m.eflags.event_type.detection=TRACE_DETECTION_D then
               m.peak_address <= resize(  --FIXME  use peak_addr_n minimise bits
@@ -323,6 +325,17 @@ begin
         end if;
       end case;
       
+      case m.eflags.height is
+      when PEAK_HEIGHT_D =>
+        m.height <= m.filtered.sample; 
+      when CFD_HEIGHT_D =>
+        m.height <= m.filtered.sample; 
+      when SLOPE_INTEGRAL_D =>
+        m.height <= resize(m.slope.area,16); --FIXME scale?
+      when SLOPE_MAX_D =>
+        m.height <= m.slope.extrema(15 downto 0); 
+      end case;
+        
       if m.eflags.height=CFD_HEIGHT_D then
         m.height_valid <= cfd_high_p(DEPTH-1);
       else
@@ -365,7 +378,7 @@ m.valid_peak <= valid_peak_p(DEPTH);
 m.cfd_high <= cfd_high_p(DEPTH);
 m.cfd_low <= cfd_low_p(DEPTH);
 m.max_slope <= max_slope_p(DEPTH);
-m.eflags.peak_count <= peak_count(PEAK_COUNT_BITS-1 downto 0);
+--m.eflags.peak_count <= peak_count(PEAK_COUNT_BITS-1 downto 0);
 m.above_pulse_threshold <= a_pulse_thresh_p(DEPTH-4);
 m.pulse_threshold_pos <= pulse_pos_Txing_p(DEPTH-4);
 m.pulse_threshold_neg <= pulse_neg_Txing_p(DEPTH-4);

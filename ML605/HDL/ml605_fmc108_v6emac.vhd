@@ -346,11 +346,11 @@ signal filter_events,slope_events,baseline_events:
 signal adc_sample0:adc_sample_t;
 --signal adc_enable:boolean_vector(ADC_CHANNELS-1 downto 0);
 
-constant DEBUG:string:="FALSE";
-attribute MARK_DEBUG:string;
+--constant DEBUG:string:="FALSE";
+--attribute MARK_DEBUG:string;
 --attribute MARK_DEBUG of fifo_reset:signal is DEBUG;
 --attribute MARK_DEBUG of enables_reg2:signal is DEBUG;
-attribute MARK_DEBUG of adc_sample0:signal is DEBUG;
+--attribute MARK_DEBUG of adc_sample0:signal is DEBUG;
 --attribute MARK_DEBUG of fifo_valid:signal is DEBUG;
 --attribute MARK_DEBUG of adc_enable:signal is DEBUG;
 

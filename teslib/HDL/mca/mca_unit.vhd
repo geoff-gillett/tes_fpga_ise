@@ -21,7 +21,7 @@ use streamlib.types.all;
 
 library mcalib;
 
-use work.adc.all;
+--use work.adc.all;
 use work.events.all;
 use work.registers.all;
 --use work.protocol.all;

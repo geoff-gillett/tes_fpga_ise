@@ -50,7 +50,7 @@ signal pulse:pulse_detection_t;
 signal pulse_peak:pulse_peak_t;
 signal pulse_peak_we:boolean_vector(CHUNKS-1 downto 0);
 
-signal height_mux:signal_t;
+--signal height_mux:signal_t;
 signal started,commit_event,overflow_int,error_int:boolean;
 signal frame_word:streambus_t;
 signal frame_we:boolean_vector(CHUNKS-1 downto 0);
@@ -78,36 +78,18 @@ signal clear_address_m1:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal above_pulse_threshold:boolean;
 signal armed:boolean;
   
-constant DEBUG:string:="TRUE";
-attribute MARK_DEBUG:string;
-attribute MARK_DEBUG of height:signal is DEBUG;
-attribute MARK_DEBUG of rise_time:signal is DEBUG;
-attribute MARK_DEBUG of commit_event:signal is DEBUG;
-attribute MARK_DEBUG of above_pulse_threshold:signal is DEBUG;
-attribute MARK_DEBUG of armed:signal is DEBUG;
+--constant DEBUG:string:="FALSE";
+--attribute MARK_DEBUG:string;
+--attribute MARK_DEBUG of height:signal is DEBUG;
+--attribute MARK_DEBUG of rise_time:signal is DEBUG;
+--attribute MARK_DEBUG of commit_event:signal is DEBUG;
+--attribute MARK_DEBUG of above_pulse_threshold:signal is DEBUG;
+--attribute MARK_DEBUG of armed:signal is DEBUG;
 
 begin
 m <= measurements;
 overflow <= overflow_int;
 error <= error_int;
-
---TODO move this into measure.vhd?
-heightMux:process(m.filtered.sample,
-  m.slope.area(15 downto 0), m.slope.extrema(15 downto 0),
-  m.eflags.height
-)
-begin
-  case m.eflags.height is
-  when PEAK_HEIGHT_D =>
-    height_mux <= m.filtered.sample; 
-  when CFD_HEIGHT_D =>
-    height_mux <= m.filtered.sample; 
-  when SLOPE_INTEGRAL_D =>
-    height_mux <= m.slope.area(15 downto 0); 
-  when SLOPE_MAX_D =>
-    height_mux <= m.slope.extrema(15 downto 0); 
-  end case;
-end process heightMux;
 
 dataReg:process(clk)
 begin
@@ -120,7 +102,7 @@ begin
       
       height_valid <= m.height_valid and m.valid_peak;
       if m.height_valid then --pulse_peak_we 0,2
-        height <= height_mux;
+        height <= m.height;
         rise_time <= m.rise_time;
         height_addr <= m.peak_address;
         above_pulse_threshold <= m.above_pulse_threshold;
@@ -137,19 +119,20 @@ begin
       
       pulse_start <= m.pulse_start and m.valid_peak;
       if m.pulse_start then
-        flags <= m.eflags;
+        flags.channel <= m.eflags.channel;
+        flags.event_type <= m.eflags.event_type;
+        flags.height <= m.eflags.height;
+        flags.new_window <= m.eflags.new_window;
+        flags.peak_overflow <= m.eflags.peak_overflow;
+        flags.timing <= m.eflags.timing;
         size <= m.size;
         clear_addr <= m.last_address;
       end if;
       
       stamp_pulse <= m.stamp_pulse and m.valid_peak and enable; 
       
-      if m.slope.neg_0xing then
-        max <= TRUE;
-        flags <= m.eflags;
-      else
-        max <= FALSE;
-      end if;
+      max <=  m.slope.neg_0xing;
+      flags.peak_count <= m.eflags.peak_count;
       
       pulse_end <= m.pulse_threshold_neg;
       if m.pulse_threshold_neg then
