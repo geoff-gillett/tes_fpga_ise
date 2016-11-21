@@ -5,8 +5,6 @@ use ieee.numeric_std.all;
 library extensions;
 use extensions.logic.all;
 
-use work.registers.all;
-
 
 entity round_TB is
 generic(
@@ -37,7 +35,7 @@ signal sim_pipe:pipe;
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.round2
+UUT:entity work.round
 generic map(
   WIDTH_IN => WIDTH_IN,
   FRAC_IN => FRAC_IN,

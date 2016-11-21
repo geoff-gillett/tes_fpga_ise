@@ -19,7 +19,6 @@ use extensions.logic.all;
 library streamlib;
 use streamlib.types.all;
 
-library dsp;
 
 
 --! Adds value mapping to bins to basic MCA (MCA.vhd).

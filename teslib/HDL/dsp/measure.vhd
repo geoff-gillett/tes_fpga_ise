@@ -209,6 +209,7 @@ begin
                        not a_pulse_thresh_p(DEPTH-1);
       m.peak_start <= slope_pos_0xing_p(DEPTH-1);
       
+      m.max_slope <= max_slope_p(DEPTH);
       -- pulse start
       if slope_pos_0xing_p(DEPTH-1) and not a_pulse_thresh_p(DEPTH-1) then
          
@@ -317,9 +318,9 @@ begin
         end if;
         
       when SLOPE_MAX_TIMING_D =>
-        m.stamp_peak <= max_slope_p(DEPTH-1);
-        m.stamp_pulse <= max_slope_p(DEPTH-1) and first_peak;
-        if max_slope_p(DEPTH-1) then
+        m.stamp_peak <= max_slope_p(DEPTH);
+        m.stamp_pulse <= max_slope_p(DEPTH) and first_peak;
+        if max_slope_p(DEPTH) then
           rise_t_n <= (0 => '1',others => '0');
           m.rise_time <= (others => '0');
         end if;
@@ -346,15 +347,15 @@ begin
         m.time_offset <= m.pulse_time;
       end if;
 
-      if slope_pos_Txing_p(DEPTH-1) then
+      if slope_pos_Txing_p(DEPTH-5) then
         m.armed <= TRUE;
-      elsif slope_neg_0xing_p(DEPTH) then
+      elsif slope_neg_0xing_p(DEPTH-1) then
         m.armed <= FALSE;
       end if;
       
-      if slope_pos_Txing_p(DEPTH-1) then
+      if slope_pos_Txing_p(DEPTH-5) then
         m.has_armed <= TRUE;
-      elsif pulse_neg_Txing_p(DEPTH) then
+      elsif pulse_neg_Txing_p(DEPTH-5) then
         m.has_armed <= FALSE;
       end if;
       
@@ -377,7 +378,7 @@ end process pulseMeas;
 m.valid_peak <= valid_peak_p(DEPTH);
 m.cfd_high <= cfd_high_p(DEPTH);
 m.cfd_low <= cfd_low_p(DEPTH);
-m.max_slope <= max_slope_p(DEPTH);
+--m.max_slope <= max_slope_p(DEPTH);
 --m.eflags.peak_count <= peak_count(PEAK_COUNT_BITS-1 downto 0);
 m.above_pulse_threshold <= a_pulse_thresh_p(DEPTH-4);
 m.pulse_threshold_pos <= pulse_pos_Txing_p(DEPTH-4);

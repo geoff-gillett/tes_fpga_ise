@@ -109,3 +109,4 @@ docs/images/python/smootherdata/traces
 *.eps
 *.older
 dsplib/Vivado/
+teslib/simulation/channel_TB/data/

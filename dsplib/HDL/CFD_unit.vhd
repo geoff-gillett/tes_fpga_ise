@@ -103,6 +103,7 @@ signal q_error,cfd_error_int:boolean:=FALSE;
 
 signal min_p,max_p,valid_peak_p:boolean_vector(1 to DEPTH);
 signal max_slope_int,max_slope_threshold:signed(WIDTH-1 downto 0);
+--signal flags,flags_d:std_logic_vector(7 downto 0);
 
 begin
 
@@ -146,7 +147,7 @@ port map(
   reset => reset1,
   min => (others => '0'),
   cf => cf_int,
-  sig => f_pipe(1),
+  sig => f_pipe(1), --FIXME is this the right latency?
   p => p -- constant fraction of the rise above minimum
 );
 
@@ -173,34 +174,37 @@ begin
       slope_pos_thresh_p 
         <= slope_pos_Thresh & slope_pos_thresh_p(1 to DEPTH-1);
             
-      if slope_pos then
+      
+      -- slope_i = s_pipe(4)
+      if slope_pos then --s_pipe(4)
         cf_int <= constant_fraction;
         slope_threshold_int <= slope_threshold;
         pulse_threshold_int <= pulse_threshold;
       end if; 
       
       if slope_pos_thresh_p(1) then
-        armed <= TRUE;
-      elsif slope_neg_p(2) then
+        armed <= TRUE; -- aligned to pipe(6)
+      elsif slope_neg_p(1) then
         armed <= FALSE;
       end if;
       
-      if slope_pos then
-        max_slope_int <= slope_i;
+      if slope_pos_p(1) then
+        max_slope_int <= s_pipe(5);
       else
-        if slope_i > max_slope_int then
-          max_slope_int <= slope_i;
+        if s_pipe(5) > max_slope_int then
+          max_slope_int <= s_pipe(5);
         end if;
       end if;
       
-      above <= f_pipe(5) >= pulse_threshold_int;
+      above <= f_pipe(5) >= pulse_threshold_int; -- aligned to pipe(6)
       
       cfd_low_i <= p;
-      cfd_high_i <= f_pipe(5) - p;
+      cfd_high_i <= f_pipe(5) - p; -- Correct latency 
       
       --FIXME need a reset signal to be sent to end of delay 
       q_error <= FALSE;
       q_wr_en <= '0';
+      --FIXME this is bullshit
       if slope_neg_p(1) and 
          (cfd_state/=BOOT_S or cfd_state/=INIT_S or cfd_state/=WAIT_S) then
         if q_full='0' then
@@ -227,10 +231,11 @@ end process cfReg;
 assert q_full='0' 
 report "Threshold queue full" severity ERROR;
 
-cf_data(WIDTH-2 downto 0) <= std_logic_vector(cfd_low_i(WIDTH-1 downto 1));
+-- can safely remove MSBs as all values will be positive
+cf_data(WIDTH-2 downto 0) <= std_logic_vector(cfd_low_i(WIDTH-2 downto 0));
 cf_data(WIDTH-1) <= to_std_logic(armed);
 cf_data(2*WIDTH-2 downto WIDTH) 
-  <= std_logic_vector(cfd_high_i(WIDTH-1 downto 1));
+  <= std_logic_vector(cfd_high_i(WIDTH-2 downto 0));
 cf_data(2*WIDTH-1) <= to_std_logic(above);
 cf_data(3*WIDTH-1 downto 2*WIDTH) <= std_logic_vector(max_slope_int);
 
@@ -246,6 +251,20 @@ port map (
   full => q_full,
   empty => q_empty
 );
+
+-- FIXME add a delay for flags
+-- Need a ready flag, 
+
+--flagDelay:entity work.sdp_bram_delay
+--generic map(
+--  DELAY => CFD_DELAY,
+--  WIDTH => 8
+--)
+--port map(
+--  clk => clk,
+--  input => std_logic_vector(flags),
+--  delayed => flags_d
+--);
 
 rawDelay:entity work.sdp_bram_delay
 generic map(
@@ -343,10 +362,10 @@ begin
             cfd_error_int <= TRUE;
           else
             cfd_state <= ARMED_S;
-            cfd_high_threshold <= signed(q_dout(2*WIDTH-2 downto WIDTH) & '0');
-            cfd_low_threshold <= signed(q_dout(WIDTH-2 downto 0) & '0');
+            cfd_high_threshold <= signed('0' & q_dout(2*WIDTH-2 downto WIDTH));
+            cfd_low_threshold <= signed('0' & q_dout(WIDTH-2 downto 0));
             max_slope_threshold <= signed(q_dout(3*WIDTH-1 downto 2*WIDTH));
-            valid_peak_int <= ((q_dout(2*WIDTH-1) and q_dout(WIDTH-1))='1');
+            valid_peak_int <= (q_dout(2*WIDTH-1)='1' and q_dout(WIDTH-1)='1');
           end if;
         end if;
             

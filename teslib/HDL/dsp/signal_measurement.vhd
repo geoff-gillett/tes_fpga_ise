@@ -69,8 +69,8 @@ type extrema_state is (MAX_S,MIN_S);
 signal state:extrema_state;
 
 begin
-extrema <= extreme_int;
 signal_out <= pipe(DEPTH);
+extrema <= extreme_int;
 pos_xing <= pos_p(DEPTH-1);
 neg_xing <= neg_p(DEPTH-1);
 xing <= xing_p(DEPTH-1);
@@ -157,8 +157,10 @@ extremeMeas:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
+    
     extreme_int <= (others => '0');
     state <= MAX_S; 
+    
   else
     if pos_p(DEPTH-1) then
       state <= MAX_S;
@@ -167,14 +169,14 @@ if rising_edge(clk) then
     end if;
     if xing_p(DEPTH-1) then
       extreme_int <= pipe(DEPTH-1);
-    end if;
-    
-    if (state=MAX_S and gt) then
-      extreme_int <= pipe(DEPTH-1);
-    end if;
-    
-    if (state=MIN_S and not gt) then
-      extreme_int <= pipe(DEPTH-1);
+    else
+      if state=MAX_S and gt then
+        extreme_int <= pipe(DEPTH-1);
+      end if;
+      
+      if (state=MIN_S and not gt) then
+        extreme_int <= pipe(DEPTH-1);
+      end if;
     end if;
     
   end if;

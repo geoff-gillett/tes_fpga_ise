@@ -18,13 +18,13 @@ signal clk:std_logic:='1';
 signal reset:std_logic:='1';
 constant CLK_PERIOD:time:=4 ns;
 
-constant SIM_WIDTH:integer:=5;
+constant SIM_WIDTH:integer:=4;
 signal sim_count,sim_out:signed(SIM_WIDTH-1 downto 0);
 
 constant DEPTH:natural:=9;
 type pipe is array (1 to DEPTH) of signed(SIM_WIDTH-1 downto 0);
 signal sim_pipe:pipe;
-signal hist_nm1:natural range 0 to ADDRESS_BITS;
+signal hist_nm1:natural range 0 to ADDRESS_BITS; -- last bin
 signal bin_n:natural range 0 to ADDRESS_BITS;
 signal lowest_value:signed(VALUE_BITS-1 downto 0);
 signal value:signed(VALUE_BITS-1 downto 0);
@@ -41,7 +41,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  hist_nm1 => hist_nm1,
+  last_bin => hist_nm1, 
   bin_n => bin_n,
   lowest_value => lowest_value,
   value => value,
@@ -66,8 +66,8 @@ value <= resize(sim_count,VALUE_BITS);
 stimulus:process is
 begin
   bin_n <= 1;
-  hist_nm1 <= 2;
-  lowest_value <= to_signed(0,VALUE_BITS);
+  hist_nm1 <= 4;
+  lowest_value <= to_signed(-7,VALUE_BITS);
   wait for CLK_PERIOD;
   reset <= '0';
   wait;

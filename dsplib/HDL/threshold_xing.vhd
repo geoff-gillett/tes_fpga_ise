@@ -54,6 +54,7 @@ first_closest <= abs1 < abs0;
 pos_int <= dif0(WIDTH)='0' and dif1(WIDTH)='1';
 neg_int <= (dif0(WIDTH)='1' and dif1(WIDTH)='0' and not dif_was0) or
            (dif1(WIDTH)='0' and (not dif_was0 and dif_is0));
+           --(dif1(WIDTH)='0' and (not dif_was0 and dif_is0));
 
 signal_int <= resize(signal_in,signal_in'length+1);
 reg:process (clk) is

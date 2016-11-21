@@ -124,7 +124,7 @@ begin
 end process clkCount;
 
 stimulusFile:process
-file sample_file:text is in "../input_signals/double_peak";
+file sample_file:text is in "../input_signals/long";
 variable file_line:line; -- text line buffer 
 variable str_sample:string(4 downto 1);
 variable sample_in:std_logic_vector(15 downto 0);
@@ -134,7 +134,7 @@ while not endfile(sample_file) loop
   read(file_line, str_sample);
   sample_in:=hexstr2vec(str_sample);
   wait until rising_edge(clk);
-  adc_sample <= resize(sample_in, ADC_BITS);
+--  adc_sample <= resize(sample_in, ADC_BITS);
   if clk_count mod 10000 = 0 then
     report "clk " & integer'image(clk_count);
   end if;
@@ -156,7 +156,7 @@ end process simsquare;
 squaresig <= std_logic_vector(to_unsigned(100,ADC_BITS))
              when sim_count(SIM_WIDTH-1)='1' 
              else std_logic_vector(to_unsigned(1000,ADC_BITS));
---adc_sample <= squaresig;
+adc_sample <= squaresig;
 
 stimulus:process
 begin
@@ -182,9 +182,9 @@ registers.baseline.new_only <= TRUE;
 registers.baseline.subtraction <= TRUE;
 registers.baseline.timeconstant <= to_unsigned(2**12,32);
 
-registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
-registers.capture.slope_threshold <= to_unsigned(524,DSP_BITS-1);
-registers.capture.pulse_threshold <= to_unsigned(400,DSP_BITS-1);
+registers.capture.constant_fraction  <= to_unsigned(0,DSP_BITS-1);
+registers.capture.slope_threshold <= to_unsigned(2300,DSP_BITS-1);
+registers.capture.pulse_threshold <= to_unsigned(3300,DSP_BITS-1);
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 registers.capture.detection <= PEAK_DETECTION_D;
