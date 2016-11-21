@@ -16,7 +16,7 @@ use ieee.numeric_std.all;
 library extensions;
 use extensions.logic.all;
 
-
+--latency = 4
 entity threshold_xing is
 generic(
 	WIDTH:integer:=18

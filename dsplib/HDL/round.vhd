@@ -17,7 +17,7 @@ generic(
   FRAC_IN:integer:=28;
   WIDTH_OUT:integer:=18;
   FRAC_OUT:integer:=3;
-  TOWARDS_INF:boolean:=TRUE
+  TOWARDS_INF:boolean:=FALSE
 ); 
 port(
   clk:in std_logic;

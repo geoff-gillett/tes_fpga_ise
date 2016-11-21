@@ -55,6 +55,7 @@ signal stage2_config:fir_control_in_t;
 signal stage2_events:fir_control_out_t;
 signal baseline_config:fir_control_in_t;
 signal baseline_events:fir_control_out_t;
+signal simenable:boolean:=FALSE;
 
 constant CF:integer:=2**17/10;
 
@@ -146,7 +147,7 @@ end process stimulusFile;
 simsquare:process (clk) is
 begin
   if rising_edge(clk) then
-    if reset1 = '1' then
+    if not simenable then
       sim_count <= (others => '0');
     else
       sim_count <= sim_count+1;
@@ -188,8 +189,8 @@ registers.capture.pulse_threshold <= to_unsigned(3300,DSP_BITS-1);
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 registers.capture.detection <= PEAK_DETECTION_D;
-registers.capture.timing <= CFD_LOW_TIMING_D;
-registers.capture.height <= CFD_HEIGHT_D;
+registers.capture.timing <= PULSE_THRESH_TIMING_D;
+registers.capture.height <= PEAK_HEIGHT_D;
 
 event_enable <= TRUE;
 
@@ -198,6 +199,8 @@ reset1 <= '0';
 reset2 <= '0';
 wait for CLK_PERIOD;
 ready <= TRUE;
+wait for CLK_PERIOD*1500;
+simenable <= TRUE;
 wait; 
 end process stimulus;
 

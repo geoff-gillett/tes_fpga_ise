@@ -6,7 +6,7 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
-entity CFD_unit is
+entity CFD_unit2 is
 generic(
   WIDTH:integer:=18;
   CFD_DELAY:integer:=1020
@@ -38,9 +38,9 @@ port (
   min:out boolean;
   valid_peak:out boolean -- max following min crosses both thresholds
 );
-end entity CFD_unit;
+end entity CFD_unit2;
 
-architecture RTL of CFD_unit is
+architecture RTL of CFD_unit2 is
   
 --constant RAW_CFD_DELAY:integer:=256;
 constant DEPTH:integer:=8;
@@ -66,6 +66,8 @@ signal s_pipe:pipe(1 to DEPTH):=(others => (others => '0'));
 signal s_out_pipe:pipe(1 to DEPTH):=(others => (others => '0'));
 signal slope_neg_p,slope_pos_p:boolean_vector(1 to DEPTH):=(others => FALSE);
 signal slope_pos_thresh_p:boolean_vector(1 to DEPTH):=(others => FALSE);
+
+signal minima:signed(WIDTH-1 downto 0);
 
 signal slope_pos,slope_neg:boolean;
 signal raw_d,filtered_d,filtered_d_reg,slope_d
@@ -138,6 +140,7 @@ port map(
   neg => slope_neg_thresh
 );
 
+--latency 4
 cfCalc:entity work.constant_fraction
 generic map(
   WIDTH => WIDTH
@@ -145,9 +148,9 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  min => (others => '0'),
+  min => minima,
   cf => cf_int,
-  sig => f_pipe(1), --FIXME is this the right latency?
+  sig => f_pipe(5), --FIXME is this the right latency?
   p => p -- constant fraction of the rise above minimum
 );
 
@@ -165,7 +168,12 @@ begin
       slope_threshold_int <= (WIDTH-1 => '0', others => '1');
       pulse_threshold_int <= (WIDTH-1 => '0', others => '1');
       q_error <= FALSE;
+      minima <= (others => '0');
     else
+      if slope_pos then
+        minima <= f_pipe(4);
+      end if;
+      
       
       f_pipe <= filtered & f_pipe(1 to DEPTH-1);
       s_pipe <= slope & s_pipe(1 to DEPTH-1);
@@ -184,7 +192,7 @@ begin
       
       if slope_pos_thresh_p(1) then
         armed <= TRUE; -- aligned to pipe(6)
-      elsif slope_neg_p(2) then
+      elsif slope_neg_p(1) then
         armed <= FALSE;
       end if;
       
@@ -220,6 +228,8 @@ begin
   end if;
 end process cfReg;
 
+--Flags
+--
 --------------------------------------------------------------------------------
 -- CFD delays
 --------------------------------------------------------------------------------

@@ -136,7 +136,7 @@ generic map(
 	FRAC_OUT => SIGNAL_FRAC,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  CFD_DELAY => 1027
+  CFD_DELAY => 1026
 )
 port map(
   clk => clk,

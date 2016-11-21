@@ -22,7 +22,7 @@ generic(
   FRAC_OUT:natural:=1;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  CFD_DELAY:natural:=1027
+  CFD_DELAY:natural:=1000
 );
 port (
   clk:in std_logic;
@@ -349,7 +349,7 @@ begin
 
       if slope_pos_Txing_p(DEPTH-5) then
         m.armed <= TRUE;
-      elsif slope_neg_0xing_p(DEPTH-1) then
+      elsif slope_neg_0xing_p(DEPTH) then
         m.armed <= FALSE;
       end if;
       
