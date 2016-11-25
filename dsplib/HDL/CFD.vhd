@@ -110,6 +110,7 @@ signal max_d,min_d,above_pulse_threshold_d,pulse_threshold_pos_d:boolean;
 signal pulse_threshold_neg_d,slope_threshold_pos_d:boolean;
 signal CFD_error_reg:boolean;
 signal q_was_empty:boolean;
+signal CFD_valid:boolean;
 --signal CFD_error:boolean;
 
 begin
@@ -331,6 +332,8 @@ if rising_edge(clk) then
     slope_t_p_d <= FALSE;
     CFD_error_reg <= FALSE;
     CFD_error <= FALSE;
+    CFD_valid <= FALSE;
+    q_rd_en <= '0';
   else
     overrun_d <= to_boolean(flags_d(8));
     overrun <= overrun_d;
@@ -351,7 +354,7 @@ if rising_edge(clk) then
     slope_threshold_pos <= slope_threshold_pos_d;
     q_rd_en <= '0';
     
-    if q_empty='0' then
+    if q_rd_en='1' then
       cfd_low_threshold <= signed(q_dout(WIDTH-1 downto 0));
       cfd_high_threshold <= signed(q_dout(2*WIDTH-1 downto WIDTH));
       max_slope <= signed(q_dout(3*WIDTH-1 downto 2*WIDTH));
@@ -371,7 +374,15 @@ if rising_edge(clk) then
       q_rd_en <= '0';
     end if;
     
-    CFD_error <= min_d and q_empty='1' and q_was_empty;
+    if min_d and q_empty='1' and q_was_empty then
+      CFD_error <= TRUE;
+      CFD_valid <= FALSE;
+    else
+      CFD_error <= FALSE;
+      if min_d then
+        CFD_valid <= TRUE;
+      end if;
+    end if;
         
   end if;
 end if;

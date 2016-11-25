@@ -40,7 +40,7 @@ end entity measure2;
 architecture RTL of measure2 is
 
 -- pipelines to sync signals
-signal cfd_low,cfd_high,cfd_error:boolean;
+signal cfd_low,cfd_high,cfd_error_cfd:boolean;
 signal slope_cfd,filtered_cfd:signed(WIDTH-1 downto 0);
 signal m:measurements_t;
 
@@ -73,13 +73,13 @@ signal cfd_low_threshold,cfd_high_threshold:signed(WIDTH-1 downto 0);
 signal max_slope_threshold:signed(WIDTH-1 downto 0);
 signal max_cfd,min_cfd:boolean;
 signal will_go_above:boolean;
-signal will_arm:boolean;
-signal overrun:boolean;
-signal armed:boolean;
-signal slope_threshold_pos:boolean;
+signal will_arm_cfd:boolean;
+signal overrun_cfd:boolean;
+signal armed_cfd:boolean;
+signal slope_threshold_pos_cfd:boolean;
 signal above_pulse_threshold:boolean;
-signal pulse_threshold_pos:boolean;
-signal pulse_threshold_neg:boolean;
+signal pulse_threshold_pos_cfd:boolean;
+signal pulse_threshold_neg_cfd:boolean;
 signal cfd_low_pos : boolean;
 signal cfd_low_neg : boolean;
 signal cfd_high_pos : boolean;
@@ -112,19 +112,18 @@ port map(
   min => min_cfd,
   max_slope => max_slope_threshold,
   will_go_above_pulse_threshold => will_go_above,
-  will_arm => will_arm,
-  overrun => overrun,
+  will_arm => will_arm_cfd,
+  overrun => overrun_cfd,
   slope_out => slope_cfd,
-  slope_threshold_pos => slope_threshold_pos,
-  armed => armed,
+  slope_threshold_pos => slope_threshold_pos_cfd,
+  armed => armed_cfd,
   above_pulse_threshold => above_pulse_threshold,
   filtered_out => filtered_cfd,
-  pulse_threshold_pos => pulse_threshold_pos,
-  pulse_threshold_neg => pulse_threshold_neg,
-  cfd_error => cfd_error
+  pulse_threshold_pos => pulse_threshold_pos_cfd,
+  pulse_threshold_neg => pulse_threshold_neg_cfd,
+  cfd_error => cfd_error_cfd
 );
 
---latency ?
 pulseArea:entity dsp.area_acc
 generic map(
   WIDTH => WIDTH,
@@ -135,7 +134,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  xing => pulse_threshold_pos,
+  xing => pulse_threshold_pos_cfd,
   sig => filtered_cfd,  
   area => pulse_area
 );
@@ -216,6 +215,8 @@ begin
       slope_neg_0xing_p <= slope_neg_0xing_cfd & slope_neg_0xing_p(1 to DEPTH-1);
       pulse_pos_Txing_p <= pulse_pos_Txing & pulse_pos_Txing_p(1 to DEPTH-1);
       pulse_neg_Txing_p <= pulse_neg_Txing & pulse_neg_Txing_p(1 to DEPTH-1);
+      
+      
      
       peak_count_n <= peak_count + 1;
       
@@ -301,15 +302,15 @@ begin
       
       case m.eflags.timing is
       when PULSE_THRESH_TIMING_D =>
-        m.stamp_pulse <= pulse_threshold_pos and first_peak;
+        m.stamp_pulse <= pulse_threshold_pos_cfd and first_peak;
         if first_peak then
-          m.stamp_peak <= pulse_threshold_pos; -- 
+          m.stamp_peak <= pulse_threshold_pos_cfd; -- 
         else
           m.stamp_peak <= cfd_low;
         end if;
         
         
-        if pulse_threshold_pos then
+        if pulse_threshold_pos_cfd then
           rise_time_n <= (0 => '1',others => '0');
           m.rise_time <= (others => '0');
         end if;

@@ -15,7 +15,7 @@ generic(
   FRAC:integer:=3;
   AREA_WIDTH:integer:=32;
   AREA_FRAC:integer:=1;
-  CFD_DELAY:integer:=46
+  CFD_DELAY:integer:=46 --1026
 );
 end entity measure_TB;
 
