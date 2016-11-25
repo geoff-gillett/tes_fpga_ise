@@ -20,7 +20,7 @@ use extensions.logic.all;
 -- TODO implement a TDP version that can get 2*width at 1/2 DELAY per bram
 entity sdp_bram_delay is
 generic(
-  DELAY:integer:=1027; -- minimum 3
+  DELAY:integer:=1026; -- minimum 3
   WIDTH:integer:=18
 );
 port(
@@ -32,7 +32,7 @@ end sdp_bram_delay;
 
 architecture rtl of sdp_bram_delay is
 
-constant ADDRWIDTH:integer:=ceilLog2(DELAY-3);
+constant ADDRWIDTH:integer:=ceillog2(DELAY-2);
 
 signal addr:unsigned(ADDRWIDTH-1 downto 0):=(others => '0');
 signal dout_reg:std_logic_vector(WIDTH-1 downto 0);

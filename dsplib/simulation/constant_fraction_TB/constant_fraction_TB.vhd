@@ -32,7 +32,7 @@ signal p:signed(WIDTH-1 downto 0);
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.constant_fraction
+UUT:entity work.constant_fraction2
 generic map(
   WIDTH => WIDTH
 )
@@ -50,11 +50,22 @@ begin
 wait for CLK_PERIOD;
 reset <= '0';
 sig <= to_signed(256, WIDTH);
-cf <= (WIDTH-1 downto WIDTH-2 => '0', others => '1');
+cf <= (WIDTH-3 => '1', others => '0');
 min <= (others => '0');
 wait for CLK_PERIOD*10;
-sig <= to_signed(512, WIDTH);
-min <= to_signed(12, WIDTH);
+sig <= to_signed(64, WIDTH);
+wait for CLK_PERIOD;
+sig <= to_signed(-512, WIDTH);
+wait for CLK_PERIOD;
+sig <= to_signed(-513, WIDTH);
+min <= (others => '0');
+--min <= to_signed(12, WIDTH);
+wait for CLK_PERIOD;
+sig <= to_signed(-514, WIDTH);
+wait for CLK_PERIOD;
+sig <= to_signed(-515, WIDTH);
+wait for CLK_PERIOD;
+sig <= to_signed(-516, WIDTH);
 
 wait;
 end process stimulus;

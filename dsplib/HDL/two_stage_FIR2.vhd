@@ -23,7 +23,7 @@ use work.types.all;
 
 -- stage1 output w=48 f=28
 -- stage2 output w=48 f=28
-entity two_stage_FIR is
+entity two_stage_FIR2 is
 generic(
 	WIDTH:integer:=18
 );
@@ -35,13 +35,12 @@ port(
   stage2_config:in fir_control_in_t;
   stage2_events:out fir_control_out_t;
 
-  sample_out:out signed(WIDTH-1 downto 0);
   stage1:out signed(WIDTH-1 downto 0);
   stage2:out signed(WIDTH-1 downto 0)
 );
-end entity two_stage_FIR;
+end entity two_stage_FIR2;
 
-architecture coregen of two_stage_FIR is
+architecture coregen of two_stage_FIR2 is
 --IP cores FIR compiler 6.3
 component stage1_fir_23
 port (
@@ -86,7 +85,7 @@ end component;
 signal stage1_in,stage2_in:std_logic_vector(23 downto 0);
 signal stage1_out,stage2_out:std_logic_vector(47 downto 0);
 signal stage1_d,stage1_data,stage2_data:std_logic_vector(WIDTH-1 downto 0);
-signal sample_d:std_logic_vector(WIDTH-1 downto 0);
+--signal sample_d:std_logic_vector(WIDTH-1 downto 0);
 
 begin
 	
@@ -166,16 +165,16 @@ port map(
 -- delays to align outputs after FIR group delay
 --------------------------------------------------------------------------------
 --FIXME move outside 
-sampleDelay:entity work.sdp_bram_delay
-generic map(
-  DELAY => 92,
-  WIDTH => WIDTH
-)
-port map(
-  clk => clk,
-  input => std_logic_vector(sample_in),
-  delayed => sample_d
-);
+--sampleDelay:entity work.sdp_bram_delay
+--generic map(
+--  DELAY => 92,
+--  WIDTH => WIDTH
+--)
+--port map(
+--  clk => clk,
+--  input => std_logic_vector(sample_in),
+--  delayed => sample_d
+--);
 
 stage1Delay:entity work.sdp_bram_delay
 generic map(
@@ -188,7 +187,7 @@ port map(
   delayed => stage1_d
 );
 
-sample_out <= signed(sample_d);
+--sample_out <= signed(sample_d);
 stage1 <= signed(stage1_d);
 stage2 <= signed(stage2_data);
 

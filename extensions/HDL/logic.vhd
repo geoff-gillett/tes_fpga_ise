@@ -49,7 +49,8 @@ function to_std_logic(i,w:integer) return std_logic_vector;
 function to_0IfX(slv:std_logic_vector) return std_logic_vector;
 function to_0IfX(u:unsigned) return unsigned;
 function to_0IfX(s:signed) return signed;
-function ceilLog2(a:integer) return integer;
+function ceilLog2(a:natural) return natural;
+function minbits(a:natural) return natural;
 -- reshape shifts and resizes to output width and frac
 function reshape(u:unsigned;in_frac,width,frac:integer) return unsigned;
 function reshape(s:signed;in_frac,width,frac:integer) return signed;
@@ -162,12 +163,20 @@ begin
   return signed(to_0Ifx(std_logic_vector(s)));
 end function;
 
-function ceilLog2(a:integer) return integer is
+function ceilLog2(a:natural) return natural is
 begin
   if a<=1 then return 1;
   else return integer(ceil(log2(real(a))));
   end if;
 end function ceilLog2;
+
+--minimum bits needed to represent a ie 2 takes 3 bits
+function minbits(a:natural) return natural is
+variable l:real;
+begin
+  l:=log2(real(a+1));
+  return natural(ceil(l));
+end function minbits;
 
 function reshape(u:unsigned;in_frac,width,frac:integer) return unsigned is
 begin
