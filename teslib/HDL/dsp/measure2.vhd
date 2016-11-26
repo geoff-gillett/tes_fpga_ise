@@ -80,12 +80,13 @@ signal slope_threshold_pos_cfd:boolean;
 signal above_pulse_threshold:boolean;
 signal pulse_threshold_pos_cfd:boolean;
 signal pulse_threshold_neg_cfd:boolean;
-signal cfd_low_pos : boolean;
-signal cfd_low_neg : boolean;
-signal cfd_high_pos : boolean;
-signal cfd_high_neg : boolean;
+signal cfd_low_pos_x : boolean;
+signal cfd_low_neg_x : boolean;
+signal cfd_high_pos_x : boolean;
+signal cfd_high_neg_x : boolean;
 signal slope_x:signed(WIDTH-1 downto 0);
-signal max_slope : boolean;
+signal max_slope_x : boolean;
+signal max_x,min_x : boolean;
 
 begin
 measurements <= m;
@@ -124,6 +125,7 @@ port map(
   cfd_error => cfd_error_cfd
 );
 
+--latecy 4
 pulseArea:entity dsp.area_acc
 generic map(
   WIDTH => WIDTH,
@@ -141,7 +143,8 @@ port map(
 
 cfdLowXing:entity dsp.crossing
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  STRICT => FALSE
 )
 port map(
   clk => clk,
@@ -149,13 +152,14 @@ port map(
   signal_in => filtered_cfd,
   threshold => cfd_low_threshold,
   signal_out => filtered_x,
-  pos => cfd_low_pos,
-  neg => cfd_low_neg
+  pos => cfd_low_pos_x,
+  neg => cfd_low_neg_x
 );
 
 cfdHighXing:entity dsp.crossing
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  STRICT => FALSE
 )
 port map(
   clk => clk,
@@ -163,21 +167,22 @@ port map(
   signal_in => filtered_cfd,
   threshold => cfd_high_threshold,
   signal_out => open,
-  pos => cfd_high_pos,
-  neg => cfd_high_neg
+  pos => cfd_high_pos_x,
+  neg => cfd_high_neg_x
 );
 
 maxSlopeXing:entity dsp.crossing
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  STRICT => FALSE
 )
 port map(
   clk => clk,
   reset => reset,
   signal_in => slope_cfd,
-  threshold => cfd_high_threshold,
+  threshold => max_slope_threshold,
   signal_out => slope_x,
-  pos => max_slope,
+  pos => max_slope_x,
   neg => open
 );
 
@@ -203,7 +208,14 @@ begin
 --      pulse_threshold_s <= (WIDTH-1 => '0', others => '1');
 --      slope_threshold_s <= (WIDTH-1 => '0', others => '1');
 --      area_threshold_s <= (AREA_WIDTH-1 => '0', others => '1');
+      max_x <= FALSE;
+      min_x <= FALSE;
+      --pulse_threshold_pos_x <= pulse_threshold_pos_cfd;
+
+
     else
+      max_x <= max_cfd;
+      min_x <= min_cfd;
       
       max_slope_p <= max_slope_cfd & max_slope_p(1 to DEPTH-1);
       cfd_low_p <= cfd_low & cfd_low_p(1 to DEPTH-1);
@@ -394,6 +406,7 @@ m.pulse_threshold_neg <= pulse_neg_Txing_p(DEPTH);
 m.slope_threshold_pos <= slope_pos_Txing_p(DEPTH);
 m.slope_threshold_neg <= slope_neg_Txing_p(DEPTH);
 
+--latency 7
 filteredMeas:entity work.signal_measurement
 generic map(
   WIDTH => WIDTH,

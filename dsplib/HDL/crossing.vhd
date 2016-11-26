@@ -19,7 +19,8 @@ use extensions.logic.all;
 --latency = 4
 entity crossing is
 generic(
-	WIDTH:integer:=18
+	WIDTH:integer:=18;
+	STRICT:boolean:=TRUE
 );
 port(
   clk:in std_logic;
@@ -39,13 +40,14 @@ constant DEPTH:integer:=1;
 type pipe_t is array (natural range <>) of signed(WIDTH-1 downto 0);
 signal pipe:pipe_t(1 to DEPTH):=(others => (others => '0'));
 
-signal below,above,was_below,was_above:boolean;
+signal below,above,was_below,was_above,equal,was_equal:boolean;
 
 begin
 signal_out <= pipe(DEPTH);
 
 below <= signal_in < threshold;
 above <= signal_in > threshold;
+equal  <= signal_in = threshold;
 
 reg:process (clk) is
 begin
@@ -60,9 +62,15 @@ begin
       
       was_below <= below;
       was_above <= above;
-      
-      pos <= was_below and not below;
-      neg <= was_above and not above;
+      was_equal <= equal;
+
+      if STRICT then
+        pos <= was_below and not below;
+        neg <= was_above and not above;
+      else
+        pos <= was_below and (above or equal);
+        neg <= was_above and (below or equal);
+      end if;
       
     end if;
 	end if;
