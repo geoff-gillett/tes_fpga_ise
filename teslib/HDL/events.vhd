@@ -290,7 +290,7 @@ begin
   sb.data := set_endianness(e.height,endianness) &
              set_endianness(e.rise_time,endianness) &
              to_std_logic(e.flags) & --FIXME set endianess 
-             "----------------"; 
+             "0000000000000000"; 
 	sb.discard := (others => FALSE);
 	sb.last := (0 => TRUE, others => FALSE);
 	return sb;

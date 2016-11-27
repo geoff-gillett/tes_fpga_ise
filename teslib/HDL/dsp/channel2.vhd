@@ -156,9 +156,11 @@ generic map(
   FRAC_OUT => FRAC_OUT,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  CFD_DELAY => CFD_DELAY-98
+  CFD_DELAY => CFD_DELAY-101,
+  FRAMER_ADDRESS_BITS => MEASUREMENT_FRAMER_ADDRESS_BITS
 )
 port map(
+  enable => event_enable,
   clk => clk,
   reset => reset1,
   registers => registers.capture,
@@ -173,14 +175,14 @@ m.slope <= dsp_m.slope;
 m.above_area_threshold <= dsp_m.above_area_threshold;
 m.above_pulse_threshold <= dsp_m.above_pulse_threshold;
 m.armed <= dsp_m.armed;
-m.baseline <= dsp_m.baseline;
+--m.baseline <= dsp_m.baseline;
 m.cfd_error <= dsp_m.cfd_error;
 m.cfd_high <= dsp_m.cfd_high;
 m.cfd_low <= dsp_m.cfd_low;
 m.eflags <= dsp_m.eflags;
 m.height <= dsp_m.height;
 m.height_valid <= dsp_m.height_valid;
-m.last_address <= dsp_m.last_address;
+--m.last_address <= dsp_m.last_address;
 m.last_peak <= dsp_m.last_peak;
 m.max_peaks <= dsp_m.max_peaks;
 m.max_slope <= dsp_m.max_slope;
@@ -201,9 +203,7 @@ m.stamp_pulse <= dsp_m.stamp_pulse;
 m.time_offset <= dsp_m.time_offset;
 m.valid_peak <= dsp_m.valid_peak;
 
-
-
-rawMeas:entity work.signal_measurement
+rawMeas:entity work.signal_measurement2
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -225,7 +225,7 @@ port map(
   extrema => m.raw.extrema
 );
 
-framer:entity work.measurement_framer
+framer:entity work.measurement_framer2
 generic map(
   FRAMER_ADDRESS_BITS => MEASUREMENT_FRAMER_ADDRESS_BITS,
   ENDIAN => ENDIAN

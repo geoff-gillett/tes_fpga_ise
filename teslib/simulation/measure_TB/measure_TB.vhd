@@ -109,7 +109,7 @@ begin
   stage2_config.reload_last <= '0';
   stage2_config.reload_valid <= '0';
   
-  reg.constant_fraction  <= to_unsigned(CF,17);
+  reg.constant_fraction  <= to_unsigned(0,17);
   reg.slope_threshold <= to_unsigned(2300,WIDTH-1);
   reg.pulse_threshold <= to_unsigned(300,WIDTH-1);
   reg.area_threshold <= to_unsigned(10000,AREA_WIDTH-1);

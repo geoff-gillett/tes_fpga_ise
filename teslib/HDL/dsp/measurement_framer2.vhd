@@ -95,62 +95,61 @@ m <= measurements;
 overflow <= overflow_int;
 error <= error_int;
 
-
-dataReg:process(clk)
-begin
-  if rising_edge(clk) then
-    if reset = '1' then
-      pulse_peak_we <= (others => FALSE); 
-    else
-      
-      framer_full <= framer_free < m.size;
-      
-      --height_valid <= m.height_valid and m.valid_peak;
-      if m.height_valid then --pulse_peak_we 0,2
-        height <= m.height;
-        rise_time <= m.rise_time;
-        height_addr <= m.peak_address;
-        above_pulse_threshold <= m.above_pulse_threshold;
-        armed <= m.armed;
-      end if;
-      
-      stamp_peak <= m.stamp_peak and m.valid_peak and enable;
-      if m.stamp_peak then --pulse_peak_we 1,3
-        stamp_peak_addr <= m.peak_address;
-        minima <= m.filtered.sample;
-        peak_timestamp <= m.pulse_time;
-        last_peak <= m.last_peak;k@
-      end if;
-      
-      pulse_start <= m.pulse_start and m.valid_peak;
-      if m.pulse_start then
-        flags.channel <= m.eflags.channel;
-        flags.event_type <= m.eflags.event_type;
-        flags.height <= m.eflags.height;
-        flags.new_window <= m.eflags.new_window;
-        flags.peak_overflow <= m.eflags.peak_overflow;
-        flags.timing <= m.eflags.timing;
-        size <= m.size;
-        clear_addr <= m.last_address;
-      end if;
-      
-      stamp_pulse <= m.stamp_pulse and m.valid_peak and enable; 
-      
-      max <=  m.slope.neg_0xing;
-      flags.peak_number <= m.eflags.peak_number;
-      
-      pulse_end <= m.pulse_threshold_neg;
-      if m.pulse_threshold_neg then
-        pulse_length <= m.pulse_length;
-        pulse_offset <= m.time_offset;
-        pulse_area <= m.pulse_area;
-        has_armed <= m.has_armed;
-        above_area_threshold <= m.above_area_threshold;
-      end if;
-      
-    end if;
-  end if;
-end process dataReg;
+--dataReg:process(clk)
+--begin
+--  if rising_edge(clk) then
+--    if reset = '1' then
+--      pulse_peak_we <= (others => FALSE); 
+--    else
+--      
+--      framer_full <= framer_free < m.size;
+--      
+--      --height_valid <= m.height_valid and m.valid_peak;
+--      if m.height_valid then --pulse_peak_we 0,2
+--        height <= m.height;
+--        rise_time <= m.rise_time;
+--        height_addr <= m.peak_address;
+--        above_pulse_threshold <= m.above_pulse_threshold;
+--        armed <= m.armed;
+--      end if;
+--      
+--      stamp_peak <= m.stamp_peak and m.valid_peak and enable;
+--      if m.stamp_peak then --pulse_peak_we 1,3
+--        stamp_peak_addr <= m.peak_address;
+--        minima <= m.filtered.sample;
+--        peak_timestamp <= m.pulse_time;
+--        last_peak <= m.last_peak;
+--      end if;
+--      
+--      pulse_start <= m.pulse_start and m.valid_peak;
+--      if m.pulse_start then
+--        flags.channel <= m.eflags.channel;
+--        flags.event_type <= m.eflags.event_type;
+--        flags.height <= m.eflags.height;
+--        flags.new_window <= m.eflags.new_window;
+--        flags.peak_overflow <= m.eflags.peak_overflow;
+--        flags.timing <= m.eflags.timing;
+--        size <= m.size;
+--        clear_addr <= m.last_address;
+--      end if;
+--      
+--      stamp_pulse <= m.stamp_pulse and m.valid_peak and enable; 
+--      
+--      max <=  m.slope.neg_0xing;
+--      flags.peak_number <= m.eflags.peak_number;
+--      
+--      pulse_end <= m.pulse_threshold_neg;
+--      if m.pulse_threshold_neg then
+--        pulse_length <= m.pulse_length;
+--        pulse_offset <= m.time_offset;
+--        pulse_area <= m.pulse_area;
+--        has_armed <= m.has_armed;
+--        above_area_threshold <= m.above_area_threshold;
+--      end if;
+--      
+--    end if;
+--  end if;
+--end process dataReg;
 
 pulse_peak.height <= m.height;
 pulse_peak.minima <= m.filtered.sample;
@@ -170,6 +169,7 @@ peak.flags <= m.eflags;
 peak_we(0) <= m.height_valid;
 peak_we(1) <= m.height_valid;
 peak_we(2) <= m.peak_start;
+peak_we(3) <= m.peak_start;
 
 area.flags <= m.eflags; 
 area.area <= m.pulse_area;
@@ -191,171 +191,171 @@ begin
       
       start <= FALSE;
       commit_event <= FALSE;
-      dump <= FALSE;
-      overflow_int <= FALSE;
-      error_int <= FALSE;
-      frame_we <= (others => FALSE);
-      address <= m.peak_address;
+--      dump <= FALSE;
+--      overflow_int <= FALSE;
+--      error_int <= FALSE;
+--      frame_we <= (others => FALSE);
+--      address <= m.peak_address;
       frame_length <= resize(m.size,FRAMER_ADDRESS_BITS+1);
      
       case m.eflags.event_type.detection is
       when PEAK_DETECTION_D => 
         -- never needs dumping
+        start <= m.stamp_peak and not framer_full;
         frame_word <= to_streambus(peak,ENDIAN);
         frame_we <= peak_we;
+        address <= (others => '0');
         if m.peak_start and framer_full then --this always is at the minima
           overflowed <= TRUE;
-        else
-          started <= TRUE;
         end if;
-        commit_event <= m.slope.neg_0xing and not overflowed;
-      when others => null;
+        if (m.slope.neg_0xing and not overflowed) or 
+           (m.slope.neg_0xing and m.peak_start) then
+          commit_event <= TRUE;
+        end if;
+                        
+      when others => null; --FIXME add others
       end case;
       
-     
-        
-       
-      if m.eflags.event_type.detection = PEAK_DETECTION_D then
-        
-        
-        if m.stamp_peak then
-          if framer_full then
-          else
-            start <= TRUE;
-            started <= TRUE;
-          end if;
-        end if;
-        --what if 
-        commit_event <= (started or m.stamp_peak) and m.slope.neg_0xing;
-        
-        if m.slope.neg_0xing then 
-          started <= FALSE;
-          commit_event <= TRUE;
-          --if m.armed and m.above_pulse_threshold and not framer_full and
-          if armed and above_pulse_threshold and not framer_full and
-             (started or stamp_peak) then
-            commit_event <= TRUE; 
-          else
-            overflow_int <= framer_full;
-            dump <= started or (stamp_peak and not framer_full);
-          end if;
-        end if;
-        
-        if height_valid then
-          if framer_full then
-            overflow_int <= TRUE;
-            dump <= started or stamp_peak;
-          else
-            frame_we <= (others => TRUE);
-          end if;
-        end if;
-      end if;
-     
-      if m.eflags.event_type.detection = AREA_DETECTION_D then
-        if stamp_pulse then
-          if framer_full then
-            overflow_int <= TRUE;
-          else
-            start <= TRUE;
-            started <= TRUE;
-          end if;
-        end if;
-        
-        frame_word <= to_streambus(area,ENDIAN);
-        if pulse_end then 
-          started <= FALSE;
-          if m.has_armed and m.above_area_threshold and not framer_full then
-            commit_event <= TRUE; 
-            frame_we <= (others => TRUE);
-          else
-            overflow_int <= framer_full;
-            dump <= started or (stamp_pulse and not framer_full);
-          end if;
-        end if;
-      end if;
-     
-      --TODO this could be improved 
-      if m.eflags.event_type.detection = PULSE_DETECTION_D then
-        if stamp_pulse and not dumped then
-          if framer_full then
-            overflow_int <= TRUE;
-          else
-            start <= TRUE;
-            started <= TRUE;
-          end if;
-        end if;
-        
-        --header0 can't be dumped yet
-        if pulse_start then
-          clear_address <= clear_addr;
-          clear_address_m1 <= clear_addr-1;
-          cleared <= FALSE;
-          clear_last <= TRUE;
-          
-          if framer_full then
-            overflow_int <= TRUE;
-            dumped <= TRUE;
-            dump <= started or (stamp_pulse and not dumped);
-            pulse_started <= FALSE;
-          else
-            pulse_started <= TRUE;
-            address <= (others => '0');
-            frame_word <= to_streambus(pulse,0,ENDIAN);
-            frame_we <= (others => TRUE);
-            stamp_peak_ovfl <= stamp_peak;
-          end if;
-        end if;
-        
-        --header1
-        if pulse_end then 
-          dumped <= FALSE;
-          started <= FALSE;
-          pulse_started <= FALSE;
-        end if;
-        
-        -- Assumes height_valid can't fire at same time as pulse_threshold_neg 
-        -- but this means pulse reg can which is a problem
-        if pulse_end and pulse_started then 
-          
-          --framer can't be full if pulse_started true
-          if has_armed and above_area_threshold and not dumped then
-            
-            if cleared then
-              address <= (0 => '1',others => '0');
-              frame_word <= to_streambus(pulse,1,ENDIAN);
-              frame_we <= (others => TRUE);
-              commit_event <= TRUE; 
-            else
-              error_int <= TRUE;
-              dump <= started or stamp_pulse;
-            end if;
-          else
-            dump <= started or stamp_pulse;
-          end if;
-        elsif stamp_peak and pulse_started then -- 3 must be set too
-          address <= stamp_peak_addr;
-          frame_we <= (FALSE,TRUE,FALSE,TRUE);
-          frame_word <= to_streambus(pulse_peak,last_peak,ENDIAN);
-        elsif height_valid and pulse_started then -- 2 must be set too
-          address <= height_addr; 
-          frame_we <= (TRUE,FALSE,TRUE,FALSE);
-          frame_word <= to_streambus(pulse_peak,last_peak,ENDIAN);
-        elsif not cleared and pulse_started then
-          address <= clear_address;
-          clear_address <= clear_address_m1;
-          clear_address_m1 <= clear_address_m1-1;
-          cleared <= clear_address_m1 < m.peak_address;
-          frame_word.data <= (others => '-');
-          frame_word.last <= (0 => clear_last, others => FALSE);
-          frame_word.discard <= (others => FALSE);
-          frame_we <= (others => TRUE);
-          clear_last <= FALSE;
-        end if;
-      end if;
+--      if m.eflags.event_type.detection = PEAK_DETECTION_D then
+--        
+--        if m.stamp_peak then
+--          if framer_full then
+--          else
+--            start <= TRUE;
+--            started <= TRUE;
+--          end if;
+--        end if;
+--        --what if 
+--        commit_event <= (started or m.stamp_peak) and m.slope.neg_0xing;
+--        
+--        if m.slope.neg_0xing then 
+--          started <= FALSE;
+--          commit_event <= TRUE;
+--          --if m.armed and m.above_pulse_threshold and not framer_full and
+--          if armed and above_pulse_threshold and not framer_full and
+--             (started or stamp_peak) then
+--            commit_event <= TRUE; 
+--          else
+--            overflow_int <= framer_full;
+--            dump <= started or (stamp_peak and not framer_full);
+--          end if;
+--        end if;
+--        
+--        if height_valid then
+--          if framer_full then
+--            overflow_int <= TRUE;
+--            dump <= started or stamp_peak;
+--          else
+--            frame_we <= (others => TRUE);
+--          end if;
+--        end if;
+--      end if;
+--     
+--      if m.eflags.event_type.detection = AREA_DETECTION_D then
+--        if stamp_pulse then
+--          if framer_full then
+--            overflow_int <= TRUE;
+--          else
+--            start <= TRUE;
+--            started <= TRUE;
+--          end if;
+--        end if;
+--        
+--        frame_word <= to_streambus(area,ENDIAN);
+--        if pulse_end then 
+--          started <= FALSE;
+--          if m.has_armed and m.above_area_threshold and not framer_full then
+--            commit_event <= TRUE; 
+--            frame_we <= (others => TRUE);
+--          else
+--            overflow_int <= framer_full;
+--            dump <= started or (stamp_pulse and not framer_full);
+--          end if;
+--        end if;
+--      end if;
+--     
+--      --TODO this could be improved 
+--      if m.eflags.event_type.detection = PULSE_DETECTION_D then
+--        if stamp_pulse and not dumped then
+--          if framer_full then
+--            overflow_int <= TRUE;
+--          else
+--            start <= TRUE;
+--            started <= TRUE;
+--          end if;
+--        end if;
+--        
+--        --header0 can't be dumped yet
+--        if pulse_start then
+--          clear_address <= clear_addr;
+--          clear_address_m1 <= clear_addr-1;
+--          cleared <= FALSE;
+--          clear_last <= TRUE;
+--          
+--          if framer_full then
+--            overflow_int <= TRUE;
+--            dumped <= TRUE;
+--            dump <= started or (stamp_pulse and not dumped);
+--            pulse_started <= FALSE;
+--          else
+--            pulse_started <= TRUE;
+--            address <= (others => '0');
+--            frame_word <= to_streambus(pulse,0,ENDIAN);
+--            frame_we <= (others => TRUE);
+--            stamp_peak_ovfl <= stamp_peak;
+--          end if;
+--        end if;
+--        
+--        --header1
+--        if pulse_end then 
+--          dumped <= FALSE;
+--          started <= FALSE;
+--          pulse_started <= FALSE;
+--        end if;
+--        
+--        -- Assumes height_valid can't fire at same time as pulse_threshold_neg 
+--        -- but this means pulse reg can which is a problem
+--        if pulse_end and pulse_started then 
+--          
+--          --framer can't be full if pulse_started true
+--          if has_armed and above_area_threshold and not dumped then
+--            
+--            if cleared then
+--              address <= (0 => '1',others => '0');
+--              frame_word <= to_streambus(pulse,1,ENDIAN);
+--              frame_we <= (others => TRUE);
+--              commit_event <= TRUE; 
+--            else
+--              error_int <= TRUE;
+--              dump <= started or stamp_pulse;
+--            end if;
+--          else
+--            dump <= started or stamp_pulse;
+--          end if;
+--        elsif stamp_peak and pulse_started then -- 3 must be set too
+--          address <= stamp_peak_addr;
+--          frame_we <= (FALSE,TRUE,FALSE,TRUE);
+--          frame_word <= to_streambus(pulse_peak,last_peak,ENDIAN);
+--        elsif height_valid and pulse_started then -- 2 must be set too
+--          address <= height_addr; 
+--          frame_we <= (TRUE,FALSE,TRUE,FALSE);
+--          frame_word <= to_streambus(pulse_peak,last_peak,ENDIAN);
+--        elsif not cleared and pulse_started then
+--          address <= clear_address;
+--          clear_address <= clear_address_m1;
+--          clear_address_m1 <= clear_address_m1-1;
+--          cleared <= clear_address_m1 < m.peak_address;
+--          frame_word.data <= (others => '-');
+--          frame_word.last <= (0 => clear_last, others => FALSE);
+--          frame_word.discard <= (others => FALSE);
+--          frame_we <= (others => TRUE);
+--          clear_last <= FALSE;
+--        end if;
+--      end if;
       
     end if;
   end if;
-end process frame;
+end process framing;
 
 framer:entity streamlib.framer
 generic map(

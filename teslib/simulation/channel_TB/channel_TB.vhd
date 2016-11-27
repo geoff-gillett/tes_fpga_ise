@@ -114,7 +114,6 @@ begin
 	  write(trace_file, to_integer(to_0(m.raw.sample)));
 	  write(trace_file, to_integer(to_0(m.filtered.sample)));
 	  write(trace_file, to_integer(to_0(m.slope.sample)));
-	  write(trace_file, to_integer(to_0(m.baseline)));
 	end loop;
 end process traceWriter; 
 
@@ -135,7 +134,7 @@ while not endfile(sample_file) loop
   read(file_line, str_sample);
   sample_in:=hexstr2vec(str_sample);
   wait until rising_edge(clk);
-  adc_sample <= resize(sample_in, ADC_BITS);
+  --adc_sample <= resize(sample_in, ADC_BITS);
   if clk_count mod 10000 = 0 then
     report "clk " & integer'image(clk_count);
   end if;
@@ -155,9 +154,9 @@ begin
   end if;
 end process simsquare;
 squaresig <= std_logic_vector(to_unsigned(100,ADC_BITS))
-             when sim_count(SIM_WIDTH-1)='1' 
+             when sim_count(SIM_WIDTH-1)='0' 
              else std_logic_vector(to_unsigned(1000,ADC_BITS));
---adc_sample <= squaresig;
+adc_sample <= squaresig;
 
 stimulus:process
 begin
