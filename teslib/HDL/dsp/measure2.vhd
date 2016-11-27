@@ -432,7 +432,7 @@ begin
       end if;
       
       if stamp_pulse then --FIXME will this be right?
-        m.time_offset <= pulse_time_n;
+        m.time_offset <= pulse_time_n(TIME_BITS-1 downto 0);
       end if;
     
       if pulse_t_pos_pipe(DEPTH) then
