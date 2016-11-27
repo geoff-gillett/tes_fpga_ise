@@ -113,8 +113,8 @@ begin
     end if;
   end if;
 end process simsquare;
-adc_sample <= to_signed(100,WIDTH) 
-              when sim_count(SIM_WIDTH-1)='1' 
+adc_sample <= to_signed(-100,WIDTH) 
+              when sim_count(SIM_WIDTH-1)='0' 
               else to_signed(1000,WIDTH);
 
 

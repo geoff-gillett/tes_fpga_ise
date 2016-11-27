@@ -14,7 +14,7 @@ use work.measurements.all;
 use work.events.all;
 use work.registers.all;
 
-entity measurement_framer is
+entity measurement_framer2 is
 generic(
   FRAMER_ADDRESS_BITS:integer:=11;
   ENDIAN:string:="LITTLE"
@@ -37,9 +37,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity measurement_framer;
+end entity measurement_framer2;
 
-architecture RTL of measurement_framer is
+architecture RTL of measurement_framer2 is
   
 constant CHUNKS:integer:=4;
  
@@ -77,6 +77,10 @@ signal has_armed,above_area_threshold:boolean;
 signal clear_address_m1:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal above_pulse_threshold:boolean;
 signal armed:boolean;
+
+signal peak_we:boolean_vector(CHUNKS-1 downto 0);
+signal area_we:boolean_vector(CHUNKS-1 downto 0);
+signal overflowed : boolean;
   
 --constant DEBUG:string:="FALSE";
 --attribute MARK_DEBUG:string;
@@ -91,6 +95,7 @@ m <= measurements;
 overflow <= overflow_int;
 error <= error_int;
 
+
 dataReg:process(clk)
 begin
   if rising_edge(clk) then
@@ -100,7 +105,7 @@ begin
       
       framer_full <= framer_free < m.size;
       
-      height_valid <= m.height_valid and m.valid_peak;
+      --height_valid <= m.height_valid and m.valid_peak;
       if m.height_valid then --pulse_peak_we 0,2
         height <= m.height;
         rise_time <= m.rise_time;
@@ -114,7 +119,7 @@ begin
         stamp_peak_addr <= m.peak_address;
         minima <= m.filtered.sample;
         peak_timestamp <= m.pulse_time;
-        last_peak <= m.last_peak;
+        last_peak <= m.last_peak;k@
       end if;
       
       pulse_start <= m.pulse_start and m.valid_peak;
@@ -147,26 +152,34 @@ begin
   end if;
 end process dataReg;
 
-pulse_peak.height <= height;
-pulse_peak.minima <= minima;
-pulse_peak.rise_time <= rise_time;
-pulse_peak.timestamp <= peak_timestamp;
+pulse_peak.height <= m.height;
+pulse_peak.minima <= m.filtered.sample;
+pulse_peak.rise_time <= m.rise_time;
+pulse_peak.timestamp <= m.pulse_time;
 
-pulse.flags <= flags;
-pulse.size <= size;
-pulse.length <= pulse_length;
-pulse.offset <= pulse_offset;
-pulse.area <= pulse_area;
+pulse.flags <= m.eflags;
+pulse.size <= m.size;
+pulse.length <= m.pulse_length;
+pulse.offset <= m.time_offset;
+pulse.area <= m.pulse_area;
 
-peak.height <= height; 
-peak.rise_time <= rise_time;
-peak.flags <= flags;
+peak.height <= m.height; 
+peak.rise_time <= m.rise_time;
+peak.flags <= m.eflags;
 
-area.flags <= flags; 
-area.area <= pulse_area;
+peak_we(0) <= m.height_valid;
+peak_we(1) <= m.height_valid;
+peak_we(2) <= m.peak_start;
 
+area.flags <= m.eflags; 
+area.area <= m.pulse_area;
+area_we <= (others => m.pulse_threshold_neg);
+
+framer_full <= framer_free < m.size;
 commit <= commit_event;
-frame:process(clk)
+
+
+framing:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
@@ -184,19 +197,40 @@ begin
       frame_we <= (others => FALSE);
       address <= m.peak_address;
       frame_length <= resize(m.size,FRAMER_ADDRESS_BITS+1);
+     
+      case m.eflags.event_type.detection is
+      when PEAK_DETECTION_D => 
+        -- never needs dumping
+        frame_word <= to_streambus(peak,ENDIAN);
+        frame_we <= peak_we;
+        if m.peak_start and framer_full then --this always is at the minima
+          overflowed <= TRUE;
+        else
+          started <= TRUE;
+        end if;
+        commit_event <= m.slope.neg_0xing and not overflowed;
+      when others => null;
+      end case;
       
+     
+        
+       
       if m.eflags.event_type.detection = PEAK_DETECTION_D then
-        if stamp_peak then
+        
+        
+        if m.stamp_peak then
           if framer_full then
-            overflow_int <= TRUE;
           else
             start <= TRUE;
             started <= TRUE;
           end if;
         end if;
+        --what if 
+        commit_event <= (started or m.stamp_peak) and m.slope.neg_0xing;
         
-        if max then 
+        if m.slope.neg_0xing then 
           started <= FALSE;
+          commit_event <= TRUE;
           --if m.armed and m.above_pulse_threshold and not framer_full and
           if armed and above_pulse_threshold and not framer_full and
              (started or stamp_peak) then
@@ -207,7 +241,6 @@ begin
           end if;
         end if;
         
-        frame_word <= to_streambus(peak,ENDIAN);
         if height_valid then
           if framer_full then
             overflow_int <= TRUE;

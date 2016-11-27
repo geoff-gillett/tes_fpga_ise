@@ -114,7 +114,7 @@ type measurements_t is record
 	raw:signal_measurement_t;
 	filtered:signal_measurement_t;
 	slope:signal_measurement_t;
-	baseline:signal_t;
+	--baseline:signal_t;
 	
   pulse_area:area_t;
   pulse_length:time_t; --time since pulse_pos_Txing
@@ -139,7 +139,7 @@ type measurements_t is record
   max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
   last_peak:boolean;
   peak_address:unsigned(MEASUREMENT_FRAMER_ADDRESS_BITS-1 downto 0);
-  last_address:unsigned(MEASUREMENT_FRAMER_ADDRESS_BITS-1 downto 0);
+  --last_address:unsigned(MEASUREMENT_FRAMER_ADDRESS_BITS-1 downto 0);
   
   pulse_threshold_pos:boolean;
   pulse_threshold_neg:boolean;
@@ -148,8 +148,9 @@ type measurements_t is record
   
   above_area_threshold:boolean;
   above_pulse_threshold:boolean;
+  will_go_above:boolean;
   armed:boolean; 
-  has_armed:boolean;
+  will_arm:boolean;
   
   height:signal_t; 
   height_valid:boolean;
@@ -157,8 +158,10 @@ type measurements_t is record
 	cfd_low:boolean; 
 	cfd_high:boolean;
 	cfd_error:boolean;
+	cfd_valid:boolean;
 	
 end record;
+
 type measurements_array is array (natural range <>)
 		 of measurements_t;
 

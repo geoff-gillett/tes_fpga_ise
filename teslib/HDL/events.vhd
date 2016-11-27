@@ -56,7 +56,7 @@ function to_event_type_t(sb:streambus_t) return event_type_t;
 --|    4     |      1       |   3   ||  2   	|   2    |    3       |     1    |
 --|peak_count| peak_overflow|channel||timing_d|height_d|event_type_t|new_window|
 type detection_flags_t is record 
-	peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0); 
+	peak_number:unsigned(PEAK_COUNT_BITS-1 downto 0); 
 	peak_overflow:boolean; 
 	height:height_d;
 	timing:timing_d;
@@ -255,7 +255,7 @@ function to_std_logic(f:detection_flags_t) return std_logic_vector is
 	variable slv:std_logic_vector(15 downto 0);
 begin    
 				 -- first transmitted byte
-  slv(15 downto 12) := to_std_logic(f.peak_count);
+  slv(15 downto 12) := to_std_logic(f.peak_number);
   slv(11) := to_std_logic(f.peak_overflow);
   slv(10 downto 8) := to_std_logic(f.channel);
 				 -- second transmitted byte

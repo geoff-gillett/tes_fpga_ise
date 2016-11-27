@@ -62,7 +62,7 @@ constant CF:integer:=2**17/10;
 begin
 clk <= not clk after CLK_PERIOD/2;
   
-UUT:entity work.channel
+UUT:entity work.channel2
 generic map(
   CHANNEL => CHANNEL,
   ENDIAN  => ENDIAN

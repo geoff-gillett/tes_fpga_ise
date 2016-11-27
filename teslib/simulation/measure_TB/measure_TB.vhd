@@ -73,6 +73,7 @@ generic map(
   CFD_DELAY => CFD_DELAY
 )
 port map(
+  enable => TRUE,
   clk => clk,
   reset => reset,
   registers => reg,
@@ -91,8 +92,8 @@ begin
     end if;
   end if;
 end process simsquare;
-adc_sample <= to_signed(100,WIDTH) 
-              when sim_count(SIM_WIDTH-1)='1' 
+adc_sample <= to_signed(-100,WIDTH) 
+              when sim_count(SIM_WIDTH-1)='0' 
               else to_signed(1000,WIDTH);
 
 stimulus:process is
@@ -111,10 +112,10 @@ begin
   reg.constant_fraction  <= to_unsigned(CF,17);
   reg.slope_threshold <= to_unsigned(2300,WIDTH-1);
   reg.pulse_threshold <= to_unsigned(300,WIDTH-1);
-  reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
+  reg.area_threshold <= to_unsigned(10000,AREA_WIDTH-1);
   reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS+1);
   reg.detection <= PEAK_DETECTION_D;
-  reg.timing <= CFD_LOW_TIMING_D;
+  reg.timing <= PULSE_THRESH_TIMING_D;
   reg.height <= CFD_HEIGHT_D;
 --  adc_sample <= (WIDTH-1  => '0', others => '0');
   wait for CLK_PERIOD;

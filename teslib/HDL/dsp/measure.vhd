@@ -215,7 +215,7 @@ begin
          
         first_peak <= TRUE;
         peak_count <= (others => '0');
-        m.eflags.peak_count <= (others => '0');
+        m.eflags.peak_number <= (others => '0');
         peak_count_n <= (0 => '1',others => '0');
         m.last_peak <= FALSE;
         m.time_offset <= (others => '0');
@@ -260,7 +260,7 @@ begin
             m.last_peak <= peak_count_n=('0' & m.max_peaks);
             peak_count <= peak_count_n;
             peak_count_n <= peak_count_n + 1;
-            m.eflags.peak_count <= peak_count(PEAK_COUNT_BITS-1 downto 0);
+            m.eflags.peak_number <= peak_count(PEAK_COUNT_BITS-1 downto 0);
             if m.eflags.event_type.detection=PULSE_DETECTION_D or
               m.eflags.event_type.detection=TRACE_DETECTION_D then
               m.peak_address <= resize(  --FIXME  use peak_addr_n minimise bits

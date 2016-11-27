@@ -42,7 +42,8 @@ port (
   filtered_out:out signed(WIDTH-1 downto 0);
   pulse_threshold_pos:out boolean;
   pulse_threshold_neg:out boolean;
-  CFD_error:out boolean
+  cfd_error:out boolean;
+  cfd_valid:out boolean
 );
 end entity CFD;
 
@@ -64,6 +65,7 @@ end component;
 --constant RAW_CFD_DELAY:integer:=256;
 constant DEPTH:integer:=7;
 
+signal started:boolean;
 signal slope_0_p,slope_0_n:boolean;
 signal cf_int:signed(WIDTH-1 downto 0):=(others => '0');
 signal p:signed(WIDTH-1 downto 0);
@@ -110,7 +112,7 @@ signal max_d,min_d,above_pulse_threshold_d,pulse_threshold_pos_d:boolean;
 signal pulse_threshold_neg_d,slope_threshold_pos_d:boolean;
 signal CFD_error_reg:boolean;
 signal q_was_empty:boolean;
-signal CFD_valid:boolean;
+--signal CFD_valid:boolean;
 --signal CFD_error:boolean;
 
 begin
@@ -120,7 +122,8 @@ begin
 --------------------------------------------------------------------------------
 slope0xing:entity work.crossing
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  STRICT => TRUE
 )
 port map(
   clk => clk,
@@ -134,7 +137,8 @@ port map(
 
 slopeTxing:entity work.crossing
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  STRICT => FALSE
 )
 port map(
   clk => clk,
@@ -148,7 +152,8 @@ port map(
 
 pulseTxing:entity work.crossing
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  STRICT => FALSE
 )
 port map(
   clk => clk,
@@ -179,6 +184,7 @@ begin
       armed_i <= FALSE;
       above_i <= FALSE;
       delay_counter <= 0;
+      started <= FALSE;
     else
       filtered_pipe <= filtered_x & filtered_pipe(1 to DEPTH-1);
       slope_pipe <= slope_x & slope_pipe(1 to DEPTH-1);
@@ -193,6 +199,7 @@ begin
         cf_int <= constant_fraction;
         slope_threshold_int <= slope_threshold;
         pulse_threshold_int <= pulse_threshold;
+        started <= TRUE;
       else
         minima_pipe <= minima_pipe(1) & minima_pipe(1 to DEPTH-1);
       end if;
@@ -229,6 +236,12 @@ begin
       cfd_low_i <= p + minima_pipe(6);
       cfd_high_i <= filtered_pipe(6) - p; 
       
+      if slope_0_n_pipe(DEPTH-1) and started then 
+        q_wr_en <= '1';
+      else 
+        q_wr_en <= '0';
+      end if;
+      
     end if;
   end if;
 end process pipeline;
@@ -264,7 +277,6 @@ cf_data(3*WIDTH+2) <= to_std_logic(above_i);
 cf_data(71 downto 3*WIDTH+3) <= (others => '0'); 
 
 -- write queue at max read at delayed min
-q_wr_en <= '1' when slope_0_n_pipe(DEPTH) else '0';
 q_reset <= reset;
 
 CFqueue:cf_queue
@@ -367,7 +379,7 @@ if rising_edge(clk) then
     CFD_error_reg <= FALSE;
     q_was_empty <= q_empty='1';
     
-    if (flags_d(6)='1' and overran) or (flags_d(5)='1' or 
+    if started and ((flags_d(6)='1' and overran) or flags_d(5)='1' or 
        (min_d and q_was_empty)) then
       q_rd_en <= '1';
     else

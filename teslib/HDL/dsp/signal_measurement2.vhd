@@ -23,7 +23,7 @@ use dsp.types.all;
 use work.types.all;
 
 -- Assumes FRAC >= AREA_FRAC
-entity signal_measurement is
+entity signal_measurement2 is
 generic(
 	WIDTH:integer:=18;
 	FRAC:integer:=3;
@@ -32,7 +32,7 @@ generic(
 	AREA_WIDTH:integer:=32;
 	AREA_FRAC:integer:=1;
 	-- pipes are closest to crossing
-	CLOSEST:boolean:=FALSE 
+	STRICT:boolean:=TRUE 
 );
 port (
   clk:in std_logic;
@@ -48,9 +48,9 @@ port (
   area:out signed(AREA_WIDTH-1 downto 0);
   extrema:out signed(WIDTH_OUT-1 downto 0)
 );
-end entity signal_measurement;
+end entity signal_measurement2;
 
-architecture RTL of signal_measurement is
+architecture RTL of signal_measurement2 is
   
 --FIXME add saturation check on area remove shifts and do them outside
 signal extreme_int:signed(WIDTH_OUT-1 downto 0);
@@ -62,26 +62,18 @@ constant DEPTH:integer:=5;
 signal pos_p,neg_p,xing_p:boolean_vector(1 to DEPTH):=(others => FALSE);
 signal pipe:signal_array(1 to DEPTH):=(others => (others => '0'));
 signal gt:boolean;
-signal pos_c_xing:boolean;
-signal neg_c_xing:boolean;
 
 type extrema_state is (MAX_S,MIN_S);
 signal state:extrema_state;
 
 begin
 signal_out <= pipe(DEPTH);
-extrema <= extreme_int;
-pos_xing <= pos_p(DEPTH-1);
-neg_xing <= neg_p(DEPTH-1);
-xing <= xing_p(DEPTH-1);
+--extrema <= extreme_int;
+pos_xing <= pos_p(DEPTH);
+neg_xing <= neg_p(DEPTH);
+xing <= xing_p(DEPTH);
 
-closestGen:if CLOSEST generate
-  xing_int <= pos_c_xing or neg_c_xing;
-end generate;
-
-notClosestGen:if not CLOSEST generate
-  xing_int <= pos_x or neg_x;
-end generate;
+xing_int <= pos_x or neg_x;
 
 -- saturation handled in FIR
 round:entity dsp.round
@@ -98,9 +90,10 @@ port map(
   output => signal_r
 );
 
-crossing:entity dsp.threshold_xing
+crossing:entity dsp.crossing
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  STRICT => STRICT
 )
 port map(
   clk => clk,
@@ -109,9 +102,7 @@ port map(
   threshold => threshold,
   signal_out => signal_x,
   pos => pos_x,
-  neg => neg_x,
-  pos_closest => pos_c_xing,
-  neg_closest => neg_c_xing
+  neg => neg_x
 );
 
 areaAcc:entity dsp.area_acc
@@ -138,15 +129,10 @@ begin
       xing_p <= (others => FALSE);
       pipe <= (others => (others => '0'));
     else
-      if CLOSEST then
-        pos_p <= pos_c_xing & pos_p(1 to DEPTH-1);   
-        neg_p <= neg_c_xing & neg_p(1 to DEPTH-1);   
-      else
-        pos_p <= pos_x & pos_p(1 to DEPTH-1);   
-        neg_p <= neg_x & neg_p(1 to DEPTH-1);   
-      end if;
-      xing_p <= (pos_x or neg_x) & xing_p(1 to DEPTH-1);
-      pipe <= signed(signal_r) & pipe(1 to DEPTH-1);   
+      pos_p(2 to DEPTH) <= pos_x & pos_p(2 to DEPTH-1);   
+      neg_p(2 to DEPTH) <= neg_x & neg_p(2 to DEPTH-1);   
+      xing_p(2 to DEPTH) <= xing_int & xing_p(2 to DEPTH-1);
+      pipe(4 to DEPTH) <= signed(signal_r) & pipe(4 to DEPTH-1);   
     end if;
   end if;
 end process pipeline;
@@ -167,16 +153,21 @@ if rising_edge(clk) then
     elsif neg_p(DEPTH-1) then
       state <= MIN_S;
     end if;
+    
     if xing_p(DEPTH-1) then
       extreme_int <= pipe(DEPTH-1);
+      extrema <= extreme_int;
     else
       if state=MAX_S and gt then
         extreme_int <= pipe(DEPTH-1);
+        extrema <= pipe(DEPTH-1);
       end if;
       
       if (state=MIN_S and not gt) then
         extreme_int <= pipe(DEPTH-1);
+        extrema <= pipe(DEPTH-1);
       end if;
+      
     end if;
     
   end if;
