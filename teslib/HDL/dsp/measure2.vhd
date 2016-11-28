@@ -269,8 +269,9 @@ begin
                     above_pipe(1 to DEPTH-1);
       armed_pipe <= armed_cfd & armed_pipe(1 to DEPTH-1);
       
-      valid_peak_pipe <= (will_arm_cfd and will_go_above_cfd and enabled and
-                         not cfd_error_cfd) & valid_peak_pipe(1 to DEPTH-1);
+      valid_peak_pipe(2 to DEPTH) <= (will_arm_pipe(1) and will_go_above_pipe(1) 
+                                      and enabled and not cfd_error_pipe(1)) & 
+                                      valid_peak_pipe(2 to DEPTH-1);
       
       will_go_above_pipe <= will_go_above_cfd &
                             will_go_above_pipe(1 to DEPTH-1);

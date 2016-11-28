@@ -169,7 +169,7 @@ port map(
   measurements => dsp_m
 );
 
---TODO cleanup the ugly patch
+--TODO cleanup this ugly patch
 m.filtered <= dsp_m.filtered;
 m.slope <= dsp_m.slope;
 m.above_area_threshold <= dsp_m.above_area_threshold;

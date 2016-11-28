@@ -80,6 +80,7 @@ signal armed:boolean;
 signal peak_we:boolean_vector(CHUNKS-1 downto 0);
 signal area_we:boolean_vector(CHUNKS-1 downto 0);
 signal overflowed : boolean;
+signal valid_max : boolean;
   
 --constant DEBUG:string:="FALSE";
 --attribute MARK_DEBUG:string;
@@ -177,7 +178,7 @@ area_we <= (others => m.pulse_threshold_neg);
 framer_full <= framer_free < m.size;
 commit <= commit_event;
 
-
+valid_max <= m.slope.neg_0xing and m.valid_peak;
 framing:process(clk)
 begin
   if rising_edge(clk) then
@@ -204,11 +205,14 @@ begin
         frame_word <= to_streambus(peak,ENDIAN);
         frame_we <= peak_we;
         address <= (others => '0');
-        if m.peak_start and framer_full then --this always is at the minima
-          overflowed <= TRUE;
+        if m.peak_start then --FIXME 
+          if framer_full then --this always is at the minima
+            overflowed <= TRUE;
+          else
+            overflowed <= FALSE;
+          end if;
         end if;
-        if (m.slope.neg_0xing and not overflowed) or 
-           (m.slope.neg_0xing and m.peak_start) then
+        if (valid_max and not overflowed) or (valid_max and m.peak_start) then
           commit_event <= TRUE;
         end if;
                         
