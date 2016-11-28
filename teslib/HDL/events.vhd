@@ -282,14 +282,14 @@ end function;
 
 ---------------------------- peak event 8 bytes --------------------------------
 -- |   16   |   16   |  16   |  16  |
--- | height | minima | flags | time |
+-- | height |  rise  | flags | time |
 function to_streambus(e:peak_detection_t;endianness:string) 
 return	streambus_t is
 	variable sb:streambus_t;
 begin
   sb.data := set_endianness(e.height,endianness) &
              set_endianness(e.rise_time,endianness) &
-             to_std_logic(e.flags) & --FIXME set endianess 
+             set_endianness(to_std_logic(e.flags),endianness) & --FIXME set endianess 
              "0000000000000000"; 
 	sb.discard := (others => FALSE);
 	sb.last := (0 => TRUE, others => FALSE);

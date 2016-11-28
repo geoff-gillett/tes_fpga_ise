@@ -5,19 +5,22 @@ use ieee.numeric_std.all;
 --use ieee.std_logic_textio.all;
 use std.textio.all;
 
---TODO remove references use extensions.debug
+use work.logic.all;
+
 package debug is
 
-type natural_file is file of natural;
+--type natural_file is file of natural;
 type integer_file is file of integer;
   
 function hexstr2vec(str:string) return std_logic_vector;
 function to_0(slv:std_logic_vector) return std_logic_vector;
 function to_0(u:unsigned) return unsigned;
 function to_0(s:signed) return signed;
---function write_int(fh:int_file;i:integer);
 
- 
+--write integer to file with given endian form
+procedure writeInt(l:inout integer_file;d:in std_logic_vector;e:in string);
+procedure writeInt(l:inout integer_file;d:in unsigned;e:in string);
+procedure writeInt(l:inout integer_file;d:in signed;e:in string);
   
 end package debug;
 
@@ -89,5 +92,20 @@ function to_0(u:unsigned) return unsigned is
 begin
   return unsigned(to_0(std_logic_vector(u)));
 end function;
+
+procedure writeInt(l:inout integer_file;d:in std_logic_vector;e:in string) is
+begin
+  write(l,to_integer(signed(to_0(setEndian(d,e)))));
+end procedure;
+
+procedure writeint(l:inout integer_file;d:in unsigned;e:in string) is
+begin
+  writeInt(l,std_logic_vector(d),e);
+end procedure;
+
+procedure writeint(l:inout integer_file;d:in signed;e:in string) is
+begin
+  writeInt(l,std_logic_vector(d),e);
+end procedure;
 
 end package body debug;

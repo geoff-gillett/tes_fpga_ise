@@ -59,6 +59,13 @@ function resize(slv:std_logic_vector;w:natural) return std_logic_vector;
 function resize(s:signed;w:natural) return std_logic_vector;
 function resize(u:unsigned;w:natural) return std_logic_vector;
 	
+function swapEndian(data:std_logic_vector) return std_logic_vector;
+function swapEndian(data:unsigned) return std_logic_vector;
+function swapEndian(data:signed) return std_logic_vector;
+function setEndian(d:std_logic_vector;e:string) return std_logic_vector;
+function setEndian(u:unsigned;e:string) return std_logic_vector;
+function setEndian(s:signed;e:string) return std_logic_vector;
+  
 end package logic;
 
 package body logic is
@@ -238,4 +245,60 @@ end function;
 --	return o;
 --end function;
 	
+-- assumes data is a multiple of 8 bits and big endian and downto 
+function swapEndian(data:std_logic_vector) return std_logic_vector is
+variable rev:std_logic_vector(data'range);
+constant BYTES:integer:=(data'high-data'low+1)/8;
+begin
+  assert data'length mod 8 = 0 
+    report "data must be multiple of 8 bits" severity FAILURE;
+  for i in 0 to BYTES-1 loop
+    rev(data'high-i*8 downto data'high-(i+1)*8+1)
+    	:=data((i+1)*8+data'low-1 downto i*8+data'low);
+  end loop; 
+  if (data'length>8*BYTES) then
+    rev(data'length-8*BYTES-1 downto 0):=data(data'high downto 8*BYTES);
+  end if;
+  return rev;
+end function;
+
+-- assumes data is a multiple of 8 bits and big endian and downto
+-- returns outlength-1 downto 0 
+
+function SwapEndian(data:unsigned) return std_logic_vector is
+begin
+  return(SwapEndian(std_logic_vector(data)));
+end function;
+
+function SwapEndian(data:signed) return std_logic_vector is
+begin
+  return(SwapEndian(std_logic_vector(data)));
+end function;
+
+function setEndian(d:std_logic_vector;e:string) return std_logic_vector is
+begin
+	if e="LITTLE" then
+		return SwapEndian(d);
+	else
+		return d;
+	end if;
+end function;
+
+function setendian(u:unsigned;e:string) return std_logic_vector is
+begin
+	if e="LITTLE" then
+		return SwapEndian(to_std_logic(u));
+	else
+		return to_std_logic(u);
+	end if;
+end function;
+
+function setEndian(s:signed;e:string) return std_logic_vector is
+begin
+	if e="LITTLE" then
+		return SwapEndian(to_std_logic(s));
+	else
+		return to_std_logic(s);
+	end if;
+end function;
 end package body logic;

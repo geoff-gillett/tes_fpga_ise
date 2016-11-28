@@ -166,10 +166,10 @@ peak.height <= m.height;
 peak.rise_time <= m.rise_time;
 peak.flags <= m.eflags;
 
-peak_we(0) <= m.height_valid;
-peak_we(1) <= m.height_valid;
-peak_we(2) <= m.peak_start;
-peak_we(3) <= m.peak_start;
+peak_we(3) <= m.height_valid;
+peak_we(2) <= m.height_valid;
+peak_we(1) <= m.peak_start;
+peak_we(0) <= m.peak_start;
 
 area.flags <= m.eflags; 
 area.area <= m.pulse_area;

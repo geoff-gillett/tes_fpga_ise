@@ -8,6 +8,7 @@ use streamlib.types.all;
 
 library extensions;
 use extensions.logic.all;
+use extensions.debug.all;
 
 library dsp;
 use dsp.types.all;
@@ -15,7 +16,6 @@ use dsp.types.all;
 use work.registers.all;
 use work.types.all;
 use work.measurements.all;
-use work.debug.all;
 
 entity channel_TB is
 generic(
@@ -42,8 +42,8 @@ signal valid:boolean;
 signal ready:boolean;
 
 signal clk_count:integer:=0;
-file stream_file:natural_file;
-file trace_file:int_file;
+file stream_file:integer_file;
+file trace_file:integer_file;
 signal event_enable:boolean;
 
 constant SIM_WIDTH:natural:=7;
@@ -95,8 +95,8 @@ begin
 	while TRUE loop
     wait until rising_edge(clk);
     if valid and ready then
-    	write(stream_file, to_integer(to_0(signed(stream.data(63 downto 32)))));
-    	write(stream_file, to_integer(to_0(signed(stream.data(31 downto 0)))));
+    	writeInt(stream_file,stream.data(63 downto 32),"BIG");
+    	writeInt(stream_file,stream.data(32 downto 0),"BIG");
       if stream.last(0) then
     		write(stream_file, -clk_count); 
     	else
@@ -111,9 +111,9 @@ traceWriter:process
 begin
 	while TRUE loop
     wait until rising_edge(clk);
-	  write(trace_file, to_integer(to_0(m.raw.sample)));
-	  write(trace_file, to_integer(to_0(m.filtered.sample)));
-	  write(trace_file, to_integer(to_0(m.slope.sample)));
+	  writeInt(trace_file,m.raw.sample,"BIG");
+	  writeInt(trace_file,m.filtered.sample,"BIG");
+	  writeInt(trace_file,m.slope.sample,"BIG");
 	end loop;
 end process traceWriter; 
 
@@ -179,11 +179,11 @@ registers.baseline.offset <= std_logic_vector(to_unsigned(400,ADC_BITS));
 registers.baseline.count_threshold <= to_unsigned(20,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
 registers.baseline.new_only <= TRUE;
-registers.baseline.subtraction <= TRUE;
+registers.baseline.subtraction <= FALSE;
 registers.baseline.timeconstant <= to_unsigned(2**12,32);
 
 registers.capture.constant_fraction  <= to_unsigned(0,DSP_BITS-1);
-registers.capture.slope_threshold <= to_unsigned(2300,DSP_BITS-1);
+registers.capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
 registers.capture.pulse_threshold <= to_unsigned(3300,DSP_BITS-1);
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
