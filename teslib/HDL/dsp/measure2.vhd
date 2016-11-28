@@ -332,34 +332,23 @@ begin
         m.last_peak <= registers.max_peaks=0;
         m.max_peaks <= registers.max_peaks;
         m.time_offset <= (others => '0'); --FIXME needed?
-        if registers.detection=PULSE_DETECTION_D or 
-           registers.detection=TRACE_DETECTION_D then
-          m.size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
-          m.peak_address <= (1 => '1', others => '0'); -- start at 2
-          peak_address_n <= (1 downto 0 => '1', others => '0');
-          
+        m.size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
+        m.peak_address <= (1 => '1', others => '0'); -- start at 2
+        peak_address_n <= (1 downto 0 => '1', others => '0');
+        
 --          m.last_address <= resize( -- FIXME used?
 --            ('0' & registers.max_peaks)+2,MEASUREMENT_FRAMER_ADDRESS_BITS
 --          );
-        else
-          m.peak_address <= (others => '0'); 
-          m.size <= (0 => '1',others => '0');
-        end if;
       end if;
-      if max_pipe(DEPTH) then -- maxima
+      if max_pipe(DEPTH) and valid_peak_pipe(DEPTH) then -- maxima
         if peak_number > ('0' & m.max_peaks) then 
           m.eflags.peak_overflow <= TRUE;
         else
           m.last_peak <= peak_number=('0' & m.max_peaks);
           peak_number_n <= peak_number_n + 1;
           m.eflags.peak_number <= peak_number_n(PEAK_COUNT_BITS-1 downto 0);
-          if m.eflags.event_type.detection=PULSE_DETECTION_D or
-            m.eflags.event_type.detection=TRACE_DETECTION_D then
-            m.peak_address <= peak_address_n;
-            peak_address_n <= peak_address_n+1;
-          else
-            m.peak_address <= (others => '0');
-          end if;
+          m.peak_address <= peak_address_n;
+          peak_address_n <= peak_address_n+1;
         end if;
       end if;
      

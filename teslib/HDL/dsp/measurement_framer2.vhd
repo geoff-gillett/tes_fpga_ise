@@ -185,13 +185,12 @@ begin
     if reset = '1' then
       start <= FALSE;
       commit_event <= FALSE;
-      dump <= FALSE;
       pulse_started <= FALSE;
     else
       
       start <= FALSE;
       commit_event <= FALSE;
---      dump <= FALSE;
+      dump <= FALSE;
 --      overflow_int <= FALSE;
 --      error_int <= FALSE;
 --      frame_we <= (others => FALSE);
@@ -205,7 +204,7 @@ begin
         frame_word <= to_streambus(peak,ENDIAN);
         frame_we <= peak_we;
         address <= (others => '0');
-        if m.peak_start then --FIXME 
+        if m.peak_start then 
           if framer_full then --this always is at the minima
             overflowed <= TRUE;
           else
@@ -215,7 +214,27 @@ begin
         if (valid_max and not overflowed) or (valid_max and m.peak_start) then
           commit_event <= TRUE;
         end if;
-                        
+        
+      when AREA_DETECTION_D => 
+        start <= m.stamp_pulse and not framer_full;
+        frame_word <= to_streambus(area,ENDIAN);
+        frame_we <= area_we;
+        address <= (others => '0');
+        if m.pulse_start then 
+          if framer_full then --this always is at the minima
+            overflowed <= TRUE;
+          else
+            overflowed <= FALSE;
+          end if;
+        end if;
+        if (m.pulse_threshold_neg and not overflowed) then
+          if m.above_area_threshold then 
+            commit_event <= TRUE;
+          else
+            dump <= TRUE;
+          end if;
+        end if;
+        null;
       when others => null; --FIXME add others
       end case;
       

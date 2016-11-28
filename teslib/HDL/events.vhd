@@ -304,8 +304,8 @@ return	streambus_t is
 	variable sb:streambus_t;
 begin
   sb.data := set_endianness(a.area,endianness) &
-             to_std_logic(a.flags) & 
-             "----------------"; -- replaced with rel_timestamp by mux
+             set_endianness(to_std_logic(a.flags),endianness) & 
+             "0000000000000000"; -- replaced with rel_timestamp by mux
 	sb.discard := (others => FALSE);
 	sb.last := (0 => TRUE, others => FALSE);
 	return sb;
