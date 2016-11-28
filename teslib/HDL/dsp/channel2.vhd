@@ -233,7 +233,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset2,
-  enable => event_enable,
+  --enable => event_enable,
   start => start,
   commit => commit,
   dump => dump,
