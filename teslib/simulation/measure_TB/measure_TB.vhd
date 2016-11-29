@@ -113,8 +113,8 @@ begin
   reg.slope_threshold <= to_unsigned(2300,WIDTH-1);
   reg.pulse_threshold <= to_unsigned(300,WIDTH-1);
   reg.area_threshold <= to_unsigned(10000,AREA_WIDTH-1);
-  reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS+1);
-  reg.detection <= PEAK_DETECTION_D;
+  reg.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
+  reg.detection <= PULSE_DETECTION_D;
   reg.timing <= PULSE_THRESH_TIMING_D;
   reg.height <= CFD_HEIGHT_D;
 --  adc_sample <= (WIDTH-1  => '0', others => '0');

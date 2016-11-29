@@ -110,10 +110,10 @@ signal slope_zero_xing : boolean;
 signal slope_area : signed(AREA_WIDTH-1 downto 0);
 signal slope_extrema : signed(WIDTH_OUT-1 downto 0);
 signal enabled:boolean;
-signal peak_address_n:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal peak_address_n,max_peaks:unsigned(PEAK_COUNT_BITS downto 0);
 signal stamp_peak,stamp_pulse:boolean;
 --signal rise_time:unsigned(TIME_BITS-1 downto 0);
-signal first_peak : boolean;
+signal first_peak:boolean;
 
 begin
 measurements <= m;
@@ -249,7 +249,7 @@ begin
 --      pulse_time_n <= (0 => '1',others => '0');
 --      pulse_length_n <= (0 => '1',others => '0');
 --      rise_time_n <= (0 => '1',others => '0');
-
+        m.last_peak_address <= (others => '0');
     else
       
       max_slope_pipe(2 to DEPTH) <= max_slope_x & max_slope_pipe(2 to DEPTH-1);
@@ -322,6 +322,8 @@ begin
         m.eflags.new_window <= FALSE;
         m.eflags.peak_overflow <= FALSE;
         m.eflags.timing <= registers.timing;
+        max_peaks <= '0' & registers.max_peaks;
+        m.last_peak_address <= ('0' & registers.max_peaks)+2;
       end if;  
       
       --minima (max) mutually exclusive)
@@ -330,21 +332,17 @@ begin
         peak_number_n <= (0 => '1',others => '0');
         m.eflags.peak_number <= (others => '0');
         m.last_peak <= registers.max_peaks=0;
-        m.max_peaks <= registers.max_peaks;
+        --m.max_peaks <= registers.max_peaks;
         m.time_offset <= (others => '0'); --FIXME needed?
         m.size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
         m.peak_address <= (1 => '1', others => '0'); -- start at 2
         peak_address_n <= (1 downto 0 => '1', others => '0');
-        
---          m.last_address <= resize( -- FIXME used?
---            ('0' & registers.max_peaks)+2,MEASUREMENT_FRAMER_ADDRESS_BITS
---          );
       end if;
-      if max_pipe(DEPTH) and valid_peak_pipe(DEPTH) then -- maxima
-        if peak_number > ('0' & m.max_peaks) then 
+      if m.slope.neg_0xing and m.valid_peak then -- maxima
+        if peak_number > max_peaks then 
           m.eflags.peak_overflow <= TRUE;
         else
-          m.last_peak <= peak_number=('0' & m.max_peaks);
+          m.last_peak <= peak_number=max_peaks;
           peak_number_n <= peak_number_n + 1;
           m.eflags.peak_number <= peak_number_n(PEAK_COUNT_BITS-1 downto 0);
           m.peak_address <= peak_address_n;

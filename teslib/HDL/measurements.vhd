@@ -136,10 +136,10 @@ type measurements_t is record
   size:unsigned(15 downto 0);
   
   -- actually max peaks -1
-  max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
+  --max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
   last_peak:boolean;
-  peak_address:unsigned(MEASUREMENT_FRAMER_ADDRESS_BITS-1 downto 0);
-  --last_address:unsigned(MEASUREMENT_FRAMER_ADDRESS_BITS-1 downto 0);
+  peak_address:unsigned(PEAK_COUNT_BITS downto 0);
+  last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   
   pulse_threshold_pos:boolean;
   pulse_threshold_neg:boolean;
