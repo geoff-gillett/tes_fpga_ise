@@ -175,6 +175,10 @@ area.flags <= m.eflags;
 area.area <= m.pulse_area;
 area_we <= (others => m.pulse_threshold_neg);
 
+--FIXME there is an issue here when the commit is registered because
+--the framer could go full after commit, and framer_full will still be FALSE
+-- for one clock
+
 framer_full <= framer_free < m.size;
 commit <= commit_event;
 
@@ -191,7 +195,7 @@ begin
       start <= FALSE;
       commit_event <= FALSE;
       dump <= FALSE;
---      overflow_int <= FALSE;
+      overflow_int <= FALSE;
 --      error_int <= FALSE;
 --      frame_we <= (others => FALSE);
 --      address <= m.peak_address;
@@ -207,6 +211,7 @@ begin
         if m.peak_start then 
           if framer_full then --this always is at the minima
             overflowed <= TRUE;
+            overflow_int <= TRUE;
           else
             overflowed <= FALSE;
           end if;
@@ -223,6 +228,7 @@ begin
         if m.pulse_start then 
           if framer_full then --this always is at the minima
             overflowed <= TRUE;
+            overflow_int <= TRUE;
           else
             overflowed <= FALSE;
           end if;
@@ -235,6 +241,22 @@ begin
           end if;
         end if;
         null;
+      
+      when PULSE_DETECTION_D => 
+-----------------  pulse event - 16 byte header --------------------------------
+-- w=0 | size | reserved |   flags  |   time   |
+-- w=1 |      area       |  length  |  offset  |  
+--  repeating 8 byte peak records (up to 16) for extra peaks.
+--  | height | minima | rise | time | 
+-- w=1 must be written at pulse_threshold_neg flags when?
+-- minima will be valid at pulse_start, save and write at height_valid?
+-- peak time written at stamp_peak
+-- need to clear unused peaks
+-- how do I handle simultaneous writes to different words? two deep FIFO?
+-- 
+
+
+        
       when others => null; --FIXME add others
       end case;
       

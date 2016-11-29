@@ -345,7 +345,7 @@ begin
             when PULSE_DETECTION_D =>
               size := lookahead_size;
             	size_change <= frame_size/=lookahead_size;
-            when TRACE_DETECTION_D =>
+            when TEST_DETECTION_D =>
               -- traces can extend over multiple frames set event_size to 1
               size := (0 => '1', others => '0');
             	size_change <= FALSE;
@@ -412,7 +412,7 @@ begin
 			end if;
 			
 			if event_s_ready and event_s_valid and event_s.last(0) 
-					and header.frame_type.detection=TRACE_DETECTION_D then 
+					and header.frame_type.detection=TEST_DETECTION_D then 
 				trace_last <= TRUE;
 			end if;
 			
@@ -429,7 +429,7 @@ begin
 				if frame_state=HEADER0 then
 					header.ethernet_type <= x"88B5";
 				elsif frame_state=HEADER1 then
-					if header.frame_type.detection=TRACE_DETECTION_D then
+					if header.frame_type.detection=TEST_DETECTION_D then
 						header.protocol_sequence <= trace_sequence;
 					else
 						header.protocol_sequence <= event_sequence;
@@ -452,7 +452,7 @@ begin
 				end if;
 				
 				if arbiter_state=EVENT then
-					if header.frame_type.detection=TRACE_DETECTION_D then
+					if header.frame_type.detection=TEST_DETECTION_D then
 						if trace_last then
 							trace_sequence <= (others => '0');
 							trace_last <= FALSE;
@@ -587,7 +587,7 @@ begin
 				else
           framer_we <= (others => framer_ready);
           inc_address <= framer_ready;
-					if header.frame_type.detection=TRACE_DETECTION_D or 
+					if header.frame_type.detection=TEST_DETECTION_D or 
 							header.frame_type.tick then
 						framer_word.last(0) <= event_s.last(0);
 						if event_s.last(0) and framer_ready then

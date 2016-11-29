@@ -67,7 +67,7 @@ type detection_d is (
 	PEAK_DETECTION_D,
 	AREA_DETECTION_D,
 	PULSE_DETECTION_D, --use fixed flag to indicate fixed/variable length
-	TRACE_DETECTION_D
+	TEST_DETECTION_D
 );
 
 constant NUM_DETECTION_D:integer:=detection_d'pos(detection_d'high)+1;

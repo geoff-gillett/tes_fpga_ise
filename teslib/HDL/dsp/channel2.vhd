@@ -225,7 +225,7 @@ port map(
   extrema => m.raw.extrema
 );
 
-framer:entity work.measurement_framer2
+framer:entity work.measurement_framer3
 generic map(
   FRAMER_ADDRESS_BITS => MEASUREMENT_FRAMER_ADDRESS_BITS,
   ENDIAN => ENDIAN

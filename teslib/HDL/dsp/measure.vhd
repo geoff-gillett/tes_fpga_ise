@@ -238,7 +238,7 @@ begin
         area_threshold_s <= signed('0' & registers.area_threshold);
         
         if registers.detection=PULSE_DETECTION_D or 
-           registers.detection=TRACE_DETECTION_D then
+           registers.detection=TEST_DETECTION_D then
           m.size <= resize(registers.max_peaks + 3, 16);
           m.peak_address <= (1 => '1', others => '0'); 
           m.last_address <= resize(
@@ -262,7 +262,7 @@ begin
             peak_count_n <= peak_count_n + 1;
             m.eflags.peak_number <= peak_count(PEAK_COUNT_BITS-1 downto 0);
             if m.eflags.event_type.detection=PULSE_DETECTION_D or
-              m.eflags.event_type.detection=TRACE_DETECTION_D then
+              m.eflags.event_type.detection=TEST_DETECTION_D then
               m.peak_address <= resize(  --FIXME  use peak_addr_n minimise bits
                 peak_count_n+2,MEASUREMENT_FRAMER_ADDRESS_BITS
               );
