@@ -154,7 +154,9 @@ type measurements_t is record
   
   height:signal_t; 
   height_valid:boolean;
-  	
+  
+  cfd_low_threshold:signed(17 downto 0);
+  cfd_high_threshold:signed(17 downto 0);  	
 	cfd_low:boolean; 
 	cfd_high:boolean;
 	cfd_error:boolean;

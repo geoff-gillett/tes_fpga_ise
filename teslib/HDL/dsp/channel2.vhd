@@ -182,7 +182,7 @@ m.cfd_low <= dsp_m.cfd_low;
 m.eflags <= dsp_m.eflags;
 m.height <= dsp_m.height;
 m.height_valid <= dsp_m.height_valid;
---m.last_address <= dsp_m.last_address;
+m.last_peak_address <= dsp_m.last_peak_address;
 m.last_peak <= dsp_m.last_peak;
 --m.max_peaks <= dsp_m.max_peaks;
 m.max_slope <= dsp_m.max_slope;
@@ -202,6 +202,8 @@ m.stamp_peak <= dsp_m.stamp_peak;
 m.stamp_pulse <= dsp_m.stamp_pulse;
 m.time_offset <= dsp_m.time_offset;
 m.valid_peak <= dsp_m.valid_peak;
+m.cfd_high_threshold <= dsp_m.cfd_high_threshold;
+m.cfd_low_threshold <= dsp_m.cfd_low_threshold;
 
 rawMeas:entity work.signal_measurement2
 generic map(

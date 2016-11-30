@@ -115,6 +115,9 @@ signal stamp_peak,stamp_pulse:boolean;
 --signal rise_time:unsigned(TIME_BITS-1 downto 0);
 signal first_peak:boolean;
 
+type pipe is array(1 to DEPTH) of signed(WIDTH-1 downto 0);
+signal high_pipe,low_pipe:pipe;
+
 begin
 measurements <= m;
 constant_fraction <= signed('0' & registers.constant_fraction);
@@ -249,12 +252,18 @@ begin
 --      pulse_time_n <= (0 => '1',others => '0');
 --      pulse_length_n <= (0 => '1',others => '0');
 --      rise_time_n <= (0 => '1',others => '0');
-        m.last_peak_address <= (others => '0');
+--        m.last_peak_address <= (others => '0');
     else
       
       max_slope_pipe(2 to DEPTH) <= max_slope_x & max_slope_pipe(2 to DEPTH-1);
-      cfd_low_pos_pipe(2 to DEPTH) <= cfd_low_pos_x & 
-                                      cfd_low_pos_pipe(2 to DEPTH-1);
+      
+      if low_pipe(1)=filtered_x and min_pipe(1) then
+        cfd_low_pos_pipe(2 to DEPTH) <= TRUE  & cfd_low_pos_pipe(2 to DEPTH-1);
+      else
+        cfd_low_pos_pipe(2 to DEPTH) <= cfd_low_pos_x & 
+                                        cfd_low_pos_pipe(2 to DEPTH-1);
+      end if;
+      
       cfd_high_pos_pipe(2 to DEPTH) <= cfd_high_pos_x & 
                                        cfd_high_pos_pipe(2 to DEPTH-1);
                                        
@@ -287,24 +296,14 @@ begin
       
       first_peak_pipe(2 to DEPTH) <= first_peak & first_peak_pipe(2 to DEPTH-1);
       
---      filtered_reg <= filtered_x;
---      filtered_reg2 <= filtered_reg;
---      filtered_reg3 <= filtered_reg2;
-      --slope_reg <= slope_x;
-     
-      --peak_number_n <= peak_number + 1;
+      high_pipe <= cfd_high_threshold & high_pipe(1 to DEPTH-1);
+      low_pipe <= cfd_low_threshold & low_pipe(1 to DEPTH-1);
       
       -- minima at start of pulse  
       m.pulse_start <= min_pipe(DEPTH) and not above_pipe(DEPTH) and enabled and
                        valid_peak_pipe(DEPTH) and first_peak_pipe(DEPTH);
       m.peak_start <= min_pipe(DEPTH) and enabled and valid_peak_pipe(DEPTH); 
      
-      
-        
-      
-      --valid_peak <= will_arm_pipe(DEPTH-1) and will_go_above_pipe(DEPTH-1) and 
-                    --enabled and not cfd_error_pipe(DEPTH-1);
-      
       -- k1 clk before a minima which is below threshold
       if (min_pipe(DEPTH-1) and not above_pipe(DEPTH-1)) then 
         area_threshold <= signed('0' &registers.area_threshold);
@@ -324,8 +323,11 @@ begin
         m.eflags.timing <= registers.timing;
         max_peaks <= '0' & registers.max_peaks;
         m.last_peak_address <= ('0' & registers.max_peaks)+2;
+        
+        m.cfd_low_threshold <= low_pipe(DEPTH-1);
+        m.cfd_high_threshold <= high_pipe(DEPTH-1);
       end if;  
-      
+       
       --minima (max) mutually exclusive)
       if first_peak_pipe(DEPTH) and min_pipe(DEPTH) then 
         m.eflags.peak_number <= (others => '0');
@@ -342,7 +344,7 @@ begin
         if peak_number > max_peaks then 
           m.eflags.peak_overflow <= TRUE;
         else
-          m.last_peak <= peak_number=max_peaks;
+          m.last_peak <= peak_number_n=max_peaks;
           peak_number_n <= peak_number_n + 1;
           m.eflags.peak_number <= peak_number_n(PEAK_COUNT_BITS-1 downto 0);
           m.peak_address <= peak_address_n;

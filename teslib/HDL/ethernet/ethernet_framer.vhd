@@ -346,8 +346,7 @@ begin
               size := lookahead_size;
             	size_change <= frame_size/=lookahead_size;
             when TEST_DETECTION_D =>
-              -- traces can extend over multiple frames set event_size to 1
-              size := (0 => '1', others => '0');
+              size := (1 downto 0 => '1', others => '0');
             	size_change <= FALSE;
             end case;
           end if;

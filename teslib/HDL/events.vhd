@@ -100,6 +100,20 @@ type area_detection_t is record
 end record;
 
 function to_streambus(a:area_detection_t;endianness:string) return streambus_t;
+  
+---------------------------- test event 8 bytes --------------------------------
+-- |   16   |   16   |  16   |  16  |
+-- |  min   |  rise  | flags | time |
+-- | low 1  |  low2  |  low thresh  |
+-- | high 1 |  high2 | high thresh  |
+
+type test_detection_t is record 
+  flags:detection_flags_t; 
+  high1,high2,low1,low2:signal_t; 
+  rise_time:time_t;
+  low_threshold,high_threshold:signed(DSP_BITS-1 downto 0);
+end record;
+
 --TODO add flag to indicate the first tick after reset	
 -------------------------- tick event 16 bytes----------------------------------
 --     |                   32                |  16  |  16  |
@@ -132,7 +146,7 @@ return streambus_t;
 --  | size | reserved |   flags  |   time   |
 --  |      area       |  length  |  offset  |  
 --  repeating 8 byte peak records (up to 16) for extra peaks.
---  | height | minima | rise | time |
+--  | height | rise | minima | time |
 type pulse_detection_t is
 record
 	size:unsigned(SIZE_BITS-1 downto 0);
@@ -149,7 +163,7 @@ function to_streambus(
 ) return streambus_t;
 
 --  |   16   |   16   |  16  |  16  |
---  | height | minima | rise | time |
+--  | height |  rise  |minima| time |
 type pulse_peak_t is
 record
 	height:signal_t;
@@ -359,7 +373,7 @@ end function;
 --  | size | reserved |   flags  |   time   | --fixme size could be removed?
 --  |     area        |  length  |  offset  |  
 --  repeating 8 byte peak records (up to 16) for extra peaks.
---  | height | minima | rise | time |
+--  | height | rise | minima | time |
 function to_streambus(p:pulse_detection_t;w:natural range 0 to 1;
 											endianness:string) return streambus_t is
 	variable sb:streambus_t;
@@ -367,9 +381,9 @@ begin
 	case w is
 	when 0 =>
 		sb.data(63 downto 48) := set_endianness(p.size,endianness);
-		sb.data(47 downto 32) := (others => '-');
+		sb.data(47 downto 32) := (others => '0');
 		sb.data(31 downto 16) := to_std_logic(p.flags); 
-		sb.data(15 downto 0) := (others => '-');
+		sb.data(15 downto 0) := (others => '0');
 	when 1 =>
 		sb.data(63 downto 32) := set_endianness(p.area,endianness);
 		sb.data(31 downto 16) := set_endianness(p.length,endianness);
@@ -387,8 +401,8 @@ function to_std_logic(p:pulse_peak_t;endianness:string)
 return std_logic_vector is
 begin
 	return set_endianness(p.height,endianness) &
-	       set_endianness(p.minima,endianness) &
 	       set_endianness(p.rise_time,endianness) &
+	       set_endianness(p.minima,endianness) &
 	       set_endianness(p.timestamp,endianness);
 end function;
 
