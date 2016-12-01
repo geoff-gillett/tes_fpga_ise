@@ -95,8 +95,8 @@ begin
 	while TRUE loop
     wait until rising_edge(clk);
     if valid and ready then
+    	writeInt(stream_file,stream.data(31 downto 0),"BIG");
     	writeInt(stream_file,stream.data(63 downto 32),"BIG");
-    	writeInt(stream_file,stream.data(32 downto 0),"BIG");
       if stream.last(0) then
     		write(stream_file, -clk_count); 
     	else

@@ -108,7 +108,8 @@ function to_streambus(a:area_detection_t;endianness:string) return streambus_t;
 
 type test_detection_t is record 
   flags:detection_flags_t; 
-  high1,high2,low1,low2,minima:signal_t; 
+  high1,high2,low1,low2:signed(DSP_BITS-1 downto 0); 
+  minima:signal_t;
   rise_time:time_t;
   low_threshold,high_threshold:signed(DSP_BITS-1 downto 0);
 end record;
@@ -436,14 +437,18 @@ begin
 		sb.data(15 downto 0) := (others => '0');
     sb.last := (others => FALSE);
   when 1 => 
-  	sb.data(63 downto 48) := set_endianness(t.low1,endianness);
-		sb.data(47 downto 32) := set_endianness(t.low2,endianness);
-		sb.data(31 downto 0) := to_std_logic(resize(t.low_threshold,32)); 
-    sb.last := (others => FALSE);
+    sb.data(63 downto 54) := (others => '0');
+  	sb.data(53 downto 36) := to_std_logic(t.low1);
+		sb.data(35 downto 18) := to_std_logic(t.low2);
+		sb.data(17 downto 0) := to_std_logic(t.low_threshold); 
+		sb.data := set_endianness(sb.data,endianness);
+		sb.last := (others => FALSE);
   when 2 => 
-  	sb.data(63 downto 48) := set_endianness(t.high1,endianness);
-		sb.data(47 downto 32) := set_endianness(t.high2,endianness);
-		sb.data(31 downto 0) := to_std_logic(resize(t.high_threshold,32)); 
+    sb.data(63 downto 54) := (others => '0');
+  	sb.data(53 downto 36) := to_std_logic(t.high1);
+		sb.data(35 downto 18) := to_std_logic(t.high2);
+		sb.data(17 downto 0) := to_std_logic(t.high_threshold); 
+		sb.data := set_endianness(sb.data,endianness);
     sb.last := (others => TRUE);
   end case;
   sb.discard := (others => FALSE);

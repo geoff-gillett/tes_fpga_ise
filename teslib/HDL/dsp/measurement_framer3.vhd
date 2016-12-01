@@ -74,7 +74,8 @@ signal area_we:boolean_vector(CHUNKS-1 downto 0);
 signal dump_int:boolean;
 signal lost:boolean;
 signal start_int:boolean;
-signal filtered_reg:signal_t;
+signal filtered_reg:signed(DSP_BITS-1 downto 0);
+signal minima:signal_t;
 
 type pulseFSMstate is (
   IDLE_S,PEAK_S,AREA_S,PULSE_PEAK_S,PULSE_CLEAR_S,COMMIT_S,PULSE_HEADER_S,
@@ -128,12 +129,13 @@ pulse_peak_clear.timestamp <= (others => '0');
 
 test.flags <= m.eflags;
 test.high1 <= filtered_reg;
-test.high2 <= m.filtered.sample;
+test.high2 <= m.filtered_long;
 test.low1 <= filtered_reg;
-test.low2 <= m.filtered.sample;
+test.low2 <= m.filtered_long;
 test.high_threshold <= m.cfd_high_threshold;
 test.low_threshold <= m.cfd_low_threshold; --FIXME this should be pulse thresh 
 test.rise_time <= m.rise_time; --write at commit
+test.minima <= minima;
     
 frame_commit <= state=COMMIT_S;
 --cleared <= clear_address <= last_peak_address;
@@ -144,7 +146,7 @@ begin
       state <= IDLE_S;
     else
      
-      filtered_reg <= m.filtered.sample; 
+      filtered_reg <= m.filtered_long; 
       
       if m.eflags.event_type.detection=PEAK_DETECTION_D then
         lost <= m.peak_start and (state/=IDLE_S or framer_full);
@@ -155,7 +157,6 @@ begin
       -- defaults
       start_int <= FALSE;
       dump_int <= FALSE;
-      --frame_commit <= FALSE;
       frame_address <= (others => '0');
       frame_we <= (others => FALSE);
   
@@ -198,9 +199,10 @@ begin
             frame_word <= to_streambus(test,1,ENDIAN);
             frame_we <= (others => m.stamp_peak);
             start_int <= m.stamp_peak;
-            frame_length <= (0 => '1', others => '0');
+            frame_length <= (1 downto 0 => '1', others => '0');
             stamped <= m.stamp_peak;
             done <= FALSE;
+            minima <= m.filtered.sample;
           end if;
         end case;
           
@@ -347,7 +349,7 @@ begin
         state <= COMMIT_S;
         frame_word <= test_H_word;
         frame_we <= (others => TRUE);
-        frame_address <= (1 => '1', others => '0');
+        frame_address <= (others => '0');
         
         
       when COMMIT_S =>

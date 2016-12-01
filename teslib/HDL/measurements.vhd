@@ -116,6 +116,8 @@ type measurements_t is record
 	slope:signal_measurement_t;
 	--baseline:signal_t;
 	
+	filtered_long:signed(DSP_BITS-1 downto 0);
+	
   pulse_area:area_t;
   pulse_length:time_t; --time since pulse_pos_Txing
   pulse_time:time_t;   --time since last pulse start
@@ -158,8 +160,8 @@ type measurements_t is record
   height:signal_t; 
   height_valid:boolean;
   
-  cfd_low_threshold:signed(17 downto 0);
-  cfd_high_threshold:signed(17 downto 0);  	
+  cfd_low_threshold:signed(DSP_BITS-1 downto 0);
+  cfd_high_threshold:signed(DSP_BITS-1 downto 0);  	
 	cfd_low:boolean; 
 	cfd_high:boolean;
 	cfd_error:boolean;

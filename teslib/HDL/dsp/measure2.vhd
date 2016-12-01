@@ -115,7 +115,7 @@ signal stamp_peak,stamp_pulse:boolean;
 signal first_peak:boolean;
 
 type pipe is array(1 to DEPTH) of signed(WIDTH-1 downto 0);
-signal high_pipe,low_pipe:pipe;
+signal high_pipe,low_pipe,filtered_pipe:pipe;
 
 begin
 measurements <= m;
@@ -266,7 +266,7 @@ begin
       cfd_high_pos_pipe(2 to DEPTH) <= cfd_high_pos_x & 
                                        cfd_high_pos_pipe(2 to DEPTH-1);
                                        
-      --valid_peak_p <= valid_peak & valid_peak_p(1 to DEPTH-1);
+      filtered_pipe(2 to DEPTH) <= filtered_x & filtered_pipe(2 to DEPTH-1);
       
       slope_t_pos_pipe <= slope_threshold_pos_cfd & 
                           slope_t_pos_pipe(1 to DEPTH-1);
@@ -472,6 +472,7 @@ begin
       m.cfd_error <= cfd_error_pipe(DEPTH);
       m.cfd_valid <= cfd_valid_pipe(DEPTH);
       
+      m.filtered_long <= filtered_pipe(DEPTH);
       m.filtered.sample <= filtered_out;
       m.filtered.pos_0xing <= filtered_pos_0xing;
       m.filtered.neg_0xing <= filtered_neg_0xing;
