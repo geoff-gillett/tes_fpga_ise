@@ -147,8 +147,8 @@ function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector;
 type mca_trigger_d is (
 	DISABLED_MCA_TRIGGER_D, -- no select bits set
 	CLOCK_MCA_TRIGGER_D,
-  PULSE_THRESHOLD_POS_MCA_TRIGGER_D, --FIXME this usefull? change to height?
-  PULSE_THRESHOLD_NEG_MCA_TRIGGER_D, --FIXME this usefull? change to height?
+  PULSE_THRESHOLD_POS_MCA_TRIGGER_D, 
+  PULSE_THRESHOLD_NEG_MCA_TRIGGER_D, 
   FILTERED_0XING_MCA_TRIGGER_D,
   SLOPE_0XING_MCA_TRIGGER_D,
   RAW_0XING_MCA_TRIGGER_D,
@@ -167,7 +167,23 @@ function to_mca_trigger_d(i:natural range 0 to NUM_MCA_TRIGGER_D-1)
 return mca_trigger_d;
 function to_mca_trigger_d(s:std_logic_vector) return mca_trigger_d;
 function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector;
-	
+
+type mca_qual_d is (
+  ALL_MCA_QUAL_D, -- no select bits
+  VALID_PEAK_MCA_QUAL_D,
+  ABOVE_AREA_MCA_QUAL_D,
+  ABOVE_PULSE_MCA_QUAL_D,
+  WILL_ABOVE_MCA_QUAL_D,
+  ARMED_MCA_QUAL_D,
+  WILL_ARM_MCA_QUAL_D,
+  VALID_PEAK0_MCA_QUAL_D,
+  VALID_PEAK1_MCA_QUAL_D,
+  VALID_PEAK2_MCA_QUAL_D
+);
+
+constant NUM_MCA_QUAL_D:integer:=mca_trigger_d'pos(mca_trigger_d'high)+1;
+constant MCA_QUAL_D_BITS:integer:=ceilLog2(NUM_MCA_QUAL_D);
+
 --------------------------------------------------------------------------------
 -- Channel Registers
 --------------------------------------------------------------------------------

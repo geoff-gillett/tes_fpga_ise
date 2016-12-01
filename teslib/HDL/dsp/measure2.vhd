@@ -22,8 +22,7 @@ generic(
   FRAC_OUT:natural:=1;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  CFD_DELAY:natural:=1026;
-  FRAMER_ADDRESS_BITS:integer:=MEASUREMENT_FRAMER_ADDRESS_BITS
+  CFD_DELAY:natural:=1026
 );
 port (
   clk:in std_logic;
@@ -77,7 +76,7 @@ signal constant_fraction:signed(WIDTH-1 downto 0);
 signal slope_threshold:signed(WIDTH-1 downto 0);
 signal pulse_threshold:signed(WIDTH-1 downto 0);
 --signal valid_peak:boolean;
-signal peak_number_n,peak_number:unsigned(PEAK_COUNT_BITS downto 0);
+signal peak_number_n:unsigned(PEAK_COUNT_BITS downto 0);
 --new
 signal cfd_low_threshold,cfd_high_threshold:signed(WIDTH-1 downto 0);
 signal max_slope_threshold:signed(WIDTH-1 downto 0);
@@ -324,8 +323,6 @@ begin
         max_peaks <= '0' & registers.max_peaks;
         m.last_peak_address <= ('0' & registers.max_peaks)+2;
         
-        m.cfd_low_threshold <= low_pipe(DEPTH-1);
-        m.cfd_high_threshold <= high_pipe(DEPTH-1);
       end if;  
        
       --minima (max) mutually exclusive)
@@ -336,12 +333,26 @@ begin
         m.last_peak <= registers.max_peaks=0;
         --m.max_peaks <= registers.max_peaks;
         m.time_offset <= (others => '0'); --FIXME needed?
-        m.size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
+        case registers.detection is
+        when PEAK_DETECTION_D | AREA_DETECTION_D => 
+          m.size <= (0 => '1', others => '0');
+        when PULSE_DETECTION_D => 
+          m.size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
+        when TEST_DETECTION_D => 
+          m.size <= (1 => '1', others => '0');
+        end case;
+        
+        m.valid_peak0 <= valid_peak_pipe(DEPTH);
+        
+        m.cfd_low_threshold <= low_pipe(DEPTH);
+        m.cfd_high_threshold <= high_pipe(DEPTH);
+        
         m.peak_address <= (1 => '1', others => '0'); -- start at 2
         peak_address_n <= (1 downto 0 => '1', others => '0');
       end if;
+      
       if m.slope.neg_0xing and m.valid_peak then -- maxima
-        if peak_number > max_peaks then 
+        if peak_number_n > max_peaks then 
           m.eflags.peak_overflow <= TRUE;
         else
           m.last_peak <= peak_number_n=max_peaks;
@@ -349,6 +360,11 @@ begin
           m.eflags.peak_number <= peak_number_n(PEAK_COUNT_BITS-1 downto 0);
           m.peak_address <= peak_address_n;
           peak_address_n <= peak_address_n+1;
+          
+          m.valid_peak0 <= FALSE;
+          m.valid_peak1 <= peak_number_n=1;
+          m.valid_peak2 <= peak_number_n=2;
+          
         end if;
       end if;
      

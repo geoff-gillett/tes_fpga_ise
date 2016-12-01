@@ -156,8 +156,7 @@ generic map(
   FRAC_OUT => FRAC_OUT,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  CFD_DELAY => CFD_DELAY-101,
-  FRAMER_ADDRESS_BITS => MEASUREMENT_FRAMER_ADDRESS_BITS
+  CFD_DELAY => CFD_DELAY-101
 )
 port map(
   enable => event_enable,
@@ -175,7 +174,6 @@ m.slope <= dsp_m.slope;
 m.above_area_threshold <= dsp_m.above_area_threshold;
 m.above_pulse_threshold <= dsp_m.above_pulse_threshold;
 m.armed <= dsp_m.armed;
---m.baseline <= dsp_m.baseline;
 m.cfd_error <= dsp_m.cfd_error;
 m.cfd_high <= dsp_m.cfd_high;
 m.cfd_low <= dsp_m.cfd_low;
@@ -184,7 +182,6 @@ m.height <= dsp_m.height;
 m.height_valid <= dsp_m.height_valid;
 m.last_peak_address <= dsp_m.last_peak_address;
 m.last_peak <= dsp_m.last_peak;
---m.max_peaks <= dsp_m.max_peaks;
 m.max_slope <= dsp_m.max_slope;
 m.peak_address <= dsp_m.peak_address;
 m.peak_start <= dsp_m.peak_start;

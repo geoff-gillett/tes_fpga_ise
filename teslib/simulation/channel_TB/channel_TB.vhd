@@ -187,7 +187,7 @@ registers.capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
 registers.capture.pulse_threshold <= to_unsigned(3300,DSP_BITS-1);
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
-registers.capture.detection <= PULSE_DETECTION_D;
+registers.capture.detection <= TEST_DETECTION_D;
 registers.capture.timing <= CFD_LOW_TIMING_D;
 registers.capture.height <= CFD_HEIGHT_D;
 

@@ -52,7 +52,6 @@ function to_event_type_t(sb:streambus_t) return event_type_t;
 
 --FIXME reduce peak count to 3 bits
 ----------------------- event_flags_t - 16 bits---------------------------------
---| 	first byte transmitted        ||          second byte transmitted        |
 --|    4     |      1       |   3   ||  2   	|   2    |    3       |     1    |
 --|peak_count| peak_overflow|channel||timing_d|height_d|event_type_t|new_window|
 type detection_flags_t is record 
@@ -109,10 +108,14 @@ function to_streambus(a:area_detection_t;endianness:string) return streambus_t;
 
 type test_detection_t is record 
   flags:detection_flags_t; 
-  high1,high2,low1,low2:signal_t; 
+  high1,high2,low1,low2,minima:signal_t; 
   rise_time:time_t;
   low_threshold,high_threshold:signed(DSP_BITS-1 downto 0);
 end record;
+
+function to_streambus(
+  t:test_detection_t;w:natural range 0 to 2;endianness:string
+) return streambus_t;
 
 --TODO add flag to indicate the first tick after reset	
 -------------------------- tick event 16 bytes----------------------------------
@@ -262,9 +265,8 @@ begin
 end function;
 
 ----------------------- event_flags_t - 16 bits---------------------------------
--- 		first byte transmitted         ||          second byte transmitted
 --|    4     |      1       |   3   ||   2   	|    2   |     3      |     1    |
---|peak_count|height_rel2min|channel||timing_d|height_d|event_type_t|new_window|
+--|peak_count|peak_overflow |channel||timing_d|height_d|event_type_t|new_window|
 function to_std_logic(f:detection_flags_t) return std_logic_vector is 
 	variable slv:std_logic_vector(15 downto 0);
 begin    
@@ -380,9 +382,9 @@ function to_streambus(p:pulse_detection_t;w:natural range 0 to 1;
 begin
 	case w is
 	when 0 =>
-		sb.data(63 downto 48) := set_endianness(p.size,endianness);
+  	sb.data(63 downto 48) := set_endianness(p.size,endianness);
 		sb.data(47 downto 32) := (others => '0');
-		sb.data(31 downto 16) := to_std_logic(p.flags); 
+		sb.data(31 downto 16) := set_endianness(to_std_logic(p.flags),endianness); 
 		sb.data(15 downto 0) := (others => '0');
 	when 1 =>
 		sb.data(63 downto 32) := set_endianness(p.area,endianness);
@@ -416,6 +418,39 @@ begin
 	return sb;
 end function;
 
+---------------------------- test event 3*8 bytes --------------------------------
+-- |   16   |   16   |  16   |  16  |
+-- |  min   |  rise  | flags | time |
+-- | low 1  |  low2  |  low thresh  |
+-- | high 1 |  high2 | high thresh  |
+function to_streambus(
+  t:test_detection_t;w:natural range 0 to 2;endianness:string
+) return streambus_t is
+	variable sb:streambus_t;
+begin
+  case w is
+  when 0 => 
+  	sb.data(63 downto 48) := set_endianness(t.minima,endianness);
+		sb.data(47 downto 32) := set_endianness(t.rise_time,endianness);
+		sb.data(31 downto 16) := set_endianness(to_std_logic(t.flags),endianness); 
+		sb.data(15 downto 0) := (others => '0');
+    sb.last := (others => FALSE);
+  when 1 => 
+  	sb.data(63 downto 48) := set_endianness(t.low1,endianness);
+		sb.data(47 downto 32) := set_endianness(t.low2,endianness);
+		sb.data(31 downto 0) := to_std_logic(resize(t.low_threshold,32)); 
+    sb.last := (others => FALSE);
+  when 2 => 
+  	sb.data(63 downto 48) := set_endianness(t.high1,endianness);
+		sb.data(47 downto 32) := set_endianness(t.high2,endianness);
+		sb.data(31 downto 0) := to_std_logic(resize(t.high_threshold,32)); 
+    sb.last := (others => TRUE);
+  end case;
+  sb.discard := (others => FALSE);
+  return sb;
+    
+end function;
+  
 ------------------------ trace_flags_t 16 bits ---------------------------------
 -- |  7  |   1  ||   2  |  2   |    4    |
 -- |resvd| full ||trace0|trace1|max_peaks|

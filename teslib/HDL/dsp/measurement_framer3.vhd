@@ -45,20 +45,22 @@ constant CHUNKS:integer:=4;
 signal m:measurements_t;
 signal peak:peak_detection_t;
 signal area:area_detection_t;
-signal pulse,pulse_reg:pulse_detection_t;
+signal pulse:pulse_detection_t;
+signal test:test_detection_t;
 signal pulse_peak,pulse_peak_clear:pulse_peak_t;
-signal pulse_peak_we,pulse_peak_we_reg:boolean_vector(CHUNKS-1 downto 0);
+signal pulse_peak_we:boolean_vector(CHUNKS-1 downto 0);
 
 --signal height_mux:signal_t;
 signal frame_commit,overflow_int:boolean;
 signal frame_word,pulse_H1_word,pulse_H0_word:streambus_t;
+signal test_H_word,test_high_word:streambus_t;
 signal frame_we:boolean_vector(CHUNKS-1 downto 0);
 signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal clear_address:unsigned(PEAK_COUNT_BITS downto 0);
 signal frame_length:unsigned(FRAMER_ADDRESS_BITS downto 0);
 
-signal framer_full,cleared:boolean;
+signal framer_full:boolean;
 --signal height:signal_t;
 --signal height_valid:boolean;
 --signal rise_time:unsigned(TIME_BITS-1 downto 0);
@@ -66,19 +68,21 @@ signal framer_full,cleared:boolean;
 --signal minima:signal_t;
 
 signal peak_we:boolean_vector(CHUNKS-1 downto 0);
-signal pulse_h0_we,pulse_h1_we:boolean_vector(CHUNKS-1 downto 0);
-signal pulse_h0_we_reg,pulse_h1_we_reg:boolean_vector(CHUNKS-1 downto 0);
+--signal pulse_h0_we,pulse_h1_we:boolean_vector(CHUNKS-1 downto 0);
+--signal pulse_h0_we_reg,pulse_h1_we_reg:boolean_vector(CHUNKS-1 downto 0);
 signal area_we:boolean_vector(CHUNKS-1 downto 0);
 signal dump_int:boolean;
 signal lost:boolean;
 signal start_int:boolean;
+signal filtered_reg:signal_t;
 
 type pulseFSMstate is (
-  IDLE_S,PEAK_S,AREA_S,PULSE_PEAK_S,PULSE_CLEAR_S,COMMIT_S,PULSE_HEADER_S
+  IDLE_S,PEAK_S,AREA_S,PULSE_PEAK_S,PULSE_CLEAR_S,COMMIT_S,PULSE_HEADER_S,
+  TEST_S,TEST_H_S
 );
 signal state:pulseFSMstate;
-signal pulse_done:boolean;
-signal last_peak_address : unsigned(PEAK_COUNT_BITS downto 0);
+signal done,stamped:boolean;
+--signal last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   
 begin
 m <= measurements;
@@ -121,22 +125,26 @@ pulse_peak_clear.height <= (others => '0');
 pulse_peak_clear.minima <= (others => '0');
 pulse_peak_clear.rise_time <= (others => '0');
 pulse_peak_clear.timestamp <= (others => '0');
+
+test.flags <= m.eflags;
+test.high1 <= filtered_reg;
+test.high2 <= m.filtered.sample;
+test.low1 <= filtered_reg;
+test.low2 <= m.filtered.sample;
+test.high_threshold <= m.cfd_high_threshold;
+test.low_threshold <= m.cfd_low_threshold; --FIXME this should be pulse thresh 
+test.rise_time <= m.rise_time; --write at commit
     
 frame_commit <= state=COMMIT_S;
-cleared <= clear_address <= last_peak_address;
+--cleared <= clear_address <= last_peak_address;
 pulseTransition:process(clk)
 begin
   if rising_edge(clk) then
     if reset='1' then
       state <= IDLE_S;
     else
-      
-      
-      pulse_reg <= pulse;
-      pulse_peak_we_reg <= pulse_peak_we;
-      pulse_h0_we_reg <= pulse_h0_we;
-      pulse_h1_we_reg <= pulse_h1_we;
-      
+     
+      filtered_reg <= m.filtered.sample; 
       
       if m.eflags.event_type.detection=PEAK_DETECTION_D then
         lost <= m.peak_start and (state/=IDLE_S or framer_full);
@@ -150,7 +158,6 @@ begin
       --frame_commit <= FALSE;
       frame_address <= (others => '0');
       frame_we <= (others => FALSE);
-  
   
       case state is 
       when IDLE_S => 
@@ -181,12 +188,20 @@ begin
             frame_address <= resize(m.peak_address,FRAMER_ADDRESS_BITS);
             start_int <= m.stamp_pulse;
             clear_address <= m.last_peak_address; 
-            last_peak_address <= (others  => '0');
             frame_length <= resize(m.size,FRAMER_ADDRESS_BITS+1);
-            pulse_done <= FALSE;
+            done <= FALSE;
+            stamped <= m.stamp_pulse;
           end if;
         when TEST_DETECTION_D =>
-          null;
+          if m.peak_start and not framer_full then
+            state <= TEST_S;
+            frame_word <= to_streambus(test,1,ENDIAN);
+            frame_we <= (others => m.stamp_peak);
+            start_int <= m.stamp_peak;
+            frame_length <= (0 => '1', others => '0');
+            stamped <= m.stamp_peak;
+            done <= FALSE;
+          end if;
         end case;
           
       when PEAK_S =>
@@ -215,15 +230,19 @@ begin
         frame_we <= pulse_peak_we;
         frame_address <= resize(m.peak_address,FRAMER_ADDRESS_BITS); 
         start_int <= m.stamp_pulse;
+        if m.stamp_pulse then
+          stamped <= TRUE;
+        end if;
+        
         if m.height_valid and m.last_peak then
           state <= PULSE_HEADER_S;
-          pulse_done <= FALSE;
+          done <= FALSE;
         elsif m.pulse_threshold_neg then -- should not occur when height valid
           pulse_H1_word <= to_streambus(pulse,1,ENDIAN);
           pulse_H0_word <= to_streambus(pulse,0,ENDIAN);
+          done <= TRUE;
           if m.above_area_threshold then
-            pulse_done <= TRUE;
-            if cleared then
+            if clear_address < m.peak_address then --cleared
               state <= PULSE_HEADER_S;
               frame_word <= to_streambus(pulse,0,ENDIAN);
               frame_we <= (others => TRUE);
@@ -233,6 +252,7 @@ begin
               frame_word <= to_streambus(pulse_peak_clear,TRUE,ENDIAN);
               frame_we <= (others => TRUE);
               frame_address <= resize(clear_address, FRAMER_ADDRESS_BITS);
+              clear_address <= clear_address-1;
             end if;
           else
             state <= IDLE_S;
@@ -241,16 +261,12 @@ begin
         end if;
         
       when PULSE_CLEAR_S =>
-        if clear_address > m.last_peak_address then
-          frame_address <= resize(clear_address, FRAMER_ADDRESS_BITS);
-          clear_address <= clear_address-1;
-          frame_word <= to_streambus(pulse_peak_clear,FALSE,ENDIAN);
-          frame_we <= (others => TRUE);
-        elsif m.pulse_threshold_neg then
+        
+        if m.pulse_threshold_neg then
           pulse_H1_word <= to_streambus(pulse,1,ENDIAN);
           pulse_H0_word <= to_streambus(pulse,0,ENDIAN);
+          done <= TRUE;
           if m.above_area_threshold then
-            pulse_done <= TRUE;
             state <= PULSE_HEADER_S;
             frame_word <= to_streambus(pulse,0,ENDIAN);
             frame_we <= (others => TRUE);
@@ -259,18 +275,26 @@ begin
             state <= IDLE_S;
             dump_int <= TRUE;
           end if;
-        elsif pulse_done then
+        elsif done then
           state <= PULSE_HEADER_S;
           frame_word <= pulse_H0_word;
           frame_we <= (others => TRUE);
           frame_address <= (others => '0');
+        end if;
+        
+        if not (clear_address < m.peak_address) then
+          frame_address <= resize(clear_address, FRAMER_ADDRESS_BITS);
+          clear_address <= clear_address-1;
+          frame_word <= to_streambus(pulse_peak_clear,FALSE,ENDIAN);
+          frame_we <= (others => TRUE);
+          state <= PULSE_CLEAR_S;
         end if;
           
       when PULSE_HEADER_S => 
         if m.pulse_threshold_neg then
           pulse_H1_word <= to_streambus(pulse,1,ENDIAN);
           if m.above_area_threshold then
-            pulse_done <= TRUE;
+            done <= TRUE;
             state <= PULSE_HEADER_S;
             frame_word <= to_streambus(pulse,0,ENDIAN);
             frame_we <= (others => TRUE);
@@ -279,12 +303,51 @@ begin
             state <= IDLE_S;
             dump_int <= TRUE;
           end if;
-        elsif pulse_done then
+        elsif done then
           state <= COMMIT_S;
           frame_address <= (0 => '1',others => '0');
           frame_we <= (others => TRUE);
           frame_word <= pulse_H1_word;
         end if;
+        
+      when TEST_S => 
+        -- handle simultaneous stamp and height valid
+        if m.height_valid then
+          test_H_word <= to_streambus(test,0,ENDIAN);
+          test_high_word <= to_streambus(test,2,ENDIAN);
+          done <= TRUE;
+          if stamped then
+            state <= TEST_H_S;
+            frame_word <= to_streambus(test,2,ENDIAN);
+            frame_we <= (others => TRUE);
+            frame_address <= (1 => '1', others => '0');
+          end if;
+        end if;
+        if m.stamp_peak then
+          if stamped then
+            dump_int <= TRUE;
+            lost <= TRUE;
+            state <= IDLE_S;
+          else
+            frame_word <= to_streambus(test,1,ENDIAN);
+            frame_we <= (others => TRUE);
+            start_int <= TRUE;
+            frame_address <= (0 => '1', others => '0');
+            stamped <= TRUE;
+          end if;
+          if done then
+            state <= TEST_H_S;
+            frame_word <= test_high_word;
+            frame_we <= (others => TRUE);
+            frame_address <= (1 => '1', others => '0');
+          end if;
+        end if;
+        
+      when TEST_H_S => 
+        state <= COMMIT_S;
+        frame_word <= test_H_word;
+        frame_we <= (others => TRUE);
+        frame_address <= (1 => '1', others => '0');
         
         
       when COMMIT_S =>
@@ -294,7 +357,6 @@ begin
     end if;
   end if;
 end process pulseTransition;
-
 
 framer:entity streamlib.framer
 generic map(

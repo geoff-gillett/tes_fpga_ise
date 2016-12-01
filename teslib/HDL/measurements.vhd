@@ -127,6 +127,9 @@ type measurements_t is record
   time_offset:unsigned(15 downto 0); 
   
   valid_peak:boolean;
+  valid_peak0:boolean;
+  valid_peak1:boolean;
+  valid_peak2:boolean;
 	stamp_peak:boolean; --peak timing point
   stamp_pulse:boolean; --peak_start and first peak in a pulse
   rise_time:unsigned(15 downto 0);
@@ -175,6 +178,8 @@ function get_mca_triggers(m:measurement_t) return std_logic_vector;
 	
 function get_mca_values(m:measurements_t) return mca_value_array;
 function get_mca_triggers(m:measurements_t) return std_logic_vector;
+  
+function get_mca_quals(m:measurements_t) return std_logic_vector;
 end package measurements;
 
 package body measurements is
@@ -249,6 +254,22 @@ begin
   o(9):=to_std_logic(m.max_slope);
   o(10):=to_std_logic(m.slope.pos_0xing);
   o(11):=to_std_logic(m.slope.neg_0xing);
+  return o;
+end function;
+
+function get_mca_quals(m:measurements_t) return std_logic_vector is
+variable o:std_logic_vector(NUM_MCA_TRIGGER_D-1 downto 0);
+begin
+  o(0):='1';
+  o(1):=to_std_logic(m.valid_peak);
+  o(2):=to_std_logic(m.above_area_threshold);
+  o(3):=to_std_logic(m.above_pulse_threshold);
+  o(4):=to_std_logic(m.will_go_above);
+  o(5):=to_std_logic(m.armed);
+  o(6):=to_std_logic(m.will_arm);
+  o(7):=to_std_logic(m.valid_peak0);
+  o(8):=to_std_logic(m.valid_peak1);
+  o(9):=to_std_logic(m.valid_peak2);
   return o;
 end function;
 
