@@ -84,6 +84,7 @@ signal adc_delayed,adc_mux:adc_sample_array(DSP_CHANNELS-1 downto 0);
 signal value_select:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
 
 signal trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
+signal qualifier_select:std_logic_vector(NUM_MCA_QUAL_D-1 downto 0);
 signal mca_values:mca_value_array(DSP_CHANNELS-1 downto 0);
 constant VALUE_PIPE_DEPTH:integer:=3;
 type value_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
@@ -124,7 +125,7 @@ signal mux_full:boolean;
 signal mux_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal measurement_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 
-signal m:measurements_array(DSP_CHANNELS-1 downto 0);
+signal m,m_reg:measurements_array(DSP_CHANNELS-1 downto 0);
 signal c_reg:channel_register_array(DSP_CHANNELS-1 downto 0);
 signal g_reg:global_registers_t;
 
@@ -256,27 +257,29 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     ready => eventstream_readys(c)
   );
   
-  valueMux:entity work.mca_value_selector2
+  valueMux:entity work.mca_value_selector3
   generic map(
     VALUE_BITS => MCA_VALUE_BITS,
     NUM_VALUES => NUM_MCA_VALUE_D,
-    NUM_VALIDS => NUM_MCA_TRIGGER_D-1
+    NUM_VALIDS => NUM_MCA_TRIGGER_D-1,
+    NUM_QUALS => NUM_MCA_QUAL_D
   )
   port map(
     clk => clk,
     reset => reset1,
-    measurements => m(c),
+    measurements => m_reg(c),
     value_select => value_select,
     trigger_select => trigger_select,
+    qualifier_select => qualifier_select,
     value => mca_values(c),
     valid => mca_value_valids(c)
   );
-  
 end generate tesChannel;
 
 mcaPipe:process(clk)
 begin
   if rising_edge(clk) then
+    m_reg <= m;
     value_pipe <= mca_values & value_pipe(1 to VALUE_PIPE_DEPTH-1);
     value_valid_pipe 
       <= mca_value_valids & value_valid_pipe(1 to VALUE_PIPE_DEPTH-1);
@@ -331,7 +334,7 @@ port map(
   ready => muxstream_ready
 );
 
-mca:entity work.mca_unit
+mca:entity work.mca_unit2
 generic map(
   CHANNELS => DSP_CHANNELS,
   ADDRESS_BITS => MCA_ADDRESS_BITS,
@@ -359,6 +362,7 @@ port map(
   channel_select => channel_select,
   value_select => value_select,
   trigger_select => trigger_select,
+  qualifier_select => qualifier_select,
   value => mca_value,
   value_valid => mca_value_valid,
   stream => mcastream,

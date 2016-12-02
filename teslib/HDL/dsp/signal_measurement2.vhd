@@ -68,7 +68,6 @@ signal state:extrema_state;
 
 begin
 signal_out <= pipe(DEPTH);
---extrema <= extreme_int;
 pos_xing <= pos_p(DEPTH);
 neg_xing <= neg_p(DEPTH);
 xing <= xing_p(DEPTH);

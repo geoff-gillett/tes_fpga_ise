@@ -38,7 +38,7 @@ port (
   measurements:in measurements_t;
   value_select:in std_logic_vector(NUM_VALUES-1 downto 0);
   trigger_select:in std_logic_vector(NUM_VALIDS-1 downto 0);
-  qual_select:in std_logic_vector(NUM_QUALS-1 downto 0);
+  qualifier_select:in std_logic_vector(NUM_QUALS-1 downto 0);
   value:out signed(MCA_VALUE_BITS-1 downto 0);
   valid:out boolean
 );
@@ -82,7 +82,7 @@ port map(
 );
 
 quals <= resize(get_mca_quals(measurements),12);
-qual_sel <= resize(qual_select, 12);
+qual_sel <= resize(qualifier_select, 12);
 qualSel:entity work.select_1of12
 port map(
   input => quals,

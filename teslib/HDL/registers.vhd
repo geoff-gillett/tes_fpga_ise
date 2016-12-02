@@ -181,8 +181,12 @@ type mca_qual_d is (
   VALID_PEAK2_MCA_QUAL_D
 );
 
-constant NUM_MCA_QUAL_D:integer:=mca_trigger_d'pos(mca_trigger_d'high)+1;
+constant NUM_MCA_QUAL_D:integer:=mca_qual_d'pos(mca_qual_d'high)+1;
 constant MCA_QUAL_D_BITS:integer:=ceilLog2(NUM_MCA_QUAL_D);
+function to_onehot(t:mca_qual_d) return std_logic_vector;
+function to_mca_qual_d(i:natural range 0 to NUM_MCA_QUAL_D-1) return mca_qual_d;
+function to_mca_qual_d(s:std_logic_vector) return mca_qual_d;
+function to_std_logic(t:mca_qual_d;w:natural) return std_logic_vector;
 
 --------------------------------------------------------------------------------
 -- Channel Registers
@@ -344,6 +348,7 @@ type mca_registers_t is record
 	channel:unsigned(MCA_CHANNEL_WIDTH-1 downto 0);
 	value:mca_value_d;
 	trigger:mca_trigger_d;
+	qualifier:mca_qual_d;
 	update_asap:boolean;
 	update_on_completion:boolean;
 	--iodelay_control:std_logic_vector(IODELAY_CONTROL_BITS-1 downto 0);
@@ -392,7 +397,7 @@ end record;
 --		0	fmc108 internal clk enable
 --    1  VCO power enable
 -- window														address bit 10
--- RESERVED													address bit 11 
+-- mca.qual													address bit 11 
 --
 -- write only strobe registers 
 --
@@ -405,7 +410,6 @@ end record;
 --    0	update_on_completion
 -- 		1 update_asap
 
-
 constant HDL_VERSION_ADDR_BIT:integer:=0;
 constant MCA_CONTROL_REGISTER_ADDR_BIT:integer:=1;
 constant MCA_LOWEST_VALUE_ADDR_BIT:integer:=2;
@@ -417,6 +421,7 @@ constant ADC_ENABLE_ADDR_BIT:integer:=7;
 constant CHANNEL_ENABLE_ADDR_BIT:integer:=8;
 constant FLAGS_ADDR_BIT:integer:=9;
 constant WINDOW_ADDR_BIT:integer:=10;
+constant MCA_QUAL_ADDR_BIT:integer:=11;
 
 constant IODELAY_CONTROL_ADDR_BIT:integer:=12;
 constant MCA_UPDATE_ADDR_BIT:integer:=13;
@@ -448,6 +453,7 @@ constant DEFAULT_MCA_TRIGGER:mca_trigger_d:=DISABLED_MCA_TRIGGER_D;
 constant DEFAULT_MCA_VALUE:mca_value_d:=MCA_FILTERED_SIGNAL_D;
 constant DEFAULT_MCA_LOWEST_VALUE:signed(MCA_VALUE_BITS-1 downto 0)
 				 :=to_signed(-1000,MCA_VALUE_BITS);
+constant DEFAULT_MCA_QUALIFIER:mca_qual_d:=ALL_MCA_QUAL_D;
 
 end package registers;
 
@@ -539,7 +545,7 @@ end function;
 function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector is
 begin
 	if w < MCA_TRIGGER_D_BITS then
-		assert FALSE report "w to small to represent height_d" severity ERROR;
+		assert FALSE report "w to small to represent mca_trigger_d" severity ERROR;
 	end if;
 	return to_std_logic(mca_trigger_d'pos(t),w);
 end function;
@@ -591,6 +597,33 @@ begin
 	return o;
 end function;
 
+-- mca_qual_d 
+function to_std_logic(t:mca_qual_d;w:natural) return std_logic_vector is
+begin
+	if w < MCA_QUAL_D_BITS then
+		assert FALSE report "w to small to represent mca_qual_d" severity ERROR;
+	end if;
+	return to_std_logic(mca_qual_d'pos(t),w);
+end function;
+
+function to_mca_qual_d(i:natural range 0 to NUM_MCA_QUAL_D-1) 
+return mca_qual_d is
+begin
+	return mca_qual_d'val(i);
+end function;
+
+function to_mca_qual_d(s:std_logic_vector) return mca_qual_d is
+begin
+	return to_mca_qual_d(to_integer(unsigned(s)));
+end function;
+
+function to_onehot(t:mca_qual_d) return std_logic_vector is
+variable o:std_logic_vector(NUM_MCA_QUAL_D-1 downto 0):=(others => '0');
+begin
+	o(mca_qual_d'pos(t)) := '1';
+	return o;
+end function;
+
 --------------------------------------------------------------------------------
 -- MCA register functions 
 --------------------------------------------------------------------------------
@@ -604,9 +637,6 @@ begin
 	s(9 downto 8):=to_std_logic(r.height,2);
 	s(11 downto 10):=to_std_logic(r.trace0,2);
 	s(13 downto 12):=to_std_logic(r.trace1,2);
-	--s(14):=to_std_logic(r.rel2min);
-	--s(15):=to_std_logic(r.rel2min);
-	--s(16):=to_std_logic(r.threshold_rel2min);
 	return s;
 end function; 
 
@@ -628,20 +658,5 @@ begin
 	d(29 downto 16) := to_std_logic(m.last_bin);
 	return d;
 end function;
-
--- mca_values_t functions ------------------------------------------------------
--- FIXME does this one hot function synthesise well
-
-	
---function to_unsigned(v:mca_value_d;w:natural) return unsigned is
---begin
---	return to_unsigned(mca_value_d'pos(v),w);
---end function;
---
---function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector is
---begin
---	return std_logic_vector(to_unsigned(mca_value_d'pos(v),w));
---end function;
-	
 
 end package body registers;

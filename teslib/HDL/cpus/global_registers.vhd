@@ -79,6 +79,7 @@ begin
 			reg.mca.trigger <= DEFAULT_MCA_TRIGGER;
 			reg.mca.value <= DEFAULT_MCA_VALUE;
 			reg.mca.lowest_value <= DEFAULT_MCA_LOWEST_VALUE;
+			reg.mca.qualifier <= DEFAULT_MCA_QUALIFIER;
 			reg.FMC108_internal_clk <= TRUE;
 			reg.VCO_power <= TRUE;
 		else
@@ -130,6 +131,10 @@ begin
 				if address_reg(WINDOW_ADDR_BIT)='1' then
 					reg.window <= unsigned(data_reg(TIME_BITS-1 downto 0));
 				end if;
+				if address_reg(MCA_QUAL_ADDR_BIT)='1' then
+				  reg.mca.qualifier 
+				    <= to_mca_qual_d(data_reg(MCA_QUAL_D_BITS-1 downto 0));
+				end if;
 			end if;	
 			
 			-- strobing registers
@@ -171,7 +176,7 @@ reg_data(FLAGS_ADDR_BIT) <= (
 	others => '-'
 );
 reg_data(WINDOW_ADDR_BIT) <= to_std_logic(resize(reg.window,AXI_DATA_BITS));  
-reg_data(11) <= (others => '-');
+reg_data(11) <= to_std_logic(reg.mca.qualifier,AXI_DATA_BITS);
 
 selectorGen:for b in 0 to AXI_DATA_BITS-1 generate
 begin
