@@ -176,7 +176,7 @@ if rising_edge(clk) then
       	reg.capture.delay <= unsigned(data(DELAY_BITS-1 downto 0)); 
       end if;
       if address(BL_OFFSET_ADDR_BIT)='1' then
-        reg.baseline.offset <= data(ADC_BITS-1 downto 0); 
+        reg.baseline.offset <= unsigned(data(DSP_BITS-2 downto 0)); 
       end if;
       if address(BL_TIMECONSTANT_ADDR_BIT)='1' then
         reg.baseline.timeconstant 

@@ -18,8 +18,9 @@ use extensions.boolean_vector.all;
 library dsp;
 use dsp.types.all;
 
-library mcalib;
-
+use work.functions.all;
+use work.types.all;
+use work.registers.all;
 
 entity baseline_estimator is
 generic(
@@ -27,13 +28,13 @@ generic(
   --width of counters and stream
   COUNTER_BITS:natural:=18;
   TIMECONSTANT_BITS:natural:=32;
-  WIDTH:natural:=18
+  OUT_BITS:natural:=18
 );
 port(
   clk:in std_logic;
   reset:in std_logic;
   --
-  sample:in signed(WIDTH-1 downto 0);
+  sample:in sample_t;
   sample_valid:in boolean;
   --
   av_config:in fir_control_in_t;
@@ -47,7 +48,7 @@ port(
   --only include a value in average if it different from the previous value
   new_only:in boolean;
   --
-  baseline_estimate:out signed(WIDTH-1 downto 0);
+  baseline_estimate:out signed(OUT_BITS-1 downto 0);
   range_error:out boolean
 );
 end entity baseline_estimator;
@@ -59,7 +60,7 @@ port (
   aclken:in std_logic;
   s_axis_data_tvalid:in std_logic;
   s_axis_data_tready:out std_logic;
-  s_axis_data_tdata:in std_logic_vector(23 downto 0);
+  s_axis_data_tdata:in std_logic_vector(15 downto 0);
   s_axis_config_tvalid:in std_logic;
   s_axis_config_tready:out std_logic;
   s_axis_config_tdata:in std_logic_vector(7 downto 0);
@@ -80,21 +81,20 @@ signal most_frequent:std_logic_vector(BASELINE_BITS-1 downto 0);
 signal previous_mf:std_logic_vector(BASELINE_BITS-1 downto 0);
 --signal mf_value:signed(BASELINE_BITS-1 downto 0);
 signal av_enable:boolean;
-signal most_frequent_av:signed(WIDTH-1 downto 0);
+signal most_frequent_av:signed(OUT_BITS-1 downto 0);
 signal new_most_frequent:boolean;
 signal new_mf_value:boolean;
 signal av_valid:std_logic;
 signal av_int:std_logic_vector(47 downto 0);
-signal mf_average:std_logic_vector(WIDTH-1 downto 0);
-signal mf_value:std_logic_vector(23 downto 0);
+signal mf_average:std_logic_vector(OUT_BITS-1 downto 0);
+signal mf_value:std_logic_vector(15 downto 0);
 
 begin
 --FIXME lower values should saturate
 --FIXME make range error more useful so can feed back to offset
 baselineControl:process(clk)
-variable lowest,highest:signed(WIDTH-1 downto 0);
-constant HALF_RANGE:signed(WIDTH-1 downto 0)
-         :=to_signed((2**BASELINE_BITS)/2,WIDTH);
+variable lowest,highest:sample_t;
+constant HALF_RANGE:sample_t:=to_signed((2**BASELINE_BITS)/2,SAMPLE_BITS);
 begin
 if rising_edge(clk) then
   lowest:=-HALF_RANGE;
@@ -102,7 +102,7 @@ if rising_edge(clk) then
   
   if sample_valid then 
     baseline_sample <= std_logic_vector(resize(sample,BASELINE_BITS));
-    if (sample > resize(signed('0' & threshold), WIDTH)) then 
+    if (sample > resize(signed('0' & threshold), SAMPLE_BITS)) then 
       baseline_sample_valid <= FALSE;
       range_error <= FALSE;
     elsif sample < lowest then
@@ -120,7 +120,7 @@ if rising_edge(clk) then
 end if;
 end process baselineControl;
 
-mostFrequent:entity mcalib.most_frequent
+mostFrequent:entity work.most_frequent
 generic map(
   ADDRESS_BITS => BASELINE_BITS,
   COUNTER_BITS => COUNTER_BITS,
@@ -150,12 +150,12 @@ begin
 				if new_only then
 					if new_mf_value then
 						av_enable <= TRUE;
-						mf_value <= std_logic_vector(resize(signed(most_frequent),24));
+						mf_value <= std_logic_vector(resize(signed(most_frequent),16));
 					else
 						av_enable <= FALSE;	
 					end if;
 				else
-					mf_value <= std_logic_vector(resize(signed(most_frequent),24));
+					mf_value <= std_logic_vector(resize(signed(most_frequent),16));
 					av_enable <= TRUE;
 				end if;
 			else
@@ -189,7 +189,7 @@ PORT MAP (
 round:entity dsp.round
 generic map(
   WIDTH_IN => 48,
-  FRAC_IN => 28,
+  FRAC_IN => 25,
   WIDTH_OUT => 18,
   FRAC_OUT => 3
 )
@@ -205,10 +205,10 @@ outputReg:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
-    baseline_estimate <= to_signed(0,WIDTH);
+    baseline_estimate <= to_signed(0,OUT_BITS);
   else
     if timeconstant=0 then
-    	baseline_estimate <= to_signed(0,WIDTH);
+    	baseline_estimate <= to_signed(0,OUT_BITS);
     else
       baseline_estimate <=  most_frequent_av;
     end if;

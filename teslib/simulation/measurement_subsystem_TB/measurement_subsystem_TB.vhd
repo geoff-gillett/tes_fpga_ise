@@ -33,7 +33,8 @@ use work.debug.all;
 
 entity measurement_subsystem_TB is
 generic(
-	CHANNELS:integer:=2; -- need to adjust stimulus if changed
+	CHANNELS:natural:=2; -- need to adjust stimulus if changed
+	ADC_CHANNELS:natural:=2;
 	ENDIAN:string:="LITTLE";
 	PACKET_GEN:boolean:=FALSE
 );
@@ -41,6 +42,7 @@ end entity measurement_subsystem_TB;
 
 architecture testbench of measurement_subsystem_TB is
 
+constant CF:integer:=(2**17/20);
 --constant CHANNELS:integer:=2**CHANNEL_BITS;
 component enet_cdc_fifo
 port (
@@ -66,8 +68,9 @@ constant SAMPLE_CLK_PERIOD:time:=4 ns;
 constant IO_CLK_PERIOD:time:=8 ns;
 
 signal mca_initialising:boolean;
-signal adc_samples:adc_sample_array(CHANNELS-1 downto 0);
-signal sample_reg:adc_sample_t;
+signal adc_samples:adc_sample_array(CHANNELS-1 downto 0)
+       :=(others => (others => '0'));
+signal sample_reg:adc_sample_t:=(others => '0');
 signal chan_reg:channel_register_array(CHANNELS-1 downto 0);
 
 -- discrete types as unsigned for reading into settings file
@@ -92,7 +95,7 @@ signal global:global_registers_t;
 signal clk_count:integer:=0;
 
 type int_file is file of integer;
-file bytestream_file,trace_file:int_file;
+file bytestream_file,trace_file,minmax_file:int_file;
 
 signal filter_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal slope_config:fir_ctl_in_array(CHANNELS-1 downto 0);
@@ -117,6 +120,7 @@ bytestream_ready <= TRUE after 2*IO_CLK_PERIOD;
 UUT:entity work.measurement_subsystem
 generic map(
   DSP_CHANNELS => CHANNELS,
+  ADC_CHANNELS => ADC_CHANNELS,
   ENDIAN => ENDIAN,
   PACKET_GEN => PACKET_GEN
 )
@@ -196,15 +200,15 @@ bytestream_ready_v <= to_std_logic(bytestream_ready);
 --register settings
 global.mtu <= to_unsigned(1500,MTU_BITS);
 global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
+global.tick_period <= to_unsigned(2**12,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
 global.mca.last_bin <= (others => '1');
 global.mca.lowest_value <= to_signed(-1000,MCA_VALUE_BITS);
 --TODO normalise these type names
-global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
-global.mca.value <= MCA_RAW_SIGNAL_D;
+global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
+global.mca.value <= MCA_FILTERED_EXTREMA_D;
 
 filter_config(0).config_data <= (others => '0');
 filter_config(0).config_valid <= '0';
@@ -237,34 +241,38 @@ baseline_config(1).reload_data <= (others => '0');
 baseline_config(1).reload_last <= '0';
 baseline_config(1).reload_valid <= '0';
 
-chan_reg(0).baseline.offset <= std_logic_vector(to_unsigned(260,ADC_BITS));
+chan_reg(0).baseline.offset <= to_unsigned(260*8,DSP_BITS-1);
 chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(0).baseline.threshold <= (others => '1');
 chan_reg(0).baseline.new_only <= TRUE;
 chan_reg(0).baseline.subtraction <= TRUE;
-chan_reg(0).baseline.timeconstant <= to_unsigned(2**16,32);
-chan_reg(1).baseline.offset <= std_logic_vector(to_unsigned(260,ADC_BITS));
+chan_reg(0).baseline.timeconstant <= to_unsigned(2**12,32);
+
+chan_reg(1).baseline.offset <= to_unsigned(260*8,DSP_BITS-1);
 chan_reg(1).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(1).baseline.threshold <= (others => '1');
 chan_reg(1).baseline.new_only <= TRUE;
 chan_reg(1).baseline.subtraction <= TRUE;
-chan_reg(1).baseline.timeconstant <= to_unsigned(2**16,32);
+chan_reg(1).baseline.timeconstant <= to_unsigned(2**12,32);
 
-chan_reg(0).capture.constant_fraction  <= (16 => '1', others => '0');
-chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1);
-chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1);
-chan_reg(0).capture.area_threshold <= to_unsigned(10000,AREA_WIDTH-1);
+chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
+chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
+chan_reg(0).capture.slope_threshold <= to_unsigned(4*750,DSP_BITS-1);
+chan_reg(0).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
+chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
-chan_reg(0).capture.detection <= PULSE_DETECTION_D;
-chan_reg(0).capture.timing <= SLOPE_MAX_TIMING_D;
+chan_reg(0).capture.detection <= PEAK_DETECTION_D;
+chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
-chan_reg(1).capture.constant_fraction  <= (16 => '1', others => '0');
-chan_reg(1).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1);
-chan_reg(1).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1);
-chan_reg(1).capture.area_threshold <= to_unsigned(10000,AREA_WIDTH-1);
+
+chan_reg(1).capture.adc_select <= (1 => '1', others => '0');
+chan_reg(1).capture.constant_fraction  <= to_unsigned(CF, DSP_BITS-1);
+chan_reg(1).capture.slope_threshold <= to_unsigned(4*750,DSP_BITS-1);
+chan_reg(1).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
+chan_reg(1).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(1).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 chan_reg(1).capture.detection <= PULSE_DETECTION_D;
-chan_reg(1).capture.timing <= SLOPE_MAX_TIMING_D;
+chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
 
 mcaControlStimulus:process
@@ -303,9 +311,21 @@ begin
 	  write(trace_file, to_integer(to_0(m(0).raw.sample)));
 	  write(trace_file, to_integer(to_0(m(0).filtered.sample)));
 	  write(trace_file, to_integer(to_0(m(0).slope.sample)));
-	  write(trace_file, to_integer(to_0(m(0).baseline)));
 	end loop;
 end process traceWriter; 
+
+file_open(minmax_file, "../minmax",WRITE_MODE);
+minmaxWriter:process
+begin
+	while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).slope.pos_0xing or m(0).slope.neg_0xing then
+	    write(minmax_file, to_integer(m(0).slope.pos_0xing));
+	    write(minmax_file, to_integer(m(0).slope.neg_0xing));
+	    write(minmax_file, clk_count);
+	  end if;
+	end loop;
+end process minmaxWriter; 
 
 clkCount:process is
 begin
@@ -314,7 +334,7 @@ begin
 end process clkCount;
 
 stimulusFile:process
-	file sample_file:text is in "../input_signals/short";
+	file sample_file:text is in "../input_signals/double_peak";
 	variable file_line:line; -- text line buffer 
 	variable str_sample:string(4 downto 1);
 	variable sample_in:std_logic_vector(15 downto 0);

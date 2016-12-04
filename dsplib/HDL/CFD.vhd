@@ -106,12 +106,16 @@ signal flags_i:boolean_vector(8 downto 0);
 signal flags_d,flags_i_s:std_logic_vector(8 downto 0);
 signal filtered_d:std_logic_vector(WIDTH-1 downto 0);
 signal slope_d:std_logic_vector(WIDTH-1 downto 0);
-signal slope_0_n_d,slope_0_p_d,slope_t_p_d,pulse_t_p_d,pulse_t_n_d:boolean;
+signal slope_t_p_d,pulse_t_p_d,pulse_t_n_d:boolean;
 signal overran:boolean;
 signal max_d,min_d,above_pulse_threshold_d,pulse_threshold_pos_d:boolean;
 signal pulse_threshold_neg_d,slope_threshold_pos_d:boolean;
 signal CFD_error_reg:boolean;
 signal q_was_empty:boolean;
+
+--DEBUGING
+constant DEBUG:boolean:=TRUE;
+signal wr_count,rd_count:unsigned(WIDTH-1 downto 0);
 --signal CFD_valid:boolean;
 --signal CFD_error:boolean;
 
@@ -185,10 +189,11 @@ begin
       above_i <= FALSE;
       delay_counter <= 0;
       started <= FALSE;
+      wr_count <= (others => '0');
     else
       filtered_pipe <= filtered_x & filtered_pipe(1 to DEPTH-1);
       slope_pipe <= slope_x & slope_pipe(1 to DEPTH-1);
-      slope_0_n_pipe <= slope_0_n & slope_0_n_pipe(1 to DEPTH-1);
+      slope_0_n_pipe <= (slope_0_n and started) & slope_0_n_pipe(1 to DEPTH-1);
       slope_0_p_pipe <= slope_0_p & slope_0_p_pipe(1 to DEPTH-1);
       slope_t_p_pipe <= slope_t_p & slope_t_p_pipe(1 to DEPTH-1);
       pulse_t_p_pipe <= pulse_t_p & pulse_t_p_pipe(1 to DEPTH-1);
@@ -233,11 +238,14 @@ begin
         end if;
       end if;
       
-      cfd_low_i <= p + minima_pipe(6);
-      cfd_high_i <= filtered_pipe(6) - p; 
+      cfd_low_i <= p + minima_pipe(DEPTH-1);
+      cfd_high_i <= filtered_pipe(DEPTH-1) - p; 
       
-      if slope_0_n_pipe(DEPTH-1) and started then 
+      if slope_0_n_pipe(DEPTH-1) then 
         q_wr_en <= '1';
+        --if DEBUG then
+          wr_count <= wr_count+1;
+        --end if;
       else 
         q_wr_en <= '0';
       end if;
@@ -270,7 +278,8 @@ flags_i <= overrun_i & full_i & slope_0_n_pipe(DEPTH) &
 
 cf_data(WIDTH-1 downto 0) <= std_logic_vector(cfd_low_i);
 cf_data(2*WIDTH-1 downto WIDTH) <= std_logic_vector(cfd_high_i);
-cf_data(3*WIDTH-1 downto 2*WIDTH) <= std_logic_vector(max_slope_i);
+cf_data(3*WIDTH-1 downto 2*WIDTH) <= std_logic_vector(wr_count) when DEBUG
+                                     else std_logic_vector(max_slope_i);
 cf_data(3*WIDTH) <= to_std_logic(overrun_i); 
 cf_data(3*WIDTH+1) <= to_std_logic(armed_i); 
 cf_data(3*WIDTH+2) <= to_std_logic(above_i); 
@@ -335,8 +344,6 @@ if rising_edge(clk) then
   if reset = '1' then
     overrun_d <= FALSE;
     full_d <= FALSE;
-    slope_0_n_d <= FALSE;
-    slope_0_p_d <= FALSE;
     armed_d <= FALSE;
     above_d <= FALSE;
     pulse_t_p_d <= FALSE;
@@ -346,6 +353,9 @@ if rising_edge(clk) then
     CFD_error <= FALSE;
     CFD_valid <= FALSE;
     q_rd_en <= '0';
+    --if DEBUG then 
+      rd_count <= (others => '0');
+    --end if;
   else
     overrun_d <= to_boolean(flags_d(8));
     overrun <= overrun_d;
@@ -382,6 +392,9 @@ if rising_edge(clk) then
     if started and ((flags_d(6)='1' and overran) or flags_d(5)='1' or 
        (min_d and q_was_empty)) then
       q_rd_en <= '1';
+      --if DEBUG then
+        rd_count <= rd_count+1;
+      --end if;
     else
       q_rd_en <= '0';
     end if;

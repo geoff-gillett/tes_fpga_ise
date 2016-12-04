@@ -22,6 +22,7 @@ generic(
   FRAC:natural:=3;
   WIDTH_OUT:natural:=16;
   FRAC_OUT:natural:=1;
+  ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
   CFD_DELAY:natural:=1026;
@@ -32,7 +33,7 @@ port (
   reset1:in std_logic;
   reset2:in std_logic;
   
-  adc_sample:in adc_sample_t;
+  adc_sample:in unsigned(ADC_WIDTH-1 downto 0);
   registers:in channel_registers_t;
   event_enable:in boolean;
   
@@ -56,12 +57,13 @@ port (
 end entity channel2;
 
 architecture RTL of channel2 is
+
   
 signal sample_in,raw,filtered,slope:signed(DSP_BITS-1 downto 0);
 signal sample_d:std_logic_vector(WIDTH-1 downto 0);
 signal m,dsp_m:measurements_t;
-signal sample,sample_inv:sample_t;
-signal baseline_estimate:signed(DSP_BITS-1 downto 0);
+signal sample,sample_inv:signed(WIDTH-1 downto 0);
+signal baseline_estimate:signed(WIDTH-1 downto 0);
 signal range_error:boolean;
 
 --debug
@@ -77,12 +79,17 @@ measurements <= m;
 sampleoffset:process(clk)
 begin
 if rising_edge(clk) then
-  if registers.capture.invert then
-	 sample_inv <= -signed('0' & adc_sample); 
+  if reset2='1' then
+    sample_inv <= (others => '0');
+    sample  <= (others => '0');
   else
-	 sample_inv <= signed('0' & adc_sample); 
+    if registers.capture.invert then
+      sample_inv <= -signed(reshape('0' & adc_sample,0,WIDTH,FRAC)); 
+    else
+      sample_inv <= signed(reshape('0' & adc_sample,0,WIDTH,FRAC)); 
+    end if;
+    sample <= sample_inv - signed('0' & registers.baseline.offset);
   end if;
-	sample <= sample_inv - signed('0' & registers.baseline.offset);
 end if;
 end process sampleoffset;
 
@@ -92,7 +99,7 @@ generic map(
   BASELINE_BITS => BASELINE_BITS,
   COUNTER_BITS => 18,
   TIMECONSTANT_BITS => 32,
-  OUT_BITS => DSP_BITS
+  WIDTH => DSP_BITS
 )
 port map(
   clk => clk,
@@ -113,9 +120,9 @@ baselineSubraction:process(clk)
 begin
 if rising_edge(clk) then
   if registers.baseline.subtraction then
-    sample_in <= reshape(sample,0,DSP_BITS,DSP_FRAC) - baseline_estimate;		
+    sample_in <= sample - baseline_estimate;		
   else
-    sample_in <= reshape(sample,0,DSP_BITS,DSP_FRAC);	
+    sample_in <= sample;	
   end if;
 end if;
 end process baselineSubraction;

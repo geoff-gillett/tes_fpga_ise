@@ -481,9 +481,9 @@ begin
       m.filtered.extrema <= filtered_extrema;
       
       m.slope.sample <= slope_out;
-      m.slope.pos_0xing <= slope_pos_0xing;
-      m.slope.neg_0xing <= slope_neg_0xing;
-      m.slope.zero_xing <= slope_zero_xing;
+      m.slope.pos_0xing <= min_pipe(DEPTH); --slope_pos_0xing;
+      m.slope.neg_0xing <= max_pipe(DEPTH); --slope_neg_0xing;
+      m.slope.zero_xing <= max_pipe(DEPTH) or min_pipe(DEPTH);
       m.slope.area <= slope_area;
       m.slope.extrema <= slope_extrema;
     end if;
@@ -533,8 +533,8 @@ port map(
   signal_in => slope_cfd,
   threshold => (others => '0'),
   signal_out => slope_out,
-  pos_xing => slope_pos_0xing,
-  neg_xing => slope_neg_0xing,
+  pos_xing => open, --slope_pos_0xing,
+  neg_xing => open, --slope_neg_0xing,
   xing => slope_zero_xing,
   area => slope_area,
   extrema => slope_extrema

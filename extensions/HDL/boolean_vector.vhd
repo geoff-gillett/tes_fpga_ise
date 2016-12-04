@@ -26,6 +26,8 @@ function to_std_logic(a:boolean) return std_logic;
 function to_std_logic(b:boolean_vector) return std_logic_vector;
 function to_unsigned(b:boolean_vector) return unsigned;
 function to_unsigned(b:boolean) return unsigned;
+function to_integer(b:boolean) return integer;
+function to_integer(b:boolean_vector) return integer;
 function resize(b:boolean_vector;s:natural) return boolean_vector;
 --------------------------------------------------------------------------------
 -- Bitwise boolean logic on boolean_vector
@@ -90,6 +92,16 @@ end function;
 function to_boolean(u:unsigned) return boolean_vector is
 begin
 	return to_boolean(std_logic_vector(u));
+end function;
+
+function to_integer(b:boolean) return integer is
+begin 
+  return to_integer(to_unsigned(b));
+end function;
+
+function to_integer(b:boolean_vector) return integer is
+begin 
+  return to_integer(to_unsigned(b));
 end function;
 
 function resize(b:boolean_vector;s:natural) return boolean_vector is

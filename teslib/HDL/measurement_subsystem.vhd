@@ -41,7 +41,8 @@ use work.events.all;
 
 entity measurement_subsystem is
 generic(
-  DSP_CHANNELS:integer:=2;
+  DSP_CHANNELS:natural:=2;
+  ADC_CHANNELS:natural:=2;
 	ENDIAN:string:="LITTLE";
 	PACKET_GEN:boolean:=FALSE
 );
@@ -209,12 +210,12 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 
   inputMux:entity work.input_mux
   generic map(
-    CHANNELS => ADC_CHIPS*ADC_CHIP_CHANNELS
+    CHANNELS => ADC_CHANNELS
   )
   port map(
     clk => clk,
     samples_in => samples,
-    sel => c_reg(c).capture.adc_select,
+    sel => resize(c_reg(c).capture.adc_select,ADC_CHANNELS),
     sample_out => adc_mux(c)
   );
 
@@ -239,7 +240,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     clk => clk,
     reset1 => reset1,
     reset2 => reset2,
-    adc_sample => adc_delayed(c),
+    adc_sample => unsigned(adc_delayed(c)),
     registers => c_reg(c),
     event_enable => to_boolean(g_reg.channel_enable(c)),
     stage1_config => filter_config(c),
