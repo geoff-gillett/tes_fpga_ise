@@ -114,7 +114,7 @@ signal CFD_error_reg:boolean;
 signal q_was_empty:boolean;
 
 --DEBUGING
-constant DEBUG:boolean:=TRUE;
+constant DEBUG:boolean:=FALSE;
 signal wr_count,rd_count:unsigned(WIDTH-1 downto 0);
 --signal CFD_valid:boolean;
 --signal CFD_error:boolean;
@@ -224,11 +224,7 @@ begin
         armed_i <= FALSE;
       end if; 
       
-      if pulse_t_p_pipe(6) then
-        above_i <= TRUE;
-      elsif pulse_t_n_pipe(6) then
-        above_i <= FALSE;
-      end if; 
+      above_i <= filtered_pipe(6) >= pulse_threshold_int;
       
       if slope_0_p_pipe(6) then
         max_slope_i <= slope_pipe(6);

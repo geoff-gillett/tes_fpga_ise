@@ -144,7 +144,7 @@ signal counts:std_logic_vector(65 downto 0);
 --      packet                                  
 -- word offset  |  16   |      16       |      32      |
 -- 0    24      | size  |   last_bin    | lowest_value |
--- 1    32      | flags | most_frequent |    reserved  | 
+-- 1    32      | resvd | most_frequent |    flags     | 
 -- 2    40      |                 total                |
 -- 3    48      |             start_time               |
 -- 4    56      |              stop_time               |
@@ -155,13 +155,16 @@ constant MCA_PROTOCOL_HEADER_WORDS:integer:=5; --FIXME why are these needed
 type mca_flags_t is record  -- 32 bits
 	value:mca_value_d; --4
 	trigger:mca_trigger_d; --4
+	qualifier:mca_qual_d;
 	bin_n:unsigned(MCA_BIN_N_BITS-1 downto 0); --5
 	channel:unsigned(MCA_CHANNEL_WIDTH-1 downto 0); --3
 end record;
 
 function to_std_logic(f:mca_flags_t) return std_logic_vector is
 begin
-	return to_std_logic(f.value,4) &
+	return "000000000000" &
+	       to_std_logic(f.qualifier,4) &
+	       to_std_logic(f.value,4) &
 	       to_std_logic(f.trigger,4) &
 	       to_std_logic(f.bin_n) &
 				 to_std_logic(f.channel);
@@ -191,9 +194,9 @@ begin
 					 set_endianness(h.last_bin,e) &
 					 set_endianness(h.lowest_value,e);
 	when 1 =>
-		return to_std_logic(h.flags) &
+		return "0000000000000000" &
 					 set_endianness(h.most_frequent,e) &
-					 to_std_logic(0,32); -- reserved TODO this could be period
+					 set_endianness(to_std_logic(h.flags),e); 
 	when 2 =>
 		return set_endianness(h.total,e);
 	when 3 =>

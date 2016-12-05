@@ -343,7 +343,7 @@ signal filter_events,slope_events,baseline_events:
        fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
 --------------------------------------------------------------------------------
 --debug
-signal adc_sample0:adc_sample_t;
+--signal adc_sample0:adc_sample_t;
 --signal adc_enable:boolean_vector(ADC_CHANNELS-1 downto 0);
 
 --constant DEBUG:string:="FALSE";
@@ -374,7 +374,7 @@ signal adc_sample0:adc_sample_t;
 --signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
 begin
-adc_sample0 <= adc_samples(0);
+--adc_sample0 <= adc_samples(0);
 --adc_enable <= to_boolean(global.adc_enable);
 
 --test:process(signal_clk)
@@ -753,6 +753,7 @@ end generate tesChannel;
 measurementSubsystem:entity tes.measurement_subsystem
 generic map(
   DSP_CHANNELS => DSP_CHANNELS,
+  ADC_CHANNELS => ADC_CHANNELS,
   ENDIAN => ENDIAN,
   PACKET_GEN => PACKET_GEN
 )

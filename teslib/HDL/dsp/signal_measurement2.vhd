@@ -131,7 +131,7 @@ begin
       pos_p(2 to DEPTH) <= pos_x & pos_p(2 to DEPTH-1);   
       neg_p(2 to DEPTH) <= neg_x & neg_p(2 to DEPTH-1);   
       xing_p(2 to DEPTH) <= xing_int & xing_p(2 to DEPTH-1);
-      pipe(4 to DEPTH) <= signed(signal_r) & pipe(4 to DEPTH-1);   
+      pipe(3 to DEPTH) <= signed(signal_r) & pipe(3 to DEPTH-1);   
     end if;
   end if;
 end process pipeline;

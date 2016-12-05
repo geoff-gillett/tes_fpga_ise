@@ -139,7 +139,8 @@ type ethernet_header_t is record
 	frame_sequence:unsigned(SEQUENCE_BITS-1 downto 0);
 	length:unsigned(15 downto 0);
 	protocol_sequence:unsigned(SEQUENCE_BITS-1 downto 0);
-	frame_type:event_type_t;
+	event_type:event_type_t;
+	event_size:unsigned(15 downto 0);
 end record;
 
 signal header:ethernet_header_t;
@@ -163,8 +164,10 @@ begin
 	when 2 => 
     slv := set_endianness(e.frame_sequence,endianness) &
            set_endianness(e.protocol_sequence,endianness) &
-           to_std_logic(0,24) &
-           "0000" & to_std_logic(e.frame_type) & '0';
+           set_endianness(e.event_size,endianness) &
+           to_std_logic(0,8) &
+           "0000" 
+           & to_std_logic(e.event_type) & '0';
 	when others => 
 		assert FALSE report "bad word number in ethernet_header to_streambus()"	
 						 severity ERROR;
@@ -311,12 +314,14 @@ begin
     	
     	if frame_state=HEADER0 then
     		if arbiter_state=EVENT then
-        	header.frame_type <= event_s_type;
-        	frame_size <= event_s_size;
+    		  header.event_type <= event_s_type;
+    		  header.event_size <= event_s_size;
+        	frame_size <= event_s_size; --FIXME replace with header.size
         	type_change <= FALSE;
         	size_change <= FALSE;
         else -- must be MCA
         	frame_size <= (0 => '1', others => '0');
+        	header.event_size <= (0 => '1', others => '0');
         end if;	
       end if;
     	
@@ -327,7 +332,7 @@ begin
     		if lookahead_head then	
     			event_s_type <= lookahead_type;
     			if frame_state=PAYLOAD then
-    				type_change <= header.frame_type/=lookahead_type;
+    				type_change <= header.event_type/=lookahead_type;
     			end if;
         
           if lookahead_type.tick then
@@ -377,7 +382,7 @@ begin
 				flush_events <= FALSE;
 			end if;
 			
-      if header.frame_type.tick and event_s_last_hs then
+      if header.event_type.tick and event_s_last_hs then
         tick_latency_count <= (others => '0');
         wait_for_tick <= FALSE;
       else
@@ -410,7 +415,7 @@ begin
 			end if;
 			
 			if event_s_ready and event_s_valid and event_s.last(0) 
-					and header.frame_type.detection=TEST_DETECTION_D then 
+					and header.event_type.detection=TEST_DETECTION_D then 
 				trace_last <= TRUE;
 			end if;
 			
@@ -427,7 +432,7 @@ begin
 				if frame_state=HEADER0 then
 					header.ethernet_type <= x"88B5";
 				elsif frame_state=HEADER1 then
-					if header.frame_type.detection=TEST_DETECTION_D then
+					if header.event_type.detection=TEST_DETECTION_D then
 						header.protocol_sequence <= trace_sequence;
 					else
 						header.protocol_sequence <= event_sequence;
@@ -450,7 +455,7 @@ begin
 				end if;
 				
 				if arbiter_state=EVENT then
-					if header.frame_type.detection=TEST_DETECTION_D then
+					if header.event_type.detection=TEST_DETECTION_D then
 						if trace_last then
 							trace_sequence <= (others => '0');
 							trace_last <= FALSE;
@@ -507,7 +512,7 @@ end process arbiterFSMtransition;
 frameFSMtransition:process(frame_state,arbiter_nextstate,arbiter_state,
 													 framer_ready,mca_s_valid,flush_events,
 												   event_s_valid,frame_last,mca_s,event_s,event_head,
-												   header.frame_type,header,frame_address,
+												   header.event_type,header,frame_address,
 												   last_frame_address,last_frame_word,lookahead_valid,
 												   size_change,type_change,frame_under)
 begin
@@ -585,8 +590,8 @@ begin
 				else
           framer_we <= (others => framer_ready);
           inc_address <= framer_ready;
-					if header.frame_type.detection=TEST_DETECTION_D or 
-							header.frame_type.tick then
+					if header.event_type.detection=TEST_DETECTION_D or 
+							header.event_type.tick then
 						framer_word.last(0) <= event_s.last(0);
 						if event_s.last(0) and framer_ready then
 							frame_nextstate <= LENGTH;
