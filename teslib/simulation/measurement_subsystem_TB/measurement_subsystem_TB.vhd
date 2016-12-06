@@ -95,7 +95,7 @@ signal global:global_registers_t;
 signal clk_count:integer:=0;
 
 type int_file is file of integer;
-file bytestream_file,trace_file,minmax_file:int_file;
+file bytestream_file,trace_file,minmax_file,filteredxing_file:int_file;
 
 signal filter_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal slope_config:fir_ctl_in_array(CHANNELS-1 downto 0);
@@ -206,9 +206,10 @@ global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
 global.mca.last_bin <= (others => '1');
 global.mca.lowest_value <= to_signed(-1000,MCA_VALUE_BITS);
+global.mca.qualifier <= ALL_MCA_QUAL_D;
 --TODO normalise these type names
-global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
-global.mca.value <= MCA_FILTERED_EXTREMA_D;
+global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+global.mca.value <= MCA_FILTERED_SIGNAL_D;
 
 filter_config(0).config_data <= (others => '0');
 filter_config(0).config_valid <= '0';
@@ -311,6 +312,7 @@ begin
 	  write(trace_file, to_integer(to_0(m(0).raw.sample)));
 	  write(trace_file, to_integer(to_0(m(0).filtered.sample)));
 	  write(trace_file, to_integer(to_0(m(0).slope.sample)));
+	  write(trace_file, to_integer(to_0(m(0).filtered_long)));
 	end loop;
 end process traceWriter; 
 
@@ -320,12 +322,34 @@ begin
 	while TRUE loop
     wait until rising_edge(sample_clk);
     if m(0).slope.pos_0xing or m(0).slope.neg_0xing then
-	    write(minmax_file, to_integer(m(0).slope.pos_0xing));
-	    write(minmax_file, to_integer(m(0).slope.neg_0xing));
-	    write(minmax_file, clk_count);
+	    write(minmax_file, to_integer(m(0).filtered.sample));
+	    write(minmax_file, to_integer(m(0).cfd_low_threshold));
+	    write(minmax_file, to_integer(m(0).cfd_high_threshold));
+	    if m(0).slope.pos_0xing then
+	      write(minmax_file, clk_count);
+	    else
+	      write(minmax_file, -clk_count);
+	    end if;
 	  end if;
 	end loop;
 end process minmaxWriter; 
+
+file_open(filteredxing_file, "../filteredxing",WRITE_MODE);
+filteredXingWriter:process
+begin
+	while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).filtered.pos_0xing or m(0).filtered.neg_0xing then
+	    write(filteredxing_file, to_integer(m(0).filtered.extrema));
+	    write(filteredxing_file, to_integer(m(0).filtered.area));
+	    if m(0).filtered.pos_0xing then
+	      write(filteredxing_file, clk_count);
+	    else
+	      write(filteredxing_file, -clk_count);
+	    end if;
+	  end if;
+	end loop;
+end process filteredXingWriter; 
 
 clkCount:process is
 begin
