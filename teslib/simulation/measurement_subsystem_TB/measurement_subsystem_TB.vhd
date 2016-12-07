@@ -210,6 +210,7 @@ global.mca.qualifier <= ALL_MCA_QUAL_D;
 --TODO normalise these type names
 global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 global.mca.value <= MCA_FILTERED_SIGNAL_D;
+global.window <= to_unsigned(25, TIME_BITS);
 
 global.channel_enable <= "00000011";
 
@@ -273,7 +274,7 @@ chan_reg(1).capture.constant_fraction  <= to_unsigned(CF, DSP_BITS-1);
 chan_reg(1).capture.slope_threshold <= to_unsigned(4*750,DSP_BITS-1);
 chan_reg(1).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
 chan_reg(1).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
-chan_reg(1).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
+chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 chan_reg(1).capture.detection <= PULSE_DETECTION_D;
 chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
