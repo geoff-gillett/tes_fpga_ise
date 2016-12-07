@@ -211,6 +211,8 @@ global.mca.qualifier <= ALL_MCA_QUAL_D;
 global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 global.mca.value <= MCA_FILTERED_SIGNAL_D;
 
+global.channel_enable <= "00000011";
+
 filter_config(0).config_data <= (others => '0');
 filter_config(0).config_valid <= '0';
 filter_config(0).reload_data <= (others => '0');
