@@ -48,7 +48,7 @@ end record;
 
 function to_std_logic(e:event_type_t) return std_logic_vector;
 function to_event_type_t(s:std_logic_vector) return event_type_t;
-function to_event_type_t(sb:streambus_t) return event_type_t;
+function to_event_type_t(sb:streambus_t;e:string) return event_type_t;
 
 --FIXME reduce peak count to 3 bits
 ----------------------- event_flags_t - 16 bits---------------------------------
@@ -252,17 +252,24 @@ end function;
 function to_event_type_t(s:std_logic_vector) return event_type_t is
 	variable e:event_type_t;
 begin
-	e.detection:=to_detection_d(s(s'high downto s'high-1));
-	e.tick:=to_boolean(s(s'high-2));
+	e.detection := to_detection_d(s(s'high downto s'high-1));
+	e.tick := to_boolean(s(s'high-2));
 	--e.new_window:=to_boolean(s(s'high-3));
 	return e;
 end function;
 
-function to_event_type_t(sb:streambus_t) return event_type_t is
-	variable e:event_type_t;
+function to_event_type_t(sb:streambus_t;e:string) return event_type_t is
+	variable et:event_type_t;
 begin
-	e := to_event_type_t(sb.data(19 downto 16));
-	return e;
+  if endianness="BIG" then
+	  et := to_event_type_t(sb.data(19 downto 16));
+	elsif endianness="LITTLE" then
+	  et := to_event_type_t(sb.data(27 downto 24));
+	else
+	  assert FALSE report "endianness must be either BIG or LITTLE" 
+	               severity FAILURE;
+	end if;
+	return et;
 end function;
 
 ----------------------- event_flags_t - 16 bits---------------------------------
@@ -344,10 +351,19 @@ variable sb:streambus_t;
 begin
 	case w is
 	when 0 =>
-    sb.data := set_endianness(t.period,endianness) &
-               "00000000" & -- reserved
-               to_std_logic(t.flags) &
-	             "0000000000000000"; -- replaced with rel_timestamp by mux
+	  if endianness="BIG" then
+      sb.data := set_endianness(t.period,endianness) &
+                 to_std_logic(0,8) & -- reserved
+                 to_std_logic(t.flags) &
+                 "0000000000000000"; -- replaced with rel_timestamp by mux
+    end if;
+	  if endianness="LITTLE" then
+      sb.data := set_endianness(t.period,endianness) &
+                 to_std_logic(t.flags) &
+                 to_std_logic(0,8) & -- reserved
+                 "0000000000000000"; -- replaced with rel_timestamp by mux
+    end if;
+      
     sb.discard := (others => FALSE);
     sb.last := (others => FALSE);
   when 1 =>

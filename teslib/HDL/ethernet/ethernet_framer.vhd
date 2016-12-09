@@ -120,7 +120,7 @@ signal mca_s_hs:boolean;
 signal last_frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal last_frame_word:streambus_t;
 signal mca_last:boolean;
-signal trace_last:boolean;
+--signal trace_last:boolean;
 -- frame type switching
 signal lookahead_size,frame_size:unsigned(SIZE_BITS-1 downto 0);
 signal lookahead_type,event_s_type:event_type_t;
@@ -145,7 +145,7 @@ end record;
 
 signal header:ethernet_header_t;
 signal mca_sequence,event_sequence:unsigned(SEQUENCE_BITS-1 downto 0);
-signal trace_sequence:unsigned(SEQUENCE_BITS-1 downto 0);
+--signal trace_sequence:unsigned(SEQUENCE_BITS-1 downto 0);
 
 function to_std_logic(e:ethernet_header_t;
 											w:natural range 0 to ETHERNET_HEADER_WORDS-1;
@@ -189,29 +189,29 @@ end function;
 --------------------------------------------------------------------------------
 --signals for vcd dump (simulation only)
 --synthesis translate_off
-attribute keep:string;
-attribute S:string;
-signal arbiter_state_v:std_logic_vector(1 downto 0);
-signal frame_state_v:std_logic_vector(2 downto 0);
-attribute keep of arbiter_state_v,frame_state_v:signal is "TRUE";
-attribute S of arbiter_state_v,frame_state_v:signal is "TRUE";
-function to_std_logic(s:arbiterFSMstate;w:integer) return std_logic_vector is
-begin
-  return to_std_logic(arbiterFSMstate'pos(s),w);
-end function;
+--attribute keep:string;
+--attribute S:string;
+--signal arbiter_state_v:std_logic_vector(1 downto 0);
+--signal frame_state_v:std_logic_vector(2 downto 0);
+--attribute keep of arbiter_state_v,frame_state_v:signal is "TRUE";
+--attribute S of arbiter_state_v,frame_state_v:signal is "TRUE";
+--function to_std_logic(s:arbiterFSMstate;w:integer) return std_logic_vector is
+--begin
+--  return to_std_logic(arbiterFSMstate'pos(s),w);
+--end function;
+--
+--function to_std_logic(s:frameFSMstate;w:integer) return std_logic_vector is
+--begin
+--  return to_std_logic(frameFSMstate'pos(s),w);
+--end function;
 
-function to_std_logic(s:frameFSMstate;w:integer) return std_logic_vector is
-begin
-  return to_std_logic(frameFSMstate'pos(s),w);
-end function;
-
-signal framer_word_v:std_logic_vector(BUS_DATABITS-1 downto 0);
-signal commit_v:std_logic;
-signal framer_we_v:std_logic_vector(BUS_CHUNKS-1 downto 0);
-signal event_s_v:std_logic_vector(BUS_DATABITS-1 downto 0);
-signal event_s_ready_v,event_s_valid_v,event_s_last_v:std_logic;
-signal mca_s_v:std_logic_vector(BUS_DATABITS-1 downto 0);
-signal mca_s_ready_v,mca_s_valid_v,mca_s_last_v:std_logic;
+--signal framer_word_v:std_logic_vector(BUS_DATABITS-1 downto 0);
+--signal commit_v:std_logic;
+--signal framer_we_v:std_logic_vector(BUS_CHUNKS-1 downto 0);
+--signal event_s_v:std_logic_vector(BUS_DATABITS-1 downto 0);
+--signal event_s_ready_v,event_s_valid_v,event_s_last_v:std_logic;
+--signal mca_s_v:std_logic_vector(BUS_DATABITS-1 downto 0);
+--signal mca_s_ready_v,mca_s_valid_v,mca_s_last_v:std_logic;
 --synthesis translate_on
 --------------------------------------------------------------------------------
 -- Debugging
@@ -231,19 +231,19 @@ begin
 --------------------------------------------------------------------------------
 --simulation only (for VCD dump)
 --synthesis translate_off
-arbiter_state_v <= to_std_logic(arbiter_state,2);
-frame_state_v <= to_std_logic(frame_state,3);
-framer_word_v <= framer_word.data;
-commit_v <= to_std_logic(commit_frame);
-framer_we_v <= to_std_logic(framer_we);
-event_s_v <= event_s.data;
-event_s_ready_v <= to_std_logic(event_s_ready);
-event_s_valid_v <= to_std_logic(event_s_valid);
-event_s_last_v <= to_std_logic(event_s.last(0));
-mca_s_v <= mca_s.data;
-mca_s_ready_v <= to_std_logic(mca_s_ready);
-mca_s_valid_v <= to_std_logic(mca_s_valid);
-mca_s_last_v <= to_std_logic(mca_s.last(0));
+--arbiter_state_v <= to_std_logic(arbiter_state,2);
+--frame_state_v <= to_std_logic(frame_state,3);
+--framer_word_v <= framer_word.data;
+--commit_v <= to_std_logic(commit_frame);
+--framer_we_v <= to_std_logic(framer_we);
+--event_s_v <= event_s.data;
+--event_s_ready_v <= to_std_logic(event_s_ready);
+--event_s_valid_v <= to_std_logic(event_s_valid);
+--event_s_last_v <= to_std_logic(event_s.last(0));
+--mca_s_v <= mca_s.data;
+--mca_s_ready_v <= to_std_logic(mca_s_ready);
+--mca_s_valid_v <= to_std_logic(mca_s_valid);
+--mca_s_last_v <= to_std_logic(mca_s.last(0));
 --synthesis translate_on
 --------------------------------------------------------------------------------
 
@@ -294,7 +294,7 @@ mca_s_hs <= mca_s_valid and mca_s_ready;
 buffer_full <= not eventstream_ready_int;
 buffer_empty <= not event_s_valid; -- questionable
 
-lookahead_type <= to_event_type_t(lookahead);
+lookahead_type <= to_event_type_t(lookahead,endianness);
 
 -- swap back to big endian if needed
 lookahead_size 
@@ -312,7 +312,7 @@ begin
     	event_head <= TRUE;
     else
     	
-    	if frame_state=HEADER0 then
+    	if frame_state=HEADER0 then --HEADER3????
     		if arbiter_state=EVENT then
     		  header.event_type <= event_s_type;
     		  header.event_size <= event_s_size;
@@ -350,7 +350,7 @@ begin
               size := lookahead_size;
             	size_change <= frame_size/=lookahead_size;
             when TEST_DETECTION_D =>
-              size := (1 downto 0 => '1', others => '0');
+              size := to_unsigned(3, SIZE_BITS); --3
             	size_change <= FALSE;
             end case;
           end if;
@@ -405,19 +405,19 @@ begin
 			header.length <= (others => '-');
 			event_sequence <= (others => '0');
 			mca_sequence <= (others => '0');
-			trace_sequence <= (others => '0');
+--			trace_sequence <= (others => '0');
 			mca_last <= FALSE;
-			trace_last <= FALSE;
+			--trace_last <= FALSE;
 		else
 
 			if mca_s_hs and mca_s.last(0) then
 				mca_last <= TRUE;
 			end if;
 			
-			if event_s_ready and event_s_valid and event_s.last(0) 
-					and header.event_type.detection=TEST_DETECTION_D then 
-				trace_last <= TRUE;
-			end if;
+--			if event_s_ready and event_s_valid and event_s.last(0) 
+--					and header.event_type.detection=TEST_DETECTION_D then 
+--				trace_last <= TRUE;
+--			end if;
 			
 			if arbiter_state=MCA then
 				
@@ -428,17 +428,8 @@ begin
 				--end if;
 				
 			elsif arbiter_state=EVENT then
-				
-				if frame_state=HEADER0 then
-					header.ethernet_type <= x"88B5";
-				elsif frame_state=HEADER1 then
-					if header.event_type.detection=TEST_DETECTION_D then
-						header.protocol_sequence <= trace_sequence;
-					else
-						header.protocol_sequence <= event_sequence;
-					end if;
-				end if;
-				
+  			header.ethernet_type <= x"88B5";
+				header.protocol_sequence <= event_sequence;
 			end if;
 				
 			if commit_frame then
@@ -455,16 +446,7 @@ begin
 				end if;
 				
 				if arbiter_state=EVENT then
-					if header.event_type.detection=TEST_DETECTION_D then
-						if trace_last then
-							trace_sequence <= (others => '0');
-							trace_last <= FALSE;
-						else
-							trace_sequence <= trace_sequence+1;
-						end if;
-					else
-						event_sequence <= event_sequence+1;
-					end if;
+					event_sequence <= event_sequence+1;
 				end if;
 				
 			end if;
@@ -590,7 +572,7 @@ begin
 				else
           framer_we <= (others => framer_ready);
           inc_address <= framer_ready;
-					if header.event_type.detection=TEST_DETECTION_D or 
+					if header.event_type.detection=TEST_DETECTION_D or --??
 							header.event_type.tick then
 						framer_word.last(0) <= event_s.last(0);
 						if event_s.last(0) and framer_ready then
