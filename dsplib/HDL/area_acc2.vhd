@@ -32,8 +32,8 @@ architecture DSPx2 of area_acc2 is
 constant MSB:integer:=AREA_WIDTH+(FRAC-AREA_FRAC);
 constant MASK:std_logic_vector(47 downto 0)
              :=(MSB-2 downto 0 => '1', others => '0');  
-constant ROUND:std_logic_vector(47 downto 0)
-              :=(FRAC-AREA_FRAC-2 downto 0 => '1', others => '0');             
+--constant ROUND:std_logic_vector(47 downto 0)
+--              :=(FRAC-AREA_FRAC-2 downto 0 => '1', others => '0');             
 
 -- DSP48E1 signals
 --signal c:std_logic_vector(47 downto 0);
@@ -47,8 +47,8 @@ signal p_int:std_logic_vector(47 downto 0);
 signal accum_opmode,round_opmode:std_logic_vector(6 downto 0):="0001100";
 
 signal area_int:std_logic_vector(AREA_WIDTH-1 downto 0);
-signal patb,pat,satb:std_ulogic;
-signal carry:std_ulogic;
+--signal patb,pat,satb:std_ulogic;
+--signal carry:std_ulogic;
 signal cround:std_logic_vector(47 downto 0);
 
 begin
@@ -59,7 +59,7 @@ a <= resize(threshold,30);
 d <= resize(sig,25);  
 
 ---z 
-accum_opmode <= '0' & not to_std_logic(xing) & "00101"; --get xing latency right
+accum_opmode <= '0' & not to_std_logic(xing) & "00101"; 
 
 --FIXME try to bypass multiply?
 accum:DSP48E1
@@ -75,7 +75,7 @@ generic map (
   PATTERN => X"000000000000",        -- 48-bit pattern match for pattern detect
   SEL_MASK => "MASK",                -- "C", "MASK", "ROUNDING_MODE1", "ROUNDING_MODE2" 
   SEL_PATTERN => "PATTERN",          -- Select pattern value ("PATTERN" or "C")
-  USE_PATTERN_DETECT => "PATDET", -- Enable pattern detect ("PATDET" or "NO_PATDET")
+  USE_PATTERN_DETECT => "NO_PATDET", -- Enable pattern detect ("PATDET" or "NO_PATDET")
   -- Register Control Attributes: Pipeline Register Configuration
   ACASCREG => 1,                     -- Number of pipeline stages between A/ACIN and ACOUT (0, 1 or 2)
   ADREG => 0,                        -- Number of pipeline stages for pre-adder (0 or 1)
@@ -88,7 +88,7 @@ generic map (
   CREG => 0,                         -- Number of pipeline stages for C (0 or 1)
   DREG => 1,                         -- Number of pipeline stages for D (0 or 1)
   INMODEREG => 0,                    -- Number of pipeline stages for INMODE (0 or 1)
-  MREG => 0,                         -- Number of multiplier pipeline stages (0 or 1)
+  MREG => 1,                         -- Number of multiplier pipeline stages (0 or 1)
   OPMODEREG => 1,                    -- Number of pipeline stages for OPMODE (0 or 1)
   PREG => 1,                         -- Number of pipeline stages for P (0 or 1)
   USE_SIMD => "ONE48"                -- SIMD selection ("ONE48", "TWO24", "FOUR12")
@@ -102,8 +102,8 @@ port map (
   PCOUT => open,                   -- 48-bit output: Cascade output
   -- Control: 1-bit (each) output: Control Inputs/Status Bits
   OVERFLOW => open,             -- 1-bit output: Overflow in add/acc output
-  PATTERNBDETECT => patb, -- 1-bit output: Pattern bar detect output
-  PATTERNDETECT => pat,   -- 1-bit output: Pattern detect output
+  PATTERNBDETECT => open, -- 1-bit output: Pattern bar detect output
+  PATTERNDETECT => open,   -- 1-bit output: Pattern detect output
   UNDERFLOW => open,           -- 1-bit output: Underflow in add/acc output
   -- Data: 4-bit (each) output: Data Ports
   CARRYOUT => open,             -- 4-bit output: Carry output
@@ -139,7 +139,7 @@ port map (
   CECARRYIN => '0',           -- 1-bit input: Clock enable input for CARRYINREG
   CECTRL => '1',                 -- 1-bit input: Clock enable input for OPMODEREG and CARRYINSELREG
   CED => '1',                       -- 1-bit input: Clock enable input for DREG
-  CEM => '0',                       -- 1-bit input: Clock enable input for MREG
+  CEM => '1',                       -- 1-bit input: Clock enable input for MREG
   CEP => '1',                       -- 1-bit input: Clock enable input for PREG
   RSTA => reset,                     -- 1-bit input: Reset input for AREG
   RSTALLCARRYIN => '0',   -- 1-bit input: Reset input for CARRYINREG
@@ -166,7 +166,6 @@ port map(
   input => p_int,
   output => area_int
 ); 
-
 area <= signed(area_int);
 
 
