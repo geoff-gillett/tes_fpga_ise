@@ -104,7 +104,7 @@ port map(
   neg => neg_x
 );
 
-areaAcc:entity dsp.area_acc
+areaAcc:entity dsp.area_acc2
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -116,6 +116,7 @@ port map(
   reset => reset,
   xing => xing_int,
   sig => signal_x,
+  threshold => threshold,
   area => area
 );
 
@@ -145,26 +146,28 @@ if rising_edge(clk) then
     
     extreme_int <= (others => '0');
     state <= MAX_S; 
+    extrema <= (others => '0');
     
   else
+    extrema <= extreme_int;
+    
     if pos_p(DEPTH-1) then
       state <= MAX_S;
-    elsif neg_p(DEPTH-1) then
+    elsif neg_p(DEPTH) then
       state <= MIN_S;
     end if;
     
     if xing_p(DEPTH-1) then
       extreme_int <= pipe(DEPTH-1);
-      extrema <= extreme_int;
     else
       if state=MAX_S and gt then
         extreme_int <= pipe(DEPTH-1);
-        extrema <= pipe(DEPTH-1);
+        --extrema <= pipe(DEPTH-1);
       end if;
       
       if (state=MIN_S and not gt) then
         extreme_int <= pipe(DEPTH-1);
-        extrema <= pipe(DEPTH-1);
+        --extrema <= pipe(DEPTH-1);
       end if;
       
     end if;

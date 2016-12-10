@@ -82,7 +82,7 @@ port map(
   ready => mca_ready,
   bin => unsigned(sample),
   bin_valid => sample_valid,
-  overflow => FALSE,
+  overflow => FALSE, --FIXME add overflow when
   swap_buffer => timeout,
   readable => readable,
   total => open,

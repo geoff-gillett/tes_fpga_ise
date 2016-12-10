@@ -12,8 +12,7 @@ generic(
 	WIDTH_OUT:integer:=16;
 	FRAC_OUT:integer:=1;
   AREA_WIDTH:integer:=32;
-  AREA_FRAC:integer:=1;
-  CLOSEST:boolean:=FALSE
+  AREA_FRAC:integer:=1
 );
 end entity signal_measurement_TB;
 
@@ -39,15 +38,14 @@ begin
   
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.signal_measurement
+UUT:entity work.signal_measurement2
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
   WIDTH_OUT => WIDTH_OUT,
   FRAC_OUT => FRAC_OUT,
   AREA_WIDTH => AREA_WIDTH,
-  AREA_FRAC => AREA_FRAC,
-  CLOSEST => CLOSEST
+  AREA_FRAC => AREA_FRAC
 )
 port map(
   clk => clk,

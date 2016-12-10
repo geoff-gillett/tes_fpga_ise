@@ -99,7 +99,7 @@ begin
 if rising_edge(clk) then
   lowest:=-HALF_RANGE;
   highest:=HALF_RANGE-1;
-  
+  --FIXME use overflow 
   if sample_valid then 
     baseline_sample <= std_logic_vector(resize(sample,BASELINE_BITS));
     if (sample > resize(signed('0' & threshold), WIDTH)) then 

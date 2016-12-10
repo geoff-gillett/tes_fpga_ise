@@ -214,7 +214,7 @@ if rising_edge(clk) then
 end if;
 end process ramWrite;
 --------------------------------------------------------------------------------
--- Track the bin with the highest count
+-- Track the bin with the highest count (not bin 0 or last_bin)
 --------------------------------------------------------------------------------
 mostFrequent:process(clk)
 begin
@@ -228,7 +228,7 @@ if rising_edge(clk) then
       most_frequent <= (others => '0'); 
     else
       if (to_0IfX(newcount) >= to_0IfX(maxcount_int)) and wr_en and write_pipe(4) 
-          and not overflow_pipe(5) then
+          and not overflow_pipe(5) then --FIXME wr_addr/=0
         maxcount_int <= to_0IfX(newcount);
         most_frequent <= wr_addr;
         new_max <= TRUE;
