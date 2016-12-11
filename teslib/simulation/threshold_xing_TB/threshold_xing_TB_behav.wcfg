@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="threshold_xing_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="boolean_vector" />
+            <top_module name="dsptypes" />
+            <top_module name="functions" />
+            <top_module name="logic" />
+            <top_module name="threshold_xing_TB" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="159688989fs"></ZoomEndTime>
+      <Cursor1Time time="80000000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group38" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/signal_in" type="array">
+         <obj_property name="ElementShortName">signal_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_in[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/threshold" type="array">
+         <obj_property name="ElementShortName">threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/pos" type="other">
+         <obj_property name="ElementShortName">pos</obj_property>
+         <obj_property name="ObjectShortName">pos</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/neg" type="other">
+         <obj_property name="ElementShortName">neg</obj_property>
+         <obj_property name="ObjectShortName">neg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/signal_out" type="array">
+         <obj_property name="ElementShortName">signal_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_out[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/neg_closest" type="other">
+         <obj_property name="ElementShortName">neg_closest</obj_property>
+         <obj_property name="ObjectShortName">neg_closest</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/pos_closest" type="other">
+         <obj_property name="ElementShortName">pos_closest</obj_property>
+         <obj_property name="ObjectShortName">pos_closest</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/CLK_PERIOD" type="other">
+         <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
+         <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group13" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/threshold" type="array">
+         <obj_property name="ElementShortName">threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/signal_out" type="array">
+         <obj_property name="ElementShortName">signal_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_out[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFD700</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/pos" type="other">
+         <obj_property name="ElementShortName">pos</obj_property>
+         <obj_property name="ObjectShortName">pos</obj_property>
+         <obj_property name="CustomSignalColor">#FFD700</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/neg" type="other">
+         <obj_property name="ElementShortName">neg</obj_property>
+         <obj_property name="ObjectShortName">neg</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/pos_closest" type="other">
+         <obj_property name="ElementShortName">pos_closest</obj_property>
+         <obj_property name="ObjectShortName">pos_closest</obj_property>
+         <obj_property name="CustomSignalColor">#FFD700</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/neg_closest" type="other">
+         <obj_property name="ElementShortName">neg_closest</obj_property>
+         <obj_property name="ObjectShortName">neg_closest</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/signal_in" type="array">
+         <obj_property name="ElementShortName">signal_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">signal_in[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/pos_int" type="other">
+         <obj_property name="ElementShortName">pos_int</obj_property>
+         <obj_property name="ObjectShortName">pos_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/neg_int" type="other">
+         <obj_property name="ElementShortName">neg_int</obj_property>
+         <obj_property name="ObjectShortName">neg_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/first_closest" type="other">
+         <obj_property name="ElementShortName">first_closest</obj_property>
+         <obj_property name="ObjectShortName">first_closest</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/pos_reg" type="other">
+         <obj_property name="ElementShortName">pos_reg</obj_property>
+         <obj_property name="ObjectShortName">pos_reg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/neg_reg" type="other">
+         <obj_property name="ElementShortName">neg_reg</obj_property>
+         <obj_property name="ObjectShortName">neg_reg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/neg_xing_next" type="other">
+         <obj_property name="ElementShortName">neg_xing_next</obj_property>
+         <obj_property name="ObjectShortName">neg_xing_next</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/pos_xing_next" type="other">
+         <obj_property name="ElementShortName">pos_xing_next</obj_property>
+         <obj_property name="ObjectShortName">pos_xing_next</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/pipe" type="array">
+         <obj_property name="ElementShortName">pipe[1:3][17:0]</obj_property>
+         <obj_property name="ObjectShortName">pipe[1:3][17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/dif0" type="array">
+         <obj_property name="ElementShortName">dif0[17:0]</obj_property>
+         <obj_property name="ObjectShortName">dif0[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/dif1" type="array">
+         <obj_property name="ElementShortName">dif1[17:0]</obj_property>
+         <obj_property name="ObjectShortName">dif1[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/sign_change" type="logic">
+         <obj_property name="ElementShortName">sign_change</obj_property>
+         <obj_property name="ObjectShortName">sign_change</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/dif_is0" type="other">
+         <obj_property name="ElementShortName">dif_is0</obj_property>
+         <obj_property name="ObjectShortName">dif_is0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/dif_was0" type="other">
+         <obj_property name="ElementShortName">dif_was0</obj_property>
+         <obj_property name="ObjectShortName">dif_was0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/threshold_xing_TB/UUT/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

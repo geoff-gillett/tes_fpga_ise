@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="baseline_estimator_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="baseline_estimator_TB" />
+            <top_module name="boolean_vector" />
+            <top_module name="dsptypes" />
+            <top_module name="functions" />
+            <top_module name="logic" />
+            <top_module name="registers" />
+            <top_module name="types" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="363508334fs"></ZoomStartTime>
+      <ZoomEndTime time="415058335fs"></ZoomEndTime>
+      <Cursor1Time time="376000000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="3" />
+   <wvobject fp_name="group19" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/sample" type="array">
+         <obj_property name="ElementShortName">sample[14:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/sample_valid" type="other">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/av_config" type="array">
+         <obj_property name="ElementShortName">av_config</obj_property>
+         <obj_property name="ObjectShortName">av_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/av_events" type="array">
+         <obj_property name="ElementShortName">av_events</obj_property>
+         <obj_property name="ObjectShortName">av_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/timeconstant" type="array">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/threshold" type="array">
+         <obj_property name="ElementShortName">threshold[3:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[3:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/count_threshold" type="array">
+         <obj_property name="ElementShortName">count_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/new_only" type="other">
+         <obj_property name="ElementShortName">new_only</obj_property>
+         <obj_property name="ObjectShortName">new_only</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/baseline_estimate" type="array">
+         <obj_property name="ElementShortName">baseline_estimate[17:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_estimate[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/range_error" type="other">
+         <obj_property name="ElementShortName">range_error</obj_property>
+         <obj_property name="ObjectShortName">range_error</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/simsig" type="array">
+         <obj_property name="ElementShortName">simsig[4:0]</obj_property>
+         <obj_property name="ObjectShortName">simsig[4:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/BASELINE_BITS" type="other">
+         <obj_property name="ElementShortName">BASELINE_BITS</obj_property>
+         <obj_property name="ObjectShortName">BASELINE_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/COUNTER_BITS" type="other">
+         <obj_property name="ElementShortName">COUNTER_BITS</obj_property>
+         <obj_property name="ObjectShortName">COUNTER_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/TIMECONSTANT_BITS" type="other">
+         <obj_property name="ElementShortName">TIMECONSTANT_BITS</obj_property>
+         <obj_property name="ObjectShortName">TIMECONSTANT_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/OUT_BITS" type="other">
+         <obj_property name="ElementShortName">OUT_BITS</obj_property>
+         <obj_property name="ObjectShortName">OUT_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/CLK_PERIOD" type="other">
+         <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
+         <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group48" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/sample" type="array">
+         <obj_property name="ElementShortName">sample[14:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/sample_valid" type="other">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/av_config" type="array">
+         <obj_property name="ElementShortName">av_config</obj_property>
+         <obj_property name="ObjectShortName">av_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/av_events" type="array">
+         <obj_property name="ElementShortName">av_events</obj_property>
+         <obj_property name="ObjectShortName">av_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/timeconstant" type="array">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/threshold" type="array">
+         <obj_property name="ElementShortName">threshold[3:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[3:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/count_threshold" type="array">
+         <obj_property name="ElementShortName">count_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/new_only" type="other">
+         <obj_property name="ElementShortName">new_only</obj_property>
+         <obj_property name="ObjectShortName">new_only</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/baseline_estimate" type="array">
+         <obj_property name="ElementShortName">baseline_estimate[17:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_estimate[17:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
+         <obj_property name="AnalogYRangeMin">-15.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">15.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/range_error" type="other">
+         <obj_property name="ElementShortName">range_error</obj_property>
+         <obj_property name="ObjectShortName">range_error</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/baseline_sample" type="array">
+         <obj_property name="ElementShortName">baseline_sample[4:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_sample[4:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/baseline_sample_valid" type="other">
+         <obj_property name="ElementShortName">baseline_sample_valid</obj_property>
+         <obj_property name="ObjectShortName">baseline_sample_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/most_frequent" type="array">
+         <obj_property name="ElementShortName">most_frequent[4:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[4:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/previous_mf" type="array">
+         <obj_property name="ElementShortName">previous_mf[4:0]</obj_property>
+         <obj_property name="ObjectShortName">previous_mf[4:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/av_enable" type="other">
+         <obj_property name="ElementShortName">av_enable</obj_property>
+         <obj_property name="ObjectShortName">av_enable</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/most_frequent_av" type="array">
+         <obj_property name="ElementShortName">most_frequent_av[17:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_av[17:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/new_most_frequent" type="other">
+         <obj_property name="ElementShortName">new_most_frequent</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/new_mf_value" type="other">
+         <obj_property name="ElementShortName">new_mf_value</obj_property>
+         <obj_property name="ObjectShortName">new_mf_value</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/av_valid" type="logic">
+         <obj_property name="ElementShortName">av_valid</obj_property>
+         <obj_property name="ObjectShortName">av_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/av_int" type="array">
+         <obj_property name="ElementShortName">av_int[47:0]</obj_property>
+         <obj_property name="ObjectShortName">av_int[47:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">25</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mf_average" type="array">
+         <obj_property name="ElementShortName">mf_average[17:0]</obj_property>
+         <obj_property name="ObjectShortName">mf_average[17:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mf_value" type="array">
+         <obj_property name="ElementShortName">mf_value[15:0]</obj_property>
+         <obj_property name="ObjectShortName">mf_value[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">1</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/BASELINE_BITS" type="other">
+         <obj_property name="ElementShortName">BASELINE_BITS</obj_property>
+         <obj_property name="ObjectShortName">BASELINE_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/COUNTER_BITS" type="other">
+         <obj_property name="ElementShortName">COUNTER_BITS</obj_property>
+         <obj_property name="ObjectShortName">COUNTER_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/TIMECONSTANT_BITS" type="other">
+         <obj_property name="ElementShortName">TIMECONSTANT_BITS</obj_property>
+         <obj_property name="ObjectShortName">TIMECONSTANT_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/OUT_BITS" type="other">
+         <obj_property name="ElementShortName">OUT_BITS</obj_property>
+         <obj_property name="ObjectShortName">OUT_BITS</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group74" type="group">
+      <obj_property name="label">most frequent</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/timeconstant" type="array">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/threshold" type="array">
+         <obj_property name="ElementShortName">threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/sample" type="array">
+         <obj_property name="ElementShortName">sample[4:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[4:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/sample_valid" type="other">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/most_frequent" type="array">
+         <obj_property name="ElementShortName">most_frequent[4:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[4:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/new_value" type="other">
+         <obj_property name="ElementShortName">new_value</obj_property>
+         <obj_property name="ObjectShortName">new_value</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/mca_ready" type="other">
+         <obj_property name="ElementShortName">mca_ready</obj_property>
+         <obj_property name="ObjectShortName">mca_ready</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/nextstate" type="other">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/timer" type="array">
+         <obj_property name="ElementShortName">timer[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timer[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/timeout" type="other">
+         <obj_property name="ElementShortName">timeout</obj_property>
+         <obj_property name="ObjectShortName">timeout</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/readable" type="other">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/most_frequent_int" type="array">
+         <obj_property name="ElementShortName">most_frequent_int[4:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_int[4:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/max_count" type="array">
+         <obj_property name="ElementShortName">max_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_count[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/new_max" type="other">
+         <obj_property name="ElementShortName">new_max</obj_property>
+         <obj_property name="ObjectShortName">new_max</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/address_to_clear" type="array">
+         <obj_property name="ElementShortName">address_to_clear[4:0]</obj_property>
+         <obj_property name="ObjectShortName">address_to_clear[4:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/clear_mca" type="other">
+         <obj_property name="ElementShortName">clear_mca</obj_property>
+         <obj_property name="ObjectShortName">clear_mca</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/clear_done" type="other">
+         <obj_property name="ElementShortName">clear_done</obj_property>
+         <obj_property name="ObjectShortName">clear_done</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/ADDRESS_BITS" type="other">
+         <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
+         <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/COUNTER_BITS" type="other">
+         <obj_property name="ElementShortName">COUNTER_BITS</obj_property>
+         <obj_property name="ObjectShortName">COUNTER_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/TIMECONSTANT_BITS" type="other">
+         <obj_property name="ElementShortName">TIMECONSTANT_BITS</obj_property>
+         <obj_property name="ObjectShortName">TIMECONSTANT_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/baseline_estimator_TB/UUT/mostFrequent/MIN_TIMECONSTANT" type="other">
+         <obj_property name="ElementShortName">MIN_TIMECONSTANT</obj_property>
+         <obj_property name="ObjectShortName">MIN_TIMECONSTANT</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

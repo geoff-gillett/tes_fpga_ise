@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="round_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="boolean_vector" />
+            <top_module name="logic" />
+            <top_module name="round_TB" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="5197639fs"></ZoomStartTime>
+      <ZoomEndTime time="70011810fs"></ZoomEndTime>
+      <Cursor1Time time="16000000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group17" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/round_TB/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/input" type="array">
+         <obj_property name="ElementShortName">input[47:0]</obj_property>
+         <obj_property name="ObjectShortName">input[47:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/sim_count" type="array">
+         <obj_property name="ElementShortName">sim_count[6:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_count[6:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/sim_out" type="array">
+         <obj_property name="ElementShortName">sim_out[6:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_out[6:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/output" type="array">
+         <obj_property name="ElementShortName">output[3:0]</obj_property>
+         <obj_property name="ObjectShortName">output[3:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">1</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/WIDTH_IN" type="other">
+         <obj_property name="ElementShortName">WIDTH_IN</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/FRAC_IN" type="other">
+         <obj_property name="ElementShortName">FRAC_IN</obj_property>
+         <obj_property name="ObjectShortName">FRAC_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/WIDTH_OUT" type="other">
+         <obj_property name="ElementShortName">WIDTH_OUT</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/FRAC_OUT" type="other">
+         <obj_property name="ElementShortName">FRAC_OUT</obj_property>
+         <obj_property name="ObjectShortName">FRAC_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/TOWARDS_INF" type="other">
+         <obj_property name="ElementShortName">TOWARDS_INF</obj_property>
+         <obj_property name="ObjectShortName">TOWARDS_INF</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/SIM_WIDTH" type="other">
+         <obj_property name="ElementShortName">SIM_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">SIM_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group40" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/a" type="array">
+         <obj_property name="ElementShortName">a[29:0]</obj_property>
+         <obj_property name="ObjectShortName">a[29:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/b" type="array">
+         <obj_property name="ElementShortName">b[17:0]</obj_property>
+         <obj_property name="ObjectShortName">b[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/ab" type="array">
+         <obj_property name="ElementShortName">ab[47:0]</obj_property>
+         <obj_property name="ObjectShortName">ab[47:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/input" type="array">
+         <obj_property name="ElementShortName">input[47:0]</obj_property>
+         <obj_property name="ObjectShortName">input[47:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/carryin" type="logic">
+         <obj_property name="ElementShortName">carryin</obj_property>
+         <obj_property name="ObjectShortName">carryin</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/p_out" type="array">
+         <obj_property name="ElementShortName">p_out[47:0]</obj_property>
+         <obj_property name="ObjectShortName">p_out[47:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/saturate" type="logic">
+         <obj_property name="ElementShortName">saturate</obj_property>
+         <obj_property name="ObjectShortName">saturate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/sim_out" type="array">
+         <obj_property name="ElementShortName">sim_out[6:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_out[6:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/output" type="array">
+         <obj_property name="ElementShortName">output[3:0]</obj_property>
+         <obj_property name="ObjectShortName">output[3:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">1</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/pat" type="logic">
+         <obj_property name="ElementShortName">pat</obj_property>
+         <obj_property name="ObjectShortName">pat</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/patb" type="logic">
+         <obj_property name="ElementShortName">patb</obj_property>
+         <obj_property name="ObjectShortName">patb</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/WIDTH_IN" type="other">
+         <obj_property name="ElementShortName">WIDTH_IN</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/FRAC_IN" type="other">
+         <obj_property name="ElementShortName">FRAC_IN</obj_property>
+         <obj_property name="ObjectShortName">FRAC_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/WIDTH_OUT" type="other">
+         <obj_property name="ElementShortName">WIDTH_OUT</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/FRAC_OUT" type="other">
+         <obj_property name="ElementShortName">FRAC_OUT</obj_property>
+         <obj_property name="ObjectShortName">FRAC_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/TOWARDS_INF" type="other">
+         <obj_property name="ElementShortName">TOWARDS_INF</obj_property>
+         <obj_property name="ObjectShortName">TOWARDS_INF</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/OVERFLOW_MASK" type="array">
+         <obj_property name="ElementShortName">OVERFLOW_MASK[47:0]</obj_property>
+         <obj_property name="ObjectShortName">OVERFLOW_MASK[47:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/ROUNDING" type="array">
+         <obj_property name="ElementShortName">ROUNDING[47:0]</obj_property>
+         <obj_property name="ObjectShortName">ROUNDING[47:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="channel_TB.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="bip_utils_pkg_v2_0" />
+            <top_module name="boolean_vector" />
+            <top_module name="channel_tb" />
+            <top_module name="debug" />
+            <top_module name="dsptypes" />
+            <top_module name="events" />
+            <top_module name="fir_compiler_v6_3_sim_pkg" />
+            <top_module name="functions" />
+            <top_module name="logic" />
+            <top_module name="math_real" />
+            <top_module name="measurements" />
+            <top_module name="numeric_std" />
+            <top_module name="registers" />
+            <top_module name="std_logic_1164" />
+            <top_module name="std_logic_arith" />
+            <top_module name="std_logic_signed" />
+            <top_module name="std_logic_textio" />
+            <top_module name="textio" />
+            <top_module name="types" />
+            <top_module name="types" />
+            <top_module name="vcomponents" />
+            <top_module name="vital_primitives" />
+            <top_module name="vital_timing" />
+            <top_module name="vpkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="4" />
+   <wvobject fp_name="group23" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/channel_tb/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/reset1" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset1</obj_property>
+         <obj_property name="ObjectShortName">reset1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/reset2" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset2</obj_property>
+         <obj_property name="ObjectShortName">reset2</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/adc_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/registers" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">registers</obj_property>
+         <obj_property name="ObjectShortName">registers</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/stage1_config" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_config</obj_property>
+         <obj_property name="ObjectShortName">stage1_config</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/stage1_events" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_events</obj_property>
+         <obj_property name="ObjectShortName">stage1_events</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/stage2_config" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_config</obj_property>
+         <obj_property name="ObjectShortName">stage2_config</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/stage2_events" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_events</obj_property>
+         <obj_property name="ObjectShortName">stage2_events</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/baseline_config" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_config</obj_property>
+         <obj_property name="ObjectShortName">baseline_config</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/baseline_events" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_events</obj_property>
+         <obj_property name="ObjectShortName">baseline_events</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">start</obj_property>
+         <obj_property name="ObjectShortName">start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/dump" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump</obj_property>
+         <obj_property name="ObjectShortName">dump</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/m" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">m</obj_property>
+         <obj_property name="ObjectShortName">m</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream</obj_property>
+         <obj_property name="ObjectShortName">stream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/clk_count" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">clk_count</obj_property>
+         <obj_property name="ObjectShortName">clk_count</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group52" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/channel_tb/UUT/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/reset1" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset1</obj_property>
+         <obj_property name="ObjectShortName">reset1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/reset2" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset2</obj_property>
+         <obj_property name="ObjectShortName">reset2</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/adc_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/registers" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">registers</obj_property>
+         <obj_property name="ObjectShortName">registers</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/stage1_config" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_config</obj_property>
+         <obj_property name="ObjectShortName">stage1_config</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/stage1_events" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage1_events</obj_property>
+         <obj_property name="ObjectShortName">stage1_events</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/stage2_config" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_config</obj_property>
+         <obj_property name="ObjectShortName">stage2_config</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/stage2_events" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stage2_events</obj_property>
+         <obj_property name="ObjectShortName">stage2_events</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baseline_config" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_config</obj_property>
+         <obj_property name="ObjectShortName">baseline_config</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baseline_events" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_events</obj_property>
+         <obj_property name="ObjectShortName">baseline_events</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/start" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">start</obj_property>
+         <obj_property name="ObjectShortName">start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/commit" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/dump" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">dump</obj_property>
+         <obj_property name="ObjectShortName">dump</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/measurements" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">measurements</obj_property>
+         <obj_property name="ObjectShortName">measurements</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/stream" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">stream</obj_property>
+         <obj_property name="ObjectShortName">stream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[14:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/sample_in" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">sample_in[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/raw" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">raw[17:0]</obj_property>
+         <obj_property name="ObjectShortName">raw[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/filtered" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">filtered[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/slope" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">slope[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/m" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">m</obj_property>
+         <obj_property name="ObjectShortName">m</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baseline_estimate" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_estimate[17:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_estimate[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/range_error" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">range_error</obj_property>
+         <obj_property name="ObjectShortName">range_error</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group187" type="group">
+      <obj_property name="label">baseline</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[14:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[14:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/sample_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/av_config" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">av_config</obj_property>
+         <obj_property name="ObjectShortName">av_config</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/av_events" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">av_events</obj_property>
+         <obj_property name="ObjectShortName">av_events</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/timeconstant" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">threshold[8:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/count_threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">count_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/new_only" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_only</obj_property>
+         <obj_property name="ObjectShortName">new_only</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/baseline_estimate" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_estimate[17:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_estimate[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/range_error" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">range_error</obj_property>
+         <obj_property name="ObjectShortName">range_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/baseline_sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_sample[9:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_sample[9:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/baseline_sample_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_sample_valid</obj_property>
+         <obj_property name="ObjectShortName">baseline_sample_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/most_frequent" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent[9:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[9:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/previous_mf" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">previous_mf[9:0]</obj_property>
+         <obj_property name="ObjectShortName">previous_mf[9:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mf_value" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mf_value[15:0]</obj_property>
+         <obj_property name="ObjectShortName">mf_value[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/av_enable" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">av_enable</obj_property>
+         <obj_property name="ObjectShortName">av_enable</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CustomSignalColor">#ff0000</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/most_frequent_av" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent_av[17:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_av[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/new_most_frequent" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_most_frequent</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/new_mf_value" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_mf_value</obj_property>
+         <obj_property name="ObjectShortName">new_mf_value</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/av_valid" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">av_valid</obj_property>
+         <obj_property name="ObjectShortName">av_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/av_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">av_int[47:0]</obj_property>
+         <obj_property name="ObjectShortName">av_int[47:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mf_average" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">mf_average[17:0]</obj_property>
+         <obj_property name="ObjectShortName">mf_average[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/baseline_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">baseline_bits</obj_property>
+         <obj_property name="ObjectShortName">baseline_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/counter_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">counter_bits</obj_property>
+         <obj_property name="ObjectShortName">counter_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/timeconstant_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">timeconstant_bits</obj_property>
+         <obj_property name="ObjectShortName">timeconstant_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/out_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">out_bits</obj_property>
+         <obj_property name="ObjectShortName">out_bits</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group212" type="group">
+      <obj_property name="label">most frequent</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/clk" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/reset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/timeconstant" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/threshold" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/sample" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">sample[9:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/sample_valid" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/most_frequent" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent[9:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[9:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/new_value" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_value</obj_property>
+         <obj_property name="ObjectShortName">new_value</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/mca_ready" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">mca_ready</obj_property>
+         <obj_property name="ObjectShortName">mca_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/state" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/nextstate" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/timer" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">timer[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timer[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/timeout" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">timeout</obj_property>
+         <obj_property name="ObjectShortName">timeout</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/readable" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/most_frequent_int" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">most_frequent_int[9:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_int[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/max_count" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">max_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_count[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/new_max" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">new_max</obj_property>
+         <obj_property name="ObjectShortName">new_max</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/address_to_clear" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">address_to_clear[9:0]</obj_property>
+         <obj_property name="ObjectShortName">address_to_clear[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/clear_mca" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">clear_mca</obj_property>
+         <obj_property name="ObjectShortName">clear_mca</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/clear_done" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">clear_done</obj_property>
+         <obj_property name="ObjectShortName">clear_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/address_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">address_bits</obj_property>
+         <obj_property name="ObjectShortName">address_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/counter_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">counter_bits</obj_property>
+         <obj_property name="ObjectShortName">counter_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/timeconstant_bits" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">timeconstant_bits</obj_property>
+         <obj_property name="ObjectShortName">timeconstant_bits</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_tb/UUT/baselineEstimator/mostFrequent/min_timeconstant" type="other" db_ref_id="1">
+         <obj_property name="ElementShortName">min_timeconstant</obj_property>
+         <obj_property name="ObjectShortName">min_timeconstant</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="mca_bin_map_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="mca_bin_map_TB" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="97074705fs"></ZoomEndTime>
+      <Cursor1Time time="58396000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="3" />
+   <wvobject fp_name="group60" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/sim_count" type="array">
+         <obj_property name="ElementShortName">sim_count[3:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_count[3:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/sim_pipe" type="array">
+         <obj_property name="ElementShortName">sim_pipe[1:9][3:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_pipe[1:9][3:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/hist_nm1" type="other">
+         <obj_property name="ElementShortName">hist_nm1</obj_property>
+         <obj_property name="ObjectShortName">hist_nm1</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/bin_n" type="other">
+         <obj_property name="ElementShortName">bin_n</obj_property>
+         <obj_property name="ObjectShortName">bin_n</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/lowest_value" type="array">
+         <obj_property name="ElementShortName">lowest_value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">lowest_value[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/value" type="array">
+         <obj_property name="ElementShortName">value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">value[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/sim_out" type="array">
+         <obj_property name="ElementShortName">sim_out[3:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_out[3:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">1</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/bin" type="array">
+         <obj_property name="ElementShortName">bin[3:0]</obj_property>
+         <obj_property name="ObjectShortName">bin[3:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/VALUE_BITS" type="other">
+         <obj_property name="ElementShortName">VALUE_BITS</obj_property>
+         <obj_property name="ObjectShortName">VALUE_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/ADDRESS_BITS" type="other">
+         <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
+         <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/CLK_PERIOD" type="other">
+         <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
+         <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/SIM_WIDTH" type="other">
+         <obj_property name="ElementShortName">SIM_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">SIM_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group96" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/hist_nm1" type="other">
+         <obj_property name="ElementShortName">hist_nm1</obj_property>
+         <obj_property name="ObjectShortName">hist_nm1</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/bin_n" type="other">
+         <obj_property name="ElementShortName">bin_n</obj_property>
+         <obj_property name="ObjectShortName">bin_n</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/lowest_value" type="array">
+         <obj_property name="ElementShortName">lowest_value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">lowest_value[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/value" type="array">
+         <obj_property name="ElementShortName">value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">value[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/low" type="array">
+         <obj_property name="ElementShortName">low[31:0]</obj_property>
+         <obj_property name="ObjectShortName">low[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/offset" type="array">
+         <obj_property name="ElementShortName">offset[31:0]</obj_property>
+         <obj_property name="ObjectShortName">offset[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/offset_value" type="array">
+         <obj_property name="ElementShortName">offset_value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">offset_value[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/bin_int" type="array">
+         <obj_property name="ElementShortName">bin_int[3:0]</obj_property>
+         <obj_property name="ObjectShortName">bin_int[3:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/bin" type="array">
+         <obj_property name="ElementShortName">bin[3:0]</obj_property>
+         <obj_property name="ObjectShortName">bin[3:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/last_bin" type="array">
+         <obj_property name="ElementShortName">last_bin[3:0]</obj_property>
+         <obj_property name="ObjectShortName">last_bin[3:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/msb" type="other">
+         <obj_property name="ElementShortName">msb</obj_property>
+         <obj_property name="ObjectShortName">msb</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/point" type="other">
+         <obj_property name="ElementShortName">point</obj_property>
+         <obj_property name="ObjectShortName">point</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/VALUE_BITS" type="other">
+         <obj_property name="ElementShortName">VALUE_BITS</obj_property>
+         <obj_property name="ObjectShortName">VALUE_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/ADDRESS_BITS" type="other">
+         <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
+         <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group113" type="group">
+      <obj_property name="label">round</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/msb" type="other">
+         <obj_property name="ElementShortName">msb</obj_property>
+         <obj_property name="ObjectShortName">msb</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/point" type="other">
+         <obj_property name="ElementShortName">point</obj_property>
+         <obj_property name="ObjectShortName">point</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/output" type="array">
+         <obj_property name="ElementShortName">output[3:0]</obj_property>
+         <obj_property name="ObjectShortName">output[3:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/a_round" type="array">
+         <obj_property name="ElementShortName">a_round[29:0]</obj_property>
+         <obj_property name="ObjectShortName">a_round[29:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/b_round" type="array">
+         <obj_property name="ElementShortName">b_round[17:0]</obj_property>
+         <obj_property name="ObjectShortName">b_round[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/input_reg" type="array">
+         <obj_property name="ElementShortName">input_reg[31:0]</obj_property>
+         <obj_property name="ObjectShortName">input_reg[31:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">1</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/p_int" type="array">
+         <obj_property name="ElementShortName">p_int[47:0]</obj_property>
+         <obj_property name="ObjectShortName">p_int[47:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/carryin" type="logic">
+         <obj_property name="ElementShortName">carryin</obj_property>
+         <obj_property name="ObjectShortName">carryin</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/p_out" type="array">
+         <obj_property name="ElementShortName">p_out[47:0]</obj_property>
+         <obj_property name="ObjectShortName">p_out[47:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0080</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">0</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/sim_pipe[5]" type="array">
+         <obj_property name="ElementShortName">[5][3:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_pipe[5][3:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="radix_realType">UNSIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">1</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/saturate" type="logic">
+         <obj_property name="ElementShortName">saturate</obj_property>
+         <obj_property name="ObjectShortName">saturate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/sim_pipe[7]" type="array">
+         <obj_property name="ElementShortName">[7][3:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_pipe[7][3:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">1</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/output_reg" type="array">
+         <obj_property name="ElementShortName">output_reg[47:0]</obj_property>
+         <obj_property name="ObjectShortName">output_reg[47:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/ab_round" type="array">
+         <obj_property name="ElementShortName">ab_round[47:0]</obj_property>
+         <obj_property name="ObjectShortName">ab_round[47:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/overflow_mask" type="array">
+         <obj_property name="ElementShortName">overflow_mask[47:0]</obj_property>
+         <obj_property name="ObjectShortName">overflow_mask[47:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/rounding_c" type="array">
+         <obj_property name="ElementShortName">rounding_c[47:0]</obj_property>
+         <obj_property name="ObjectShortName">rounding_c[47:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/input" type="array">
+         <obj_property name="ElementShortName">input[31:0]</obj_property>
+         <obj_property name="ObjectShortName">input[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/round_shift" type="other">
+         <obj_property name="ElementShortName">round_shift</obj_property>
+         <obj_property name="ObjectShortName">round_shift</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/overflow_shift" type="other">
+         <obj_property name="ElementShortName">overflow_shift</obj_property>
+         <obj_property name="ObjectShortName">overflow_shift</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/pat" type="logic">
+         <obj_property name="ElementShortName">pat</obj_property>
+         <obj_property name="ObjectShortName">pat</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/patb" type="logic">
+         <obj_property name="ElementShortName">patb</obj_property>
+         <obj_property name="ObjectShortName">patb</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/msb_m1" type="other">
+         <obj_property name="ElementShortName">msb_m1</obj_property>
+         <obj_property name="ObjectShortName">msb_m1</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/WIDTH_IN" type="other">
+         <obj_property name="ElementShortName">WIDTH_IN</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/WIDTH_OUT" type="other">
+         <obj_property name="ElementShortName">WIDTH_OUT</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/TOWARDS_INF" type="other">
+         <obj_property name="ElementShortName">TOWARDS_INF</obj_property>
+         <obj_property name="ObjectShortName">TOWARDS_INF</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_bin_map_TB/UUT/binWidth/ONES" type="array">
+         <obj_property name="ElementShortName">ONES[47:0]</obj_property>
+         <obj_property name="ObjectShortName">ONES[47:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

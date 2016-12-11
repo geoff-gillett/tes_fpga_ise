@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="frame_ram_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="boolean_vector" />
+            <top_module name="frame_ram_TB" />
+            <top_module name="logic" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="159510595fs"></ZoomStartTime>
+      <ZoomEndTime time="284897881fs"></ZoomEndTime>
+      <Cursor1Time time="204000000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="16" />
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/reset" type="logic">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/din" type="array">
+      <obj_property name="ElementShortName">din[15:0]</obj_property>
+      <obj_property name="ObjectShortName">din[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/address" type="array">
+      <obj_property name="ElementShortName">address[3:0]</obj_property>
+      <obj_property name="ObjectShortName">address[3:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/chunk_we" type="array">
+      <obj_property name="ElementShortName">chunk_we[1:0]</obj_property>
+      <obj_property name="ObjectShortName">chunk_we[1:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/length" type="array">
+      <obj_property name="ElementShortName">length[4:0]</obj_property>
+      <obj_property name="ObjectShortName">length[4:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/commit" type="other">
+      <obj_property name="ElementShortName">commit</obj_property>
+      <obj_property name="ObjectShortName">commit</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/free" type="array">
+      <obj_property name="ElementShortName">free[4:0]</obj_property>
+      <obj_property name="ObjectShortName">free[4:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/stream" type="array">
+      <obj_property name="ElementShortName">stream[15:0]</obj_property>
+      <obj_property name="ObjectShortName">stream[15:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/valid" type="other">
+      <obj_property name="ElementShortName">valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/ready" type="other">
+      <obj_property name="ElementShortName">ready</obj_property>
+      <obj_property name="ObjectShortName">ready</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/sim_count" type="array">
+      <obj_property name="ElementShortName">sim_count[15:0]</obj_property>
+      <obj_property name="ObjectShortName">sim_count[15:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/CHUNKS" type="other">
+      <obj_property name="ElementShortName">CHUNKS</obj_property>
+      <obj_property name="ObjectShortName">CHUNKS</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/CHUNK_BITS" type="other">
+      <obj_property name="ElementShortName">CHUNK_BITS</obj_property>
+      <obj_property name="ObjectShortName">CHUNK_BITS</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/ADDRESS_BITS" type="other">
+      <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
+      <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" fp_name="/frame_ram_TB/CLK_PERIOD" type="other">
+      <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
+      <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
+   </wvobject>
+</wave_config>

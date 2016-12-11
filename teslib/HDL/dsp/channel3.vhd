@@ -58,7 +58,6 @@ port (
 end entity channel3;
 
 architecture RTL of channel3 is
-
   
 signal sample_in,raw,filtered,slope:signed(DSP_BITS-1 downto 0);
 signal sample_d:std_logic_vector(WIDTH-1 downto 0);
@@ -68,18 +67,19 @@ signal baseline_estimate:signed(WIDTH-1 downto 0);
 signal range_error:boolean;
 
 --debug
-
 constant DEBUG:string:="FALSE";
 attribute mark_debug:string;
 attribute mark_debug of sample:signal is DEBUG;
 attribute mark_debug of sample_in:signal is DEBUG;
 
+--raw signal measurements
 signal raw_x:signed(WIDTH-1 downto 0);
 signal raw_0_pos_x,raw_0_neg_x,raw_0xing:boolean;
 signal raw_rounded:signed(WIDTH_OUT-1 downto 0);
-
+--pipelines
 constant ALAT:natural:=5; --accumulator latency
 constant RLAT:natural:=3; --round latency
+constant XLAT:natural:=1; --crossing latency
 constant ELAT:natural:=1; --extrema latency
 constant DEPTH:integer:=ALAT;--5; --main pipeline depth
 type pipe is array (natural range <>) of signed(WIDTH_OUT-1 downto 0);
@@ -187,32 +187,11 @@ port map(
   measurements => dsp_m
 );
 
-rawMeas:entity work.signal_measurement2
-generic map(
-  WIDTH => WIDTH,
-  FRAC => FRAC,
-	WIDTH_OUT => WIDTH_OUT,
-	FRAC_OUT => FRAC_OUT,
-  AREA_WIDTH => AREA_WIDTH,
-  AREA_FRAC => AREA_FRAC
-)
-port map(
-  clk => clk,
-  reset => reset1,
-  signal_in => raw,
-  threshold => (others => '0'),
-  signal_out => m.raw.sample,
-  pos_xing => m.raw.pos_0xing,
-  neg_xing => m.raw.neg_0xing,
-  xing => m.raw.zero_xing,
-  area => m.raw.area,
-  extrema => m.raw.extrema
-);
-
 pipelines:process (clk) is
 begin
   if rising_edge(clk) then
-    raw_pipe(1+RLAT to DEPTH) <= raw_rounded & raw_pipe(1+RLAT to DEPTH-1);
+    raw_pipe(RLAT-XLAT to DEPTH) 
+      <= raw_rounded & raw_pipe(RLAT-XLAT to DEPTH-1);
     raw_0_pos_pipe <= raw_0_pos_x & raw_0_pos_pipe(1 to DEPTH-1);
     raw_0_neg_pipe <= raw_0_neg_x & raw_0_neg_pipe(1 to DEPTH-1);
   end if;
@@ -234,7 +213,7 @@ port map(
 );
 raw_0xing <= raw_0_pos_x or raw_0_neg_x;
 
-filteredArea:entity dsp.area_acc3
+rawArea:entity dsp.area_acc3
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -252,7 +231,7 @@ port map(
   area => m.raw.area
 );
 
-filteredRound:entity dsp.round2
+rawRound:entity dsp.round2
 generic map(
   WIDTH_IN => WIDTH,
   FRAC_IN => FRAC,
@@ -269,7 +248,7 @@ port map(
   above_threshold => open
 );
 
-filteredExtrema:entity work.extrema
+rawExtrema:entity work.extrema
 generic map(
   WIDTH => WIDTH_OUT
 )
@@ -283,13 +262,18 @@ port map(
 );
 
 m.raw.sample <= raw_pipe(DEPTH);
+m.raw.pos_0xing <= raw_0_pos_pipe(DEPTH);
+m.raw.neg_0xing <= raw_0_neg_pipe(DEPTH);
 --TODO cleanup this ugly patch
 m.filtered <= dsp_m.filtered;
 m.slope <= dsp_m.slope;
 m.above_area_threshold <= dsp_m.above_area_threshold;
 m.above_pulse_threshold <= dsp_m.above_pulse_threshold;
+m.will_go_above <= dsp_m.will_go_above;
 m.armed <= dsp_m.armed;
+m.will_arm <= dsp_m.will_arm;
 m.cfd_error <= dsp_m.cfd_error;
+m.cfd_valid <= dsp_m.cfd_valid;
 m.cfd_high <= dsp_m.cfd_high;
 m.cfd_low <= dsp_m.cfd_low;
 m.eflags <= dsp_m.eflags;
@@ -308,12 +292,15 @@ m.pulse_threshold_pos <= dsp_m.pulse_threshold_pos;
 m.pulse_time <= dsp_m.pulse_time;
 m.rise_time <= dsp_m.rise_time;
 m.size <= dsp_m.size;
-m.slope_threshold_neg <= dsp_m.slope_threshold_neg;
+--m.slope_threshold_neg <= dsp_m.slope_threshold_neg;
 m.slope_threshold_pos <= dsp_m.slope_threshold_pos;
 m.stamp_peak <= dsp_m.stamp_peak;
 m.stamp_pulse <= dsp_m.stamp_pulse;
 m.time_offset <= dsp_m.time_offset;
 m.valid_peak <= dsp_m.valid_peak;
+m.valid_peak0 <= dsp_m.valid_peak0;
+m.valid_peak1 <= dsp_m.valid_peak1;
+m.valid_peak2 <= dsp_m.valid_peak2;
 m.cfd_high_threshold <= dsp_m.cfd_high_threshold;
 m.cfd_low_threshold <= dsp_m.cfd_low_threshold;
 m.filtered_long <= dsp_m.filtered_long;

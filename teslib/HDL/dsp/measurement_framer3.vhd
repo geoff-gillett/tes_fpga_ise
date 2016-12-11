@@ -196,6 +196,7 @@ begin
         when TEST_DETECTION_D =>
           if m.peak_start and not framer_full then
             state <= TEST_S;
+            frame_address <= (0 => '1', others => '0');
             frame_word <= to_streambus(test,1,ENDIAN);
             frame_we <= (others => m.stamp_peak);
             start_int <= m.stamp_peak;

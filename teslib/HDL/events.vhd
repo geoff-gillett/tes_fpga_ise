@@ -261,9 +261,9 @@ end function;
 function to_event_type_t(sb:streambus_t;e:string) return event_type_t is
 	variable et:event_type_t;
 begin
-  if endianness="BIG" then
+  if e="BIG" then
 	  et := to_event_type_t(sb.data(19 downto 16));
-	elsif endianness="LITTLE" then
+	elsif e="LITTLE" then
 	  et := to_event_type_t(sb.data(27 downto 24));
 	else
 	  assert FALSE report "endianness must be either BIG or LITTLE" 
@@ -465,7 +465,7 @@ begin
 		sb.data(35 downto 18) := to_std_logic(t.high2);
 		sb.data(17 downto 0) := to_std_logic(t.high_threshold); 
 		sb.data := set_endianness(sb.data,endianness);
-    sb.last := (others => TRUE);
+    sb.last := (0 => TRUE,others => FALSE);
   end case;
   sb.discard := (others => FALSE);
   return sb;

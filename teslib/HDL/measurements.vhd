@@ -132,7 +132,7 @@ type measurements_t is record
   pulse_time:time_t;   --time since last pulse start
   
   slope_threshold_pos:boolean;
-  slope_threshold_neg:boolean;
+  --slope_threshold_neg:boolean;
   armed:boolean; 
   will_arm:boolean;
   
