@@ -61,7 +61,7 @@ port map(
   stage2 => slope
 );
 
-UUT:entity work.measure2
+UUT:entity work.measure3
 generic map(
   CHANNEL => 0,
   WIDTH => WIDTH,

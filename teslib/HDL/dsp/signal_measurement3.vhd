@@ -23,7 +23,7 @@ use dsp.types.all;
 use work.types.all;
 
 -- Assumes FRAC >= AREA_FRAC
-entity signal_measurement2 is
+entity signal_measurement3 is
 generic(
 	WIDTH:integer:=18;
 	FRAC:integer:=3;
@@ -38,7 +38,8 @@ port (
   clk:in std_logic;
   reset:in std_logic;
   signal_in:in signed(WIDTH-1 downto 0);
-  threshold:in signed(WIDTH-1 downto 0);
+  signal_threshold:in signed(WIDTH-1 downto 0);
+  area_threshold:in signed(AREA_WIDTH-1 downto 0);
   
   signal_out:out signed(WIDTH_OUT-1 downto 0);
   pos_xing:out boolean;
@@ -46,17 +47,17 @@ port (
   xing:out boolean;
   -- both area and extrema valid at zero_xing
   area:out signed(AREA_WIDTH-1 downto 0);
+  above_area_threshold:out boolean;
   extrema:out signed(WIDTH_OUT-1 downto 0)
 );
-end entity signal_measurement2;
+end entity signal_measurement3;
 
-architecture RTL of signal_measurement2 is
+architecture RTL of signal_measurement3 is
   
---FIXME add saturation check on area remove shifts and do them outside
 signal extreme_int:signed(WIDTH_OUT-1 downto 0);
 signal pos_x,neg_x,xing_int:boolean;
 signal signal_x:signed(WIDTH-1 downto 0);
-signal signal_r:std_logic_vector(WIDTH_OUT-1 downto 0);
+signal signal_r:signed(WIDTH_OUT-1 downto 0);
 
 constant DEPTH:integer:=6;
 signal pos_p,neg_p,xing_p:boolean_vector(1 to DEPTH):=(others => FALSE);
@@ -75,7 +76,7 @@ xing <= xing_p(DEPTH);
 xing_int <= pos_x or neg_x;
 
 -- saturation handled in FIR
-round:entity dsp.round
+round:entity dsp.round2
 generic map(
   WIDTH_IN  => WIDTH,
   FRAC_IN   => FRAC,
@@ -85,8 +86,10 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  input => std_logic_vector(signal_in),
-  output => signal_r
+  input => signal_in,
+  output_threshold => (others => '0'),
+  output => signal_r,
+  above_threshold => open
 );
 
 crossing:entity dsp.crossing
@@ -98,13 +101,13 @@ port map(
   clk => clk,
   reset => reset,
   signal_in => signal_in,
-  threshold => threshold,
+  threshold => signal_threshold,
   signal_out => signal_x,
   pos => pos_x,
   neg => neg_x
 );
 
-areaAcc:entity dsp.area_acc2
+areaAcc:entity dsp.area_acc3
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -116,8 +119,10 @@ port map(
   reset => reset,
   xing => xing_int,
   sig => signal_x,
-  threshold => threshold,
-  area => area
+  signal_threshold => signal_threshold,
+  area_threshold => area_threshold,
+  area => area,
+  above_area_threshold => above_area_threshold
 );
 
 pipeline:process(clk)
@@ -132,7 +137,7 @@ begin
       pos_p(2 to DEPTH) <= pos_x & pos_p(2 to DEPTH-1);   
       neg_p(2 to DEPTH) <= neg_x & neg_p(2 to DEPTH-1);   
       xing_p(2 to DEPTH) <= xing_int & xing_p(2 to DEPTH-1);
-      pipe(3 to DEPTH) <= signed(signal_r) & pipe(3 to DEPTH-1);   
+      pipe(3 to DEPTH) <= signal_r & pipe(3 to DEPTH-1);   
     end if;
   end if;
 end process pipeline;
@@ -162,12 +167,10 @@ if rising_edge(clk) then
     else
       if state=MAX_S and gt then
         extreme_int <= pipe(DEPTH-1);
-        --extrema <= pipe(DEPTH-1);
       end if;
       
       if (state=MIN_S and not gt) then
         extreme_int <= pipe(DEPTH-1);
-        --extrema <= pipe(DEPTH-1);
       end if;
       
     end if;

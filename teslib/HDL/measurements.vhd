@@ -116,26 +116,40 @@ type measurements_t is record
 	slope:signal_measurement_t;
 	--baseline:signal_t;
 	
+  height:signal_t; 
+  height_valid:boolean;
+  
+  rise_time:unsigned(15 downto 0);
 	filtered_long:signed(DSP_BITS-1 downto 0);
 	
+  pulse_threshold_pos:boolean;
+  pulse_threshold_neg:boolean;
+  above_pulse_threshold:boolean;
   pulse_area:area_t;
+  above_area_threshold:boolean;
+  will_go_above:boolean;
   pulse_length:time_t; --time since pulse_pos_Txing
   pulse_time:time_t;   --time since last pulse start
   
+  slope_threshold_pos:boolean;
+  slope_threshold_neg:boolean;
+  armed:boolean; 
+  will_arm:boolean;
+  
+	cfd_low:boolean; 
+	cfd_high:boolean;
+  max_slope:boolean;
   pulse_start:boolean; --minima at start of pulse
   peak_start:boolean; --minima at start of pulse
-  
-  --pulse time of timestamp valid after event start
-  time_offset:unsigned(15 downto 0); 
-  
   valid_peak:boolean;
   valid_peak0:boolean;
   valid_peak1:boolean;
   valid_peak2:boolean;
+  
 	stamp_peak:boolean; --peak timing point
   stamp_pulse:boolean; --peak_start and first peak in a pulse
-  rise_time:unsigned(15 downto 0);
-  max_slope:boolean;
+  time_offset:unsigned(15 downto 0); 
+  
   
   eflags:detection_flags_t;
   size:unsigned(15 downto 0);
@@ -146,24 +160,8 @@ type measurements_t is record
   peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   
-  pulse_threshold_pos:boolean;
-  pulse_threshold_neg:boolean;
-  slope_threshold_pos:boolean;
-  slope_threshold_neg:boolean;
-  
-  above_area_threshold:boolean;
-  above_pulse_threshold:boolean;
-  will_go_above:boolean;
-  armed:boolean; 
-  will_arm:boolean;
-  
-  height:signal_t; 
-  height_valid:boolean;
-  
   cfd_low_threshold:signed(DSP_BITS-1 downto 0);
   cfd_high_threshold:signed(DSP_BITS-1 downto 0);  	
-	cfd_low:boolean; 
-	cfd_high:boolean;
 	cfd_error:boolean;
 	cfd_valid:boolean;
 	

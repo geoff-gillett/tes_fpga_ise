@@ -22,10 +22,12 @@ signal clk:std_logic:='1';
 signal reset:std_logic:='1';
 signal signal_in:signed(WIDTH-1 downto 0);
 signal signal_out:signed(WIDTH_OUT-1 downto 0);
-signal threshold:signed(WIDTH-1 downto 0);
+signal signal_threshold:signed(WIDTH-1 downto 0);
+signal area_threshold:signed(AREA_WIDTH-1 downto 0);
 
 constant CLK_PERIOD:time:=4 ns;
 signal area:signed(AREA_WIDTH-1 downto 0);
+signal above_area_threshold:boolean;
 signal pos_0xing:boolean;
 signal neg_0xing:boolean;
 signal zero_xing:boolean;
@@ -38,7 +40,7 @@ begin
   
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.signal_measurement2
+UUT:entity work.signal_measurement3
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -51,12 +53,14 @@ port map(
   clk => clk,
   reset => reset,
   signal_in => signal_in,
-  threshold => threshold,
+  signal_threshold => signal_threshold,
+  area_threshold => area_threshold,
   signal_out => signal_out,
   pos_xing => pos_0xing,
   neg_xing => neg_0xing,
   xing => zero_xing,
   area => area,
+  above_area_threshold => above_area_threshold,
   extrema => extrema
 );
 
@@ -78,7 +82,8 @@ signal_in <= squaresig;
              
 stimulus:process is
 begin
-threshold <= to_signed(0,WIDTH);
+signal_threshold <= to_signed(400,WIDTH);
+area_threshold <= to_signed(2000,AREA_WIDTH);
 wait for CLK_PERIOD;
 reset <= '0';
 wait;

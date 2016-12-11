@@ -70,9 +70,17 @@ constant CF:integer:=2**17/10;
 begin
 clk <= not clk after CLK_PERIOD/2;
   
-UUT:entity work.channel2
+UUT:entity work.channel3
 generic map(
   CHANNEL => CHANNEL,
+  WIDTH => WIDTH,
+  FRAC => FRAC,
+  WIDTH_OUT => WIDTH_OUT,
+  FRAC_OUT => FRAC_OUT,
+  ADC_WIDTH => ADC_WIDTH,
+  AREA_WIDTH => AREA_WIDTH,
+  AREA_FRAC => AREA_FRAC,
+  CFD_DELAY => CFD_DELAY,
   ENDIAN  => ENDIAN
 )
 port map(

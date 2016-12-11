@@ -22,10 +22,10 @@ generic(
 port(
   clk:in std_logic;
   reset:in std_logic;
-  input:in std_logic_vector(WIDTH_IN-1 downto 0);
-  threshold:in signed(WIDTH_OUT-1 downto 0);
-  output:out std_logic_vector(WIDTH_OUT-1 downto 0);
-  above:out boolean
+  input:in signed(WIDTH_IN-1 downto 0);
+  output_threshold:in signed(WIDTH_OUT-1 downto 0);
+  output:out signed(WIDTH_OUT-1 downto 0);
+  above_threshold:out boolean
 );
 end entity round2;
 
@@ -58,7 +58,7 @@ report "FRAC_OUT must be less than FRAC_in" severity ERROR;
 carryin <= (not input(WIDTH_IN-1)) when TOWARDS_INF else input(WIDTH_IN-1);
 saturate <= not (pat xor patb);
 
-ab <= resize(signed(input),48);
+ab <= resize(input,48);
 a <= ab(47 downto 18);
 b <= ab(17 downto 0);
 
@@ -72,15 +72,17 @@ begin
       if saturate='1' then 
         output <= (WIDTH_OUT-1 => p_out(47), others => not p_out(47));
         if p_out(47)='1' then
-          above <= FALSE;
+          above_threshold <= FALSE;
         else
-          above <= TRUE; -- this is wrong when threshold = MAX
+          above_threshold <= TRUE; -- this is wrong when threshold = MAX
         end if;
       else
-        output <= p_out(WIDTH_OUT+FRAC_IN-FRAC_OUT-1 downto FRAC_IN-FRAC_OUT);
-        above <= signed(
+        output <= signed(
           p_out(WIDTH_OUT+FRAC_IN-FRAC_OUT-1 downto FRAC_IN-FRAC_OUT)
-        ) > threshold;
+        );
+        above_threshold <= signed(
+          p_out(WIDTH_OUT+FRAC_IN-FRAC_OUT-1 downto FRAC_IN-FRAC_OUT)
+        ) > output_threshold;
       end if;
     end if;
   end if;
