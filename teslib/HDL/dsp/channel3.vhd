@@ -49,6 +49,8 @@ port (
   start:out boolean;
   commit:out boolean;
   dump:out boolean;
+  framer_overflow:out boolean;
+  framer_error:out boolean; -- event_lost;
   
   measurements:out measurements_t;
   stream:out streambus_t;
@@ -317,6 +319,8 @@ port map(
   start => start,
   commit => commit,
   dump => dump,
+  overflow => framer_overflow,
+  error => framer_error,
   measurements => m,
   stream => stream,
   valid => valid,

@@ -135,7 +135,7 @@ type tick_event_t is record
   framer_overflows:boolean_vector(CHANNELS-1 downto 0);
   measurement_overflows:boolean_vector(CHANNELS-1 downto 0);
   mux_overflows:boolean_vector(CHANNELS-1 downto 0);
-  peak_overflows:boolean_vector(CHANNELS-1 downto 0);
+  framer_errors:boolean_vector(CHANNELS-1 downto 0);
   time_overflows:boolean_vector(CHANNELS-1 downto 0);
   baseline_underflows:boolean_vector(CHANNELS-1 downto 0);
   cfd_errors:boolean_vector(CHANNELS-1 downto 0);
@@ -375,7 +375,7 @@ begin
     					 resize(to_std_logic(t.mux_overflows),CHANNELS) &
     					 resize(to_std_logic(t.measurement_overflows),CHANNELS) &
     					 resize(to_std_logic(t.cfd_errors),CHANNELS) &
-    					 resize(to_std_logic(t.peak_overflows),CHANNELS) &
+    					 resize(to_std_logic(t.framer_errors),CHANNELS) &
     					 resize(to_std_logic(t.time_overflows),CHANNELS) &
     					 resize(to_std_logic(t.baseline_underflows),CHANNELS) &
     					 to_std_logic(0, 8);

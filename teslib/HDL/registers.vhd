@@ -38,8 +38,8 @@ constant BASELINE_BITS:integer:=12;
 constant BASELINE_TIMECONSTANT_BITS:integer:=32;
 constant BASELINE_COUNTER_BITS:integer:=18;
 constant BASELINE_MAX_AV_ORDER:integer:=6;
-constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=11;
-constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=12;
+constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=10;
+constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=10;
 constant DELAY_BITS:integer:=13;
 constant PEAK_COUNT_BITS:integer:=4;
 
@@ -66,7 +66,7 @@ constant AREA_WIDTH:integer:=32;
 type detection_d is (
 	PEAK_DETECTION_D,
 	AREA_DETECTION_D,
-	PULSE_DETECTION_D, --use fixed flag to indicate fixed/variable length
+	PULSE_DETECTION_D, 
 	TEST_DETECTION_D
 );
 
@@ -92,7 +92,6 @@ function to_std_logic(t:timing_d;w:integer) return std_logic_vector;
 function to_timing_d(i:natural range 0 to NUM_TIMING_D-1) return timing_d;
 function to_timing_d(s:std_logic_vector) return timing_d;
 
---TODO add CFD_LOW?	or extrema?
 type height_d is (
 	PEAK_HEIGHT_D,
 	CFD_HEIGHT_D,

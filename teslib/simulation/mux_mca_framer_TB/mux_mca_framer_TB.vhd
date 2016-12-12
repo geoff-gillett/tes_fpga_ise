@@ -218,7 +218,7 @@ port map(
   framer_overflows => framer_overflows,
   mux_overflows => mux_overflows,
   measurement_overflows => measurement_overflows,
-  peak_overflows => peak_overflows,
+  framer_errors => peak_overflows,
   time_overflows => time_overflows,
   baseline_underflows => baseline_underflows,
   window => window,

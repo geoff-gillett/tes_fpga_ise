@@ -132,10 +132,12 @@ signal peak_address:unsigned(PEAK_COUNT_BITS downto 0);
 signal last_peak:boolean;
 signal valid_peak0,valid_peak1,valid_peak2:boolean;
 signal cfd_high_thresh_out,cfd_low_thresh_out:signed(WIDTH-1 downto 0);
-signal size:unsigned(SIZE_WIDTH-1 downto 0);
+signal size,pre_size:unsigned(SIZE_WIDTH-1 downto 0);
 signal last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
 signal peak_start:boolean;
 signal pulse_t_xing:boolean;
+signal pre_pulse_start,pre_peak_start:boolean;
+signal reg:capture_registers_t;
 
 begin
 measurements <= m;
@@ -449,25 +451,47 @@ begin
       low_pipe <= cfd_low_threshold & low_pipe(1 to DEPTH-1);
       
       -- minima at start of pulse  
-      pulse_start <= min_pipe(DEPTH-1) and not above_pipe(DEPTH-1) and 
-                       enabled and valid_peak_pipe(DEPTH-1) and 
-                       first_peak_pipe(DEPTH-1);
+--      pulse_start <= min_pipe(DEPTH-1) and not above_pipe(DEPTH-1) and 
+--                       enabled and valid_peak_pipe(DEPTH-1) and 
+--                       first_peak_pipe(DEPTH-1);
                        
-      peak_start <= min_pipe(DEPTH-1) and enabled and 
-                    valid_peak_pipe(DEPTH-1); 
+      pre_pulse_start <= min_pipe(DEPTH-2) and not above_pipe(DEPTH-2) and 
+                       enabled and valid_peak_pipe(DEPTH-2) and 
+                       first_peak_pipe(DEPTH-2);
+      pulse_start <= pre_pulse_start;
+                       
+--      peak_start <= min_pipe(DEPTH-1) and enabled and 
+--                    valid_peak_pipe(DEPTH-1); 
      
-      -- 1 clk before a minima which is below threshold
+      pre_peak_start <= min_pipe(DEPTH-1) and enabled and 
+                        valid_peak_pipe(DEPTH-1); 
+      
+      peak_start <= pre_pulse_start;
+      
+      --pre minima below pulse threshold 
+      if (min_pipe(DEPTH-2) and not above_pipe(DEPTH-2)) then 
+        reg <= registers;
+        case registers.detection is
+        when PEAK_DETECTION_D | AREA_DETECTION_D => 
+          pre_size <= (0 => '1', others => '0');
+        when PULSE_DETECTION_D => 
+          pre_size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
+        when TEST_DETECTION_D => 
+          pre_size <= (1 => '1', others => '0');
+        end case;
+      end if;
+      
       if (min_pipe(DEPTH-1) and not above_pipe(DEPTH-1)) then 
-        area_threshold <= signed('0' & registers.area_threshold);
+        area_threshold <= signed('0' & reg.area_threshold);
         flags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
-        flags.event_type.detection <= registers.detection;
+        flags.event_type.detection <= reg.detection;
         flags.event_type.tick <= FALSE;
-        flags.height <= registers.height;
+        flags.height <= reg.height;
         flags.new_window <= FALSE;
         flags.peak_overflow <= FALSE;
-        flags.timing <= registers.timing;
-        max_peaks <= '0' & registers.max_peaks;
-        last_peak_address <= ('0' & registers.max_peaks)+2;
+        flags.timing <= reg.timing;
+        max_peaks <= '0' & reg.max_peaks;
+        last_peak_address <= ('0' & reg.max_peaks)+2;
         
       end if;  
        
@@ -477,17 +501,10 @@ begin
           flags.peak_number <= (others => '0');
           peak_number_n <= (0 => '1',others => '0');
           flags.peak_number <= (others => '0');
-          last_peak <= registers.max_peaks=0;
+          last_peak <= reg.max_peaks=0;
           --m.max_peaks <= registers.max_peaks;
           time_offset <= (others => '0'); 
-          case registers.detection is
-          when PEAK_DETECTION_D | AREA_DETECTION_D => 
-            size <= (0 => '1', others => '0');
-          when PULSE_DETECTION_D => 
-            size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
-          when TEST_DETECTION_D => 
-            size <= (1 => '1', others => '0');
-          end case;
+          size <= pre_size;
           
           valid_peak0 <= valid_peak_pipe(DEPTH-1);
           valid_peak1 <= FALSE;
@@ -642,7 +659,9 @@ m.peak_address <= peak_address;
 m.last_peak_address <= last_peak_address;
 
 m.peak_start <= peak_start;
+m.pre_peak_start <= pre_peak_start;
 m.pulse_start <= pulse_start;
+m.pre_pulse_start <= pre_pulse_start;
 m.pulse_time <= pulse_time;
 m.stamp_peak <= stamp_peak;
 m.stamp_pulse <= stamp_pulse;
@@ -654,6 +673,7 @@ m.rise_time <= rise_time;
 
 m.eflags <= flags;
 m.size <= size;
+m.pre_size <= pre_size;
 m.cfd_low_threshold <= cfd_low_thresh_out;
 m.cfd_high_threshold <= cfd_high_thresh_out;
 m.cfd_high <= cfd_high_pos_pipe(DEPTH);

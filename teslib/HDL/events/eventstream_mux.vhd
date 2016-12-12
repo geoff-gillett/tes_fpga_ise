@@ -53,7 +53,7 @@ port(
   framer_overflows:in boolean_vector(CHANNELS-1 downto 0);
   mux_overflows:in boolean_vector(CHANNELS-1 downto 0);
   measurement_overflows:in boolean_vector(CHANNELS-1 downto 0);
-  peak_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  framer_errors:in boolean_vector(CHANNELS-1 downto 0);
   time_overflows:in boolean_vector(CHANNELS-1 downto 0);
   baseline_underflows:in boolean_vector(CHANNELS-1 downto 0);
 	
@@ -153,7 +153,7 @@ port map(
   baseline_underflows => baseline_underflows,
   framer_overflows => framer_overflows,
   measurement_overflows => measurement_overflows,
-  peak_overflows => peak_overflows,
+  framer_errors => framer_errors,
   time_overflows => time_overflows,
   tickstream => tickstream,
   valid => tickstream_valid,

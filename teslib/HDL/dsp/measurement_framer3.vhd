@@ -83,6 +83,7 @@ type pulseFSMstate is (
 );
 signal state:pulseFSMstate;
 signal done,stamped:boolean;
+signal free_after_commit:unsigned(FRAMER_ADDRESS_BITS downto 0);
 --signal last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   
 begin
@@ -111,7 +112,6 @@ area.flags <= m.eflags;
 area.area <= m.pulse_area;
 area_we <= (others => m.pulse_threshold_neg);
 
-framer_full <= framer_free < m.size;
 
 pulse_peak.height <= m.height;                 
 pulse_peak.minima <= m.filtered.sample;
@@ -139,16 +139,29 @@ test.minima <= minima;
     
 frame_commit <= state=COMMIT_S;
 --cleared <= clear_address <= last_peak_address;
-pulseTransition:process(clk)
+FSMtransition:process(clk)
 begin
   if rising_edge(clk) then
     if reset='1' then
       state <= IDLE_S;
     else
-     
+      --FIXME this could be an issue as the framer fills
+      --want not framer_full to be accurate at minima
+      --framer_free can only decrease after commit
+      --This FSM needs to be cleaned up it should be possible to avoid errors
+      --At least for peak and area
+      
+      free_after_commit <= framer_free - frame_length;
+      if state=COMMIT_S then -- problem if commit and pulse/peak start
+        framer_full <= free_after_commit < m.pre_size; --needs to be next size
+      else
+        framer_full <= framer_free < m.size; -- size changes at minima
+      end if;
+      
       filtered_reg <= m.filtered_long; 
       
-      if m.eflags.event_type.detection=PEAK_DETECTION_D then
+      if m.eflags.event_type.detection=PEAK_DETECTION_D or 
+         m.eflags.event_type.detection=TEST_DETECTION_D then
         lost <= m.peak_start and (state/=IDLE_S or framer_full);
       else
         lost <= m.pulse_start and (state/=IDLE_S or framer_full);
@@ -351,15 +364,12 @@ begin
         frame_word <= test_H_word;
         frame_we <= (others => TRUE);
         frame_address <= (others => '0');
-        
-        
       when COMMIT_S =>
-          state <= IDLE_S;
+        state <= IDLE_S;
       end case;
-      
     end if;
   end if;
-end process pulseTransition;
+end process FSMtransition;
 
 framer:entity streamlib.framer
 generic map(

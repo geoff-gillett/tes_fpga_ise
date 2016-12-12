@@ -153,7 +153,7 @@ port map(
   baseline_underflows => baseline_underflows,
   framer_overflows => framer_overflows,
   measurement_overflows => measurement_overflows,
-  peak_overflows => peak_overflows,
+  framer_errors => peak_overflows,
   time_overflows => time_overflows,
   tickstream => tickstream,
   valid => tickstream_valid,

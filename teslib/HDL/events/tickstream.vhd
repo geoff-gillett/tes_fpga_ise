@@ -46,7 +46,7 @@ port (
   cfd_errors:in boolean_vector(CHANNELS-1 downto 0);
   framer_overflows:in boolean_vector(CHANNELS-1 downto 0);
   measurement_overflows:in boolean_vector(CHANNELS-1 downto 0);
-  peak_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  framer_errors:in boolean_vector(CHANNELS-1 downto 0);
   time_overflows:in boolean_vector(CHANNELS-1 downto 0);
   baseline_underflows:in boolean_vector(CHANNELS-1 downto 0);
  
@@ -143,8 +143,8 @@ begin
         	<= resize(framer_overflow_reg or framer_overflows,8);
         framer_overflow_reg <= (others => FALSE);
         
-        tick_event.peak_overflows
-        	<= resize(peak_overflow_reg or peak_overflows,8);
+        tick_event.framer_errors
+        	<= resize(peak_overflow_reg or framer_errors,8);
         peak_overflow_reg <= (others => FALSE);
         
         tick_event.time_overflows
@@ -165,7 +165,7 @@ begin
       	mux_overflow_reg <= mux_overflow_reg or mux_overflows;
       	measurement_overflow_reg 
       		<= measurement_overflow_reg or measurement_overflows;
-      	peak_overflow_reg <= peak_overflow_reg or peak_overflows;
+      	peak_overflow_reg <= peak_overflow_reg or framer_errors;
       	time_overflow_reg <= time_overflow_reg or time_overflows;
       	baseline_underflow_reg <= baseline_underflow_reg or baseline_underflows;
       	cfd_error_reg <= cfd_error_reg or cfd_errors;

@@ -103,7 +103,7 @@ signal starts:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal baseline_errors:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal cfd_errors:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal time_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal peak_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal framer_errors:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal framer_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal channel_select:std_logic_vector(DSP_CHANNELS-1 downto 0);
 signal mca_value:signed(MCA_VALUE_BITS-1 downto 0);
@@ -252,11 +252,14 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     start => starts(c),
     commit => commits(c),
     dump => dumps(c),
+    framer_overflow => framer_overflows(c),
+    framer_error => framer_errors(c),
     measurements => m(c),
     stream => eventstreams(c),
     valid => eventstream_valids(c),
     ready => eventstream_readys(c)
   );
+  cfd_errors(c) <= m(c).cfd_error;
   
   valueMux:entity work.mca_value_selector3
   generic map(
@@ -327,7 +330,7 @@ port map(
   framer_overflows => framer_overflows,
   mux_overflows => mux_overflows,
   measurement_overflows => measurement_overflows,
-  peak_overflows => peak_overflows,
+  framer_errors => framer_errors,
   time_overflows => time_overflows,
   baseline_underflows => baseline_errors,
   muxstream => muxstream,

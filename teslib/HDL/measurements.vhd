@@ -140,7 +140,9 @@ type measurements_t is record
 	cfd_high:boolean;
   max_slope:boolean;
   pulse_start:boolean; --minima at start of pulse
+  pre_pulse_start:boolean; -- clk before
   peak_start:boolean; --minima at start of pulse
+  pre_peak_start:boolean; --minima at start of pulse
   valid_peak:boolean;
   valid_peak0:boolean;
   valid_peak1:boolean;
@@ -153,6 +155,7 @@ type measurements_t is record
   
   eflags:detection_flags_t;
   size:unsigned(15 downto 0);
+  pre_size:unsigned(15 downto 0);
   
   -- actually max peaks -1
   --max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
