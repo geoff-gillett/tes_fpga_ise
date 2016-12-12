@@ -463,8 +463,8 @@ begin
 --      peak_start <= min_pipe(DEPTH-1) and enabled and 
 --                    valid_peak_pipe(DEPTH-1); 
      
-      pre_peak_start <= min_pipe(DEPTH-1) and enabled and 
-                        valid_peak_pipe(DEPTH-1); 
+      pre_peak_start <= min_pipe(DEPTH-2) and enabled and 
+                        valid_peak_pipe(DEPTH-2); 
       
       peak_start <= pre_pulse_start;
       
