@@ -466,7 +466,7 @@ begin
       pre_peak_start <= min_pipe(DEPTH-2) and enabled and 
                         valid_peak_pipe(DEPTH-2); 
       
-      peak_start <= pre_pulse_start;
+      peak_start <= pre_peak_start;
       
       --pre minima below pulse threshold 
       if (min_pipe(DEPTH-2) and not above_pipe(DEPTH-2)) then 
