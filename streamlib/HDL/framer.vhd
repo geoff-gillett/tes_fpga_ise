@@ -42,7 +42,7 @@ port(
 );
 end entity framer;
 
-architecture SDP of framer is
+architecture wrapper of framer is
   
 signal din:std_logic_vector(BUS_CHUNKS*CHUNK_BITS-1 downto 0);
 signal streamvector:std_logic_vector(BUS_CHUNKS*CHUNK_BITS-1 downto 0);
@@ -73,4 +73,4 @@ port map(
 
 stream <= to_streambus(streamvector);
 
-end architecture SDP;
+end architecture wrapper;
