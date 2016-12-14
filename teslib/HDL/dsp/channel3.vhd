@@ -294,6 +294,7 @@ m.pulse_threshold_pos <= dsp_m.pulse_threshold_pos;
 m.pulse_time <= dsp_m.pulse_time;
 m.rise_time <= dsp_m.rise_time;
 m.size <= dsp_m.size;
+m.pre_size <= dsp_m.pre_size;
 --m.slope_threshold_neg <= dsp_m.slope_threshold_neg;
 m.slope_threshold_pos <= dsp_m.slope_threshold_pos;
 m.stamp_peak <= dsp_m.stamp_peak;

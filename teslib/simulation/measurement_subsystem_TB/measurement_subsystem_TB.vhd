@@ -95,7 +95,7 @@ signal global:global_registers_t;
 signal clk_count:integer:=0;
 
 type int_file is file of integer;
-file bytestream_file,trace_file,minmax_file,filteredxing_file:int_file;
+file bytestream_file,trace_file,minmax_file,filteredxing_file,cfd_file:int_file;
 
 signal filter_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal slope_config:fir_ctl_in_array(CHANNELS-1 downto 0);
@@ -336,6 +336,20 @@ begin
 	  end if;
 	end loop;
 end process minmaxWriter; 
+
+file_open(cfd_file, "../cfd",WRITE_MODE);
+cfdlowWriter:process
+begin
+	while TRUE loop
+    wait until rising_edge(sample_clk);
+	    if m(0).cfd_low then
+	      write(cfd_file, -clk_count);
+	    end if;
+	    if m(0).cfd_high then
+	      write(cfd_file, clk_count);
+	    end if;
+	end loop;
+end process cfdlowWriter; 
 
 file_open(filteredxing_file, "../filteredxing",WRITE_MODE);
 filteredXingWriter:process

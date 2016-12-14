@@ -58,7 +58,7 @@ signal rd_ptr,rd_ptr_next,wr_addr,wr_ptr:unsigned(ADDRESS_BITS downto 0);
 signal free_ram,wr_ptr_next,length_reg:unsigned(ADDRESS_BITS downto 0);
 signal address_reg:unsigned(ADDRESS_BITS-1 downto 0);
 signal read_next,empty,ram_valid,good_commit:boolean;
-signal msb_xor,msb_xor_next,ptr_equal,will_empty:boolean;
+signal msb_xor,msb_xor_next,ptr_equal,ptr_next_equal,will_empty:boolean;
 signal ram_ready,one_pending,two_pending,none_pending,commit_reg:boolean;
 signal read_pipe:boolean_vector(1 to 2);
 
@@ -87,11 +87,13 @@ end if;
 end process frameRAM;
 
 good_commit <= commit and (to_0IfX(length) <= to_0IfX(free_ram)) and 
-               length /= 0;
+               length /= 0; --this is not meeting timing 
                
 msb_xor <= (wr_ptr(ADDRESS_BITS) xor rd_ptr(ADDRESS_BITS))='1';
 msb_xor_next <= (wr_ptr(ADDRESS_BITS) xor rd_ptr_next(ADDRESS_BITS))='1';
 ptr_equal <= wr_ptr(ADDRESS_BITS-1 downto 0) = rd_ptr(ADDRESS_BITS-1 downto 0);
+ptr_next_equal 
+  <= wr_ptr(ADDRESS_BITS-1 downto 0) = rd_ptr(ADDRESS_BITS-1 downto 0);
 will_empty 
   <= wr_ptr(ADDRESS_BITS-1 downto 0) = rd_ptr_next(ADDRESS_BITS-1 downto 0);
 
@@ -117,7 +119,7 @@ if rising_edge(clk) then
     wr_addr <= wr_ptr + address; 
     --offset <= length + ('0' & address);
     
-    if good_commit then
+    if good_commit then 
       if read_next then
         free_ram <= free_ram - length + 1;
       else
@@ -127,29 +129,41 @@ if rising_edge(clk) then
     elsif commit_reg then
       wr_ptr <= wr_ptr_next; --only place wr_ptr can change
       wr_addr <= wr_ptr_next + address; 
-      empty <= FALSE; 
+      --empty <= FALSE; 
       if read_next then
         free_ram <= free_ram - 1;
       end if;
     else
    		if read_next then
 	    	free_ram <= rd_ptr_next - wr_ptr;
-        empty <= rd_ptr_next(ADDRESS_BITS-1 downto 0) = 
-                 wr_ptr(ADDRESS_BITS-1 downto 0) and msb_xor_next;
+--        empty <= (rd_ptr_next(ADDRESS_BITS-1 downto 0) = 
+--                 wr_ptr(ADDRESS_BITS-1 downto 0)) and msb_xor_next;
 	    else
 	    	free_ram <= rd_ptr - wr_ptr;
-        empty 
-          <= rd_ptr(ADDRESS_BITS-1 downto 0) = wr_ptr(ADDRESS_BITS-1 downto 0) 
-      			 and msb_xor; 
+--        empty 
+--          <= rd_ptr(ADDRESS_BITS-1 downto 0) = wr_ptr(ADDRESS_BITS-1 downto 0) 
+--      			 and msb_xor; 
 	    end if;
     end if;
     
+    if commit_reg then
+      empty <= FALSE; 
+    elsif read_next then
+        empty <= (rd_ptr_next(ADDRESS_BITS-1 downto 0) = 
+                 wr_ptr(ADDRESS_BITS-1 downto 0)) and msb_xor_next;
+    else
+        empty 
+          <= rd_ptr(ADDRESS_BITS-1 downto 0) = wr_ptr(ADDRESS_BITS-1 downto 0) 
+      			 and msb_xor; 
+    end if;
+      
     if read_next then
       rd_ptr <= rd_ptr_next;
       rd_ptr_next <= rd_ptr_next + 1;
     end if;
     
-    read_pipe(1) <= (read_next or (commit_reg and empty)) and not will_empty;
+--    read_pipe(1) <= (read_next or (commit_reg and empty)) and not will_empty;
+    read_pipe(1) <= (read_next and not will_empty) or (commit_reg and empty);
     read_pipe(2) <= read_pipe(1);
 
     if (ram_valid and ram_ready) or not ram_valid then
@@ -207,7 +221,7 @@ begin
       else
         nextstate <= REG1_S;
         reg1_w <= TRUE;
-        read_next <= not two_pending and not empty;
+        read_next <= not two_pending and not empty; --not will_empty
       end if;
     else
       read_next <= not empty;-- and not empty_commit;
