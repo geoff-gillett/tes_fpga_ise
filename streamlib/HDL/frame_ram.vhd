@@ -85,9 +85,10 @@ if rising_edge(clk) then
   ram_data <= ram_dout; -- register output
 end if;
 end process frameRAM;
-
-good_commit <= commit and (to_0IfX(length) <= to_0IfX(free_ram)) and 
-               length /= 0; --this is not meeting timing 
+--removed checks make it responsibility of caller
+--good_commit <= commit and (to_0IfX(length) <= to_0IfX(free_ram)) and 
+--               length /= 0; --this is not meeting timing 
+good_commit <= commit;
                
 msb_xor <= (wr_ptr(ADDRESS_BITS) xor rd_ptr(ADDRESS_BITS))='1';
 msb_xor_next <= (wr_ptr(ADDRESS_BITS) xor rd_ptr_next(ADDRESS_BITS))='1';
@@ -119,7 +120,7 @@ if rising_edge(clk) then
     wr_addr <= wr_ptr + address; 
     --offset <= length + ('0' & address);
     
-    if good_commit then 
+    if good_commit then -- 
       if read_next then
         free_ram <= free_ram - length + 1;
       else

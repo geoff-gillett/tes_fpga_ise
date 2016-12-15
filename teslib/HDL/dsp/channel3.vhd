@@ -110,7 +110,7 @@ end process sampleoffset;
 
 baselineEstimator:entity work.baseline_estimator
 generic map(
-  BASELINE_BITS => BASELINE_BITS,
+  BASELINE_BITS => BASELINE_BITS, --FIXME make generic in parent
   COUNTER_BITS => 18,
   TIMECONSTANT_BITS => 32,
   WIDTH => DSP_BITS

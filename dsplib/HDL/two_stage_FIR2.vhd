@@ -84,7 +84,8 @@ end component;
 
 signal stage1_in,stage2_in:std_logic_vector(23 downto 0);
 signal stage1_out,stage2_out:std_logic_vector(47 downto 0);
-signal stage1_d,stage1_data,stage2_data:std_logic_vector(WIDTH-1 downto 0);
+signal stage1_d:std_logic_vector(WIDTH-1 downto 0);
+signal stage1_data,stage2_data:signed(WIDTH-1 downto 0);
 --signal sample_d:std_logic_vector(WIDTH-1 downto 0);
 
 begin
@@ -113,7 +114,7 @@ port map(
   event_s_reload_tlast_unexpected => stage1_events.last_unexpected
 );
 
-stage1Round:entity work.round
+stage1Round:entity work.round2
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 28,
@@ -123,11 +124,12 @@ generic map(
 port map(
   clk => clk,
   reset => '0',
-  input => stage1_out,
+  input => signed(stage1_out),
+  output_threshold => (others => '0'),
   output => stage1_data
 );
 
-stage2_in <= resize(signed(stage1_data),24);
+stage2_in <= resize(stage1_data,24);
 stage2FIRfilter:stage2_FIR_23
 port map(
   aclk => clk,
@@ -147,7 +149,7 @@ port map(
   event_s_reload_tlast_unexpected => stage2_events.last_unexpected
 );
 
-stage2Round:entity work.round
+stage2Round:entity work.round2
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 28,
@@ -157,7 +159,8 @@ generic map(
 port map(
   clk => clk,
   reset => '0',
-  input => stage2_out,
+  input => signed(stage2_out),
+  output_threshold => (others => '0'),
   output => stage2_data
 );
 
@@ -183,7 +186,7 @@ generic map(
 )
 port map(
   clk => clk,
-  input => stage1_data,
+  input => std_logic_vector(stage1_data),
   delayed => stage1_d
 );
 

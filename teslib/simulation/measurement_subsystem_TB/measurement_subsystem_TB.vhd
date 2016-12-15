@@ -42,7 +42,7 @@ end entity measurement_subsystem_TB;
 
 architecture testbench of measurement_subsystem_TB is
 
-constant CF:integer:=(2**17/10);
+constant CF:integer:=(2**17/5); --20%
 --constant CHANNELS:integer:=2**CHANNEL_BITS;
 component enet_cdc_fifo
 port (
