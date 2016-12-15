@@ -200,7 +200,7 @@ bytestream_ready_v <= to_std_logic(bytestream_ready);
 --register settings
 global.mtu <= to_unsigned(1500,MTU_BITS);
 global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(2**12,TICK_PERIOD_BITS);
+global.tick_period <= to_unsigned(2**14+2000,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
@@ -260,7 +260,7 @@ chan_reg(1).baseline.subtraction <= TRUE;
 chan_reg(1).baseline.timeconstant <= to_unsigned(2**12,32);
 
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
-chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
+chan_reg(0).capture.constant_fraction  <= to_unsigned(0,DSP_BITS-1);
 chan_reg(0).capture.slope_threshold <= to_unsigned(4*750,DSP_BITS-1);
 chan_reg(0).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
@@ -270,7 +270,7 @@ chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 
 chan_reg(1).capture.adc_select <= (1 => '1', others => '0');
-chan_reg(1).capture.constant_fraction  <= to_unsigned(CF, DSP_BITS-1);
+chan_reg(1).capture.constant_fraction  <= to_unsigned(0, DSP_BITS-1);
 chan_reg(1).capture.slope_threshold <= to_unsigned(4*750,DSP_BITS-1);
 chan_reg(1).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
 chan_reg(1).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
@@ -329,9 +329,9 @@ begin
 	    write(minmax_file, to_integer(m(0).cfd_low_threshold));
 	    write(minmax_file, to_integer(m(0).cfd_high_threshold));
 	    if m(0).slope.pos_0xing then
-	      write(minmax_file, clk_count);
-	    else
 	      write(minmax_file, -clk_count);
+	    else
+	      write(minmax_file, clk_count);
 	    end if;
 	  end if;
 	end loop;

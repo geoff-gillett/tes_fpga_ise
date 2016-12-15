@@ -266,7 +266,9 @@ port map(
 m.raw.sample <= raw_pipe(DEPTH);
 m.raw.pos_0xing <= raw_0_pos_pipe(DEPTH);
 m.raw.neg_0xing <= raw_0_neg_pipe(DEPTH);
+
 --TODO cleanup this ugly patch
+m.minima <= dsp_m.minima;
 m.filtered <= dsp_m.filtered;
 m.slope <= dsp_m.slope;
 m.above_area_threshold <= dsp_m.above_area_threshold;

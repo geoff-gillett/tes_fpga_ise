@@ -159,7 +159,7 @@ pulse.offset <= pulse_offset;
 pulse.area <= pulse_area;
 
 peak.height <= height; 
-peak.rise_time <= rise_time;
+peak.minima <= rise_time;
 peak.flags <= flags;
 
 area.flags <= flags; 

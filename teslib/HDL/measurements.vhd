@@ -130,6 +130,7 @@ type measurements_t is record
   will_go_above:boolean;
   pulse_length:time_t; --time since pulse_pos_Txing
   pulse_time:time_t;   --time since last pulse start
+  minima:signal_t;
   
   slope_threshold_pos:boolean;
   --slope_threshold_neg:boolean;

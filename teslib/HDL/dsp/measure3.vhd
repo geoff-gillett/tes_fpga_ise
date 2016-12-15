@@ -138,6 +138,7 @@ signal peak_start:boolean;
 signal pulse_t_xing:boolean;
 signal pre_pulse_start,pre_peak_start:boolean;
 signal reg:capture_registers_t;
+signal minima:signed(WIDTH_OUT-1 downto 0);
 
 begin
 measurements <= m;
@@ -506,6 +507,8 @@ begin
           time_offset <= (others => '0'); 
           size <= pre_size;
           
+          minima <= filtered_pipe(DEPTH-1);
+          
           valid_peak0 <= valid_peak_pipe(DEPTH-1);
           valid_peak1 <= FALSE;
           valid_peak2 <= FALSE;
@@ -670,6 +673,7 @@ m.time_offset <= time_offset;
 m.height <= height;
 m.height_valid <= height_valid;
 m.rise_time <= rise_time;
+m.minima <= minima;
 
 m.eflags <= flags;
 m.size <= size;

@@ -101,7 +101,7 @@ pulse.offset <= m.time_offset;
 pulse.area <= m.pulse_area;
 
 peak.height <= m.height; 
-peak.rise_time <= m.rise_time;
+peak.minima <= m.minima;
 peak.flags <= m.eflags;
 peak_we(3) <= m.height_valid;
 peak_we(2) <= m.height_valid;
@@ -112,14 +112,13 @@ area.flags <= m.eflags;
 area.area <= m.pulse_area;
 area_we <= (others => m.pulse_threshold_neg);
 
-
 pulse_peak.height <= m.height;                 
 pulse_peak.minima <= m.filtered.sample;
 pulse_peak.rise_time <= m.rise_time;
 pulse_peak.timestamp <= m.pulse_time;
 pulse_peak_we(3) <= m.height_valid;
-pulse_peak_we(2) <= m.height_valid;
-pulse_peak_we(1) <= m.peak_start;
+pulse_peak_we(2) <= m.peak_start;
+pulse_peak_we(1) <= m.height_valid;
 pulse_peak_we(0) <= m.stamp_peak;
 
 pulse_peak_clear.height <= (others => '0');

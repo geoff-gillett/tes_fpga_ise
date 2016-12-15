@@ -56,7 +56,7 @@ function to_event_type_t(sb:streambus_t;e:string) return event_type_t;
 --|peak_count| peak_overflow|channel||timing_d|height_d|event_type_t|new_window|
 type detection_flags_t is record 
 	peak_number:unsigned(PEAK_COUNT_BITS-1 downto 0); 
-	peak_overflow:boolean; 
+	peak_overflow:boolean; --FIXME change to cfd_rel2min
 	height:height_d;
 	timing:timing_d;
 	channel:unsigned(CHANNEL_BITS-1 downto 0); 
@@ -81,10 +81,9 @@ function to_std_logic(f:tickflags_t) return std_logic_vector;
 ---------------------------- peak event 8 bytes --------------------------------
 -- |   16   |   16   |  16   |  16  |
 -- | height |  rise  | flags | time |
---TODO make minima rise_time
 type peak_detection_t is record -- entire peak only event
   height:signal_t; 
-  rise_time:time_t;  
+  minima:signal_t; -- FIXME change to minima 
   flags:detection_flags_t; 
 end record;
 
@@ -101,10 +100,11 @@ end record;
 function to_streambus(a:area_detection_t;endianness:string) return streambus_t;
   
 ---------------------------- test event 8 bytes --------------------------------
--- |   16   |   16   |  16   |  16  |
--- |  min   |  rise  | flags | time |
--- | low 1  |  low2  |  low thresh  |
--- | high 1 |  high2 | high thresh  |
+-- |    16    |    16    |   16    |   16   |
+-- |   min    |   rise   |  flags  |  time  |
+-- |  10  |    18   |   18   |     18       |
+-- | res  |  low 1  |  low2  |  low thresh  | 
+-- | res  |  high 1 |  high2 | high thresh  |
 
 type test_detection_t is record 
   flags:detection_flags_t; 
@@ -112,7 +112,7 @@ type test_detection_t is record
   minima:signal_t;
   rise_time:time_t;
   low_threshold,high_threshold:signed(DSP_BITS-1 downto 0);
-end record;
+end record; 
 
 function to_streambus(
   t:test_detection_t;w:natural range 0 to 2;endianness:string
@@ -167,7 +167,7 @@ function to_streambus(
 ) return streambus_t;
 
 --  |   16   |   16   |  16  |  16  |
---  | height |  rise  |minima| time |
+--  | height | minima | rise | time |
 type pulse_peak_t is
 record
 	height:signal_t;
@@ -312,7 +312,7 @@ return	streambus_t is
 	variable sb:streambus_t;
 begin
   sb.data := set_endianness(e.height,endianness) &
-             set_endianness(e.rise_time,endianness) &
+             set_endianness(e.minima,endianness) &
              set_endianness(to_std_logic(e.flags),endianness) & --FIXME set endianess 
              "0000000000000000"; 
 	sb.discard := (others => FALSE);

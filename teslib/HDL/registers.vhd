@@ -55,7 +55,7 @@ constant TICKPIPE_DEPTH:integer:=2;
 constant RELATIVETIME_BITS:integer:=16;
 constant MTU_BITS:integer:=16;
 constant TICK_PERIOD_BITS:integer:=32;
-constant MIN_TICK_PERIOD:integer:=2**16;
+constant MIN_TICK_PERIOD:integer:=2**14;
 constant TICK_LATENCY_BITS:integer:=32;
 constant IODELAY_CONTROL_BITS:integer:=ADC_BITS+ADC_CHANNELS+2*ADC_CHIPS;
 
