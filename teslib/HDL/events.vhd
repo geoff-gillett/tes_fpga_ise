@@ -274,7 +274,7 @@ end function;
 
 ----------------------- event_flags_t - 16 bits---------------------------------
 --|    4     |      1       |   3   ||   2   	|    2   |     3      |     1    |
---|peak_count|peak_overflow |channel||timing_d|height_d|event_type_t|new_window|
+--|peak_count|  cfd_rel2min |channel||timing_d|height_d|event_type_t|new_window|
 function to_std_logic(f:detection_flags_t) return std_logic_vector is 
 	variable slv:std_logic_vector(15 downto 0);
 begin    
