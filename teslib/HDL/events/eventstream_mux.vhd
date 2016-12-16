@@ -389,9 +389,9 @@ bigEndian:if endianness="BIG" generate
 end generate;
 
 littleEndian:if endianness="LITTLE" generate
-  stream_int.data <= muxstream_int.data(63 downto 41) &
+  stream_int.data <= muxstream_int.data(63 downto 25) &
                      to_std_logic(window_start) &
-                     muxstream_int.data(39 downto 16) &
+                     muxstream_int.data(23 downto 16) &
                      reltime_stamp
                   when out_state=HEAD
                   else muxstream_int.data;

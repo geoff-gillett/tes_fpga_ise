@@ -210,7 +210,7 @@ global.mca.qualifier <= ALL_MCA_QUAL_D;
 --TODO normalise these type names
 global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 global.mca.value <= MCA_FILTERED_SIGNAL_D;
-global.window <= to_unsigned(30, TIME_BITS);
+global.window <= to_unsigned(40, TIME_BITS);
 
 global.channel_enable <= "00000011";
 
