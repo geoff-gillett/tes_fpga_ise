@@ -13,7 +13,7 @@ use work.registers.all;
 use work.events.all;
 use work.measurements.all;
 
-entity measure3 is
+entity measure4 is
 generic(
   CHANNEL:natural:=0;
   WIDTH:natural:=18;
@@ -37,9 +37,9 @@ port (
   
   measurements:out measurements_t
 );
-end entity measure3;
+end entity measure4;
 
-architecture RTL of measure3 is
+architecture RTL of measure4 is
 
 -- pipelines to sync signals
 signal cfd_error_cfd,cfd_valid_cfd:boolean;
@@ -139,6 +139,7 @@ signal pulse_t_xing:boolean;
 signal pre_pulse_start,pre_peak_start:boolean;
 signal reg:capture_registers_t;
 signal minima:signed(WIDTH_OUT-1 downto 0);
+signal cfd_high_thresh_rounded:signed(WIDTH_OUT-1 downto 0);
 
 begin
 measurements <= m;
@@ -146,7 +147,7 @@ constant_fraction <= signed('0' & registers.constant_fraction);
 slope_threshold <= signed('0' & registers.slope_threshold);
 pulse_threshold <= signed('0' & registers.pulse_threshold);
 
-CFD:entity dsp.CFD
+CFD:entity dsp.CFD2
 generic map(
   WIDTH => WIDTH,
   DELAY => CFD_DELAY
@@ -157,6 +158,7 @@ port map(
   slope => slope,
   filtered => filtered,
   constant_fraction => constant_fraction,
+  rel2min => registers.cfd_rel2min,
   slope_threshold => slope_threshold,
   pulse_threshold => pulse_threshold,
   cfd_low_threshold => cfd_low_threshold,
@@ -291,6 +293,23 @@ port map(
   above_threshold => open
 );
 
+highThreshRound:entity dsp.round2
+generic map(
+  WIDTH_IN => WIDTH,
+  FRAC_IN => FRAC,
+  WIDTH_OUT => WIDTH_OUT,
+  FRAC_OUT => FRAC_OUT,
+  TOWARDS_INF => FALSE
+)
+port map(
+  clk => clk,
+  reset => reset,
+  input => high_pipe(DEPTH-RLAT-1),
+  output_threshold => (others => '0'),
+  output => cfd_high_thresh_rounded,
+  above_threshold => open
+);
+
 filteredExtrema:entity work.extrema
 generic map(
   WIDTH => WIDTH_OUT
@@ -378,7 +397,7 @@ begin
       max_slope_pipe(1+XLAT to DEPTH) 
         <= max_slope_x & max_slope_pipe(1+XLAT to DEPTH-1);
       
-      if low_pipe(XLAT)=filtered_x and min_pipe(XLAT) then
+      if low_pipe(XLAT)<=filtered_x and min_pipe(XLAT) then
         cfd_low_pos_pipe(1+XLAT to DEPTH) 
           <= TRUE  & cfd_low_pos_pipe(1+XLAT to DEPTH-1);
       else
@@ -489,7 +508,7 @@ begin
         flags.event_type.tick <= FALSE;
         flags.height <= reg.height;
         flags.new_window <= FALSE;
-        flags.cfd_rel2min <= FALSE;
+        flags.cfd_rel2min <= reg.cfd_rel2min;
         flags.timing <= reg.timing;
         max_peaks <= '0' & reg.max_peaks;
         last_peak_address <= ('0' & reg.max_peaks)+2;
@@ -528,7 +547,7 @@ begin
       if m.slope.neg_0xing and m.valid_peak then -- maxima
         last_peak <= peak_number_n=max_peaks;
         if peak_number_n > max_peaks then 
-          flags.cfd_rel2min <= TRUE;
+          --flags.peak_overflow <= TRUE;
           last_peak <= TRUE;
         end if;
         
@@ -609,20 +628,26 @@ begin
       case flags.height is
       when PEAK_HEIGHT_D =>
         height <= filtered_pipe(DEPTH-1); 
+        height_valid <= max_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
       when CFD_HEIGHT_D =>
-        height <= filtered_pipe(DEPTH-1); 
+--        height <= filtered_pipe(DEPTH-1); 
+        height <= cfd_high_thresh_rounded; 
+        height_valid <= cfd_high_pos_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
       when SLOPE_INTEGRAL_D =>
         height <= resize(slope_area_m1,16); --FIXME scale?
-      when SLOPE_MAX_D =>
-        height <= slope_extrema(15 downto 0); --FIXME why?
-      end case;
-    
-      if flags.height=CFD_HEIGHT_D then
-        height_valid <= cfd_high_pos_pipe(DEPTH-1) and 
-                          valid_peak_pipe(DEPTH-1);
-      else
         height_valid <= max_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
-      end if;
+      when SLOPE_MAX_D => --FIXME not sure this is useful
+        height <= filtered_pipe(DEPTH-1); 
+        height_valid <= max_slope_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
+      end case;
+      
+          
+--      if flags.height=CFD_HEIGHT_D then
+--        height_valid <= cfd_high_pos_pipe(DEPTH-1) and 
+--                          valid_peak_pipe(DEPTH-1);
+--      else
+--        height_valid <= max_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
+--      end if;
       
       if stamp_pulse_m1 and not pulse_started then --FIXME will this be right?
         if min_pipe(DEPTH-1) and first_peak_pipe(DEPTH-1) then
@@ -651,6 +676,10 @@ begin
     end if;
   end if;
 end process pulseMeas;
+
+--FIXME it would be usefull in the framer to expose the pipes for some more 
+--signals already done for starts
+--a valid max an pre would help in the framer
 
 m.valid_peak <= valid_peak_pipe(DEPTH);
 m.valid_peak0 <= valid_peak0;

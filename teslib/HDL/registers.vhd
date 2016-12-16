@@ -203,6 +203,7 @@ type capture_registers_t is record
 	-- sets length of pulse event
 	max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
 	constant_fraction:unsigned(CFD_BITS-2 downto 0);
+	cfd_rel2min:boolean;
 	pulse_threshold:unsigned(DSP_BITS-2 downto 0);
 	slope_threshold:unsigned(DSP_BITS-2 downto 0);
 	area_threshold:unsigned(AREA_WIDTH-2 downto 0);
@@ -255,7 +256,7 @@ type channel_register_array is array (natural range <>)
 --
 -- pulse_threshold 						address bit 1
 -- slope_threshold 						address bit 2
--- constant_fraction 					address bit 3
+-- constant_fraction 					address bit 3 --bit 31 is rel2min
 -- pulse_area_threshold				address bit 4
 -- delay											address bit 5
 -- baseline.offset   					address bit 6				

@@ -164,7 +164,7 @@ begin
       m.pulse_time <= (others => '0');
       m.pulse_length <= (others => '0');
       peak_count <= (others => '0');
-      m.eflags.peak_overflow <= FALSE;
+      m.eflags.cfd_rel2min <= FALSE;
       m.eflags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
       m.stamp_peak <= FALSE;
       m.stamp_pulse <= FALSE;
@@ -229,7 +229,7 @@ begin
         m.eflags.event_type.tick <= FALSE;
         m.eflags.height <= registers.height;
         m.eflags.new_window <= FALSE;
-        m.eflags.peak_overflow <= FALSE;
+        m.eflags.cfd_rel2min <= FALSE;
         m.eflags.timing <= registers.timing;
         m.last_peak <= registers.max_peaks=0;
         m.max_peaks <= registers.max_peaks;
@@ -255,7 +255,7 @@ begin
         -- maxima
         if slope_neg_0xing_p(DEPTH-1) then
           if peak_count > ('0' & m.max_peaks) then 
-            m.eflags.peak_overflow <= TRUE;
+            m.eflags.cfd_rel2min <= TRUE;
           else
             m.last_peak <= peak_count_n=('0' & m.max_peaks);
             peak_count <= peak_count_n;

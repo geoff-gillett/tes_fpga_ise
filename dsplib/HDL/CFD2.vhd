@@ -81,7 +81,8 @@ type pipe is array (natural range <>) of signed(WIDTH-1 downto 0);
 signal filtered_pipe:pipe(1 to DEPTH):=(others => (others => '0'));
 signal slope_pipe:pipe(1 to DEPTH):=(others => (others => '0'));
 signal minima_pipe:pipe(1 to DEPTH):=(others => (others => '0'));
-signal slope_0_n_pipe,slope_0_p_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
+signal slope_0_n_pipe,slope_0_p_pipe:boolean_vector(1 to DEPTH)
+       :=(others => FALSE);
 signal slope_t_p_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 signal pulse_t_p_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 signal pulse_t_n_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
@@ -201,7 +202,11 @@ begin
       pulse_t_n_pipe <= pulse_t_n & pulse_t_n_pipe(1 to DEPTH-1);
       
       if slope_0_p then
-        minima_pipe <= filtered_x & minima_pipe(1 to DEPTH-1);
+        if rel2min then
+          minima_pipe <= filtered_x & minima_pipe(1 to DEPTH-1);
+        else
+          minima_pipe <= to_signed(0,width) & minima_pipe(1 to DEPTH-1);
+        end if;
         cf_int <= constant_fraction;
         slope_threshold_int <= slope_threshold;
         pulse_threshold_int <= pulse_threshold;
@@ -217,7 +222,6 @@ begin
           delay_counter <= delay_counter+1;
         end if;
       end if;
-      
       
       if slope_t_p_pipe(6) then
         armed_i <= TRUE;
@@ -334,7 +338,6 @@ port map(
 --------------------------------------------------------------------------------
 -- output registers
 --------------------------------------------------------------------------------
-           
 outputReg:process(clk)
 begin
 if rising_edge(clk) then

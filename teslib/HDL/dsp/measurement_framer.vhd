@@ -123,7 +123,7 @@ begin
         flags.event_type <= m.eflags.event_type;
         flags.height <= m.eflags.height;
         flags.new_window <= m.eflags.new_window;
-        flags.peak_overflow <= m.eflags.peak_overflow;
+        flags.cfd_rel2min <= m.eflags.cfd_rel2min;
         flags.timing <= m.eflags.timing;
         size <= m.size;
         clear_addr <= m.last_address;

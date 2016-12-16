@@ -325,7 +325,7 @@ begin
         m.eflags.event_type.tick <= FALSE;
         m.eflags.height <= registers.height;
         m.eflags.new_window <= FALSE;
-        m.eflags.peak_overflow <= FALSE;
+        m.eflags.cfd_rel2min <= FALSE;
         m.eflags.timing <= registers.timing;
         max_peaks <= '0' & registers.max_peaks;
         m.last_peak_address <= ('0' & registers.max_peaks)+2;
@@ -369,7 +369,7 @@ begin
       if m.slope.neg_0xing and m.valid_peak then -- maxima
         m.last_peak <= peak_number_n=max_peaks;
         if peak_number_n > max_peaks then 
-          m.eflags.peak_overflow <= TRUE;
+          m.eflags.cfd_rel2min <= TRUE;
           m.last_peak <= TRUE;
         end if;
         

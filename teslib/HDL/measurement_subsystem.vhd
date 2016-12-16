@@ -70,7 +70,6 @@ port(
   ethernetstream:out streambus_t;
   ethernetstream_valid:out boolean;
   ethernetstream_ready:in boolean
-  
 );
 end entity measurement_subsystem;
 
@@ -231,7 +230,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     delayed => adc_delayed(c)
   );
 
-  processingChannel:entity work.channel3
+  processingChannel:entity work.channel4
   generic map(
     CHANNEL => c,
     ENDIAN => ENDIAN

@@ -56,7 +56,7 @@ function to_event_type_t(sb:streambus_t;e:string) return event_type_t;
 --|peak_count| peak_overflow|channel||timing_d|height_d|event_type_t|new_window|
 type detection_flags_t is record 
 	peak_number:unsigned(PEAK_COUNT_BITS-1 downto 0); 
-	peak_overflow:boolean; --FIXME change to cfd_rel2min
+	cfd_rel2min:boolean; --FIXME change to cfd_rel2min
 	height:height_d;
 	timing:timing_d;
 	channel:unsigned(CHANNEL_BITS-1 downto 0); 
@@ -280,7 +280,7 @@ function to_std_logic(f:detection_flags_t) return std_logic_vector is
 begin    
 				 -- first transmitted byte
   slv(15 downto 12) := to_std_logic(f.peak_number);
-  slv(11) := to_std_logic(f.peak_overflow);
+  slv(11) := to_std_logic(f.cfd_rel2min);
   slv(10 downto 8) := to_std_logic(f.channel);
 				 -- second transmitted byte
   slv(7 downto 6) := to_std_logic(f.timing,2);

@@ -166,7 +166,8 @@ if rising_edge(clk) then
       end if;
       if address(CONSTANT_FRACTION_ADDR_BIT)='1' then
       	reg.capture.constant_fraction
-          <= unsigned(data(CFD_BITS-2 downto 0)); 
+          <= unsigned(data(CFD_BITS-2 downto 0));
+        reg.capture.cfd_rel2min <= data(AXI_DATA_BITS-1)='1'; 
       end if;
       if address(AREA_THRESHOLD_ADDR_BIT)='1' then
       	reg.capture.area_threshold 
@@ -214,7 +215,8 @@ reg_data(PULSE_THRESHOLD_ADDR_BIT)
 reg_data(SLOPE_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.capture.slope_threshold,AXI_DATA_BITS));
 reg_data(CONSTANT_FRACTION_ADDR_BIT)
-   <= to_std_logic(resize(reg.capture.constant_fraction,AXI_DATA_BITS));
+   <= to_std_logic(reg.capture.cfd_rel2min) & 
+      to_std_logic(resize(reg.capture.constant_fraction,AXI_DATA_BITS-1));
 reg_data(AREA_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.capture.area_threshold,AXI_DATA_BITS));
 reg_data(DELAY_ADDR_BIT)

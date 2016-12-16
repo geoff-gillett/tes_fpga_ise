@@ -268,6 +268,7 @@ chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 chan_reg(0).capture.detection <= PEAK_DETECTION_D;
 chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
+chan_reg(0).capture.cfd_rel2min <= TRUE;
 
 chan_reg(1).capture.adc_select <= (1 => '1', others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(0, DSP_BITS-1);
@@ -278,6 +279,7 @@ chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 chan_reg(1).capture.detection <= PULSE_DETECTION_D;
 chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
+chan_reg(1).capture.cfd_rel2min <= TRUE;
 
 mcaControlStimulus:process
 begin
