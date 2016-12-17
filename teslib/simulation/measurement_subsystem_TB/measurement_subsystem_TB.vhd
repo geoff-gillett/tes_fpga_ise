@@ -260,7 +260,7 @@ chan_reg(1).baseline.subtraction <= TRUE;
 chan_reg(1).baseline.timeconstant <= to_unsigned(2**12,32);
 
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
-chan_reg(0).capture.constant_fraction  <= to_unsigned(0,DSP_BITS-1);
+chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 chan_reg(0).capture.slope_threshold <= to_unsigned(4*750,DSP_BITS-1);
 chan_reg(0).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
@@ -271,7 +271,7 @@ chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= TRUE;
 
 chan_reg(1).capture.adc_select <= (1 => '1', others => '0');
-chan_reg(1).capture.constant_fraction  <= to_unsigned(0, DSP_BITS-1);
+chan_reg(1).capture.constant_fraction  <= to_unsigned(CF, DSP_BITS-1);
 chan_reg(1).capture.slope_threshold <= to_unsigned(4*750,DSP_BITS-1);
 chan_reg(1).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
 chan_reg(1).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);

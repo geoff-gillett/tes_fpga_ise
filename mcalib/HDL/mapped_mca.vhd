@@ -54,7 +54,7 @@ port (
   --number of bins = last_bin+1, values that map to a bin >= last_bin 
   --are counted in last_bin
   last_bin:in unsigned(ADDRESS_BITS-1 downto 0); 
-  --values<=lowest_value are mapped to bin 0. 
+  --values<=lowest_value are mapped to bin 0. --FIXME strictly less than? 
   lowest_value:in signed(VALUE_BITS-1 downto 0);
   --total valid when stream valid;
   max_count:out unsigned(COUNTER_BITS-1 downto 0);

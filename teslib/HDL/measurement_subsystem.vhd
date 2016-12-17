@@ -311,6 +311,7 @@ mux:entity work.eventstream_mux
 generic map(
   --CHANNEL_BITS => CHANNEL_BITS,
   CHANNELS => DSP_CHANNELS,
+  MIN_TICKPERIOD => MIN_TICK_PERIOD,
   ENDIANNESS => ENDIAN
 )
 port map(
