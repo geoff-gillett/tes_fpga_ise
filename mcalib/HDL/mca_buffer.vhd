@@ -40,7 +40,7 @@ port(
   --
   bin:in unsigned(ADDRESS_BITS-1 downto 0);
   bin_valid:in boolean; -- increment this bin
-  overflow:in boolean;
+  out_of_bounds:in boolean;
   write:in boolean; -- true to count FALSE reads and clears
   ready:out boolean; -- ready after reset
   -- probability distribution maxima
@@ -95,7 +95,7 @@ signal collided:boolean;
 signal write_pipe:boolean_vector(1 to 4);
 signal bin_pipe:bin_pipeline(1 to 4);
 signal valid_pipe:boolean_vector(1 to 4);
-signal overflow_pipe:boolean_vector(1 to 5);
+signal oob_pipe:boolean_vector(1 to 5);
 signal collision:boolean_vector(1 to 3);
 begin
 count <= stream;
@@ -156,14 +156,14 @@ if rising_edge(clk) then
    end loop;
     valid_pipe <= (bin_valid and write and not unaryOR(col)) &
     							 valid_pipe(1 to 3);
-    overflow_pipe <= overflow & overflow_pipe(1 to 4);
+    oob_pipe <= out_of_bounds & oob_pipe(1 to 4);
     collision <= col;
   end if;
 end if;
 end process collisions;
--- Check counter saturation
+-- Check counter saturation ???
 saturated <= incremented_count(COUNTER_BITS)='1' 
-             or (not incremented_count(COUNTER_BITS-1 downto 0))=0;
+             or (not incremented_count(COUNTER_BITS-1 downto 0))=0; --???
 -- Adder pipeline calculates the increment to the count while waiting for the 
 -- old count to be read and processed.
 adderPipeline:process(clk)
@@ -228,7 +228,7 @@ if rising_edge(clk) then
       most_frequent <= (others => '0'); 
     else
       if (to_0IfX(newcount) >= to_0IfX(maxcount_int)) and wr_en and write_pipe(4) 
-          and not overflow_pipe(5) then --FIXME wr_addr/=0
+          and not oob_pipe(5) then --FIXME wr_addr/=0
         maxcount_int <= to_0IfX(newcount);
         most_frequent <= wr_addr;
         new_max <= TRUE;

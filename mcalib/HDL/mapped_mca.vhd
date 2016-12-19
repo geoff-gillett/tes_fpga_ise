@@ -70,14 +70,17 @@ port (
 end entity mapped_mca;
 
 architecture RTL of mapped_mca is
+  
 	
 signal bin,last_bin_reg,last_bin_temp:unsigned(ADDRESS_BITS-1 downto 0);
 signal bin_n_reg,bin_n_temp:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal bin_valid,swap_int,swapping,MCA_can_swap,can_swap_int,just_reset:boolean;
 signal lowest_value_reg,offset_value:signed(VALUE_BITS-1 downto 0);
 signal bin_value:unsigned(VALUE_BITS-1 downto 0);
-signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to 3);
-signal overflowed,overflow,underflow,underflowed:boolean;
+
+constant DEPTH:natural:=3;
+signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to DEPTH);
+signal overflow,out_of_bounds,underflow,underflowed:boolean;
 
 -- debug
 constant DEBUG:string:="FALSE";
@@ -96,29 +99,29 @@ if rising_edge(clk) then
     just_reset <= TRUE;
     swapping <= FALSE;
   else
-    swap_pipe <= shift(swap_buffer and can_swap_int,swap_pipe);
-    valid_pipe <= shift(value_valid,valid_pipe);
-    enabled_pipe <= shift(enabled,enabled_pipe);
+    swap_pipe <= (swap_buffer and can_swap_int) & swap_pipe(1 to DEPTH-1);
+    valid_pipe <= value_valid & valid_pipe(1 to DEPTH-1);
+    enabled_pipe <= enabled & enabled_pipe(1 to DEPTH-1);
     swap_int <= FALSE;
-    can_swap_int <= not (swapping or swap_buffer) and MCA_can_swap;
+    can_swap_int <= not (swapping or swap_buffer) and MCA_can_swap; --reg ??
     if swap_buffer and can_swap_int then
       lowest_value_reg <= lowest_value;
       bin_n_temp <= bin_n;
       last_bin_temp <= last_bin;
       swapping <= TRUE;
     end if;
-    if swap_pipe(1) then
+    if swap_pipe(DEPTH-2) then
       bin_n_reg <= bin_n_temp;
     end if;
-    if swap_pipe(2) then
+    if swap_pipe(DEPTH-1) then
       last_bin_reg <= last_bin_temp;
-      just_reset <= FALSE;
-      swap_int <= not just_reset and enabled_pipe(2);
+      just_reset <= not enabled_pipe(DEPTH-1);
+      swap_int <= not just_reset and enabled_pipe(DEPTH-1);
     end if;
-    if swap_pipe(3) then
+    if swap_pipe(DEPTH) then
       swapping <= FALSE;
     end if;
-  end if;
+  end if; 
 end if;
 end process controlRegisters;
 
@@ -130,13 +133,14 @@ end process controlRegisters;
 --underflowed <= to_0IfX(value) <= to_0IfX(lowest_value_reg);
 underflowed <= to_0IfX(value) < to_0IfX(lowest_value_reg);
 valueOffset:process (clk)
-constant MIN:signed(VALUE_BITS-1 downto 0):=(VALUE_BITS-1 => '1',others => '0');
+constant MOSTNEG:signed(VALUE_BITS-1 downto 0)
+         :=(VALUE_BITS-1 => '1',others => '0');
 begin
   if rising_edge(clk) then
     if underflowed then
-      offset_value <= MIN;
+      offset_value <= MOSTNEG;
     else
-      offset_value <= value-lowest_value_reg+MIN;
+      offset_value <= value-lowest_value_reg+MOSTNEG;
     end if;
   end if;
 end process valueOffset;
@@ -153,14 +157,14 @@ if rising_edge(clk) then
 end if;
 end process valueBin;
 --swap+3
-overflowed <= to_0IfX(bin_value) >= resize(to_0IfX(last_bin_reg),VALUE_BITS);
+overflow <= to_0IfX(bin_value) >= resize(to_0IfX(last_bin_reg),VALUE_BITS);
 underflow <= to_0IfX(bin_value)=0;
 binOut:process(clk)
 begin
 if rising_edge(clk) then
   bin_valid <= valid_pipe(2) and enabled_pipe(2);
-  overflow <= overflowed or underflow;
-  if overflowed then
+  out_of_bounds <= overflow or underflow;
+  if overflow then
     bin <= last_bin_reg;
   else
     bin <= bin_value(ADDRESS_BITS-1 downto 0);
@@ -179,7 +183,7 @@ port map(
   reset => reset,
   bin => bin,
   bin_valid => bin_valid,
-  overflow => overflow,
+  out_of_bounds => out_of_bounds,
   swap_buffer => swap_int,
   can_swap => MCA_can_swap,
   last_bin => last_bin_temp,

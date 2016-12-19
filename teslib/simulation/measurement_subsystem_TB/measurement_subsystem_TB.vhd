@@ -73,11 +73,11 @@ signal adc_samples:adc_sample_array(CHANNELS-1 downto 0)
 signal sample_reg:adc_sample_t:=(others => '0');
 signal chan_reg:channel_register_array(CHANNELS-1 downto 0);
 
--- discrete types as unsigned for reading into settings file
 signal ethernetstream:streambus_t;
 signal ethernetstream_valid:boolean;
 signal ethernetstream_ready:boolean;
 --mca
+signal mca_interrupt:boolean;
 signal bytestream:std_logic_vector(7 downto 0);
 signal bytestream_valid:boolean;
 signal bytestream_ready:boolean:=FALSE;
@@ -117,7 +117,7 @@ reset1 <= '0' after 10*IO_CLK_PERIOD;
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
 bytestream_ready <= TRUE after 2*IO_CLK_PERIOD;
 
-UUT:entity work.measurement_subsystem
+UUT:entity work.measurement_subsystem2
 generic map(
   DSP_CHANNELS => CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
@@ -139,6 +139,7 @@ port map(
   baseline_config => baseline_config,
   baseline_events => open,
   measurements => m,
+  mca_interrupt => mca_interrupt,
   ethernetstream => ethernetstream,
   ethernetstream_valid => ethernetstream_valid,
   ethernetstream_ready => ethernetstream_ready
@@ -208,8 +209,8 @@ global.mca.last_bin <= (others => '1');
 global.mca.lowest_value <= to_signed(-1000,MCA_VALUE_BITS);
 global.mca.qualifier <= ALL_MCA_QUAL_D;
 --TODO normalise these type names
-global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
-global.mca.value <= MCA_FILTERED_SIGNAL_D;
+--global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+--global.mca.value <= MCA_FILTERED_SIGNAL_D;
 global.window <= to_unsigned(40, TIME_BITS);
 
 global.channel_enable <= "00000011";
@@ -261,7 +262,7 @@ chan_reg(1).baseline.timeconstant <= to_unsigned(2**12,32);
 
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
 chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
-chan_reg(0).capture.slope_threshold <= to_unsigned(4*750,DSP_BITS-1);
+chan_reg(0).capture.slope_threshold <= to_unsigned(400*4,DSP_BITS-1);
 chan_reg(0).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
@@ -272,7 +273,7 @@ chan_reg(0).capture.cfd_rel2min <= TRUE;
 
 chan_reg(1).capture.adc_select <= (1 => '1', others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF, DSP_BITS-1);
-chan_reg(1).capture.slope_threshold <= to_unsigned(4*750,DSP_BITS-1);
+chan_reg(1).capture.slope_threshold <= to_unsigned(400*4,DSP_BITS-1);
 chan_reg(1).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
 chan_reg(1).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
@@ -285,10 +286,38 @@ mcaControlStimulus:process
 begin
   global.mca.update_asap <= FALSE;
   global.mca.update_on_completion <= FALSE;
-	wait for SAMPLE_CLK_PERIOD;
+	wait for IO_CLK_PERIOD;
 	wait until not mca_initialising;
 	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
+	wait for IO_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
+	global.mca.value <= MCA_FILTERED_EXTREMA_D;
+	global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
+	global.mca.update_asap <= TRUE;
+	wait for IO_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
+	global.mca.value <= MCA_FILTERED_AREA_D;
+	global.mca.update_asap <= TRUE;
+	wait for IO_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
+	global.mca.value <= MCA_SLOPE_SIGNAL_D;
+	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+	global.mca.update_asap <= TRUE;
+	wait for IO_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
+	global.mca.value <= MCA_SLOPE_EXTREMA_D;
+	global.mca.trigger <= SLOPE_0XING_MCA_TRIGGER_D;
+	global.mca.update_asap <= TRUE;
+	wait for IO_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
+	global.mca.value <= MCA_SLOPE_AREA_D;
+	global.mca.update_asap <= TRUE;
+	wait for IO_CLK_PERIOD;
 	global.mca.update_asap <= FALSE;
 	wait;
 end process mcaControlStimulus;	
@@ -328,8 +357,10 @@ begin
     wait until rising_edge(sample_clk);
     if m(0).slope.pos_0xing or m(0).slope.neg_0xing then
 	    write(minmax_file, to_integer(m(0).filtered.sample));
-	    write(minmax_file, to_integer(m(0).cfd_low_threshold));
-	    write(minmax_file, to_integer(m(0).cfd_high_threshold));
+	    write(minmax_file, to_integer(m(0).timing_threshold));
+	    write(minmax_file, to_integer(m(0).height_threshold));
+	    write(minmax_file, to_integer(m(0).slope.extrema));
+	    write(minmax_file, to_integer(m(0).slope.area));
 	    if m(0).slope.pos_0xing then
 	      write(minmax_file, -clk_count);
 	    else

@@ -16,7 +16,7 @@ use work.registers.all;
 use work.measurements.all;
 use work.types.all;
 
-entity channel4 is
+entity channel_FIR71 is
 generic(
   CHANNEL:natural:=0;
   WIDTH:natural:=18;
@@ -26,7 +26,6 @@ generic(
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  CFD_DELAY:natural:=1026;
   ENDIAN:string:="LITTLE"
 );
 port (
@@ -57,9 +56,11 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity channel4;
+end entity channel_FIR71;
 
-architecture RTL of channel4 is
+architecture RTL of channel_FIR71 is
+  
+constant RAW_DELAY:natural:=1026;
   
 signal sample_in,raw,filtered,slope:signed(DSP_BITS-1 downto 0);
 signal sample_d:std_logic_vector(WIDTH-1 downto 0);
@@ -87,6 +88,7 @@ constant DEPTH:integer:=ALAT;--5; --main pipeline depth
 type pipe is array (natural range <>) of signed(WIDTH_OUT-1 downto 0);
 signal raw_pipe:pipe(1 to DEPTH);
 signal raw_0_pos_pipe,raw_0_neg_pipe:boolean_vector(1 to DEPTH);
+
 
 begin
 measurements <= m;
@@ -141,9 +143,9 @@ if rising_edge(clk) then
 end if;
 end process baselineSubraction;
 
-fiteredDelay:entity dsp.sdp_bram_delay
+rawDelay:entity dsp.sdp_bram_delay
 generic map(
-  DELAY => CFD_DELAY,
+  DELAY => RAW_DELAY,
   WIDTH => WIDTH
 )
 port map(
@@ -153,7 +155,7 @@ port map(
 );
 raw <= signed(sample_d);
 
-FIR:entity dsp.two_stage_FIR2
+FIR:entity dsp.two_stage_FIR71
 generic map(
   WIDTH => WIDTH
 )
@@ -168,6 +170,7 @@ port map(
   stage2 => slope
 );
 
+
 measure:entity work.measure4
 generic map(
   CHANNEL => CHANNEL,
@@ -177,7 +180,7 @@ generic map(
   FRAC_OUT => FRAC_OUT,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  CFD_DELAY => CFD_DELAY-101
+  CFD_DELAY => RAW_DELAY-101-72
 )
 port map(
   enable => event_enable,

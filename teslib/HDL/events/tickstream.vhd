@@ -261,7 +261,8 @@ tickCounter:entity work.tick_counter
 generic map(
   MINIMUM_PERIOD => MINIMUM_PERIOD,
   TICK_BITS => TICKPERIOD_BITS,
-  TIMESTAMP_BITS => TIMESTAMP_BITS
+  TIMESTAMP_BITS => TIMESTAMP_BITS,
+  INIT => -TICKPIPE_DEPTH
 )
 port map(
   clk => clk,

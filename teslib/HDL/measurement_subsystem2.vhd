@@ -39,10 +39,11 @@ use work.registers.all;
 use work.measurements.all;
 use work.events.all;
 
-entity measurement_subsystem is
+entity measurement_subsystem2 is
 generic(
   DSP_CHANNELS:natural:=2;
   ADC_CHANNELS:natural:=2;
+  MCA_VALUE_PIPE_DEPTH:natural:=1;
 	ENDIAN:string:="LITTLE";
 	PACKET_GEN:boolean:=FALSE
 );
@@ -66,14 +67,15 @@ port(
   baseline_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
   
   measurements:out measurements_array(DSP_CHANNELS-1 downto 0);
+  mca_interrupt:out boolean;
   
   ethernetstream:out streambus_t;
   ethernetstream_valid:out boolean;
   ethernetstream_ready:in boolean
 );
-end entity measurement_subsystem;
+end entity measurement_subsystem2;
 
-architecture RTL of measurement_subsystem is
+architecture RTL of measurement_subsystem2 is
 	
 signal adc_delayed,adc_mux:adc_sample_array(DSP_CHANNELS-1 downto 0);
 
@@ -86,14 +88,15 @@ signal value_select:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
 signal trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
 signal qualifier_select:std_logic_vector(NUM_MCA_QUAL_D-1 downto 0);
 signal mca_values:mca_value_array(DSP_CHANNELS-1 downto 0);
-constant MCA_PIPE_DEPTH:integer:=3;
-type value_pipe_t is array (1 to MCA_PIPE_DEPTH) of
+
+constant VALUE_PIPE_DEPTH:natural:=MCA_VALUE_PIPE_DEPTH;
+type value_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
      mca_value_array(DSP_CHANNELS-1 downto 0);
 signal value_pipe:value_pipe_t;
-type value_valid_pipe_t is array (1 to MCA_PIPE_DEPTH) of
+type value_valid_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
      boolean_vector(DSP_CHANNELS-1 downto 0);
 signal value_valid_pipe:value_valid_pipe_t;
-
+--
 signal mca_value_valids:boolean_vector(DSP_CHANNELS-1 downto 0);
 --signal mca_value_valids_reg:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal dumps:boolean_vector(DSP_CHANNELS-1 downto 0);
@@ -108,7 +111,7 @@ signal channel_select:std_logic_vector(DSP_CHANNELS-1 downto 0);
 signal mca_value:signed(MCA_VALUE_BITS-1 downto 0);
 signal mca_value_valid:boolean;
 
-signal updated:boolean;
+--signal updated:boolean;
 signal mcastream:streambus_t;
 signal mcastream_valid:boolean;
 signal mcastream_ready:boolean;
@@ -125,7 +128,8 @@ signal mux_full:boolean;
 signal mux_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal measurement_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 
-signal m,m_reg:measurements_array(DSP_CHANNELS-1 downto 0);
+--signal m,m_reg:measurements_array(DSP_CHANNELS-1 downto 0);
+signal m:measurements_array(DSP_CHANNELS-1 downto 0);
 signal c_reg:channel_register_array(DSP_CHANNELS-1 downto 0);
 signal g_reg:global_registers_t;
 
@@ -230,7 +234,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     delayed => adc_delayed(c)
   );
 
-  processingChannel:entity work.channel4
+  processingChannel:entity work.channel_FIR71
   generic map(
     CHANNEL => c,
     ENDIAN => ENDIAN
@@ -270,7 +274,8 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   port map(
     clk => clk,
     reset => reset1,
-    measurements => m_reg(c),
+    --measurements => m_reg(c),
+    measurements => m(c),
     value_select => value_select,
     trigger_select => trigger_select,
     qualifier_select => qualifier_select,
@@ -282,10 +287,10 @@ end generate tesChannel;
 mcaPipe:process(clk)
 begin
   if rising_edge(clk) then
-    m_reg <= m;
-    value_pipe <= mca_values & value_pipe(1 to MCA_PIPE_DEPTH-1);
+    --m_reg <= m;
+    value_pipe <= mca_values & value_pipe(1 to VALUE_PIPE_DEPTH-1);
     value_valid_pipe 
-      <= mca_value_valids & value_valid_pipe(1 to MCA_PIPE_DEPTH-1);
+      <= mca_value_valids & value_valid_pipe(1 to VALUE_PIPE_DEPTH-1);
   end if;
 end process mcaPipe;
 
@@ -298,11 +303,12 @@ port map(
   clk => clk,
   reset => reset1,
   channel_select => channel_select,
-  values => value_pipe(MCA_PIPE_DEPTH),
-  valids => value_valid_pipe(MCA_PIPE_DEPTH),
+  values => value_pipe(VALUE_PIPE_DEPTH),
+  valids => value_valid_pipe(VALUE_PIPE_DEPTH),
   value => mca_value,
   valid => mca_value_valid
 );
+
 --------------------------------------------------------------------------------
 -- 
 --------------------------------------------------------------------------------
@@ -338,7 +344,7 @@ port map(
   ready => muxstream_ready
 );
 
-mca:entity work.mca_unit2
+mca:entity work.mca_unit3
 generic map(
   CHANNELS => DSP_CHANNELS,
   ADDRESS_BITS => MCA_ADDRESS_BITS,
@@ -348,7 +354,7 @@ generic map(
   TICKCOUNT_BITS => MCA_TICKCOUNT_BITS,
   TICKPERIOD_BITS => TICK_PERIOD_BITS,
   MIN_TICK_PERIOD => MIN_TICK_PERIOD,
-  TICKPIPE_DEPTH => TICKPIPE_DEPTH,
+  DEPTH => VALUE_PIPE_DEPTH+2,
   ENDIANNESS => ENDIANNESS
 )
 port map(
@@ -359,7 +365,7 @@ port map(
   update_asap => g_reg.mca.update_asap,
   --TODO remove redundant register port
   update_on_completion => g_reg.mca.update_on_completion,
-  updated => updated, --TODO implement CPU interupt
+  updated => mca_interrupt, --TODO implement CPU interupt
   registers => g_reg.mca,
   --TODO remove redundant register port
   tick_period => g_reg.tick_period,

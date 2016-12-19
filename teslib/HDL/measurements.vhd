@@ -164,8 +164,8 @@ type measurements_t is record
   peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   
-  cfd_low_threshold:signed(DSP_BITS-1 downto 0);
-  cfd_high_threshold:signed(DSP_BITS-1 downto 0);  	
+  timing_threshold:signed(DSP_BITS-1 downto 0);
+  height_threshold:signed(DSP_BITS-1 downto 0);  	
 	cfd_error:boolean;
 	cfd_valid:boolean;
 	

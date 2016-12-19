@@ -54,7 +54,7 @@ file stream_file:integer_file;
 file trace_file:integer_file;
 signal event_enable:boolean;
 
-constant SIM_WIDTH:natural:=7;
+constant SIM_WIDTH:natural:=9;
 signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
 signal squaresig:unsigned(ADC_WIDTH-1 downto 0);
 signal stage1_config:fir_control_in_t;
@@ -70,7 +70,7 @@ constant CF:integer:=2**17/10;
 begin
 clk <= not clk after CLK_PERIOD/2;
   
-UUT:entity work.channel3
+UUT:entity work.channel_FIR71
 generic map(
   CHANNEL => CHANNEL,
   WIDTH => WIDTH,
@@ -80,7 +80,6 @@ generic map(
   ADC_WIDTH => ADC_WIDTH,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  CFD_DELAY => CFD_DELAY,
   ENDIAN  => ENDIAN
 )
 port map(
@@ -171,7 +170,7 @@ begin
 end process simsquare;
 squaresig <= to_unsigned(10,ADC_WIDTH)
              when sim_count(SIM_WIDTH-1)='0' 
-             else to_unsigned(200,ADC_WIDTH);
+             else to_unsigned(400,ADC_WIDTH);
 adc_sample <= squaresig;
 
 stimulus:process

@@ -206,8 +206,8 @@ m.stamp_peak <= dsp_m.stamp_peak;
 m.stamp_pulse <= dsp_m.stamp_pulse;
 m.time_offset <= dsp_m.time_offset;
 m.valid_peak <= dsp_m.valid_peak;
-m.cfd_high_threshold <= dsp_m.cfd_high_threshold;
-m.cfd_low_threshold <= dsp_m.cfd_low_threshold;
+m.height_threshold <= dsp_m.height_threshold;
+m.timing_threshold <= dsp_m.timing_threshold;
 m.filtered_long <= dsp_m.filtered_long;
 
 rawMeas:entity work.signal_measurement2

@@ -354,8 +354,8 @@ begin
           m.valid_peak1 <= FALSE;
           m.valid_peak2 <= FALSE;
           
-          m.cfd_low_threshold <= low_pipe(DEPTH);
-          m.cfd_high_threshold <= high_pipe(DEPTH);
+          m.timing_threshold <= low_pipe(DEPTH);
+          m.height_threshold <= high_pipe(DEPTH);
           
           m.peak_address <= (1 => '1', others => '0'); -- start at 2
           peak_address_n <= (1 downto 0 => '1', others => '0');

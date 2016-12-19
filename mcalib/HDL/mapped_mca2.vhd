@@ -221,7 +221,7 @@ port map(
   reset => reset,
   bin => bin,
   bin_valid => bin_valid,
-  overflow => overflow,
+  out_of_bounds => overflow,
   swap_buffer => swap_int,
   can_swap => MCA_can_swap,
   last_bin => last_bin_temp,

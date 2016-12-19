@@ -306,8 +306,8 @@ m.valid_peak <= dsp_m.valid_peak;
 m.valid_peak0 <= dsp_m.valid_peak0;
 m.valid_peak1 <= dsp_m.valid_peak1;
 m.valid_peak2 <= dsp_m.valid_peak2;
-m.cfd_high_threshold <= dsp_m.cfd_high_threshold;
-m.cfd_low_threshold <= dsp_m.cfd_low_threshold;
+m.height_threshold <= dsp_m.height_threshold;
+m.timing_threshold <= dsp_m.timing_threshold;
 m.filtered_long <= dsp_m.filtered_long;
 
 framer:entity work.measurement_framer3

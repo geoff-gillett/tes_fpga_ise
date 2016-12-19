@@ -35,7 +35,7 @@ port(
   --
   bin:in unsigned(ADDRESS_BITS-1 downto 0);
   bin_valid:in boolean;
-  overflow:in boolean;
+  out_of_bounds:in boolean;
   -- values are counted in the other buffer *after* swap_buffer is asserted
   swap_buffer:in boolean;
   can_swap:out boolean;
@@ -88,7 +88,7 @@ port map(
   reset => reset,
   bin => bin,
   bin_valid => bin_valid,
-  overflow => overflow,
+  out_of_bounds => out_of_bounds,
   swap_buffer => swap_buffer_int,
   ready => mca_ready,
   readable => readable_int,

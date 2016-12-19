@@ -131,8 +131,8 @@ test.high1 <= filtered_reg;
 test.high2 <= m.filtered_long;
 test.low1 <= filtered_reg;
 test.low2 <= m.filtered_long;
-test.high_threshold <= m.cfd_high_threshold;
-test.low_threshold <= m.cfd_low_threshold; --FIXME this should be pulse thresh 
+test.high_threshold <= m.height_threshold;
+test.low_threshold <= m.timing_threshold; --FIXME this should be pulse thresh 
 test.rise_time <= m.rise_time; --write at commit
 test.minima <= minima;
     

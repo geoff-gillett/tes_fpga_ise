@@ -36,7 +36,7 @@ port(
   --
   bin:in unsigned(ADDRESS_BITS-1 downto 0);
   bin_valid:in boolean;
-  overflow:in boolean;
+  out_of_bounds:in boolean;
   -- values are counted in the other buffer *after* swap_buffer is asserted
   swap_buffer:in boolean;
   -- flag indicating that the new buffer can be read and total is valid 
@@ -85,7 +85,7 @@ port map(
   reset => reset,
   bin => bin,
   bin_valid => bin_valid,
-  overflow => overflow,
+  out_of_bounds => out_of_bounds,
   write => write0,
   ready => ready0,
   most_frequent => most_frequent0,
@@ -107,7 +107,7 @@ port map(
   reset => reset,
   bin => bin,
   bin_valid => bin_valid,
-  overflow => overflow,
+  out_of_bounds => out_of_bounds,
   write => write1,
   ready => open,
   most_frequent => most_frequent1,
@@ -143,13 +143,13 @@ if rising_edge(clk) then
     end if;
     if swap_buffer then
       total_int <= (others => '0');
-      if bin_valid and not overflow then
+      if bin_valid and not out_of_bounds then
         total_reg <= total_int+1;
       else
         total_reg <= total_int;
       end if;
     else      
-      if ready0 and bin_valid and not overflow then
+      if ready0 and bin_valid and not out_of_bounds then
         total_int <= total_int+1;
       end if;
     end if;
