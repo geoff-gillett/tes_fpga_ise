@@ -277,8 +277,8 @@ chan_reg(1).capture.slope_threshold <= to_unsigned(400*4,DSP_BITS-1);
 chan_reg(1).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
 chan_reg(1).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-chan_reg(1).capture.detection <= PULSE_DETECTION_D;
-chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
+chan_reg(1).capture.detection <= TEST_DETECTION_D;
+chan_reg(1).capture.timing <= CFD_LOW_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
 chan_reg(1).capture.cfd_rel2min <= TRUE;
 

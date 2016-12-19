@@ -536,11 +536,9 @@ begin
           time_offset <= (others => '0'); 
           size <= pre_size;
           
-          
           valid_peak0 <= valid_peak_pipe(DEPTH-1);
           valid_peak1 <= FALSE;
           valid_peak2 <= FALSE;
-          
           
           peak_address <= (1 => '1', others => '0'); -- start at 2
           peak_address_n <= (1 downto 0 => '1', others => '0');
