@@ -284,6 +284,8 @@ constant BL_FLAGS_ADDR_BIT:integer:=10;
 constant INPUT_SEL_ADDR_BIT:integer:=11;
 
 -- FIR AXI streams
+constant BASELINE_CONFIG_ADDR_BIT:integer:=18;
+constant BASELINE_RELOAD_ADDR_BIT:integer:=19;
 constant FILTER_CONFIG_ADDR_BIT:integer:=20;
 constant FILTER_RELOAD_ADDR_BIT:integer:=21;
 constant DIFFERENTIATOR_CONFIG_ADDR_BIT:integer:=22;

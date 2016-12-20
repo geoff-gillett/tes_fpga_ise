@@ -166,7 +166,7 @@ begin
 end process newOnly;
 
 av:baseline_av
-PORT MAP (
+port map (
   aclk => clk,
   aclken => to_std_logic(av_enable),
   s_axis_data_tvalid => '1',

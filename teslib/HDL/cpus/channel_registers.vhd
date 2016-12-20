@@ -96,14 +96,14 @@ type bit_array is array (natural range <>) of std_logic_vector(11 downto 0);
 signal reg_bits:bit_array(AXI_DATA_BITS-1 downto 0);
 
 signal filter_data_int:std_logic_vector(COEF_BITS downto 0);
-signal dif_data_int:std_logic_vector(COEF_BITS downto 0);
+signal dif_data_int,baseline_data_int:std_logic_vector(COEF_BITS downto 0);
 signal filter_error_reg:std_logic;
-signal dif_error_reg:std_logic;
-signal filter_go,dif_go:std_logic;
-signal filter_config_go,dif_config_go:std_logic;
-signal filter_done,dif_done:std_logic;
+signal dif_error_reg,baseline_error_reg:std_logic;
+signal filter_go,dif_go,baseline_go:std_logic;
+signal filter_config_go,dif_config_go,baseline_config_go:std_logic;
+signal filter_done,dif_done,baseline_done:std_logic;
 signal resetn:std_logic;
-signal filter_config_done,dif_config_done:std_logic;
+signal filter_config_done,dif_config_done,baseline_config_done:std_logic;
 signal value_int:register_data_t;
 
 --NOTE bits 16 to 19 are used as the bit address when the iodelay is read
@@ -199,9 +199,6 @@ if rising_edge(clk) then
       	reg.capture.adc_select <= data(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
       	reg.capture.invert <= data(ADC_CHIPS*ADC_CHIP_CHANNELS)='1';
       end if;
-      if address(FILTER_CONFIG_ADDR_BIT)='1' then
-      	--TODO implement
-      end if;
     end if;
   end if;
 end if;
@@ -262,6 +259,7 @@ begin
 		if reset = '1' then
 			filter_error_reg <= '0';
 			dif_error_reg <= '0';
+			baseline_error_reg <= '0';
 		else
 			if filter_go='1' then
 				filter_error_reg <= '0';
@@ -274,6 +272,12 @@ begin
 			elsif slope_events.last_missing='1' or 
 			      slope_events.last_unexpected='1' then
 				dif_error_reg <= '1';
+			end if;
+			if baseline_go='1' then
+				baseline_error_reg <= '0';
+			elsif baseline_events.last_missing='1' or 
+			      baseline_events.last_unexpected='1' then
+				baseline_error_reg <= '1';
 			end if;
 		end if;
 	end if;
@@ -288,12 +292,18 @@ begin
     elsif address(DIFFERENTIATOR_RELOAD_ADDR_BIT)='1' then
       axis_error <= dif_error_reg;
       axis_done <= dif_done;
+    elsif address(BASELINE_RELOAD_ADDR_BIT)='1' then
+      axis_error <= baseline_error_reg;
+      axis_done <= baseline_done;
     elsif address(FILTER_CONFIG_ADDR_BIT)='1' then
       axis_error <= '0';
       axis_done <= filter_config_done;
     elsif address(DIFFERENTIATOR_CONFIG_ADDR_BIT)='1' then
       axis_error <= '0';
       axis_done <= dif_config_done;
+    elsif address(BASELINE_CONFIG_ADDR_BIT)='1' then
+      axis_error <= '0';
+      axis_done <= baseline_config_done;
     else
       axis_error <= '0';
       axis_done <= '0';
@@ -361,5 +371,36 @@ port map(
   axi_data => slope_config.config_data,
   axi_valid => slope_config.config_valid,
   axi_ready => slope_events.config_ready
+);
+
+baseline_go <= write and address(BASELINE_RELOAD_ADDR_BIT);
+baselineReload:entity work.axi_wr_chan
+generic map(WIDTH => COEF_BITS+1)
+port map(
+  clk => clk,
+  resetn => resetn,
+  reg_value => data(COEF_BITS downto 0),
+  go => baseline_go,
+  done => baseline_done,
+  axi_data => baseline_data_int,
+  axi_valid => baseline_config.reload_valid,
+  axi_ready => baseline_events.reload_ready
+);
+baseline_config.reload_data 
+	<= resize(baseline_data_int(COEF_BITS-1 downto 0), COEF_WIDTH);
+baseline_config.reload_last <= baseline_data_int(COEF_BITS);
+
+baseline_config_go <= write and address(BASELINE_CONFIG_ADDR_BIT);
+baselineConfig:entity work.axi_wr_chan
+generic map(WIDTH => CONFIG_BITS)
+port map(
+  clk => clk,
+  resetn => resetn,
+  reg_value => data(CONFIG_BITS-1 downto 0),
+  go => baseline_config_go,
+  done => baseline_config_done,
+  axi_data => baseline_config.config_data,
+  axi_valid => baseline_config.config_valid,
+  axi_ready => baseline_events.config_ready
 );
 end architecture RTL;

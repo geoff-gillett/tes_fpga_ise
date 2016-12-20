@@ -119,9 +119,7 @@ signal max_count:unsigned(COUNTER_BITS-1 downto 0);
 signal most_frequent:unsigned(ADDRESS_BITS-1 downto 0);
 signal timestamp,start_time,stop_time:unsigned(TIMESTAMP_BITS-1 downto 0);
 -- registers saved when update asserted
-signal updated_reg:mca_registers_t;
--- registers that will be used for the next MCA frame
-signal current_reg:mca_registers_t;
+signal updated_reg,header_reg,current_reg:mca_registers_t;
 -- register values for the current MCA frame
 signal outstream,countstream:streambus_t;
 signal outstream_valid,outstream_ready:boolean;
@@ -147,7 +145,7 @@ signal counts:std_logic_vector(65 downto 0);
 --      packet                                  
 -- word offset  |  16   |      16       |      32      |
 -- 0    24      | size  |   last_bin    | lowest_value |
--- 1    32      | flags | most_frequent |    reserved  | 
+-- 1    32      | resvd | most_frequent |     flags    | 
 -- 2    40      |                 total                |
 -- 3    48      |             start_time               |
 -- 4    56      |              stop_time               |
@@ -156,6 +154,7 @@ constant MCA_PROTOCOL_HEADER_WORDS:integer:=5; --FIXME why are these needed
 --				 :=MCA_PROTOCOL_HEADER_WORDS*BUS_CHUNKS;
 				 
 type mca_flags_t is record  -- 32 bits
+  qualifier:mca_qual_d;
 	value:mca_value_d; --4
 	trigger:mca_trigger_d; --4
 	bin_n:unsigned(MCA_BIN_N_BITS-1 downto 0); --5
@@ -164,10 +163,14 @@ end record;
 
 function to_std_logic(f:mca_flags_t) return std_logic_vector is
 begin
-	return to_std_logic(f.value,4) &
-	       to_std_logic(f.trigger,4) &
-	       to_std_logic(f.bin_n) &
-				 to_std_logic(f.channel);
+	return resize(
+	         to_std_logic(f.qualifier,4) &
+	         to_std_logic(f.value,4) & --??
+	         to_std_logic(f.trigger,4) &
+	         to_std_logic(f.bin_n) &
+				   to_std_logic(f.channel),
+				   32
+				 );
 end function;
 
 type mca_header_t is record
@@ -194,9 +197,9 @@ begin
 					 set_endianness(h.last_bin,e) &
 					 set_endianness(h.lowest_value,e);
 	when 1 =>
-		return to_std_logic(h.flags) &
+		return to_std_logic(0,16) &
 					 set_endianness(h.most_frequent,e) &
-					 to_std_logic(0,32); -- reserved TODO this could be period
+					 set_endianness(to_std_logic(h.flags),endianness); 
 	when 2 =>
 		return set_endianness(h.total,e);
 	when 3 =>
@@ -257,9 +260,11 @@ if rising_edge(clk) then
     if update_pipe(DEPTH-1) then -- check
       if update_registers then
         current_reg <= registers; --current_reg valid after swap
+        header_reg <= current_reg;
         enabled <= registers.trigger/=DISABLED_MCA_TRIGGER_D;
       else
     	  current_reg <= updated_reg;
+        header_reg <= current_reg;
         enabled <= updated_reg.trigger/=DISABLED_MCA_TRIGGER_D;
     	end if;
     end if;
@@ -296,7 +301,6 @@ if rising_edge(clk) then
   end if;
 end if;
 end process controlFSMnextstate;
-
 
 controlFSMtransition:process(
   control_state,update_asap,update_on_completion,can_swap,tick,ticks_remaining,
@@ -443,15 +447,17 @@ begin
 			header.total <= total;
 			header.most_frequent <= resize(most_frequent,CHUNK_DATABITS);
 		
-    	header.size <= resize(shift_right(current_reg.last_bin,1),SIZE_BITS) +
+    	header.size <= shift_right(resize(header_reg.last_bin,SIZE_BITS),1) +
     	               2 + MCA_PROTOCOL_HEADER_WORDS;
-    	header.flags.bin_n <= current_reg.bin_n;
-    	header.flags.channel <= current_reg.channel;
-    	header.flags.trigger <= current_reg.trigger;
-    	header.flags.value <= current_reg.value;
-    	header.last_bin <= resize(current_reg.last_bin,CHUNK_DATABITS);
+    	               
+    	header.flags.bin_n <= header_reg.bin_n;
+    	header.flags.qualifier <= header_reg.qualifier;
+    	header.flags.channel <= header_reg.channel;
+    	header.flags.trigger <= header_reg.trigger;
+    	header.flags.value <= header_reg.value;
+    	header.last_bin <= resize(header_reg.last_bin,CHUNK_DATABITS);
     	header.lowest_value 
-    		<= resize(current_reg.lowest_value,2*CHUNK_DATABITS);
+    		<= resize(header_reg.lowest_value,2*CHUNK_DATABITS);
 		end if;
 	end if;
 end process protocolHeader;

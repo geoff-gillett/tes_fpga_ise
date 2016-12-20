@@ -170,7 +170,6 @@ port map(
   stage2 => slope
 );
 
-
 measure:entity work.measure4
 generic map(
   CHANNEL => CHANNEL,

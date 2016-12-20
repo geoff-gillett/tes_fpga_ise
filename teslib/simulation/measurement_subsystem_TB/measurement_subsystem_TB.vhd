@@ -76,6 +76,7 @@ signal chan_reg:channel_register_array(CHANNELS-1 downto 0);
 signal ethernetstream:streambus_t;
 signal ethernetstream_valid:boolean;
 signal ethernetstream_ready:boolean;
+
 --mca
 signal mca_interrupt:boolean;
 signal bytestream:std_logic_vector(7 downto 0);
@@ -101,11 +102,6 @@ signal filter_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal slope_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal baseline_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 
---signals for vcd dump
-signal bytestream_valid_v,bytestream_ready_v:std_logic;
-signal ethernetstream_v:std_logic_vector(63 downto 0);
-signal ethernetstream_valid_v,ethernetstream_ready_v:std_logic;
-signal ethernetstream_last_v:std_logic;
 signal m:measurements_array(CHANNELS-1 downto 0);
 
 begin
@@ -144,10 +140,6 @@ port map(
   ethernetstream_valid => ethernetstream_valid,
   ethernetstream_ready => ethernetstream_ready
 );
-ethernetstream_v <= ethernetstream.data;
-ethernetstream_valid_v <= to_std_logic(ethernetstream_valid);
-ethernetstream_ready_v <= to_std_logic(ethernetstream_ready);
-ethernetstream_last_v <= to_std_logic(ethernetstream.last(0));
 
 cdc_din <= '0' & ethernetstream.data(63 downto 56) &
            '0' & ethernetstream.data(55 downto 48) &
@@ -192,11 +184,8 @@ port map(
   ready => bytestream_ready,
   valid => bytestream_valid
 );
-
 bytestream <= bytestream_int(7 downto 0);
 bytestream_last <= bytestream_int(8)='1';
-bytestream_valid_v <= to_std_logic(bytestream_valid);
-bytestream_ready_v <= to_std_logic(bytestream_ready);
 
 --register settings
 global.mtu <= to_unsigned(1500,MTU_BITS);
@@ -261,6 +250,7 @@ chan_reg(1).baseline.subtraction <= TRUE;
 chan_reg(1).baseline.timeconstant <= to_unsigned(2**12,32);
 
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
+chan_reg(0).capture.delay <= (others => '0');
 chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 chan_reg(0).capture.slope_threshold <= to_unsigned(400*4,DSP_BITS-1);
 chan_reg(0).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
@@ -271,7 +261,8 @@ chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= TRUE;
 
-chan_reg(1).capture.adc_select <= (1 => '1', others => '0');
+chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
+chan_reg(1).capture.delay <= (others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF, DSP_BITS-1);
 chan_reg(1).capture.slope_threshold <= to_unsigned(400*4,DSP_BITS-1);
 chan_reg(1).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
@@ -281,46 +272,6 @@ chan_reg(1).capture.detection <= TEST_DETECTION_D;
 chan_reg(1).capture.timing <= CFD_LOW_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
 chan_reg(1).capture.cfd_rel2min <= TRUE;
-
-mcaControlStimulus:process
-begin
-  global.mca.update_asap <= FALSE;
-  global.mca.update_on_completion <= FALSE;
-	wait for IO_CLK_PERIOD;
-	wait until not mca_initialising;
-	global.mca.update_asap <= TRUE;
-	wait for IO_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_FILTERED_EXTREMA_D;
-	global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
-	global.mca.update_asap <= TRUE;
-	wait for IO_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_FILTERED_AREA_D;
-	global.mca.update_asap <= TRUE;
-	wait for IO_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_SLOPE_SIGNAL_D;
-	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
-	global.mca.update_asap <= TRUE;
-	wait for IO_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_SLOPE_EXTREMA_D;
-	global.mca.trigger <= SLOPE_0XING_MCA_TRIGGER_D;
-	global.mca.update_asap <= TRUE;
-	wait for IO_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_SLOPE_AREA_D;
-	global.mca.update_asap <= TRUE;
-	wait for IO_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait;
-end process mcaControlStimulus;	
 
 file_open(bytestream_file,"../bytestream",WRITE_MODE);
 byteStreamWriter:process
@@ -428,5 +379,46 @@ begin
 	end loop;
 	wait;
 end process stimulusFile;
+
+mcaControlStimulus:process
+begin
+  global.mca.update_asap <= FALSE;
+  global.mca.update_on_completion <= FALSE;
+	wait until not mca_initialising;
+	global.mca.value <= MCA_FILTERED_SIGNAL_D;
+	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+	global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
+	global.mca.value <= MCA_FILTERED_EXTREMA_D;
+	global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
+	global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
+	global.mca.value <= MCA_FILTERED_AREA_D;
+	global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
+	global.mca.value <= MCA_SLOPE_SIGNAL_D;
+	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+	global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
+	global.mca.value <= MCA_SLOPE_EXTREMA_D;
+	global.mca.trigger <= SLOPE_0XING_MCA_TRIGGER_D;
+	global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
+	global.mca.value <= MCA_SLOPE_AREA_D;
+	global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait;
+end process mcaControlStimulus;	
 
 end architecture testbench;

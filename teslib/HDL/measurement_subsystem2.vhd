@@ -53,6 +53,7 @@ port(
   reset2:in std_logic;
   
   mca_initialising:out boolean;
+  mca_interrupt:out boolean;
   
   samples:in adc_sample_array(ADC_CHANNELS-1 downto 0);
   
@@ -67,7 +68,6 @@ port(
   baseline_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
   
   measurements:out measurements_array(DSP_CHANNELS-1 downto 0);
-  mca_interrupt:out boolean;
   
   ethernetstream:out streambus_t;
   ethernetstream_valid:out boolean;

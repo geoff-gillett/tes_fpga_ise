@@ -447,8 +447,8 @@ function to_streambus(
 begin
   case w is
   when 0 => 
-  	sb.data(63 downto 48) := set_endianness(t.minima,endianness);
-		sb.data(47 downto 32) := set_endianness(t.rise_time,endianness);
+  	sb.data(63 downto 48) := set_endianness(t.rise_time,endianness);
+		sb.data(47 downto 32) := set_endianness(t.minima,endianness);
 		sb.data(31 downto 16) := set_endianness(to_std_logic(t.flags),endianness); 
 		sb.data(15 downto 0) := (others => '0');
     sb.last := (others => FALSE);
