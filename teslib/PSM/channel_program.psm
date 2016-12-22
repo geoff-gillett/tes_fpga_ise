@@ -34,4 +34,5 @@
                     INCLUDE "command_IO.psm"
                     INCLUDE "utility.psm"
                     INCLUDE "channel_command_handler.psm"
+                    ;INCLUDE "channel_definitions.psm"
                     ;

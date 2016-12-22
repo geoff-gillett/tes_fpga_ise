@@ -24,6 +24,16 @@
                     TEST s2, 02              
                     JUMP Z, respond_slverr           ; not writable
                     CALL write_register
+                    TEST address3, FIR_RELOAD_ADDR3_BIT
+                    JUMP Z, send_response
+                    ; FIR reload check for done or error
+ wait_fir_response: TEST value0, FIR_RESP_MASK
+                    JUMP NZ, fir_response
+                    INPUT value0, BYTE0_IO_PORT
+                    jump wait_fir_response
+      fir_response: TEST value0, FIR_ERROR_MASK
+                    JUMP Z, send_response 
+                    OR command, AXI_SLVERR
                     JUMP send_response
                     ;
   read_channel_reg: CALL check_chan_addr
@@ -44,7 +54,7 @@
                     ; format: address bit 0 access, ..., address bit 23 access
                     ; where access bit 0 indicates readable bit 1 writable
                     ;
-TABLE chan_access#, [3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0]'d           
+TABLE chan_access#, [3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,3]'d           
        chan_access: LOAD&RETURN s2, chan_access#
                     ;
                     ;-----------------------------------------------------------
@@ -70,5 +80,4 @@ TABLE chan_access#, [3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0]'d
                     HWBUILD s4                  ; set c
                     RETURN
             				; 
-                    ;-----------------------------------------------------------
                     ;-----------------------------------------------------------

@@ -56,9 +56,12 @@ use work.registers.all;
 --use work.events.all;
 
 -- expects s_clk = 2*reg_clk
-entity channel_registers is
+entity channel_registers2 is
 generic(
-	CHANNEL:integer:=0
+	CHANNEL:integer:=0;
+  FILTER_COEF_WIDTH:natural:=23;
+  SLOPE_COEF_WIDTH:natural:=25;
+  BASELINE_COEF_WIDTH:natural:=25
 );
 port (
 	-- reg_clk domain
@@ -70,9 +73,6 @@ port (
   write:in std_logic; --Strobe
   value:out register_data_t;
   
-  axis_done:out std_logic;
-  axis_error:out std_logic;
-  
 	registers:out channel_registers_t;
 
   filter_config:out fir_control_in_t;
@@ -82,9 +82,9 @@ port (
   baseline_config:out fir_control_in_t;
   baseline_events:in fir_control_out_t
 );
-end entity channel_registers;
+end entity channel_registers2;
 --
-architecture RTL of channel_registers is
+architecture RTL of channel_registers2 is
 
 signal reg:channel_registers_t;
 
@@ -92,19 +92,18 @@ signal reg_data:AXI_data_array(11 downto 0);
 type bit_array is array (natural range <>) of std_logic_vector(11 downto 0);
 signal reg_bits:bit_array(AXI_DATA_BITS-1 downto 0);
 
+signal resetn:std_logic;
 signal value_int:register_data_t;
+signal last_mising:std_logic;
+signal reload_done:std_logic;
+signal coef_data:std_logic_vector(AXI_DATA_BITS-1 downto 0);
+signal fir_write:std_logic;
+signal last_unexpected:std_logic;
 
 --NOTE bits 16 to 19 are used as the bit address when the iodelay is read
 -- FIXME huh???
 begin 
--- value is read by the cpu in the io_clk domain
--- TODO implement baseline FIR controls
 registers <= reg;
---baseline_config.config_data <= (others => '0');
---baseline_config.config_valid <= '0';
---baseline_config.reload_data <= (others => '0');
---baseline_config.reload_last <= '0';
---baseline_config.reload_valid <= '0';
 
 regWrite:process(clk) 
 begin
@@ -187,6 +186,11 @@ if rising_edge(clk) then
       	reg.capture.adc_select <= data(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
       	reg.capture.invert <= data(ADC_CHIPS*ADC_CHIP_CHANNELS)='1';
       end if;
+      if address(FIR_RELOAD_ADDR_BIT)='1' then
+        coef_data <= data;
+      else 
+        coef_data <= (others => '0');
+      end if;
     end if;
   end if;
 end if;
@@ -233,12 +237,48 @@ begin
   );
 end generate;
 
+FIRreload:entity work.fir_reload
+generic map(
+  FILTER_COEF_WIDTH => FILTER_COEF_WIDTH,
+  SLOPE_COEF_WIDTH => SLOPE_COEF_WIDTH,
+  BASELINE_COEF_WIDTH => BASELINE_COEF_WIDTH
+)
+port map(
+  clk => clk,
+  reset => reset,
+  write => fir_write,
+  data => coef_data,
+  last_missing => last_mising,
+  last_unexpected => last_unexpected,
+  done => reload_done,
+  filter_config => filter_config,
+  filter_events => filter_events,
+  slope_config => slope_config,
+  slope_events => slope_events,
+  baseline_config => baseline_config,
+  baseline_events => baseline_events
+);
+  
 valueReg:process (clk) is
+variable val:std_logic_vector(AXI_DATA_BITS-1 downto 0):=(others => '0');
 begin
 	if rising_edge(clk) then
-		value <= value_int;
+    val(0):=reload_done;
+    val(1):=last_mising;
+    val(2):=last_unexpected;
+	  if address(FIR_RELOAD_ADDR_BIT)='1' then
+	    fir_write <= write;
+	    if write='1' or fir_write='1' then
+	      value <= (others => '0');
+	    else
+  	    value <= val;
+  	  end if;
+	  else
+      fir_write <= '0';
+		  value <= value_int;
+		end if;
 	end if;
 end process valueReg;
 
-
+resetn <= not reset;
 end architecture RTL;

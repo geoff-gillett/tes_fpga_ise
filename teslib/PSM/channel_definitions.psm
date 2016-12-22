@@ -20,10 +20,14 @@
                     ; CONTROL_CO_PORT
                     CONSTANT CONTROL_DO_READ,          	00100000'b
                     CONSTANT CONTROL_DO_WRITE,         	10000000'b
-                    ; AXI FIR coefficient reload
-                    ; MSB of address (address3 bit)
-                    CONSTANT DIF_RELOAD_ADDR3_BIT,  	 	10000000'b
-                    CONSTANT DIF_CONFIG_ADDR3_BIT,  		01000000'b
-                    CONSTANT FILTER_RELOAD_ADDR3_BIT,  	00100000'b
-                    CONSTANT FILTER_CONFIG_ADDR3_BIT,  	00010000'b
-                    CONSTANT FIR_ADDR3_MASK,						11110000'b
+                    ; FIR coefficient reload
+                    CONSTANT FIR_RELOAD_ADDR3_BIT,  	 	10000000'b
+                    CONSTANT FIR_RESP_MASK,             00000111'b
+                    CONSTANT FIR_DONE_MASK,             00000001'b
+                    CONSTANT FIR_ERROR_MASK,            00000110'b
+                    CONSTANT FIR_LAST_MASK,             10000000'b
+                    CONSTANT FIR_RESET_MASK,            01000000'b
+                    CONSTANT FIR_FILTER_MASK,           00100000'b
+                    CONSTANT FIR_SLOPE_MASK,            00010000'b
+                    CONSTANT FIR_BASELINE_MASK,         00001000'b
+                    

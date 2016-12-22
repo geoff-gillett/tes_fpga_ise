@@ -96,6 +96,7 @@ end component;
 
 -- control registers -----------------------------------------------------------
 signal ticks_remaining:unsigned(TICKCOUNT_BITS-1 downto 0);
+signal last_tick:boolean;
 signal enabled:boolean;
 -- component wiring ------------------------------------------------------------
 signal readable:boolean;
@@ -303,8 +304,8 @@ end if;
 end process controlFSMnextstate;
 
 controlFSMtransition:process(
-  control_state,update_asap,update_on_completion,can_swap,tick,ticks_remaining,
-  swap_buffer,updated_reg.trigger
+  control_state,update_asap,update_on_completion,can_swap,tick,
+  swap_buffer,updated_reg.trigger,last_tick
 )
 begin
   
@@ -329,7 +330,7 @@ when DISABLED =>
   end if;
   
 when RUN =>
-  swap_pipe(0) <= ticks_remaining=0 and tick and can_swap;
+  swap_pipe(0) <= last_tick and tick and can_swap;
   update_pipe(0) <= FALSE;
   if update_asap then   
     control_nextstate <= ASAP;
@@ -351,9 +352,9 @@ when ASAP =>
   end if;
   
 when ON_COMPLETION => 
-  swap_pipe(0) <= ticks_remaining=0 and tick and can_swap;
-  update_pipe(0) <= tick and ticks_remaining=0 and can_swap;
-  if tick and ticks_remaining=0 and can_swap then
+  swap_pipe(0) <= last_tick and tick and can_swap;
+  update_pipe(0) <= tick and last_tick and can_swap;
+  if tick and last_tick and can_swap then
     control_nextstate <= RUN; 
   elsif update_asap then
     control_nextstate <= ASAP;
@@ -407,8 +408,15 @@ if rising_edge(clk) then
     ticks_remaining <= (others => '0');
   else
     if swap_pipe(1) then
-      ticks_remaining <= updated_reg.ticks-1;
-    elsif tick and not ticks_remaining=0 then
+      if updated_reg.ticks=1 or updated_reg.ticks=0 then
+        ticks_remaining <= (others => '0');
+        last_tick <= TRUE;
+      else
+        ticks_remaining <= updated_reg.ticks-1;
+        last_tick <= FALSE;
+      end if;
+    elsif tick and not last_tick then
+      last_tick <= ticks_remaining=1;
       ticks_remaining <= ticks_remaining-1;
     end if;
   end if;

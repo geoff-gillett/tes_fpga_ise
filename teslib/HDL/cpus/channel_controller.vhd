@@ -32,10 +32,10 @@ port(
   reg_address:out register_address_t;
   reg_data:out register_data_t;
   reg_value:in register_data_t;
-  reg_write:out std_logic; -- strobe
+  reg_write:out std_logic -- strobe
   --axi stream signals;
-  axis_done:in std_logic;
-  axis_error:in std_logic
+  --axis_done:in std_logic;
+  --axis_error:in std_logic
 );
 end entity channel_controller;
 --
@@ -209,10 +209,10 @@ in_port <= uart_rx_byte when port_id(UART_IO_PORTID_BIT)='1'
                               STATUS_RX_NOTEMPTY_BIT => rx_not_empty,
                               others => '-') 
                         when port_id(STATUS_IN_PORTID_BIT)='1'
-                        else (RESP_AXIS_DONE_BIT => axis_done,
-                        			RESP_AXIS_ERROR_BIT => axis_error,
-                        			others => '-') 
-                        when port_id(RESP_IN_PORTID_BIT) = '1'
+--                        else (RESP_AXIS_DONE_BIT => axis_done,
+--                        			RESP_AXIS_ERROR_BIT => axis_error,
+--                        			others => '-') 
+--                        when port_id(RESP_IN_PORTID_BIT) = '1'
                         else (others => '-');
                         	
 byte_sel <= port_id(BYTE3_IO_PORTID_BIT downto BYTE0_IO_PORTID_BIT);

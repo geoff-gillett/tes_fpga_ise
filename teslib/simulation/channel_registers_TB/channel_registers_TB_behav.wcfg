@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="channel_registers_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="boolean_vector" />
+            <top_module name="channel_registers_TB" />
+            <top_module name="dsptypes" />
+            <top_module name="events" />
+            <top_module name="functions" />
+            <top_module name="logic" />
+            <top_module name="measurements" />
+            <top_module name="registers" />
+            <top_module name="types" />
+            <top_module name="types" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="91800000fs"></ZoomStartTime>
+      <ZoomEndTime time="309000001fs"></ZoomEndTime>
+      <Cursor1Time time="190000000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="3" />
+   <wvobject fp_name="group23" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/reset1" type="logic">
+         <obj_property name="ElementShortName">reset1</obj_property>
+         <obj_property name="ObjectShortName">reset1</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/reset2" type="logic">
+         <obj_property name="ElementShortName">reset2</obj_property>
+         <obj_property name="ObjectShortName">reset2</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/data" type="array">
+         <obj_property name="ElementShortName">data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">data[31:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/address" type="array">
+         <obj_property name="ElementShortName">address[23:0]</obj_property>
+         <obj_property name="ObjectShortName">address[23:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/write" type="logic">
+         <obj_property name="ElementShortName">write</obj_property>
+         <obj_property name="ObjectShortName">write</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/value" type="array">
+         <obj_property name="ElementShortName">value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">value[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/registers" type="array">
+         <obj_property name="ElementShortName">registers</obj_property>
+         <obj_property name="ObjectShortName">registers</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/filter_config" type="array">
+         <obj_property name="ElementShortName">filter_config</obj_property>
+         <obj_property name="ObjectShortName">filter_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/filter_events" type="array">
+         <obj_property name="ElementShortName">filter_events</obj_property>
+         <obj_property name="ObjectShortName">filter_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/slope_config" type="array">
+         <obj_property name="ElementShortName">slope_config</obj_property>
+         <obj_property name="ObjectShortName">slope_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/slope_events" type="array">
+         <obj_property name="ElementShortName">slope_events</obj_property>
+         <obj_property name="ObjectShortName">slope_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/baseline_config" type="array">
+         <obj_property name="ElementShortName">baseline_config</obj_property>
+         <obj_property name="ObjectShortName">baseline_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/baseline_events" type="array">
+         <obj_property name="ElementShortName">baseline_events</obj_property>
+         <obj_property name="ObjectShortName">baseline_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/CHANNEL" type="other">
+         <obj_property name="ElementShortName">CHANNEL</obj_property>
+         <obj_property name="ObjectShortName">CHANNEL</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/CLK_PERIOD" type="other">
+         <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
+         <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group24" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/data" type="array">
+         <obj_property name="ElementShortName">data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">data[31:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/address" type="array">
+         <obj_property name="ElementShortName">address[23:0]</obj_property>
+         <obj_property name="ObjectShortName">address[23:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/write" type="logic">
+         <obj_property name="ElementShortName">write</obj_property>
+         <obj_property name="ObjectShortName">write</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/value" type="array">
+         <obj_property name="ElementShortName">value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">value[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/registers" type="array">
+         <obj_property name="ElementShortName">registers</obj_property>
+         <obj_property name="ObjectShortName">registers</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/filter_config" type="array">
+         <obj_property name="ElementShortName">filter_config</obj_property>
+         <obj_property name="ObjectShortName">filter_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/filter_events" type="array">
+         <obj_property name="ElementShortName">filter_events</obj_property>
+         <obj_property name="ObjectShortName">filter_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/slope_config" type="array">
+         <obj_property name="ElementShortName">slope_config</obj_property>
+         <obj_property name="ObjectShortName">slope_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/slope_events" type="array">
+         <obj_property name="ElementShortName">slope_events</obj_property>
+         <obj_property name="ObjectShortName">slope_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/baseline_config" type="array">
+         <obj_property name="ElementShortName">baseline_config</obj_property>
+         <obj_property name="ObjectShortName">baseline_config</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/baseline_events" type="array">
+         <obj_property name="ElementShortName">baseline_events</obj_property>
+         <obj_property name="ObjectShortName">baseline_events</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/reg" type="array">
+         <obj_property name="ElementShortName">reg</obj_property>
+         <obj_property name="ObjectShortName">reg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/reg_data" type="array">
+         <obj_property name="ElementShortName">reg_data[11:0][31:0]</obj_property>
+         <obj_property name="ObjectShortName">reg_data[11:0][31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/reg_bits" type="array">
+         <obj_property name="ElementShortName">reg_bits[31:0][11:0]</obj_property>
+         <obj_property name="ObjectShortName">reg_bits[31:0][11:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/resetn" type="logic">
+         <obj_property name="ElementShortName">resetn</obj_property>
+         <obj_property name="ObjectShortName">resetn</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/value_int" type="array">
+         <obj_property name="ElementShortName">value_int[31:0]</obj_property>
+         <obj_property name="ObjectShortName">value_int[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/reload_done" type="logic">
+         <obj_property name="ElementShortName">reload_done</obj_property>
+         <obj_property name="ObjectShortName">reload_done</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/CHANNEL" type="other">
+         <obj_property name="ElementShortName">CHANNEL</obj_property>
+         <obj_property name="ObjectShortName">CHANNEL</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FILTER_COEF_WIDTH" type="other">
+         <obj_property name="ElementShortName">FILTER_COEF_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">FILTER_COEF_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/SLOPE_COEF_WIDTH" type="other">
+         <obj_property name="ElementShortName">SLOPE_COEF_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">SLOPE_COEF_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/BASELINE_COEF_WIDTH" type="other">
+         <obj_property name="ElementShortName">BASELINE_COEF_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">BASELINE_COEF_WIDTH</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group164" type="group">
+      <obj_property name="label">filter reload</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/write" type="logic">
+         <obj_property name="ElementShortName">write</obj_property>
+         <obj_property name="ObjectShortName">write</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/data" type="array">
+         <obj_property name="ElementShortName">data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">data[31:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/done" type="logic">
+         <obj_property name="ElementShortName">done</obj_property>
+         <obj_property name="ObjectShortName">done</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/last_missing" type="logic">
+         <obj_property name="ElementShortName">last_missing</obj_property>
+         <obj_property name="ObjectShortName">last_missing</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/last_unexpected" type="logic">
+         <obj_property name="ElementShortName">last_unexpected</obj_property>
+         <obj_property name="ObjectShortName">last_unexpected</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/filter_config" type="array">
+         <obj_property name="ElementShortName">filter_config</obj_property>
+         <obj_property name="ObjectShortName">filter_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/filter_events" type="array">
+         <obj_property name="ElementShortName">filter_events</obj_property>
+         <obj_property name="ObjectShortName">filter_events</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/slope_config" type="array">
+         <obj_property name="ElementShortName">slope_config</obj_property>
+         <obj_property name="ObjectShortName">slope_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/slope_events" type="array">
+         <obj_property name="ElementShortName">slope_events</obj_property>
+         <obj_property name="ObjectShortName">slope_events</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/baseline_config" type="array">
+         <obj_property name="ElementShortName">baseline_config</obj_property>
+         <obj_property name="ObjectShortName">baseline_config</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/baseline_events" type="array">
+         <obj_property name="ElementShortName">baseline_events</obj_property>
+         <obj_property name="ObjectShortName">baseline_events</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/nextstate" type="other">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/FILTER_COEF_WIDTH" type="other">
+         <obj_property name="ElementShortName">FILTER_COEF_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">FILTER_COEF_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/SLOPE_COEF_WIDTH" type="other">
+         <obj_property name="ElementShortName">SLOPE_COEF_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">SLOPE_COEF_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/BASELINE_COEF_WIDTH" type="other">
+         <obj_property name="ElementShortName">BASELINE_COEF_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">BASELINE_COEF_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/LAST_BIT" type="other">
+         <obj_property name="ElementShortName">LAST_BIT</obj_property>
+         <obj_property name="ObjectShortName">LAST_BIT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/FILTER_BIT" type="other">
+         <obj_property name="ElementShortName">FILTER_BIT</obj_property>
+         <obj_property name="ObjectShortName">FILTER_BIT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/SLOPE_BIT" type="other">
+         <obj_property name="ElementShortName">SLOPE_BIT</obj_property>
+         <obj_property name="ObjectShortName">SLOPE_BIT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_registers_TB/UUT/FIRreload/BASELINE_BIT" type="other">
+         <obj_property name="ElementShortName">BASELINE_BIT</obj_property>
+         <obj_property name="ObjectShortName">BASELINE_BIT</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

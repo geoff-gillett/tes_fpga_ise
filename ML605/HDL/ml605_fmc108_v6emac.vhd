@@ -272,8 +272,8 @@ signal channel_address:registeraddress_array(DSP_CHANNELS-1 downto 0);
 signal channel_data,channel_value:registerdata_array(DSP_CHANNELS-1 downto 0);
 signal channel_reg_write:std_logic_vector(DSP_CHANNELS-1 downto 0);
 signal channel_reg_write_io_clk:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal axis_done:std_logic_vector(DSP_CHANNELS-1 downto 0);
-signal axis_error:std_logic_vector(DSP_CHANNELS-1 downto 0);
+--signal axis_done:std_logic_vector(DSP_CHANNELS-1 downto 0);
+--signal axis_error:std_logic_vector(DSP_CHANNELS-1 downto 0);
 
 signal channel_registers:channel_register_array(DSP_CHANNELS-1 downto 0);
 --attribute S of channel_registers:signal is "TRUE";
@@ -696,7 +696,7 @@ end process adcEnable;
 --------------------------------------------------------------------------------
 tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 
-	registers:entity tes.channel_registers
+	registers:entity tes.channel_registers2
   generic map(
     CHANNEL => c
   )
@@ -707,8 +707,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     address => channel_address(c),
     write => channel_reg_write(c),
     value => channel_value(c),
-    axis_done => axis_done(c),
-    axis_error => axis_error(c),
+    
     registers => channel_registers(c),
     filter_config => filter_config(c),
     filter_events => filter_events(c),
@@ -734,9 +733,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     reg_address => channel_address(c),
     reg_data => channel_data(c),
     reg_value => channel_value(c),
-    reg_write => channel_reg_write_io_clk(c),
-    axis_done => axis_done(c),
-    axis_error => axis_error(c)
+    reg_write => channel_reg_write_io_clk(c)
   );
   
 --  valueReg:process(signal_clk)
