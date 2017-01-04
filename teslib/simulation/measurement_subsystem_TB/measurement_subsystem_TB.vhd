@@ -308,6 +308,7 @@ begin
     wait until rising_edge(sample_clk);
     if m(0).slope.pos_0xing or m(0).slope.neg_0xing then
 	    write(minmax_file, to_integer(m(0).filtered.sample));
+	    write(minmax_file, to_integer(m(0).filtered_long));
 	    write(minmax_file, to_integer(m(0).timing_threshold));
 	    write(minmax_file, to_integer(m(0).height_threshold));
 	    write(minmax_file, to_integer(m(0).slope.extrema));

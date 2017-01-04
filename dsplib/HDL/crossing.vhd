@@ -20,7 +20,7 @@ use extensions.logic.all;
 entity crossing is
 generic(
 	WIDTH:integer:=18;
-	STRICT:boolean:=TRUE
+	STRICT:boolean:=FALSE
 );
 port(
   clk:in std_logic;
@@ -40,7 +40,8 @@ constant DEPTH:integer:=2;
 type pipe_t is array (natural range <>) of signed(WIDTH-1 downto 0);
 signal pipe:pipe_t(1 to DEPTH):=(others => (others => '0'));
 
-signal below,above,was_below,was_above,notequal,was_equal:boolean;
+signal below,above,was_below,was_above,notequal:boolean;
+signal was_notequal:boolean;
 
 begin
 signal_out <= pipe(DEPTH);
@@ -57,23 +58,32 @@ begin
       below <= signal_in < threshold;
       above <= signal_in > threshold;
       notequal <= signal_in /= threshold;
-     
+      was_notequal  <= notequal;
+      
       if STRICT then
-        if notequal then
+        -- must strictly cross 
+        if notequal then -- does not change if equal
           was_below <= below;
           was_above <= above;
-          was_equal <= notequal;
         end if;
       else 
-        was_below <= below;
-        was_above <= above;
-        was_equal <= notequal;
+        -- equal generates crossing
+        if not notequal then --equal to crossing  
+          if was_notequal then
+            was_below <= not was_below;
+            was_above <= not was_above;
+          end if;
+        else
+          was_below <= below;
+          was_above <= above;
+        end if;
       end if;
 
       if STRICT then
         pos <= was_below and above;
         neg <= was_above and below;
       else
+        --FIXME problem with multiple equals in a row
         pos <= was_below and not below;
         neg <= was_above and not above;
       end if;

@@ -24,7 +24,8 @@ generic(
   AREA_FRAC:natural:=1;
   TIME_WIDTH:natural:=16;
   SIZE_WIDTH:natural:=16;
-  CFD_DELAY:natural:=1026
+  CFD_DELAY:natural:=1026;
+  STRICT_CROSSING:boolean:=TRUE
 );
 port (
   clk:in std_logic;
@@ -150,7 +151,8 @@ pulse_threshold <= signed('0' & registers.pulse_threshold);
 CFD:entity dsp.CFD2
 generic map(
   WIDTH => WIDTH,
-  DELAY => CFD_DELAY
+  DELAY => CFD_DELAY,
+  STRICT_CROSSING => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -215,7 +217,7 @@ port map(
 cfdLowXing:entity dsp.crossing
 generic map(
   WIDTH => WIDTH,
-  STRICT => FALSE
+  STRICT => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -230,7 +232,7 @@ port map(
 cfdHighXing:entity dsp.crossing
 generic map(
   WIDTH => WIDTH,
-  STRICT => FALSE
+  STRICT => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -245,7 +247,7 @@ port map(
 filtered0xing:entity dsp.crossing
 generic map(
   WIDTH => WIDTH,
-  STRICT => FALSE
+  STRICT => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -375,7 +377,7 @@ port map(
 maxSlopeXing:entity dsp.crossing
 generic map(
   WIDTH => WIDTH,
-  STRICT => FALSE
+  STRICT => STRICT_CROSSING
 )
 port map(
   clk => clk,
