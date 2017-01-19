@@ -647,11 +647,13 @@ begin
         else
           height <= cfd_high_thresh_rounded; 
         end if;
+        --FIXME should be able to use the max 
         height_valid <= cfd_high_pos_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
       when SLOPE_INTEGRAL_D =>
         height <= resize(slope_area_m1,16); --FIXME scale?
         height_valid <= max_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
       when SLOPE_MAX_D => 
+        --FIXME use slope extrema then all heights valid at max
         height <= slope_pipe(DEPTH-1); 
         height_valid <= max_slope_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
       end case;
