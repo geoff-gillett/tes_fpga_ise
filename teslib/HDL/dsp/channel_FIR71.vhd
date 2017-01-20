@@ -179,7 +179,8 @@ generic map(
   FRAC_OUT => FRAC_OUT,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  CFD_DELAY => RAW_DELAY-101-72
+  CFD_DELAY => RAW_DELAY-101-72,
+  STRICT_CROSSING => TRUE
 )
 port map(
   enable => event_enable,

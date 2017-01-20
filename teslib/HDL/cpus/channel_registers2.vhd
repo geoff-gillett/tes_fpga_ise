@@ -124,8 +124,8 @@ if rising_edge(clk) then
 		--reg.capture.threshold_rel2min <= DEFAULT_THRESHOLD_REL2MIN;
 		reg.capture.timing <= DEFAULT_TIMING;
 		reg.capture.detection <= DEFAULT_DETECTION;
-		reg.capture.trace0 <= DEFAULT_TRACE0;
-		reg.capture.trace1 <= DEFAULT_TRACE1;
+		reg.capture.trace0 <= DEFAULT_TRACE0; --FIXME remove
+		reg.capture.trace1 <= DEFAULT_TRACE1; --FIXME remove
 		reg.capture.delay <= DEFAULT_DELAY;
 		reg.capture.adc_select <= (CHANNEL => '1',others => '0');
   else
@@ -139,9 +139,8 @@ if rising_edge(clk) then
       	reg.capture.timing <= to_timing_d(data(3 downto 2));
       	reg.capture.max_peaks <= unsigned(data(7 downto 4));
       	reg.capture.height <= to_height_d(data(9 downto 8));
-      	reg.capture.trace0 <= to_trace_d(data(11 downto 10));
-      	reg.capture.trace1 <= to_trace_d(data(13 downto 12));
-      	--reg.capture.threshold_rel2min <= to_boolean(data(16));
+      	reg.capture.trace0 <= to_trace_d(data(11 downto 10)); --FIXME remove
+      	reg.capture.trace1 <= to_trace_d(data(13 downto 12)); --FIXME remove
       end if;
       if address(PULSE_THRESHOLD_ADDR_BIT)='1' then
         reg.capture.pulse_threshold 

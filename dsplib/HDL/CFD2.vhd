@@ -9,7 +9,8 @@ use extensions.logic.all;
 entity CFD2 is
 generic(
   WIDTH:integer:=18;
-  DELAY:integer:=1023
+  DELAY:integer:=1023;
+  STRICT_CROSSING:boolean:=TRUE
 );
 port (
   clk:in std_logic;
@@ -129,7 +130,7 @@ begin
 slope0xing:entity work.crossing
 generic map(
   WIDTH => WIDTH,
-  STRICT => TRUE
+  STRICT => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -144,7 +145,7 @@ port map(
 slopeTxing:entity work.crossing
 generic map(
   WIDTH => WIDTH,
-  STRICT => FALSE
+  STRICT => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -159,7 +160,7 @@ port map(
 pulseTxing:entity work.crossing
 generic map(
   WIDTH => WIDTH,
-  STRICT => FALSE
+  STRICT => STRICT_CROSSING
 )
 port map(
   clk => clk,
