@@ -77,7 +77,7 @@ port map(
   baseline_events => baseline_events
 );
 
-chan:entity work.channel4
+chan:entity work.channel_FIR71
   generic map(
     CHANNEL => 0,
     WIDTH => 18,
@@ -87,7 +87,6 @@ chan:entity work.channel4
     ADC_WIDTH => 14,
     AREA_WIDTH => AREA_WIDTH,
     AREA_FRAC => AREA_FRAC,
-    CFD_DELAY => 1026,
     ENDIAN => "LITTLE"
   )
   port map(

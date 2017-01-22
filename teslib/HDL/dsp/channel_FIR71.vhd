@@ -19,6 +19,7 @@ use work.types.all;
 entity channel_FIR71 is
 generic(
   CHANNEL:natural:=0;
+  BASELINE_BITS:natural:=12;
   WIDTH:natural:=18;
   FRAC:natural:=3;
   WIDTH_OUT:natural:=16;

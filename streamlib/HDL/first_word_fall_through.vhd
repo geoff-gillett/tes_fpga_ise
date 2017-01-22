@@ -113,7 +113,7 @@ begin
       end case;
     end if;
   end if;
-end process FSMreg;
+end process FSMoutput;
 
 stream <= stream_int;
 valid <= valid_int;

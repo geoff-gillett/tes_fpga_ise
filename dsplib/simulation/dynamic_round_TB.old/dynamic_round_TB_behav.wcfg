@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="dynamic_round_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="dynamic_round_TB" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="1927466667fs"></ZoomStartTime>
+      <ZoomEndTime time="1978666668fs"></ZoomEndTime>
+      <Cursor1Time time="1936000000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group67" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/input" type="array">
+         <obj_property name="ElementShortName">input[47:0]</obj_property>
+         <obj_property name="ObjectShortName">input[47:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/output" type="array">
+         <obj_property name="ElementShortName">output[4:0]</obj_property>
+         <obj_property name="ObjectShortName">output[4:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/sim_count" type="array">
+         <obj_property name="ElementShortName">sim_count[8:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_count[8:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/sim_out" type="array">
+         <obj_property name="ElementShortName">sim_out[8:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_out[8:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/sim_pipe" type="array">
+         <obj_property name="ElementShortName">sim_pipe[1:7][8:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_pipe[1:7][8:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/point" type="other">
+         <obj_property name="ElementShortName">point</obj_property>
+         <obj_property name="ObjectShortName">point</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/WIDTH_IN" type="other">
+         <obj_property name="ElementShortName">WIDTH_IN</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/WIDTH_OUT" type="other">
+         <obj_property name="ElementShortName">WIDTH_OUT</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/TOWARDS_INF" type="other">
+         <obj_property name="ElementShortName">TOWARDS_INF</obj_property>
+         <obj_property name="ObjectShortName">TOWARDS_INF</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/CLK_PERIOD" type="other">
+         <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
+         <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/SIM_WIDTH" type="other">
+         <obj_property name="ElementShortName">SIM_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">SIM_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group94" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/point" type="other">
+         <obj_property name="ElementShortName">point</obj_property>
+         <obj_property name="ObjectShortName">point</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/msb" type="other">
+         <obj_property name="ElementShortName">msb</obj_property>
+         <obj_property name="ObjectShortName">msb</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/input" type="array">
+         <obj_property name="ElementShortName">input[47:0]</obj_property>
+         <obj_property name="ObjectShortName">input[47:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/input_reg" type="array">
+         <obj_property name="ElementShortName">input_reg[47:0]</obj_property>
+         <obj_property name="ObjectShortName">input_reg[47:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">1</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/carryin" type="logic">
+         <obj_property name="ElementShortName">carryin</obj_property>
+         <obj_property name="ObjectShortName">carryin</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/p_int" type="array">
+         <obj_property name="ElementShortName">p_int[47:0]</obj_property>
+         <obj_property name="ObjectShortName">p_int[47:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/saturate" type="logic">
+         <obj_property name="ElementShortName">saturate</obj_property>
+         <obj_property name="ObjectShortName">saturate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/p_out" type="array">
+         <obj_property name="ElementShortName">p_out[47:0]</obj_property>
+         <obj_property name="ObjectShortName">p_out[47:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">1</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/output_reg" type="array">
+         <obj_property name="ElementShortName">output_reg[47:0]</obj_property>
+         <obj_property name="ObjectShortName">output_reg[47:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/output" type="array">
+         <obj_property name="ElementShortName">output[4:0]</obj_property>
+         <obj_property name="ObjectShortName">output[4:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">0</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/sim_out" type="array">
+         <obj_property name="ElementShortName">sim_out[8:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_out[8:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/a_round" type="array">
+         <obj_property name="ElementShortName">a_round[29:0]</obj_property>
+         <obj_property name="ObjectShortName">a_round[29:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/a_sat" type="array">
+         <obj_property name="ElementShortName">a_sat[29:0]</obj_property>
+         <obj_property name="ObjectShortName">a_sat[29:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/b_round" type="array">
+         <obj_property name="ElementShortName">b_round[17:0]</obj_property>
+         <obj_property name="ObjectShortName">b_round[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/b_sat" type="array">
+         <obj_property name="ElementShortName">b_sat[17:0]</obj_property>
+         <obj_property name="ObjectShortName">b_sat[17:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/ab_round" type="array">
+         <obj_property name="ElementShortName">ab_round[47:0]</obj_property>
+         <obj_property name="ObjectShortName">ab_round[47:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/overflow_mask" type="array">
+         <obj_property name="ElementShortName">overflow_mask[47:0]</obj_property>
+         <obj_property name="ObjectShortName">overflow_mask[47:0]</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/rounding_c" type="array">
+         <obj_property name="ElementShortName">rounding_c[47:0]</obj_property>
+         <obj_property name="ObjectShortName">rounding_c[47:0]</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/round_shift" type="other">
+         <obj_property name="ElementShortName">round_shift</obj_property>
+         <obj_property name="ObjectShortName">round_shift</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/overflow_shift" type="other">
+         <obj_property name="ElementShortName">overflow_shift</obj_property>
+         <obj_property name="ObjectShortName">overflow_shift</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/pat" type="logic">
+         <obj_property name="ElementShortName">pat</obj_property>
+         <obj_property name="ObjectShortName">pat</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/patb" type="logic">
+         <obj_property name="ElementShortName">patb</obj_property>
+         <obj_property name="ObjectShortName">patb</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/WIDTH_IN" type="other">
+         <obj_property name="ElementShortName">WIDTH_IN</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/WIDTH_OUT" type="other">
+         <obj_property name="ElementShortName">WIDTH_OUT</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/TOWARDS_INF" type="other">
+         <obj_property name="ElementShortName">TOWARDS_INF</obj_property>
+         <obj_property name="ObjectShortName">TOWARDS_INF</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/dynamic_round_TB/UUT/ONES" type="array">
+         <obj_property name="ElementShortName">ONES[47:0]</obj_property>
+         <obj_property name="ObjectShortName">ONES[47:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

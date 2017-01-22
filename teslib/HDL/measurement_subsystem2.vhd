@@ -237,7 +237,8 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   processingChannel:entity work.channel_FIR71
   generic map(
     CHANNEL => c,
-    ENDIAN => ENDIAN
+    ENDIAN => ENDIAN,
+    BASELINE_BITS => BASELINE_BITS
   )
   port map(
     clk => clk,

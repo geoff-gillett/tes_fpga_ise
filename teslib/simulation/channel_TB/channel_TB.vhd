@@ -138,25 +138,25 @@ begin
 		clk_count <= clk_count+1;
 end process clkCount;
 
-stimulusFile:process
-file sample_file:text is in "../input_signals/short";
-variable file_line:line; -- text line buffer 
-variable str_sample:string(4 downto 1);
-variable sample_in:std_logic_vector(15 downto 0);
-begin
-while not endfile(sample_file) loop
-  readline(sample_file, file_line);
-  read(file_line, str_sample);
-  sample_in:=hexstr2vec(str_sample);
-  wait until rising_edge(clk);
-  --adc_sample <= resize(unsigned(sample_in), ADC_WIDTH);
-  if clk_count mod 10000 = 0 then
-    report "clk " & integer'image(clk_count);
-  end if;
-  --assert false report str_sample severity note;
-end loop;
-wait;
-end process stimulusFile;
+--stimulusFile:process
+--file sample_file:text is in "../input_signals/short";
+--variable file_line:line; -- text line buffer 
+--variable str_sample:string(4 downto 1);
+--variable sample_in:std_logic_vector(15 downto 0);
+--begin
+--while not endfile(sample_file) loop
+--  readline(sample_file, file_line);
+--  read(file_line, str_sample);
+--  sample_in:=hexstr2vec(str_sample);
+--  wait until rising_edge(clk);
+--  --adc_sample <= resize(unsigned(sample_in), ADC_WIDTH);
+--  if clk_count mod 10000 = 0 then
+--    report "clk " & integer'image(clk_count);
+--  end if;
+--  --assert false report str_sample severity note;
+--end loop;
+--wait;
+--end process stimulusFile;
 
 simsquare:process (clk) is
 begin

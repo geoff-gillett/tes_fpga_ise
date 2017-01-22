@@ -23,7 +23,7 @@ library mcalib;
 
 entity baseline_estimator is
 generic(
-  BASELINE_BITS:natural:=11;
+  BASELINE_BITS:natural:=12;
   --width of counters and stream
   COUNTER_BITS:natural:=18;
   TIMECONSTANT_BITS:natural:=32;
