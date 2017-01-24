@@ -1,6 +1,8 @@
 #ethernet=../../ethernetlib/IP_cores/v6_emac_v2_3/v6_emac_v2_3_0/example_design
 planahead_project=../PlanAhead/teslib.ppr
 vivado_project=../Vivado/teslib.xpr
+vivado_sim=../Vivado/teslib.sim/
+hdl=../HDL/
 
 planahead: $(planahead_project)
 
