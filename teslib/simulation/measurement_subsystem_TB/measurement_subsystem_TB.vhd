@@ -406,6 +406,10 @@ begin
   global.mca.update_asap <= FALSE;
   global.mca.update_on_completion <= FALSE;
 	wait until not mca_initialising;
+	global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	wait until mca_interrupt;
 	global.mca.value <= MCA_FILTERED_SIGNAL_D;
 	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 	global.mca.update_asap <= TRUE;
