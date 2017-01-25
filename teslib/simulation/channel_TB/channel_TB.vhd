@@ -190,7 +190,7 @@ baseline_config.config_valid <= '0';
 baseline_config.reload_data <= (others => '0');
 baseline_config.reload_last <= '0';
 baseline_config.reload_valid <= '0';
-registers.baseline.offset <= to_unsigned(0,WIDTH-1);
+registers.baseline.offset <= to_unsigned(1500,WIDTH-1);
 registers.baseline.count_threshold <= to_unsigned(20,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
 registers.baseline.new_only <= TRUE;
@@ -205,7 +205,7 @@ registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 registers.capture.detection <= TEST_DETECTION_D;
 registers.capture.timing <= CFD_LOW_TIMING_D;
 registers.capture.height <= CFD_HEIGHT_D;
-
+registers.capture.cfd_rel2min <= TRUE;
 event_enable <= TRUE;
 
 wait for CLK_PERIOD;

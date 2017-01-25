@@ -325,7 +325,6 @@ port map(
   extrema => filtered_extrema
 );
 
-slope_0xing <= min_pipe(XLAT-1) or max_pipe(XLAT-1); 
 slopeArea:entity dsp.area_acc3
 generic map(
   WIDTH => WIDTH,
@@ -476,7 +475,9 @@ begin
 --      pulse_start <= min_pipe(DEPTH-1) and not above_pipe(DEPTH-1) and 
 --                       enabled and valid_peak_pipe(DEPTH-1) and 
 --                       first_peak_pipe(DEPTH-1);
-                       
+      --TODO: check this latency
+      slope_0xing <= min_pipe(XLAT-1) or max_pipe(XLAT-1); 
+      
       pre_pulse_start <= min_pipe(DEPTH-2) and not above_pipe(DEPTH-2) and 
                        enabled and valid_peak_pipe(DEPTH-2) and 
                        first_peak_pipe(DEPTH-2);

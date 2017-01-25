@@ -239,7 +239,7 @@ chan_reg(0).baseline.offset <= to_unsigned(1000*4,DSP_BITS-1);
 chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(0).baseline.threshold <= (others => '1');
 chan_reg(0).baseline.new_only <= TRUE;
-chan_reg(0).baseline.subtraction <= TRUE;
+chan_reg(0).baseline.subtraction <= FALSE;
 chan_reg(0).baseline.timeconstant <= to_unsigned(2**12,32);
 
 chan_reg(1).baseline.offset <= to_unsigned(1000*4,DSP_BITS-1);
@@ -381,7 +381,8 @@ end process clkCount;
 --end process stimulusFile;
 
 stimulusFile:process
-	file sample_file:int_file is in "../input_signals/oldlownoise.bin";
+	file sample_file:int_file is in 
+	     "../input_signals/50mvCh1on_amp_100khzdiode_250_1.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
@@ -401,11 +402,13 @@ end process stimulusFile;
 
 mcaControlStimulus:process
 begin
+	wait until not mca_initialising;
 	global.mca.value <= MCA_RAW_SIGNAL_D;
 	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
   global.mca.update_asap <= FALSE;
+	wait for SAMPLE_CLK_PERIOD;
   global.mca.update_on_completion <= FALSE;
-	wait until not mca_initialising;
+  wait;
 	global.mca.value <= MCA_FILTERED_SIGNAL_D;
 	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 	global.mca.update_asap <= TRUE;

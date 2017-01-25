@@ -102,9 +102,11 @@ if rising_edge(clk) then
   --FIXME use overflow 
   if sample_valid then 
     baseline_sample <= std_logic_vector(resize(sample,BASELINE_BITS));
-    if (sample > resize(signed('0' & threshold), WIDTH)) then 
+    if (sample >= resize(signed('0' & threshold), WIDTH)) then 
       baseline_sample_valid <= FALSE;
       range_error <= FALSE;
+    elsif sample > highest then
+      baseline_sample <= std_logic_vector(resize(highest,BASELINE_BITS));
     elsif sample < lowest then
       baseline_sample_valid <= TRUE;
       baseline_sample <= std_logic_vector(resize(lowest,BASELINE_BITS));
