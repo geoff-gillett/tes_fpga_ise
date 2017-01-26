@@ -240,6 +240,7 @@ begin
 update_registers <= update_asap or update_on_completion;
 initialising <= control_state=INIT;
 
+--FIXME the register assignment is hard to understand and probably broken
 controlReg:process(clk)
 begin 
 if rising_edge(clk) then
@@ -256,10 +257,15 @@ if rising_edge(clk) then
 		
   	if update_registers then
   		updated_reg <= registers;
+  		if control_state=DISABLED then
+  		  current_reg <= registers;
+  		  header_reg <= registers;
+        enabled <= updated_reg.trigger/=DISABLED_MCA_TRIGGER_D;
+  		end if;
     end if;
     
     if update_pipe(DEPTH-1) then -- check
-      if update_registers then
+      if update_registers then  -- whats this
         current_reg <= registers; --current_reg valid after swap
         header_reg <= current_reg;
         enabled <= registers.trigger/=DISABLED_MCA_TRIGGER_D;

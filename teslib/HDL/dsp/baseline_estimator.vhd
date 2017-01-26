@@ -81,34 +81,35 @@ signal previous_mf:std_logic_vector(BASELINE_BITS-1 downto 0);
 --signal mf_value:signed(BASELINE_BITS-1 downto 0);
 signal av_enable:boolean;
 signal most_frequent_av:signed(WIDTH-1 downto 0);
-signal new_most_frequent:boolean;
 signal new_mf_value:boolean;
+signal new_mf:boolean;
 signal av_valid:std_logic;
 signal av_int:std_logic_vector(47 downto 0);
 signal mf_average:std_logic_vector(WIDTH-1 downto 0);
 signal mf_value:std_logic_vector(23 downto 0);
+signal mf_reg:signed(WIDTH-1 downto 0);
+constant HALF_RANGE:signed(WIDTH-1 downto 0)
+         :=to_signed((2**BASELINE_BITS)/2,WIDTH);
+signal new_mf_value_reg:boolean;
 
 begin
 --FIXME lower values should saturate
 --FIXME make range error more useful so can feed back to offset
 baselineControl:process(clk)
-variable lowest,highest:signed(WIDTH-1 downto 0);
-constant HALF_RANGE:signed(WIDTH-1 downto 0)
-         :=to_signed((2**BASELINE_BITS)/2,WIDTH);
+variable lowest,highest,mapped:signed(WIDTH-1 downto 0);
 begin
+
 if rising_edge(clk) then
   lowest:=-HALF_RANGE;
   highest:=HALF_RANGE-1;
-  --FIXME use overflow 
+  mapped:=resize(sample, WIDTH) + HALF_RANGE;
+  baseline_sample <= std_logic_vector(resize(mapped,BASELINE_BITS));
   if sample_valid then 
-    baseline_sample <= std_logic_vector(resize(sample,BASELINE_BITS));
-    if (sample >= resize(signed('0' & threshold), WIDTH)) then 
+    if (sample > resize(signed('0' & threshold), WIDTH)) then 
       baseline_sample_valid <= FALSE;
       range_error <= FALSE;
-    elsif sample > highest then
-      baseline_sample <= std_logic_vector(resize(highest,BASELINE_BITS));
     elsif sample < lowest then
-      baseline_sample_valid <= TRUE;
+      baseline_sample_valid <= FALSE;
       baseline_sample <= std_logic_vector(resize(lowest,BASELINE_BITS));
       range_error <= TRUE;
     else
@@ -136,10 +137,9 @@ port map(
   sample => baseline_sample,
   sample_valid => baseline_sample_valid,
   most_frequent => most_frequent,
-  new_value => new_most_frequent
+  new_value => new_mf_value
 );
 
-new_mf_value <= previous_mf /= most_frequent;
 newOnly:process (clk) is
 begin
 	if rising_edge(clk) then
@@ -147,17 +147,21 @@ begin
 			previous_mf <= (others => '0');
 			av_enable <= FALSE;
 		else
-			if new_most_frequent then
+		  new_mf <= previous_mf /= most_frequent;
+		  mf_reg <= signed('0' & most_frequent)-HALF_RANGE; 
+		  new_mf_value_reg <= new_mf_value; 
+		  
+			if new_mf_value_reg then 
 				previous_mf <= most_frequent;
 				if new_only then
-					if new_mf_value then
+					if new_mf then
 						av_enable <= TRUE;
-						mf_value <= std_logic_vector(resize(signed(most_frequent),24));
+						mf_value <= std_logic_vector(resize(mf_reg,24));
 					else
 						av_enable <= FALSE;	
 					end if;
 				else
-					mf_value <= std_logic_vector(resize(signed(most_frequent),24));
+					mf_value <= std_logic_vector(resize(mf_reg,24));
 					av_enable <= TRUE;
 				end if;
 			else
@@ -188,20 +192,21 @@ port map (
 );
 
 -- FIXME only need the rounding stage
-round:entity dsp.round
-generic map(
-  WIDTH_IN => 48,
-  FRAC_IN => 28,
-  WIDTH_OUT => 18,
-  FRAC_OUT => 3
-)
-port map(
-  clk => clk,
-  reset => reset,
-  input => av_int,
-  output => mf_average
-);
-most_frequent_av <= signed(mf_average);
+--round:entity dsp.round
+--generic map(
+--  WIDTH_IN => 48,
+--  FRAC_IN => 28,
+--  WIDTH_OUT => 18,
+--  FRAC_OUT => 3
+--)
+--port map(
+--  clk => clk,
+--  reset => reset,
+--  input => av_int,
+--  output => mf_average
+--);
+--most_frequent_av <= signed(mf_average);
+most_frequent_av <= signed(av_int(42 downto 25));
 
 outputReg:process(clk)
 begin
@@ -209,11 +214,7 @@ if rising_edge(clk) then
   if reset = '1' then
     baseline_estimate <= to_signed(0,WIDTH);
   else
-    if timeconstant=0 then
-    	baseline_estimate <= to_signed(0,WIDTH);
-    else
-      baseline_estimate <=  most_frequent_av;
-    end if;
+    baseline_estimate <=  most_frequent_av;
   end if;
 end if;
 end process outputReg;

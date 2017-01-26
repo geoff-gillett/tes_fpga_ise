@@ -235,25 +235,25 @@ baseline_config(1).reload_data <= (others => '0');
 baseline_config(1).reload_last <= '0';
 baseline_config(1).reload_valid <= '0';
 
-chan_reg(0).baseline.offset <= to_unsigned(1000*4,DSP_BITS-1);
-chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
+chan_reg(0).baseline.offset <= to_unsigned(850*8,DSP_BITS-1);
+chan_reg(0).baseline.count_threshold <= to_unsigned(10,BASELINE_COUNTER_BITS);
 chan_reg(0).baseline.threshold <= (others => '1');
 chan_reg(0).baseline.new_only <= TRUE;
-chan_reg(0).baseline.subtraction <= FALSE;
+chan_reg(0).baseline.subtraction <= TRUE;
 chan_reg(0).baseline.timeconstant <= to_unsigned(2**12,32);
 
-chan_reg(1).baseline.offset <= to_unsigned(1000*4,DSP_BITS-1);
-chan_reg(1).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
+chan_reg(1).baseline.offset <= to_unsigned(850*8,DSP_BITS-1);
+chan_reg(1).baseline.count_threshold <= to_unsigned(10,BASELINE_COUNTER_BITS);
 chan_reg(1).baseline.threshold <= (others => '1');
 chan_reg(1).baseline.new_only <= TRUE;
-chan_reg(1).baseline.subtraction <= FALSE;
+chan_reg(1).baseline.subtraction <= TRUE;
 chan_reg(1).baseline.timeconstant <= to_unsigned(2**12,32);
 
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
 chan_reg(0).capture.delay <= (others => '0');
 chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
-chan_reg(0).capture.slope_threshold <= to_unsigned(400*4,DSP_BITS-1);
-chan_reg(0).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
+chan_reg(0).capture.slope_threshold <= to_unsigned(1000*4,DSP_BITS-1);
+chan_reg(0).capture.pulse_threshold <= to_unsigned(1500*4,DSP_BITS-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 chan_reg(0).capture.detection <= PEAK_DETECTION_D;
@@ -264,8 +264,8 @@ chan_reg(0).capture.cfd_rel2min <= TRUE;
 chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
 chan_reg(1).capture.delay <= (others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF, DSP_BITS-1);
-chan_reg(1).capture.slope_threshold <= to_unsigned(400*4,DSP_BITS-1);
-chan_reg(1).capture.pulse_threshold <= to_unsigned(4*600,DSP_BITS-1);
+chan_reg(1).capture.slope_threshold <= to_unsigned(1000*4,DSP_BITS-1);
+chan_reg(1).capture.pulse_threshold <= to_unsigned(1500*4,DSP_BITS-1);
 chan_reg(1).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 chan_reg(1).capture.detection <= TEST_DETECTION_D;
@@ -402,12 +402,15 @@ end process stimulusFile;
 
 mcaControlStimulus:process
 begin
+  global.mca.update_asap <= FALSE;
+  global.mca.update_on_completion <= FALSE;
 	wait until not mca_initialising;
+	wait for SAMPLE_CLK_PERIOD;
 	global.mca.value <= MCA_RAW_SIGNAL_D;
 	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
-  global.mca.update_asap <= FALSE;
+  global.mca.update_asap <= TRUE;
 	wait for SAMPLE_CLK_PERIOD;
-  global.mca.update_on_completion <= FALSE;
+  global.mca.update_asap <= FALSE;
   wait;
 	global.mca.value <= MCA_FILTERED_SIGNAL_D;
 	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;

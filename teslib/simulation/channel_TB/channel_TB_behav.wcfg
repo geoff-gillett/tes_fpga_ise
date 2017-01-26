@@ -21,9 +21,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="911666666fs"></ZoomStartTime>
-      <ZoomEndTime time="1017666667fs"></ZoomEndTime>
-      <Cursor1Time time="1000000000fs"></Cursor1Time>
+      <ZoomStartTime time="80654560000fs"></ZoomStartTime>
+      <ZoomEndTime time="101854560001fs"></ZoomEndTime>
+      <Cursor1Time time="11182833000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="7" />
    <wave_markers>
@@ -157,6 +157,10 @@
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measurements.raw.area" type="array">
             <obj_property name="ElementShortName">.area[31:0]</obj_property>
             <obj_property name="ObjectShortName">measurements.raw.area[31:0]</obj_property>
+            <obj_property name="Radix">REALRADIX</obj_property>
+            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+            <obj_property name="radix_fractionWidth">1</obj_property>
+            <obj_property name="radix_otherWidth">0</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measurements.raw.extrema" type="array">
             <obj_property name="ElementShortName">.extrema[15:0]</obj_property>
@@ -202,6 +206,10 @@
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measurements.filtered.area" type="array">
             <obj_property name="ElementShortName">.area[31:0]</obj_property>
             <obj_property name="ObjectShortName">measurements.filtered.area[31:0]</obj_property>
+            <obj_property name="Radix">REALRADIX</obj_property>
+            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+            <obj_property name="radix_fractionWidth">1</obj_property>
+            <obj_property name="radix_otherWidth">0</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measurements.filtered.extrema" type="array">
             <obj_property name="ElementShortName">.extrema[15:0]</obj_property>
@@ -1077,7 +1085,6 @@
    <wvobject fp_name="group1414" type="group">
       <obj_property name="label">CFD</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="group649" type="group">
          <obj_property name="label">ports</obj_property>
          <obj_property name="DisplayName">label</obj_property>
@@ -1131,12 +1138,18 @@
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measure/CFD/slope_threshold" type="array">
             <obj_property name="ElementShortName">slope_threshold[17:0]</obj_property>
             <obj_property name="ObjectShortName">slope_threshold[17:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            <obj_property name="Radix">REALRADIX</obj_property>
+            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+            <obj_property name="radix_fractionWidth">3</obj_property>
+            <obj_property name="radix_otherWidth">0</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measure/CFD/pulse_threshold" type="array">
             <obj_property name="ElementShortName">pulse_threshold[17:0]</obj_property>
             <obj_property name="ObjectShortName">pulse_threshold[17:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            <obj_property name="Radix">REALRADIX</obj_property>
+            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+            <obj_property name="radix_fractionWidth">3</obj_property>
+            <obj_property name="radix_otherWidth">0</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measure/CFD/slope_threshold_int" type="array">
             <obj_property name="ElementShortName">slope_threshold_int[17:0]</obj_property>
@@ -1151,6 +1164,10 @@
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measure/CFD/max_slope" type="array">
             <obj_property name="ElementShortName">max_slope[17:0]</obj_property>
             <obj_property name="ObjectShortName">max_slope[17:0]</obj_property>
+            <obj_property name="Radix">REALRADIX</obj_property>
+            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+            <obj_property name="radix_fractionWidth">8</obj_property>
+            <obj_property name="radix_otherWidth">0</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measure/CFD/cfd_error" type="other">
             <obj_property name="ElementShortName">cfd_error</obj_property>
@@ -1161,30 +1178,36 @@
             <obj_property name="ObjectShortName">slope_out[17:0]</obj_property>
             <obj_property name="CellHeight">60</obj_property>
             <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-            <obj_property name="AnalogYRangeMin">-7400.000000</obj_property>
-            <obj_property name="AnalogYRRangeMax">7400.000000</obj_property>
+            <obj_property name="AnalogYRangeMin">-20.000000</obj_property>
+            <obj_property name="AnalogYRRangeMax">20.000000</obj_property>
             <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
             <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
             <obj_property name="AnalogHorizLine">0.000000</obj_property>
             <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            <obj_property name="Radix">REALRADIX</obj_property>
             <obj_property name="CustomSignalColor">#F0E68C</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+            <obj_property name="radix_fractionWidth">8</obj_property>
+            <obj_property name="radix_otherWidth">0</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measure/CFD/filtered_out" type="array">
             <obj_property name="ElementShortName">filtered_out[17:0]</obj_property>
             <obj_property name="ObjectShortName">filtered_out[17:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            <obj_property name="Radix">REALRADIX</obj_property>
             <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
             <obj_property name="CustomSignalColor">#FF00FF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
             <obj_property name="CellHeight">60</obj_property>
             <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-            <obj_property name="AnalogYRangeMin">-850.000000</obj_property>
-            <obj_property name="AnalogYRRangeMax">850.000000</obj_property>
+            <obj_property name="AnalogYRangeMin">-500.000000</obj_property>
+            <obj_property name="AnalogYRRangeMax">500.000000</obj_property>
             <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
             <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
             <obj_property name="AnalogHorizLine">0.000000</obj_property>
+            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+            <obj_property name="radix_fractionWidth">3</obj_property>
+            <obj_property name="radix_otherWidth">0</obj_property>
          </wvobject>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measure/CFD/max" type="other">
@@ -1281,12 +1304,18 @@
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measure/CFD/cfd_low_threshold" type="array">
          <obj_property name="ElementShortName">cfd_low_threshold[17:0]</obj_property>
          <obj_property name="ObjectShortName">cfd_low_threshold[17:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measure/CFD/cfd_high_threshold" type="array">
          <obj_property name="ElementShortName">cfd_high_threshold[17:0]</obj_property>
          <obj_property name="ObjectShortName">cfd_high_threshold[17:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measure/CFD/q_rd_en" type="logic">
          <obj_property name="ElementShortName">q_rd_en</obj_property>
