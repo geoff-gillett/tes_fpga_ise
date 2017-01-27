@@ -27,7 +27,8 @@ generic(
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  ENDIAN:string:="LITTLE"
+  ENDIAN:string:="LITTLE";
+  STRICT_CROSSING:boolean:=TRUE
 );
 port (
   clk:in std_logic;
@@ -181,7 +182,7 @@ generic map(
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
   CFD_DELAY => RAW_DELAY-101-72,
-  STRICT_CROSSING => TRUE
+  STRICT_CROSSING => STRICT_CROSSING
 )
 port map(
   enable => event_enable,
@@ -200,13 +201,14 @@ begin
       <= raw_rounded & raw_pipe(RLAT-XLAT to DEPTH-1);
     raw_0_pos_pipe <= raw_0_pos_x & raw_0_pos_pipe(1 to DEPTH-1);
     raw_0_neg_pipe <= raw_0_neg_x & raw_0_neg_pipe(1 to DEPTH-1);
+    m.raw.zero_xing <= raw_0_neg_pipe(DEPTH-1) or raw_0_pos_pipe(DEPTH-1);
   end if;
 end process pipelines;
 
 raw0xing:entity dsp.crossing
 generic map(
   WIDTH => WIDTH,
-  STRICT => FALSE
+  STRICT => TRUE
 )
 port map(
   clk => clk,
