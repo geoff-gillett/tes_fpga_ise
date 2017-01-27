@@ -202,9 +202,10 @@ reg_data(PULSE_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.capture.pulse_threshold,AXI_DATA_BITS));
 reg_data(SLOPE_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.capture.slope_threshold,AXI_DATA_BITS));
-reg_data(CONSTANT_FRACTION_ADDR_BIT)
-   <= to_std_logic(reg.capture.cfd_rel2min) & 
-      to_std_logic(resize(reg.capture.constant_fraction,AXI_DATA_BITS-1));
+reg_data(CONSTANT_FRACTION_ADDR_BIT)(AXI_DATA_BITS-1)
+   <= to_std_logic(reg.capture.cfd_rel2min);
+reg_data(CONSTANT_FRACTION_ADDR_BIT)(CFD_BITS-2 downto 0)      
+   <= to_std_logic(reg.capture.constant_fraction);
 reg_data(AREA_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.capture.area_threshold,AXI_DATA_BITS));
 reg_data(DELAY_ADDR_BIT)

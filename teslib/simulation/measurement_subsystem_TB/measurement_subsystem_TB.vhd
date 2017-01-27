@@ -103,6 +103,7 @@ signal slope_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal baseline_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 
 signal m:measurements_array(CHANNELS-1 downto 0);
+signal adc_count:unsigned(ADC_BITS-1 downto 0);
 
 begin
 	
@@ -196,13 +197,15 @@ global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
 global.mca.last_bin <= (others => '1');
 global.mca.lowest_value <= to_signed(-1000,MCA_VALUE_BITS);
+global.mca.lowest_value <= to_signed(0,MCA_VALUE_BITS);
 global.mca.qualifier <= ALL_MCA_QUAL_D;
 --TODO normalise these type names
 --global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 --global.mca.value <= MCA_RAW_SIGNAL_D;
 global.window <= to_unsigned(40, TIME_BITS);
 
-global.channel_enable <= "00000011";
+--global.channel_enable <= "00000011";
+global.channel_enable <= "00000000";
 
 filter_config(0).config_data <= (others => '0');
 filter_config(0).config_valid <= '0';
@@ -235,18 +238,20 @@ baseline_config(1).reload_data <= (others => '0');
 baseline_config(1).reload_last <= '0';
 baseline_config(1).reload_valid <= '0';
 
-chan_reg(0).baseline.offset <= to_unsigned(850*8,DSP_BITS-1);
+--chan_reg(0).baseline.offset <= to_unsigned(850*8,DSP_BITS-1);
+chan_reg(0).baseline.offset <= to_unsigned(0,DSP_BITS-1);
 chan_reg(0).baseline.count_threshold <= to_unsigned(10,BASELINE_COUNTER_BITS);
 chan_reg(0).baseline.threshold <= (others => '1');
 chan_reg(0).baseline.new_only <= TRUE;
-chan_reg(0).baseline.subtraction <= TRUE;
+chan_reg(0).baseline.subtraction <= FALSE;
 chan_reg(0).baseline.timeconstant <= to_unsigned(2**12,32);
 
-chan_reg(1).baseline.offset <= to_unsigned(850*8,DSP_BITS-1);
+--chan_reg(1).baseline.offset <= to_unsigned(850*8,DSP_BITS-1);
+chan_reg(1).baseline.offset <= to_unsigned(0,DSP_BITS-1);
 chan_reg(1).baseline.count_threshold <= to_unsigned(10,BASELINE_COUNTER_BITS);
 chan_reg(1).baseline.threshold <= (others => '1');
 chan_reg(1).baseline.new_only <= TRUE;
-chan_reg(1).baseline.subtraction <= TRUE;
+chan_reg(1).baseline.subtraction <= FALSE;
 chan_reg(1).baseline.timeconstant <= to_unsigned(2**12,32);
 
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
@@ -389,7 +394,7 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(sample_clk);
-		adc_samples(0) <= to_std_logic(sample, 14);
+		--adc_samples(0) <= to_std_logic(sample, 14);
 		--sample_reg <= resize(sample_in, 14);
 		adc_samples(1) <= (others => '0'); -- adc_samples(0);
 		if clk_count mod 10000 = 0 then
@@ -399,6 +404,18 @@ begin
 	end loop;
 	wait;
 end process stimulusFile;
+
+ramp:process (sample_clk) is
+begin
+  if rising_edge(sample_clk) then
+    if reset1 = '1' then
+      adc_count <= (others => '0');
+    else
+      adc_count <= adc_count+1;
+    end if;
+  end if;
+end process ramp;
+adc_samples(0) <= std_logic_vector(adc_count);
 
 mcaControlStimulus:process
 begin
