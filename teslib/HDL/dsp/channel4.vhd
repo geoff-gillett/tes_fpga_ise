@@ -23,6 +23,7 @@ generic(
   FRAC:natural:=3;
   WIDTH_OUT:natural:=16;
   FRAC_OUT:natural:=1;
+  SLOPE_FRAC:natural:=8;
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
@@ -175,6 +176,7 @@ generic map(
   FRAC => FRAC,
   WIDTH_OUT => WIDTH_OUT,
   FRAC_OUT => FRAC_OUT,
+  SLOPE_FRAC => SLOPE_FRAC,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
   CFD_DELAY => CFD_DELAY-101

@@ -8,9 +8,6 @@ use unisim.vcomponents.DSP48E1;
 library extensions;
 use extensions.logic.all;
 
---TODO this is only used after fir stages, write own fir stage instead of 
--- using coregen could save 1 DSP slice by incorporating saturate slice into FIR
-
 entity round2 is
 generic(
   WIDTH_IN:integer:=48; -- max 48

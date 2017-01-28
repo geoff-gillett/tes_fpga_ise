@@ -53,8 +53,8 @@ generic(
 	FRAC_OUT:integer:=3;
 	SLOPE_FRAC:natural:=8;
 	SLOPE_FRAC_OUT:natural:=8;
-	AREA_WIDTH:natural:=1;
-	AREA_FRAC:natural:=32
+	AREA_WIDTH:natural:=32;
+	AREA_FRAC:natural:=1
 );
 port(
   clk:in std_logic;
