@@ -25,7 +25,9 @@ use work.types.all;
 -- stage2 output w=48 f=28
 entity two_stage_FIR71 is
 generic(
-	WIDTH:integer:=18
+	WIDTH:integer:=18;
+	FRAC:natural:=3;
+	SLOPE_FRAC:natural:=8
 );
 port(
   clk:in std_logic;
@@ -121,8 +123,8 @@ stage1Round:entity work.round2
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 26,
-  WIDTH_OUT => 18,
-  FRAC_OUT => 3
+  WIDTH_OUT => WIDTH,
+  FRAC_OUT => FRAC
 )
 port map(
   clk => clk,
@@ -156,8 +158,8 @@ stage2Round:entity work.round2
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 28,
-  WIDTH_OUT => 18,
-  FRAC_OUT => 8
+  WIDTH_OUT => WIDTH,
+  FRAC_OUT => SLOPE_FRAC
 )
 port map(
   clk => clk,

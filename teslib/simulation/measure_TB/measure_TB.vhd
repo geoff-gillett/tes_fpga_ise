@@ -61,13 +61,13 @@ port map(
   stage2 => slope
 );
 
-UUT:entity work.measure3
+UUT:entity work.measure4
 generic map(
   CHANNEL => 0,
   WIDTH => WIDTH,
   FRAC => FRAC,
   WIDTH_OUT => 16,
-  FRAC_OUT => 1,
+  FRAC_OUT => 3,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
   CFD_DELAY => CFD_DELAY

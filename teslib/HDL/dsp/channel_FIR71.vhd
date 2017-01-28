@@ -20,10 +20,12 @@ entity channel_FIR71 is
 generic(
   CHANNEL:natural:=0;
   BASELINE_BITS:natural:=12;
-  WIDTH:natural:=18;
-  FRAC:natural:=3;
-  WIDTH_OUT:natural:=16;
-  FRAC_OUT:natural:=1;
+  WIDTH:natural:=18; --internal precision
+  FRAC:natural:=3; --internal precision
+  WIDTH_OUT:natural:=16; -- precision in measurement packets
+  FRAC_OUT:natural:=3;
+  SLOPE_FRAC:natural:=8; --internal precision
+  SLOPE_FRAC_OUT:natural:=8;
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
@@ -159,7 +161,9 @@ raw <= signed(sample_d);
 
 FIR:entity dsp.two_stage_FIR71
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  FRAC => FRAC,
+  SLOPE_FRAC => SLOPE_FRAC
 )
 port map(
   clk => clk,
@@ -179,6 +183,8 @@ generic map(
   FRAC => FRAC,
   WIDTH_OUT => WIDTH_OUT,
   FRAC_OUT => FRAC_OUT,
+  SLOPE_FRAC => SLOPE_FRAC,
+  SLOPE_FRAC_OUT => SLOPE_FRAC_OUT,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
   CFD_DELAY => RAW_DELAY-101-72,

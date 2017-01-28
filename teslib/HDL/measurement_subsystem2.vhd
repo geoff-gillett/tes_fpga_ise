@@ -45,7 +45,16 @@ generic(
   ADC_CHANNELS:natural:=2;
   MCA_VALUE_PIPE_DEPTH:natural:=1;
 	ENDIAN:string:="LITTLE";
-	PACKET_GEN:boolean:=FALSE
+	PACKET_GEN:boolean:=FALSE;
+	ADC_WIDTH:integer:=14;
+	WIDTH:integer:=18;
+	FRAC:integer:=3;
+	WIDTH_OUT:integer:=16;
+	FRAC_OUT:integer:=3;
+	SLOPE_FRAC:natural:=8;
+	SLOPE_FRAC_OUT:natural:=8;
+	AREA_WIDTH:natural:=1;
+	AREA_FRAC:natural:=32
 );
 port(
   clk:in std_logic;
@@ -238,7 +247,17 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   generic map(
     CHANNEL => c,
     ENDIAN => ENDIAN,
-    BASELINE_BITS => BASELINE_BITS
+    BASELINE_BITS => BASELINE_BITS,
+    WIDTH => WIDTH,
+    FRAC => FRAC,
+    WIDTH_OUT => WIDTH_OUT,
+    FRAC_OUT => FRAC_OUT,
+    SLOPE_FRAC => SLOPE_FRAC,
+    SLOPE_FRAC_OUT => SLOPE_FRAC_OUT,
+    ADC_WIDTH => ADC_WIDTH,
+    AREA_WIDTH => AREA_WIDTH,
+    AREA_FRAC => AREA_FRAC,
+    STRICT_CROSSING => TRUE 
   )
   port map(
     clk => clk,

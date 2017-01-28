@@ -19,7 +19,9 @@ generic(
   WIDTH:natural:=18;
   FRAC:natural:=3;
   WIDTH_OUT:natural:=16;
-  FRAC_OUT:natural:=1;
+  FRAC_OUT:natural:=3;
+  SLOPE_FRAC:natural:=8;
+  SLOPE_FRAC_OUT:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
   TIME_WIDTH:natural:=16;
@@ -346,9 +348,9 @@ port map(
 slopeRound:entity dsp.round2
 generic map(
   WIDTH_IN => WIDTH,
-  FRAC_IN => FRAC,
+  FRAC_IN => SLOPE_FRAC,
   WIDTH_OUT => WIDTH_OUT,
-  FRAC_OUT => FRAC_OUT,
+  FRAC_OUT => SLOPE_FRAC_OUT,
   TOWARDS_INF => FALSE
 )
 port map(
