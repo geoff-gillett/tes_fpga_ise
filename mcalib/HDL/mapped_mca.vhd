@@ -140,7 +140,7 @@ begin
     if underflowed then
       offset_value <= MOSTNEG;
     else
-      offset_value <= value-lowest_value_reg+MOSTNEG;
+      offset_value <= value-lowest_value_reg+MOSTNEG+1;
     end if;
   end if;
 end process valueOffset;

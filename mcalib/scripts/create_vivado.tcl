@@ -1,3 +1,3 @@
 package require xil
 namespace import xil::*
-xil::make_project planahead mcalib ../ ../
+xil::make_project vivado mcalib ../ ../

@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="mapped_mca_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="boolean_vector" />
+            <top_module name="logic" />
+            <top_module name="mapped_mca_TB" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="2085666666fs"></ZoomStartTime>
+      <ZoomEndTime time="2179666667fs"></ZoomEndTime>
+      <Cursor1Time time="2160000000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group26" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/pipe" type="array">
+         <obj_property name="ElementShortName">pipe[1:6][31:0]</obj_property>
+         <obj_property name="ObjectShortName">pipe[1:6][31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/pipe[1]" type="array">
+            <obj_property name="ElementShortName">[1][31:0]</obj_property>
+            <obj_property name="ObjectShortName">pipe[1][31:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/pipe[2]" type="array">
+            <obj_property name="ElementShortName">[2][31:0]</obj_property>
+            <obj_property name="ObjectShortName">pipe[2][31:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/pipe[3]" type="array">
+            <obj_property name="ElementShortName">[3][31:0]</obj_property>
+            <obj_property name="ObjectShortName">pipe[3][31:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/pipe[4]" type="array">
+            <obj_property name="ElementShortName">[4][31:0]</obj_property>
+            <obj_property name="ObjectShortName">pipe[4][31:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/pipe[5]" type="array">
+            <obj_property name="ElementShortName">[5][31:0]</obj_property>
+            <obj_property name="ObjectShortName">pipe[5][31:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/pipe[6]" type="array">
+            <obj_property name="ElementShortName">[6][31:0]</obj_property>
+            <obj_property name="ObjectShortName">pipe[6][31:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/value" type="array">
+         <obj_property name="ElementShortName">value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">value[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/value_valid" type="other">
+         <obj_property name="ElementShortName">value_valid</obj_property>
+         <obj_property name="ObjectShortName">value_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/swap_buffer" type="other">
+         <obj_property name="ElementShortName">swap_buffer</obj_property>
+         <obj_property name="ObjectShortName">swap_buffer</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/enabled" type="other">
+         <obj_property name="ElementShortName">enabled</obj_property>
+         <obj_property name="ObjectShortName">enabled</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/can_swap" type="other">
+         <obj_property name="ElementShortName">can_swap</obj_property>
+         <obj_property name="ObjectShortName">can_swap</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/bin_n" type="array">
+         <obj_property name="ElementShortName">bin_n[2:0]</obj_property>
+         <obj_property name="ObjectShortName">bin_n[2:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/last_bin" type="array">
+         <obj_property name="ElementShortName">last_bin[7:0]</obj_property>
+         <obj_property name="ObjectShortName">last_bin[7:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/lowest_value" type="array">
+         <obj_property name="ElementShortName">lowest_value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">lowest_value[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/max_count" type="array">
+         <obj_property name="ElementShortName">max_count[31:0]</obj_property>
+         <obj_property name="ObjectShortName">max_count[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/most_frequent" type="array">
+         <obj_property name="ElementShortName">most_frequent[7:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[7:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/total" type="array">
+         <obj_property name="ElementShortName">total[63:0]</obj_property>
+         <obj_property name="ObjectShortName">total[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/readable" type="other">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/stream" type="array">
+         <obj_property name="ElementShortName">stream[31:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/valid" type="other">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/ready" type="other">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/last" type="other">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/sim_count" type="array">
+         <obj_property name="ElementShortName">sim_count[31:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_count[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/sim_enable" type="other">
+         <obj_property name="ElementShortName">sim_enable</obj_property>
+         <obj_property name="ObjectShortName">sim_enable</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/ADDRESS_BITS" type="other">
+         <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
+         <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/TOTAL_BITS" type="other">
+         <obj_property name="ElementShortName">TOTAL_BITS</obj_property>
+         <obj_property name="ObjectShortName">TOTAL_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/VALUE_BITS" type="other">
+         <obj_property name="ElementShortName">VALUE_BITS</obj_property>
+         <obj_property name="ObjectShortName">VALUE_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/COUNTER_BITS" type="other">
+         <obj_property name="ElementShortName">COUNTER_BITS</obj_property>
+         <obj_property name="ObjectShortName">COUNTER_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/CLK_PERIOD" type="other">
+         <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
+         <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group27" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/value" type="array">
+         <obj_property name="ElementShortName">value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">value[31:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/value_valid" type="other">
+         <obj_property name="ElementShortName">value_valid</obj_property>
+         <obj_property name="ObjectShortName">value_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/swap_buffer" type="other">
+         <obj_property name="ElementShortName">swap_buffer</obj_property>
+         <obj_property name="ObjectShortName">swap_buffer</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/enabled" type="other">
+         <obj_property name="ElementShortName">enabled</obj_property>
+         <obj_property name="ObjectShortName">enabled</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/can_swap" type="other">
+         <obj_property name="ElementShortName">can_swap</obj_property>
+         <obj_property name="ObjectShortName">can_swap</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/bin_n" type="array">
+         <obj_property name="ElementShortName">bin_n[2:0]</obj_property>
+         <obj_property name="ObjectShortName">bin_n[2:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/last_bin" type="array">
+         <obj_property name="ElementShortName">last_bin[7:0]</obj_property>
+         <obj_property name="ObjectShortName">last_bin[7:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/lowest_value" type="array">
+         <obj_property name="ElementShortName">lowest_value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">lowest_value[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/max_count" type="array">
+         <obj_property name="ElementShortName">max_count[31:0]</obj_property>
+         <obj_property name="ObjectShortName">max_count[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/most_frequent" type="array">
+         <obj_property name="ElementShortName">most_frequent[7:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[7:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/total" type="array">
+         <obj_property name="ElementShortName">total[63:0]</obj_property>
+         <obj_property name="ObjectShortName">total[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/readable" type="other">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/stream" type="array">
+         <obj_property name="ElementShortName">stream[31:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/valid" type="other">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/ready" type="other">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/last" type="other">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/last_bin_reg" type="array">
+         <obj_property name="ElementShortName">last_bin_reg[7:0]</obj_property>
+         <obj_property name="ObjectShortName">last_bin_reg[7:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/last_bin_temp" type="array">
+         <obj_property name="ElementShortName">last_bin_temp[7:0]</obj_property>
+         <obj_property name="ObjectShortName">last_bin_temp[7:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/bin_n_reg" type="array">
+         <obj_property name="ElementShortName">bin_n_reg[2:0]</obj_property>
+         <obj_property name="ObjectShortName">bin_n_reg[2:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/bin_n_temp" type="array">
+         <obj_property name="ElementShortName">bin_n_temp[2:0]</obj_property>
+         <obj_property name="ObjectShortName">bin_n_temp[2:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/bin_valid" type="other">
+         <obj_property name="ElementShortName">bin_valid</obj_property>
+         <obj_property name="ObjectShortName">bin_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/swap_int" type="other">
+         <obj_property name="ElementShortName">swap_int</obj_property>
+         <obj_property name="ObjectShortName">swap_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/swapping" type="other">
+         <obj_property name="ElementShortName">swapping</obj_property>
+         <obj_property name="ObjectShortName">swapping</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/MCA_can_swap" type="other">
+         <obj_property name="ElementShortName">MCA_can_swap</obj_property>
+         <obj_property name="ObjectShortName">MCA_can_swap</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/can_swap_int" type="other">
+         <obj_property name="ElementShortName">can_swap_int</obj_property>
+         <obj_property name="ObjectShortName">can_swap_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/just_reset" type="other">
+         <obj_property name="ElementShortName">just_reset</obj_property>
+         <obj_property name="ObjectShortName">just_reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/pipe" type="array">
+         <obj_property name="ElementShortName">pipe[1:6][31:0]</obj_property>
+         <obj_property name="ObjectShortName">pipe[1:6][31:0]</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/lowest_value_reg" type="array">
+         <obj_property name="ElementShortName">lowest_value_reg[31:0]</obj_property>
+         <obj_property name="ObjectShortName">lowest_value_reg[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/offset_value" type="array">
+         <obj_property name="ElementShortName">offset_value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">offset_value[31:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/pipe[2]" type="array">
+         <obj_property name="ElementShortName">[2][31:0]</obj_property>
+         <obj_property name="ObjectShortName">pipe[2][31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/bin_value" type="array">
+         <obj_property name="ElementShortName">bin_value[31:0]</obj_property>
+         <obj_property name="ObjectShortName">bin_value[31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/pipe[3]" type="array">
+         <obj_property name="ElementShortName">[3][31:0]</obj_property>
+         <obj_property name="ObjectShortName">pipe[3][31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/bin" type="array">
+         <obj_property name="ElementShortName">bin[7:0]</obj_property>
+         <obj_property name="ObjectShortName">bin[7:0]</obj_property>
+         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/swap_pipe" type="array">
+         <obj_property name="ElementShortName">swap_pipe[1:3]</obj_property>
+         <obj_property name="ObjectShortName">swap_pipe[1:3]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/valid_pipe" type="array">
+         <obj_property name="ElementShortName">valid_pipe[1:3]</obj_property>
+         <obj_property name="ObjectShortName">valid_pipe[1:3]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/enabled_pipe" type="array">
+         <obj_property name="ElementShortName">enabled_pipe[1:3]</obj_property>
+         <obj_property name="ObjectShortName">enabled_pipe[1:3]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/overflow" type="other">
+         <obj_property name="ElementShortName">overflow</obj_property>
+         <obj_property name="ObjectShortName">overflow</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/out_of_bounds" type="other">
+         <obj_property name="ElementShortName">out_of_bounds</obj_property>
+         <obj_property name="ObjectShortName">out_of_bounds</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/underflow" type="other">
+         <obj_property name="ElementShortName">underflow</obj_property>
+         <obj_property name="ObjectShortName">underflow</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/underflowed" type="other">
+         <obj_property name="ElementShortName">underflowed</obj_property>
+         <obj_property name="ObjectShortName">underflowed</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/ADDRESS_BITS" type="other">
+         <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
+         <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/TOTAL_BITS" type="other">
+         <obj_property name="ElementShortName">TOTAL_BITS</obj_property>
+         <obj_property name="ObjectShortName">TOTAL_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/VALUE_BITS" type="other">
+         <obj_property name="ElementShortName">VALUE_BITS</obj_property>
+         <obj_property name="ObjectShortName">VALUE_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/COUNTER_BITS" type="other">
+         <obj_property name="ElementShortName">COUNTER_BITS</obj_property>
+         <obj_property name="ObjectShortName">COUNTER_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mapped_mca_TB/UUT/DEBUG" type="array">
+         <obj_property name="ElementShortName">DEBUG[1:5]</obj_property>
+         <obj_property name="ObjectShortName">DEBUG[1:5]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
