@@ -89,11 +89,11 @@ simcount:process (clk) is
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      sim_count <= to_signed(-10,VALUE_BITS);
+      sim_count <= to_signed(-10, VALUE_BITS);
     else
       pipe <= value & pipe(1 to DEPTH-1);
       if sim_enable then
-        if sim_count > to_signed(2**ADDRESS_BITS,VALUE_BITS) then
+        if sim_count > to_signed(2**ADDRESS_BITS*4, VALUE_BITS) then
           sim_count <= to_signed(-10,VALUE_BITS); 
         else
           sim_count <= sim_count+1;
@@ -103,20 +103,21 @@ begin
   end if;
 end process simcount;
 value <= sim_count;
+value_valid <= sim_count(1 downto 0)="11";
 
 stimulus:process is
 begin
 sim_enable <= FALSE;
-value_valid <= FALSE;
 swap_buffer <= FALSE;
 last_bin <= to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS);
-lowest_value <= (others => '0');
-bin_n <= (others => '0');
+lowest_value <= to_signed(-1, VALUE_BITS);
+bin_n <= (1 => '1', others => '0');
 ready <= TRUE;
 wait for CLK_PERIOD;
 reset <= '0';
 wait for CLK_PERIOD;
 wait until can_swap;
+enabled <= TRUE;
 sim_enable <= TRUE;
 swap_buffer <= TRUE;
 wait for CLK_PERIOD;

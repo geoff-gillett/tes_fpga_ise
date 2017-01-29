@@ -71,12 +71,11 @@ end entity mapped_mca;
 
 architecture RTL of mapped_mca is
   
-	
 signal bin,last_bin_reg,last_bin_temp:unsigned(ADDRESS_BITS-1 downto 0);
 signal bin_n_reg,bin_n_temp:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal bin_valid,swap_int,swapping,MCA_can_swap,can_swap_int,just_reset:boolean;
 signal lowest_value_reg,offset_value:signed(VALUE_BITS-1 downto 0);
-signal bin_value:unsigned(VALUE_BITS-1 downto 0);
+signal bin_value:signed(VALUE_BITS-1 downto 0);
 
 constant DEPTH:natural:=3;
 signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to DEPTH);
@@ -132,33 +131,34 @@ end process controlRegisters;
 --swap+1
 --underflowed <= to_0IfX(value) <= to_0IfX(lowest_value_reg);
 underflowed <= to_0IfX(value) < to_0IfX(lowest_value_reg);
-valueOffset:process (clk)
-constant MOSTNEG:signed(VALUE_BITS-1 downto 0)
-         :=(VALUE_BITS-1 => '1',others => '0');
-begin
-  if rising_edge(clk) then
-    if underflowed then
-      offset_value <= MOSTNEG;
-    else
-      offset_value <= value-lowest_value_reg+MOSTNEG+1;
-    end if;
-  end if;
-end process valueOffset;
+--valueOffset:process (clk)
+--constant MOSTNEG:signed(VALUE_BITS-1 downto 0)
+--         :=(VALUE_BITS-1 => '1',others => '0');
+--begin
+--  if rising_edge(clk) then
+--    if underflowed then
+--      offset_value <= MOSTNEG;
+--    else
+--      offset_value <= value-lowest_value_reg+MOSTNEG+1;
+--    end if;
+--  end if;
+--end process valueOffset;
 
 --swap+2
 valueBin:process(clk)
-variable ordered:unsigned(VALUE_BITS-1 downto 0); 
 begin
 if rising_edge(clk) then
-  --suppress sim warnings from numeric_std
-  ordered:=unsigned(not std_logic(offset_value(VALUE_BITS-1)) &
-                   std_logic_vector(offset_value(VALUE_BITS-2 downto 0)));
-  bin_value <= shift_right(ordered,to_integer(to_0IfX(bin_n_reg)));
+  --swap+1
+  offset_value <= value-lowest_value;
+  --swap+2
+  bin_value <= shift_right(offset_value,to_integer(bin_n_reg));
 end if;
 end process valueBin;
+
 --swap+3
-overflow <= to_0IfX(bin_value) >= resize(to_0IfX(last_bin_reg),VALUE_BITS);
-underflow <= to_0IfX(bin_value)=0;
+overflow <= bin_value >= resize(signed('0' & last_bin_reg),VALUE_BITS);
+underflow <= bin_value(VALUE_BITS-1)='1';
+
 binOut:process(clk)
 begin
 if rising_edge(clk) then
@@ -166,8 +166,10 @@ if rising_edge(clk) then
   out_of_bounds <= overflow or underflow;
   if overflow then
     bin <= last_bin_reg;
+  elsif underflow then
+    bin <= (others => '0');
   else
-    bin <= bin_value(ADDRESS_BITS-1 downto 0);
+    bin <= unsigned(bin_value(ADDRESS_BITS-1 downto 0))+1;
   end if;
 end if;
 end process binOut;
