@@ -33,23 +33,31 @@ signal a:std_logic_vector(29 downto 0);
 signal b:std_logic_vector(17 downto 0);
 signal p_out,ab:std_logic_vector(47 downto 0);
 
+constant NONZERO_MASKS:boolean:=FRAC_IN-FRAC_OUT > 2;
+
 constant OVERFLOW_MASK:bit_vector(47 downto 0)
          :=(WIDTH_OUT-FRAC_OUT+FRAC_IN-2 downto 0 => '1', others => '0');
 
-constant ROUNDING:std_logic_vector(47 downto 0)
-         :=(FRAC_IN-FRAC_OUT-2 downto 0 => '1', others => '0');
+--constant ROUNDING_CONSTANT:std_logic_vector(47 downto 0)
+         --:=(FRAC_IN-FRAC_OUT-2 downto 0 => '1', others => '0');
          
 signal carryin:std_logic;
 signal pat:std_ulogic;
 signal patb:std_ulogic;
 signal saturate:std_logic;
+signal rounding:std_logic_vector(47 downto 0):=(others => '0');
+--signal overflow_mask:bit_vector(47 downto 0):=(others => '0');
 
 begin
   
 assert WIDTH_IN <= 48 report "maximum WIDTH_IN is 48" severity ERROR;
 assert WIDTH_OUT <= 48 report "maximum WIDTH_OUT is 48" severity ERROR;
-assert FRAC_OUT < FRAC_IN 
-report "FRAC_OUT must be less than FRAC_in" severity ERROR;
+assert FRAC_OUT <= FRAC_IN 
+report "FRAC_OUT must be less than or equal to FRAC_in" severity ERROR;
+
+constantGen:if NONZERO_MASKS generate
+  rounding <= (FRAC_IN-FRAC_OUT-2 downto 0 => '1', others => '0');
+end generate;
 
 --carryin_sel <= "101" when TOWARDS_INF else "111";
 carryin <= (not input(WIDTH_IN-1)) when TOWARDS_INF else input(WIDTH_IN-1);

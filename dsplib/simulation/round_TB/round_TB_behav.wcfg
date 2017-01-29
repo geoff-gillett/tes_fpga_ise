@@ -12,9 +12,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="5197639fs"></ZoomStartTime>
-      <ZoomEndTime time="70011810fs"></ZoomEndTime>
-      <Cursor1Time time="16000000fs"></Cursor1Time>
+      <ZoomStartTime time="210000000fs"></ZoomStartTime>
+      <ZoomEndTime time="315897170fs"></ZoomEndTime>
+      <Cursor1Time time="68000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="2" />
    <wvobject fp_name="group17" type="group">
@@ -56,11 +56,11 @@
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/round_TB/output" type="array">
-         <obj_property name="ElementShortName">output[3:0]</obj_property>
-         <obj_property name="ObjectShortName">output[3:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="ElementShortName">output[5:0]</obj_property>
+         <obj_property name="ObjectShortName">output[5:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">1</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
          <obj_property name="CustomSignalColor">#FF00FF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
@@ -160,8 +160,8 @@
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/round_TB/UUT/output" type="array">
-         <obj_property name="ElementShortName">output[3:0]</obj_property>
-         <obj_property name="ObjectShortName">output[3:0]</obj_property>
+         <obj_property name="ElementShortName">output[5:0]</obj_property>
+         <obj_property name="ObjectShortName">output[5:0]</obj_property>
          <obj_property name="Radix">REALRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">1</obj_property>
@@ -201,9 +201,9 @@
          <obj_property name="ElementShortName">OVERFLOW_MASK[47:0]</obj_property>
          <obj_property name="ObjectShortName">OVERFLOW_MASK[47:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/ROUNDING" type="array">
-         <obj_property name="ElementShortName">ROUNDING[47:0]</obj_property>
-         <obj_property name="ObjectShortName">ROUNDING[47:0]</obj_property>
+      <wvobject db_ref_id="1" fp_name="/round_TB/UUT/rounding" type="array">
+         <obj_property name="ElementShortName">rounding[47:0]</obj_property>
+         <obj_property name="ObjectShortName">rounding[47:0]</obj_property>
          <obj_property name="Radix">HEXRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>

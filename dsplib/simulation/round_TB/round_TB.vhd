@@ -10,8 +10,8 @@ entity round_TB is
 generic(
   WIDTH_IN:natural:=48; -- max 48
   FRAC_IN:natural:=3;
-  WIDTH_OUT:natural:=4;
-  FRAC_OUT:natural:=1;
+  WIDTH_OUT:natural:=6;
+  FRAC_OUT:natural:=0;
   TOWARDS_INF:boolean:=FALSE
 ); 
 end entity round_TB;
@@ -22,8 +22,8 @@ architecture testbench of round_TB is
 signal clk:std_logic:='1';
 signal reset:std_logic:='1';
 constant CLK_PERIOD:time:=4 ns;
-signal input:std_logic_vector(WIDTH_IN-1 downto 0);
-signal output:std_logic_vector(WIDTH_OUT-1 downto 0);
+signal input:signed(WIDTH_IN-1 downto 0);
+signal output:signed(WIDTH_OUT-1 downto 0);
 
 constant SIM_WIDTH:integer:=7;
 signal sim_count,sim_out:signed(SIM_WIDTH-1 downto 0);
@@ -31,11 +31,13 @@ signal sim_count,sim_out:signed(SIM_WIDTH-1 downto 0);
 constant DEPTH:natural:=3;
 type pipe is array (1 to DEPTH) of signed(SIM_WIDTH-1 downto 0);
 signal sim_pipe:pipe;
+signal output_threshold:signed(WIDTH_OUT-1 downto 0);
+signal above_threshold:boolean;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.round
+UUT:entity work.round2
 generic map(
   WIDTH_IN => WIDTH_IN,
   FRAC_IN => FRAC_IN,
@@ -47,7 +49,9 @@ port map(
   clk => clk,
   reset => reset,
   input => input,
-  output => output
+  output_threshold => output_threshold,
+  output => output,
+  above_threshold => above_threshold
 );
 
 sim:process (clk) is

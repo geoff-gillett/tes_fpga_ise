@@ -76,8 +76,15 @@ signal range_error:boolean;
 --debug
 constant DEBUG:string:="FALSE";
 attribute mark_debug:string;
+attribute keep:string;
+attribute keep of adc_sample:signal is DEBUG;
+attribute mark_debug of adc_sample:signal is DEBUG;
+attribute keep of sample:signal is DEBUG;
 attribute mark_debug of sample:signal is DEBUG;
+attribute keep of sample_in:signal is DEBUG;
 attribute mark_debug of sample_in:signal is DEBUG;
+--attribute keep of sample_inv:signal is DEBUG;
+--attribute mark_debug of sample_inv:signal is DEBUG;
 
 --raw signal measurements
 signal raw_x:signed(WIDTH-1 downto 0);
@@ -101,13 +108,14 @@ sampleoffset:process(clk)
 begin
 if rising_edge(clk) then
   if reset2='1' then
+    --FIXME sample_inv could be a variable
     sample_inv <= (others => '0');
     sample  <= (others => '0');
   else
     if registers.capture.invert then
-      sample_inv <= -signed(reshape('0' & adc_sample,0,WIDTH,FRAC)); 
+      sample_inv <= reshape(signed('1' & adc_sample),0,WIDTH,FRAC); 
     else
-      sample_inv <= signed(reshape('0' & adc_sample,0,WIDTH,FRAC)); 
+      sample_inv <= reshape(signed('0' & adc_sample),0,WIDTH,FRAC); 
     end if;
     sample <= sample_inv - signed('0' & registers.baseline.offset);
   end if;

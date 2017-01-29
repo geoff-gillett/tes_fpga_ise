@@ -188,7 +188,7 @@ end function minbits;
 function reshape(u:unsigned;in_frac,width,frac:integer) return unsigned is
 begin
 	if IN_FRAC > FRAC then
-		return shift_right(resize(u, width),in_frac-frac);
+		return shift_right(resize(u,width),in_frac-frac);
 	else
 		return shift_left(resize(u,width),frac-in_frac);
 	end if;
