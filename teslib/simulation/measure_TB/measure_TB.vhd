@@ -46,7 +46,7 @@ signal m:measurements_t;
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-FIR:entity dsp.two_stage_FIR2
+FIR:entity dsp.two_stage_FIR71
 generic map(
   WIDTH => DSP_BITS
 )

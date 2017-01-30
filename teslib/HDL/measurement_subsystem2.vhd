@@ -165,10 +165,13 @@ signal height_valid:boolean;
 signal height:signal_t;
 signal rise_time:time_t;
 
-constant DEBUG:string:="FALSE";
+signal mca_value_debug:signed(MCA_VALUE_BITS-1 downto 0);
+signal mca_value_valid_debug:boolean;
+
+constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
---attribute MARK_DEBUG of mca_value:signal is DEBUG;
---attribute MARK_DEBUG of mca_value_valid:signal is DEBUG;
+attribute MARK_DEBUG of mca_value_debug:signal is DEBUG;
+attribute MARK_DEBUG of mca_value_valid_debug:signal is DEBUG;
 --attribute MARK_DEBUG of value_select:signal is DEBUG;
 --attribute MARK_DEBUG of channel_select:signal is DEBUG;
 --attribute MARK_DEBUG of adc_mux0:signal is DEBUG;
@@ -179,9 +182,9 @@ attribute MARK_DEBUG:string;
 --attribute MARK_DEBUG of raw_0xing:signal is DEBUG;
 --attribute MARK_DEBUG of filtered_0xing:signal is DEBUG;
 --attribute MARK_DEBUG of peak_count:signal is DEBUG;
-attribute MARK_DEBUG of flags:signal is DEBUG;
-attribute MARK_DEBUG of height_valid:signal is DEBUG;
-attribute MARK_DEBUG of height:signal is DEBUG;
+--attribute MARK_DEBUG of flags:signal is DEBUG;
+--attribute MARK_DEBUG of height_valid:signal is DEBUG;
+--attribute MARK_DEBUG of height:signal is DEBUG;
 
 begin
 --------------------------------------------------------------------------------
@@ -195,6 +198,9 @@ begin
 -- raw_0xing <= m(0).raw.zero_xing;
 -- filtered_0xing <= m(0).filtered.zero_xing;
  --peak_count <= m(0).eflags.peak_count;
+ mca_value_debug <= mca_values(0);
+ mca_value_valid_debug <= mca_value_valids(0);
+ 
  flags <= to_std_logic(m(0).eflags);
  height_valid <= m(0).height_valid;
  height <= m(0).height;

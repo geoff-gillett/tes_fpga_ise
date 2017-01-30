@@ -48,7 +48,7 @@ signal xing_pipe:boolean_vector(1 to DEPTH);
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.area_acc2
+UUT:entity work.area_acc3
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -60,7 +60,8 @@ port map(
   reset => reset,
   xing => xing,
   sig => sig,
-  threshold => threshold,
+  area_threshold => threshold,
+  above_threshold => above_threshold,
   area => area
 );
 

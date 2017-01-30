@@ -79,7 +79,7 @@ signal bin_value:signed(VALUE_BITS-1 downto 0);
 
 constant DEPTH:natural:=3;
 signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to DEPTH);
-signal overflow,out_of_bounds,underflow,underflowed:boolean;
+signal overflow,out_of_bounds,underflow:boolean;--,underflowed:boolean;
 
 -- debug
 constant DEBUG:string:="FALSE";
@@ -130,7 +130,7 @@ end process controlRegisters;
 --------------------------------------------------------------------------------
 --swap+1
 --underflowed <= to_0IfX(value) <= to_0IfX(lowest_value_reg);
-underflowed <= to_0IfX(value) < to_0IfX(lowest_value_reg);
+--underflowed <= to_0IfX(value) < to_0IfX(lowest_value_reg);
 --valueOffset:process (clk)
 --constant MOSTNEG:signed(VALUE_BITS-1 downto 0)
 --         :=(VALUE_BITS-1 => '1',others => '0');

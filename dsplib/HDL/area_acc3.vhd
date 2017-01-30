@@ -56,7 +56,7 @@ report "maximum width is 18" severity ERROR;
 a <= resize(signal_threshold,30); 
 d <= resize(sig,25);  
 
-xingReg : process (clk) is
+xingReg:process (clk) is
 begin
   if rising_edge(clk) then
     if reset = '1' then
@@ -139,7 +139,7 @@ port map (
   D => d,                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs
   CEA1 => '1',                     -- 1-bit input: Clock enable input for 1st stage AREG
-  CEA2 => '0',                     -- 1-bit input: Clock enable input for 2nd stage AREG
+  CEA2 => '1',                     -- 1-bit input: Clock enable input for 2nd stage AREG
   CEAD => '0',                     -- 1-bit input: Clock enable input for ADREG
   CEALUMODE => '0',           -- 1-bit input: Clock enable input for ALUMODERE
   CEB1 => '0',                     -- 1-bit input: Clock enable input for 1st stage BREG

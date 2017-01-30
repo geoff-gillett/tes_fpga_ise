@@ -214,7 +214,7 @@ port map (
   D => (others => '0'),                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs
   CEA1 => '1',                     -- 1-bit input: Clock enable input for 1st stage AREG
-  CEA2 => '0',                     -- 1-bit input: Clock enable input for 2nd stage AREG
+  CEA2 => '1',                     -- 1-bit input: Clock enable input for 2nd stage AREG
   CEAD => '1',                     -- 1-bit input: Clock enable input for ADREG
   CEALUMODE => '0',           -- 1-bit input: Clock enable input for ALUMODERE
   CEB1 => '0',                     -- 1-bit input: Clock enable input for 1st stage BREG

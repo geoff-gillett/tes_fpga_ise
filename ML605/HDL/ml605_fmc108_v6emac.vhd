@@ -345,10 +345,11 @@ signal filter_events,slope_events,baseline_events:
 --debug
 --signal adc_sample0:adc_sample_t;
 --signal adc_enable:boolean_vector(ADC_CHANNELS-1 downto 0);
+signal raw_debug:signal_t;
 
---constant DEBUG:string:="FALSE";
---attribute MARK_DEBUG:string;
---attribute MARK_DEBUG of fifo_reset:signal is DEBUG;
+constant DEBUG:string:="TRUE";
+attribute MARK_DEBUG:string;
+attribute MARK_DEBUG of raw_debug:signal is DEBUG;
 --attribute MARK_DEBUG of enables_reg2:signal is DEBUG;
 --attribute MARK_DEBUG of adc_sample0:signal is DEBUG;
 --attribute MARK_DEBUG of fifo_valid:signal is DEBUG;
@@ -374,6 +375,7 @@ signal filter_events,slope_events,baseline_events:
 --signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
 begin
+raw_debug <= measurements(0).raw.sample;
 --adc_sample0 <= adc_samples(0);
 --adc_enable <= to_boolean(global.adc_enable);
 
