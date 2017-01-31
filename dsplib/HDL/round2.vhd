@@ -13,8 +13,8 @@ generic(
   WIDTH_IN:integer:=48; -- max 48
   FRAC_IN:integer:=28;
   WIDTH_OUT:integer:=18;
-  FRAC_OUT:integer:=3;
-  TOWARDS_INF:boolean:=FALSE
+  FRAC_OUT:integer:=3
+  --TOWARDS_INF:boolean:=FALSE
 ); 
 port(
   clk:in std_logic;
@@ -48,6 +48,7 @@ signal saturate:std_logic;
 signal rounding:std_logic_vector(47 downto 0):=(others => '0');
 --signal overflow_mask:bit_vector(47 downto 0):=(others => '0');
 
+constant NO_ROUND:boolean:=FRAC_IN=FRAC_OUT;
 begin
   
 assert WIDTH_IN <= 48 report "maximum WIDTH_IN is 48" severity ERROR;
@@ -60,7 +61,7 @@ constantGen:if NONZERO_MASKS generate
 end generate;
 
 --carryin_sel <= "101" when TOWARDS_INF else "111";
-carryin <= (not input(WIDTH_IN-1)) when TOWARDS_INF else input(WIDTH_IN-1);
+carryin <= '0' when NO_ROUND else input(WIDTH_IN-1);
 saturate <= not (pat xor patb);
 
 ab <= resize(input,48);

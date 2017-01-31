@@ -285,8 +285,7 @@ generic map(
   WIDTH_IN => WIDTH,
   FRAC_IN => FRAC,
   WIDTH_OUT => WIDTH_OUT,
-  FRAC_OUT => FRAC_OUT,
-  TOWARDS_INF => FALSE
+  FRAC_OUT => FRAC_OUT
 )
 port map(
   clk => clk,
@@ -302,8 +301,7 @@ generic map(
   WIDTH_IN => WIDTH,
   FRAC_IN => FRAC,
   WIDTH_OUT => WIDTH_OUT,
-  FRAC_OUT => FRAC_OUT,
-  TOWARDS_INF => FALSE
+  FRAC_OUT => FRAC_OUT
 )
 port map(
   clk => clk,
@@ -350,8 +348,7 @@ generic map(
   WIDTH_IN => WIDTH,
   FRAC_IN => SLOPE_FRAC,
   WIDTH_OUT => WIDTH_OUT,
-  FRAC_OUT => SLOPE_FRAC_OUT,
-  TOWARDS_INF => FALSE
+  FRAC_OUT => SLOPE_FRAC_OUT
 )
 port map(
   clk => clk,

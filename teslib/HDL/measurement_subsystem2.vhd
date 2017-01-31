@@ -168,10 +168,16 @@ signal rise_time:time_t;
 signal mca_value_debug:signed(MCA_VALUE_BITS-1 downto 0);
 signal mca_value_valid_debug:boolean;
 
-constant DEBUG:string:="TRUE";
+constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
 attribute MARK_DEBUG of mca_value_debug:signal is DEBUG;
 attribute MARK_DEBUG of mca_value_valid_debug:signal is DEBUG;
+--attribute MARK_DEBUG of framestream:signal is DEBUG;
+attribute MARK_DEBUG of framestream_valid:signal is DEBUG;
+attribute MARK_DEBUG of framestream_ready:signal is DEBUG;
+attribute MARK_DEBUG of muxstream_valid:signal is DEBUG;
+attribute MARK_DEBUG of muxstream_ready:signal is DEBUG;
+
 --attribute MARK_DEBUG of value_select:signal is DEBUG;
 --attribute MARK_DEBUG of channel_select:signal is DEBUG;
 --attribute MARK_DEBUG of adc_mux0:signal is DEBUG;

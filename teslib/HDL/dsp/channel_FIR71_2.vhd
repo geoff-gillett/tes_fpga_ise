@@ -16,7 +16,8 @@ use work.registers.all;
 use work.measurements.all;
 use work.types.all;
 
-entity channel_FIR71 is
+-- baseline estimate based on 14.0 bit adc signal
+entity channel_FIR71_2 is
 generic(
   CHANNEL:natural:=0;
   BASELINE_BITS:natural:=12;
@@ -60,16 +61,16 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity channel_FIR71;
+end entity channel_FIR71_2;
 
-architecture RTL of channel_FIR71 is
+architecture RTL of channel_FIR71_2 is
   
 constant RAW_DELAY:natural:=1026;
   
 signal sample_in,raw,filtered,slope:signed(DSP_BITS-1 downto 0);
 signal sample_d:std_logic_vector(WIDTH-1 downto 0);
 signal m,dsp_m:measurements_t;
-signal sample,sample_inv:signed(WIDTH-1 downto 0);
+signal sample,sample_inv:signed(14 downto 0);
 signal baseline_estimate:signed(WIDTH-1 downto 0);
 signal range_error:boolean;
 
@@ -113,11 +114,11 @@ if rising_edge(clk) then
     sample  <= (others => '0');
   else
     if registers.capture.invert then
-      sample_inv <= reshape(signed('1' & adc_sample),0,WIDTH,FRAC); 
+      sample_inv <= -signed('0' & adc_sample); 
     else
-      sample_inv <= reshape(signed('0' & adc_sample),0,WIDTH,FRAC); 
+      sample_inv <= signed('0' & adc_sample); 
     end if;
-    sample <= sample_inv - signed('0' & registers.baseline.offset);
+    sample <= sample_inv - signed('0' & registers.baseline.offset(13 downto 0));
   end if;
 end if;
 end process sampleoffset;
@@ -127,7 +128,7 @@ generic map(
   BASELINE_BITS => BASELINE_BITS, --FIXME make generic in parent
   COUNTER_BITS => 18,
   TIMECONSTANT_BITS => 32,
-  WIDTH => DSP_BITS
+  WIDTH => 15
 )
 port map(
   clk => clk,
@@ -148,9 +149,9 @@ baselineSubraction:process(clk)
 begin
 if rising_edge(clk) then
   if registers.baseline.subtraction then
-    sample_in <= sample - baseline_estimate;		
+    sample_in <= (sample - baseline_estimate) & "000";		
   else
-    sample_in <= sample;	
+    sample_in <= sample & "000";	
   end if;
 end if;
 end process baselineSubraction;

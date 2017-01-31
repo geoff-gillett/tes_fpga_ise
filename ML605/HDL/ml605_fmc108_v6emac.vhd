@@ -312,6 +312,8 @@ signal cdc_empty:std_logic;
 signal cdc_ready:boolean;
 signal cdc_valid:boolean;
 signal bytestream_int:std_logic_vector(8 downto 0);
+signal bytestream:std_logic_vector(7 downto 0);
+signal bytestream_last:boolean;
 
 --attribute S:string;
 --attribute S of bytestream:signal is "TRUE";
@@ -345,11 +347,22 @@ signal filter_events,slope_events,baseline_events:
 --debug
 --signal adc_sample0:adc_sample_t;
 --signal adc_enable:boolean_vector(ADC_CHANNELS-1 downto 0);
-signal raw_debug:signal_t;
+signal raw0_debug:signal_t;
+signal adc0_debug:std_logic_vector(ADC_BITS-1 downto 0);
 
-constant DEBUG:string:="TRUE";
+constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
-attribute MARK_DEBUG of raw_debug:signal is DEBUG;
+attribute MARK_DEBUG of raw0_debug:signal is DEBUG;
+attribute MARK_DEBUG of adc0_debug:signal is DEBUG;
+attribute MARK_DEBUG of enables_reg:signal is DEBUG;
+attribute MARK_DEBUG of bytestream:signal is DEBUG;
+attribute MARK_DEBUG of bytestream_ready:signal is DEBUG;
+attribute MARK_DEBUG of bytestream_valid:signal is DEBUG;
+attribute MARK_DEBUG of ethernetstream_ready:signal is DEBUG;
+attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
+attribute MARK_DEBUG of cdc_ready:signal is DEBUG;
+attribute MARK_DEBUG of cdc_valid:signal is DEBUG;
+
 --attribute MARK_DEBUG of enables_reg2:signal is DEBUG;
 --attribute MARK_DEBUG of adc_sample0:signal is DEBUG;
 --attribute MARK_DEBUG of fifo_valid:signal is DEBUG;
@@ -375,7 +388,8 @@ attribute MARK_DEBUG of raw_debug:signal is DEBUG;
 --signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
 begin
-raw_debug <= measurements(0).raw.sample;
+raw0_debug <= measurements(0).raw.sample;
+adc0_debug <= adc_samples(0);
 --adc_sample0 <= adc_samples(0);
 --adc_enable <= to_boolean(global.adc_enable);
 
@@ -820,8 +834,8 @@ port map(
   valid => bytestream_valid
 );
 
---bytestream <= bytestream_int(7 downto 0);
---bytestream_last <= bytestream_int(8)='1';
+bytestream <= bytestream_int(7 downto 0);
+bytestream_last <= bytestream_int(8)='1';
 
 emac:entity work.v6_emac_v2_3
 port map(
@@ -829,7 +843,7 @@ port map(
   IO_clk => io_clk,
   s_axi_aclk => axi_clk,
   refclk_bufg => ref_clk,
-  tx_axis_fifo_tdata => bytestream_int(7 downto 0),
+  tx_axis_fifo_tdata => bytestream,
   tx_axis_fifo_tvalid => to_std_logic(bytestream_valid),
   tx_axis_fifo_tready => bytestream_ready,
   tx_axis_fifo_tlast => bytestream_int(8),

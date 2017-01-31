@@ -166,8 +166,7 @@ generic map(
   WIDTH_IN => 48,
   FRAC_IN => FRAC,
   WIDTH_OUT => AREA_WIDTH,
-  FRAC_OUT => AREA_FRAC,
-  TOWARDS_INF => FALSE
+  FRAC_OUT => AREA_FRAC
 )
 port map(
   clk => clk,

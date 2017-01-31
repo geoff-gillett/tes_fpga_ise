@@ -440,7 +440,7 @@ begin
 	wait until not mca_initialising;
 	wait for SAMPLE_CLK_PERIOD;
 	global.mca.value <= MCA_RAW_SIGNAL_D;
-	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+	global.mca.trigger <= RAW_0XING_MCA_TRIGGER_D;
   global.mca.update_asap <= TRUE;
 	wait for SAMPLE_CLK_PERIOD;
   global.mca.update_asap <= FALSE;
