@@ -172,7 +172,7 @@ ADC_chip_powerdown: CALL ADC_write_enable
                     RETURN
                     ;
                     ;-----------------------------------------------------------
-                    ; SUBROUTINE ADC_b_standby 
+                    ; SUBROUTINE ADC_a_disable 
                     ; assumes chip enables set
                     ;-----------------------------------------------------------
      ADC_a_disable: CALL ADC_write_enable
@@ -183,7 +183,7 @@ ADC_chip_powerdown: CALL ADC_write_enable
                     RETURN
                     ;
                     ;-----------------------------------------------------------
-                    ; SUBROUTINE ADC_b_standby 
+                    ; SUBROUTINE ADC_b_disable
                     ; assumes chip enables set
                     ;-----------------------------------------------------------
      ADC_b_disable: CALL ADC_write_enable

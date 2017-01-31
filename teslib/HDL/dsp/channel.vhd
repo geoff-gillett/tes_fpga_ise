@@ -16,8 +16,7 @@ use work.registers.all;
 use work.measurements.all;
 use work.types.all;
 
--- baseline estimate based on 14.0 bit adc signal
-entity channel_FIR71_2 is
+entity channel is
 generic(
   CHANNEL:natural:=0;
   BASELINE_BITS:natural:=12;
@@ -38,7 +37,7 @@ port (
   reset1:in std_logic;
   reset2:in std_logic;
   
-  adc_sample:in unsigned(ADC_WIDTH-1 downto 0);
+  adc_sample:in signed(ADC_WIDTH-1 downto 0);
   registers:in channel_registers_t;
   event_enable:in boolean;
   
@@ -61,17 +60,17 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity channel_FIR71_2;
+end entity channel;
 
-architecture RTL of channel_FIR71_2 is
+architecture fixed_16_3 of channel is
   
 constant RAW_DELAY:natural:=1026;
   
-signal sample_in,raw,filtered,slope:signed(DSP_BITS-1 downto 0);
+signal sample_in,corrected_sample,raw,filtered,slope:signed(WIDTH-1 downto 0);
 signal sample_d:std_logic_vector(WIDTH-1 downto 0);
 signal m,dsp_m:measurements_t;
-signal sample,sample_inv:signed(14 downto 0);
-signal baseline_estimate:signed(WIDTH-1 downto 0);
+signal baseline_sample,sample_inv:signed(ADC_WIDTH-1 downto 0);
+signal baseline_estimate,frac_offset:signed(WIDTH-1 downto 0);
 signal range_error:boolean;
 
 --debug
@@ -80,8 +79,8 @@ attribute mark_debug:string;
 attribute keep:string;
 attribute keep of adc_sample:signal is DEBUG;
 attribute mark_debug of adc_sample:signal is DEBUG;
-attribute keep of sample:signal is DEBUG;
-attribute mark_debug of sample:signal is DEBUG;
+attribute keep of baseline_sample:signal is DEBUG;
+attribute mark_debug of baseline_sample:signal is DEBUG;
 attribute keep of sample_in:signal is DEBUG;
 attribute mark_debug of sample_in:signal is DEBUG;
 --attribute keep of sample_inv:signal is DEBUG;
@@ -104,36 +103,41 @@ signal raw_0_pos_pipe,raw_0_neg_pipe:boolean_vector(1 to DEPTH);
 
 begin
 measurements <= m;
-  
+
+-- bring the adc sample into the range of the baseline estimator
+-- baseline offset is fixed WIDTH.FRAC
+-- subtract off the integer part
 sampleoffset:process(clk)
 begin
 if rising_edge(clk) then
   if reset2='1' then
     --FIXME sample_inv could be a variable
     sample_inv <= (others => '0');
-    sample  <= (others => '0');
+    baseline_sample  <= (others => '0');
   else
     if registers.capture.invert then
-      sample_inv <= -signed('0' & adc_sample); 
+      sample_inv <= -adc_sample; 
     else
-      sample_inv <= signed('0' & adc_sample); 
+      sample_inv <= adc_sample; 
     end if;
-    sample <= sample_inv - signed('0' & registers.baseline.offset(13 downto 0));
+    baseline_sample 
+      <= sample_inv - registers.baseline.offset(ADC_WIDTH+FRAC-1 downto FRAC);
   end if;
 end if;
 end process sampleoffset;
 
+-- estimate is always fixed 18.3 due to the averaging
 baselineEstimator:entity work.baseline_estimator
 generic map(
   BASELINE_BITS => BASELINE_BITS, --FIXME make generic in parent
   COUNTER_BITS => 18,
   TIMECONSTANT_BITS => 32,
-  WIDTH => 15
+  WIDTH => ADC_BITS
 )
 port map(
   clk => clk,
   reset => reset1,
-  sample => sample,
+  sample => baseline_sample,
   sample_valid => TRUE,
   av_config => baseline_config,
   av_events => baseline_events,
@@ -145,13 +149,16 @@ port map(
   range_error => range_error
 );
 
+--FIXME subtract off the frac part if using the correction
 baselineSubraction:process(clk)
 begin
 if rising_edge(clk) then
   if registers.baseline.subtraction then
-    sample_in <= (sample - baseline_estimate) & "000";		
+    sample_in
+      <= reshape(baseline_sample,0,WIDTH,FRAC) - baseline_estimate;	
   else
-    sample_in <= sample & "000";	
+    sample_in
+      <= reshape(sample_inv,0,WIDTH,FRAC)-registers.baseline.offset;	
   end if;
 end if;
 end process baselineSubraction;
@@ -168,7 +175,7 @@ port map(
 );
 raw <= signed(sample_d);
 
-FIR:entity dsp.two_stage_FIR71
+FIR:entity dsp.two_stage_FIR71_18_3
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -352,4 +359,4 @@ port map(
   ready => ready
 );
 
-end architecture RTL;
+end architecture fixed_16_3;

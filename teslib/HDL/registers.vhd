@@ -191,7 +191,7 @@ function to_std_logic(t:mca_qual_d;w:natural) return std_logic_vector;
 -- Channel Registers
 --------------------------------------------------------------------------------
 type baseline_registers_t is record
-	offset:unsigned(DSP_BITS-2 downto 0);
+	offset:signed(DSP_BITS-1 downto 0);
 	subtraction:boolean;
 	timeconstant:unsigned(BASELINE_TIMECONSTANT_BITS-1 downto 0);
 	threshold:unsigned(BASELINE_BITS-2 downto 0);
@@ -307,7 +307,7 @@ constant DEFAULT_AREA_THRESHOLD:unsigned(AREA_BITS-2 downto 0)
          :=to_unsigned(10000,AREA_BITS-1);
 constant DEFAULT_DELAY:unsigned(DELAY_BITS-1 downto 0)
          :=to_unsigned(0,DELAY_BITS);
-constant DEFAULT_BL_OFFSET:unsigned(DSP_BITS-2 downto 0):=(others => '0');
+constant DEFAULT_BL_OFFSET:signed(DSP_BITS-1 downto 0):=(others => '0');
 constant DEFAULT_BL_SUBTRACTION:boolean:=FALSE;
 constant DEFAULT_BL_TIMECONSTANT:unsigned(BASELINE_TIMECONSTANT_BITS-1 downto 0)
 				 :=to_unsigned(2**16,BASELINE_TIMECONSTANT_BITS);

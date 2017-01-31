@@ -108,6 +108,7 @@ registers <= reg;
 regWrite:process(clk) 
 begin
 if rising_edge(clk) then
+  --FIXME these resets needed? use assignment at definition
 	if reset='1' then
 		reg.baseline.offset <= DEFAULT_BL_OFFSET;
 		reg.baseline.subtraction <= DEFAULT_BL_SUBTRACTION;
@@ -163,7 +164,7 @@ if rising_edge(clk) then
       	reg.capture.delay <= unsigned(data(DELAY_BITS-1 downto 0)); 
       end if;
       if address(BL_OFFSET_ADDR_BIT)='1' then
-        reg.baseline.offset <= unsigned(data(DSP_BITS-2 downto 0)); 
+        reg.baseline.offset <= signed(data(DSP_BITS-1 downto 0)); 
       end if;
       if address(BL_TIMECONSTANT_ADDR_BIT)='1' then
         reg.baseline.timeconstant 
