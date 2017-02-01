@@ -19,7 +19,7 @@ use work.types.all;
 entity channel is
 generic(
   CHANNEL:natural:=0;
-  BASELINE_BITS:natural:=12;
+  BASELINE_BITS:natural:=11;
   WIDTH:natural:=18; --internal precision
   FRAC:natural:=3; --internal precision
   WIDTH_OUT:natural:=16; -- precision in measurement packets
@@ -127,12 +127,14 @@ end if;
 end process sampleoffset;
 
 -- estimate is always fixed 18.3 due to the averaging
-baselineEstimator:entity work.baseline_estimator
+baselineEstimator:entity work.baseline_estimator2
 generic map(
   BASELINE_BITS => BASELINE_BITS, --FIXME make generic in parent
+  ADC_WIDTH => ADC_WIDTH,
   COUNTER_BITS => 18,
   TIMECONSTANT_BITS => 32,
-  WIDTH => ADC_BITS
+  WIDTH => WIDTH,
+  FRAC => FRAC
 )
 port map(
   clk => clk,

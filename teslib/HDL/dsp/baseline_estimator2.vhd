@@ -14,6 +14,7 @@ use ieee.numeric_std.all;
 
 library extensions;
 use extensions.boolean_vector.all;
+use extensions.logic.all;
 
 library dsp;
 use dsp.types.all;
@@ -23,17 +24,18 @@ library mcalib;
 
 entity baseline_estimator2 is
 generic(
-  BASELINE_BITS:natural:=12;
-  --width of counters and stream
+  BASELINE_BITS:natural:=11;
+  ADC_WIDTH:natural:=14;
   COUNTER_BITS:natural:=18;
   TIMECONSTANT_BITS:natural:=32;
-  WIDTH:natural:=18
+  WIDTH:natural:=18;
+  FRAC:natural:=3
 );
 port(
   clk:in std_logic;
   reset:in std_logic;
   --
-  sample:in signed(WIDTH-1 downto 0);
+  sample:in signed(ADC_WIDTH-1 downto 0);
   sample_valid:in boolean;
   --
   av_config:in fir_control_in_t;
@@ -85,38 +87,36 @@ signal new_mf_value:boolean;
 signal new_mf:boolean;
 signal av_valid:std_logic;
 signal av_int:std_logic_vector(47 downto 0);
-signal mf_average:std_logic_vector(WIDTH-1 downto 0);
+signal mf_average:signed(WIDTH-1 downto 0);
 signal mf_value:std_logic_vector(23 downto 0);
 signal mf_reg:signed(WIDTH-1 downto 0);
-constant HALF_RANGE:signed(WIDTH-1 downto 0)
-         :=to_signed((2**BASELINE_BITS)/2,WIDTH);
+constant HALF_RANGE:signed(ADC_WIDTH-1 downto 0)
+         :=to_signed(2**(BASELINE_BITS-1),ADC_WIDTH);
 signal new_mf_value_reg:boolean;
 
 begin
---FIXME lower values should saturate
---FIXME make range error more useful so can feed back to offset
+  
 baselineControl:process(clk)
-variable lowest,highest,mapped:signed(WIDTH-1 downto 0);
+variable lowest,highest:signed(ADC_WIDTH-1 downto 0);
+variable mapped:unsigned(BASELINE_BITS-1 downto 0);
 begin
-
 if rising_edge(clk) then
   lowest:=-HALF_RANGE;
   highest:=HALF_RANGE-1;
-  mapped:=resize(sample, WIDTH) + HALF_RANGE;
-  baseline_sample <= std_logic_vector(resize(mapped,BASELINE_BITS));
+  baseline_sample <= resize(unsigned(sample+HALF_RANGE+1),BASELINE_BITS);
   if sample_valid then 
-    if (sample > resize(signed('0' & threshold), WIDTH)) then 
+    if (sample > resize(signed('0' & threshold), ADC_WIDTH)) then 
       baseline_sample_valid <= FALSE;
       range_error <= FALSE;
     elsif sample < lowest then
       baseline_sample_valid <= FALSE;
-      baseline_sample <= std_logic_vector(resize(lowest,BASELINE_BITS));
       range_error <= TRUE;
     else
       baseline_sample_valid <= sample_valid;
       range_error <= FALSE;
     end if;
   else
+    range_error <= FALSE;
     baseline_sample_valid <= FALSE;
   end if;
     
@@ -148,7 +148,10 @@ begin
 			av_enable <= FALSE;
 		else
 		  new_mf <= previous_mf /= most_frequent;
-		  mf_reg <= signed('0' & most_frequent)-HALF_RANGE; 
+		  mf_reg 
+		    <= reshape(
+		      signed(resize(most_frequent,ADC_WIDTH))-HALF_RANGE-1,0,WIDTH,FRAC
+		    ); 
 		  new_mf_value_reg <= new_mf_value; 
 		  
 			if new_mf_value_reg then 
@@ -156,12 +159,12 @@ begin
 				if new_only then
 					if new_mf then
 						av_enable <= TRUE;
-						mf_value <= std_logic_vector(resize(mf_reg,24));
+						mf_value <= resize(mf_reg,24);
 					else
 						av_enable <= FALSE;	
 					end if;
 				else
-					mf_value <= std_logic_vector(resize(mf_reg,24));
+					mf_value <= resize(mf_reg,24);
 					av_enable <= TRUE;
 				end if;
 			else
@@ -191,28 +194,28 @@ port map (
   event_s_reload_tlast_unexpected => av_events.last_unexpected
 );
 
--- FIXME only need the rounding stage
---round:entity dsp.round
---generic map(
---  WIDTH_IN => 48,
---  FRAC_IN => 28,
---  WIDTH_OUT => 18,
---  FRAC_OUT => 3
---)
---port map(
---  clk => clk,
---  reset => reset,
---  input => av_int,
---  output => mf_average
---);
---most_frequent_av <= signed(mf_average);
-most_frequent_av <= signed(av_int(42 downto 25));
+round:entity dsp.round2
+generic map(
+  WIDTH_IN => 48,
+  FRAC_IN => 28,
+  WIDTH_OUT => 18,
+  FRAC_OUT => 3
+)
+port map(
+  output_threshold => (others => '0'),
+  clk => clk,
+  reset => reset,
+  input => signed(av_int),
+  output => mf_average
+);
+most_frequent_av <= mf_average;
+--most_frequent_av <= signed(av_int(42 downto 25));
 
 outputReg:process(clk)
 begin
 if rising_edge(clk) then
   if reset = '1' then
-    baseline_estimate <= to_signed(0,WIDTH);
+    baseline_estimate <= (others => '0');
   else
     baseline_estimate <=  most_frequent_av;
   end if;

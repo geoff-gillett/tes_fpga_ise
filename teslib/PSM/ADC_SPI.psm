@@ -98,7 +98,7 @@
                     ; the addresses are also used to validate commands
                     ; A value of FF terminates the table  
                     ;-----------------------------------------------------------
-TABLE ADC_default1#,[00,80, 20,00, 3F,20, 40,0C, 41,80, 44,00, 50,44, 51,00]
+TABLE ADC_default1#,[00,80, 20,00, 3F,22 40,08, 41,80, 44,00, 50,44, 51,00]
 TABLE ADC_default2#,[52,00, 53,00, 55,00, 57,00, 62,00, 63,00, 66,00, 68,00]
 TABLE ADC_default3#,[6A,00, 75,00, 76,00, FF]  
       ADC_defaults: LOAD&RETURN s2, ADC_default1#  

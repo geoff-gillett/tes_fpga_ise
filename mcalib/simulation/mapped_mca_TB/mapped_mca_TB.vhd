@@ -48,7 +48,7 @@ signal valid:boolean;
 signal ready:boolean;
 signal last:boolean;
 
-signal sim_count:signed(VALUE_BITS-1 downto 0);
+signal sim_count:signed(13 downto 0);
 signal sim_enable:boolean;
 constant DEPTH:natural:=6;
 type value_pipe is array (1 to DEPTH) of signed(VALUE_BITS-1 downto 0);
@@ -110,7 +110,7 @@ begin
 sim_enable <= FALSE;
 swap_buffer <= FALSE;
 last_bin <= to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS);
-lowest_value <= to_signed(-1, VALUE_BITS);
+lowest_value <= to_signed(-8191, VALUE_BITS);
 bin_n <= (1 => '1', others => '0');
 ready <= TRUE;
 wait for CLK_PERIOD;
