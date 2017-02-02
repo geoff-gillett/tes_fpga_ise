@@ -590,7 +590,7 @@ mca_axi_ready <= buff_full='0';
 buff_din <= to_std_logic(mca_axi_last) & 
   set_endianness(resize(mca_axi_stream,32), ENDIANNESS);
   
-buff_wr_en <= to_std_logic(mca_axi_valid);  
+buff_wr_en <= to_std_logic(mca_axi_valid and mca_axi_ready);  
 
 countBuffer:count_buffer
 port map (
@@ -606,7 +606,7 @@ port map (
   empty => buff_empty
 );
 
-buff_rd_en <= to_std_logic(counts_ready);
+buff_rd_en <= to_std_logic(counts_ready and counts_valid);
 counts_valid <= buff_empty='0';
 
 countstreamReg:entity streamlib.stream_register
@@ -624,11 +624,7 @@ port map(
 
 countstream.data <= counts(64 downto 33) & counts(31 downto 0);
 countstream.discard <= (others => FALSE);
-countstream.last <= (
-	0 => to_boolean(counts(32)),
-	-- 2 => to_boolean(buff_dout(65)), 
-	others => FALSE
-);
+countstream.last <= (0 => to_boolean(counts(32)), others => FALSE);
 
 outstreamReg:entity streamlib.streambus_register_slice
 port map(

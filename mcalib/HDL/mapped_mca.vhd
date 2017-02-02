@@ -82,7 +82,7 @@ signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to DEPTH);
 signal overflow,out_of_bounds,underflow:boolean;--,underflowed:boolean;
 
 -- debug
-constant DEBUG:string:="FALSE";
+constant DEBUG:string:="TRUE";
 attribute mark_debug:string;
 attribute mark_debug of bin:signal is DEBUG;
 attribute mark_debug of bin_valid:signal is DEBUG;
@@ -151,7 +151,7 @@ if rising_edge(clk) then
   --swap+1
   offset_value <= value-lowest_value;
   --swap+2
-  bin_value <= shift_right(offset_value,to_integer(bin_n_reg));
+  bin_value <= shift_right(offset_value,to_integer(to_0ifx(bin_n_reg)));
 end if;
 end process valueBin;
 

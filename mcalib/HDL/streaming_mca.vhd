@@ -70,7 +70,15 @@ signal mca_last,clearing,readable_int:boolean;
 signal read_count,read_bin_valid,can_swap_int:boolean;
 signal last_read,read_bin:boolean;
 --------------------------------------------------------------------------------
+
+constant DEBUG:string:="TRUE";
+attribute mark_debug:string;
+attribute mark_debug of bin_to_read:signal is DEBUG;
+attribute mark_debug of read_bin:signal is DEBUG;
+attribute mark_debug of count:signal is DEBUG;
+
 begin
+  
 valid <= mca_valid;
 last <= mca_last;
 can_swap <= can_swap_int; 
