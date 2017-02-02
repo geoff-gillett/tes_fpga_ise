@@ -226,10 +226,11 @@ end function;
 --debug
 constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
-attribute MARK_DEBUG of update_asap:signal is DEBUG;
+--attribute MARK_DEBUG of update_asap:signal is DEBUG;
+attribute MARK_DEBUG of mca_axi_stream:signal is DEBUG;
 attribute MARK_DEBUG of mca_axi_valid:signal is DEBUG;
 attribute MARK_DEBUG of mca_axi_ready:signal is DEBUG;
-attribute MARK_DEBUG of ticks_remaining:signal is DEBUG;
+--attribute MARK_DEBUG of ticks_remaining:signal is DEBUG;
 
 begin
   

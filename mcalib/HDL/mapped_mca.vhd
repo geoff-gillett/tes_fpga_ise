@@ -82,7 +82,7 @@ signal swap_pipe,valid_pipe,enabled_pipe:boolean_vector(1 to DEPTH);
 signal overflow,out_of_bounds,underflow:boolean;--,underflowed:boolean;
 
 -- debug
-constant DEBUG:string:="TRUE";
+constant DEBUG:string:="FALSE";
 attribute mark_debug:string;
 attribute mark_debug of bin:signal is DEBUG;
 attribute mark_debug of bin_valid:signal is DEBUG;
@@ -174,7 +174,7 @@ if rising_edge(clk) then
 end if;
 end process binOut;
 
-MCA:entity work.streaming_mca
+MCA:entity work.streaming_mca2
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
   COUNTER_BITS => COUNTER_BITS,

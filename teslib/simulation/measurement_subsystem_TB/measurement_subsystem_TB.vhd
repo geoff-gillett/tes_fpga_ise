@@ -206,8 +206,8 @@ bytestream_last <= bytestream_int(8)='1';
 
 --register settings
 global.mtu <= to_unsigned(1500,MTU_BITS);
-global.tick_latency <= to_unsigned(25000000,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(25000000,TICK_PERIOD_BITS);
+global.tick_latency <= to_unsigned(250000,TICK_LATENCY_BITS);
+global.tick_period <= to_unsigned(250000,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
