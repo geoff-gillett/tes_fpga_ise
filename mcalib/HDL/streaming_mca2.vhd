@@ -65,9 +65,9 @@ signal state,nextstate:FSMstate;
 signal bin_to_read,last_bin_reg:MCA_bin;
 signal count:MCA_Count;
 signal data:std_logic_vector(COUNTER_BITS-1 downto 0);
-signal mca_ready,mca_valid,last_addr,last_MCA_addr,swap_buffer_int:boolean;
+signal mca_intialised,mca_valid,last_addr,last_MCA_addr,swap_buffer_int:boolean;
 signal mca_last,clearing,readable_int:boolean;
-signal read_count,read_bin_valid,can_swap_int:boolean;
+signal read_count,can_swap_int:boolean;
 signal last_read,read_bin,hold:boolean;
 --------------------------------------------------------------------------------
 
@@ -83,7 +83,7 @@ valid <= mca_valid;
 last <= mca_last;
 can_swap <= can_swap_int; 
 readable <= readable_int;
-swap_buffer_int <= can_swap_int and mca_ready and swap_buffer;
+swap_buffer_int <= can_swap_int and mca_intialised and swap_buffer;
 
 core:entity work.mca
 generic map(
@@ -98,7 +98,7 @@ port map(
   bin_valid => bin_valid,
   out_of_bounds => out_of_bounds,
   swap_buffer => swap_buffer_int,
-  ready => mca_ready,
+  ready => mca_intialised,
   readable => readable_int,
   total => total,
   most_frequent => most_frequent,
@@ -130,24 +130,6 @@ port map(
   last => mca_last
 );
 
---serialiser:entity streamlib.serialiser
---generic map(
---  LATENCY => 3,
---  DATA_BITS => COUNTER_BITS
---)
---port map(
---  clk => clk,
---  reset => reset,
---  read => read_count,
---  read_en => read_bin_valid,
---  last_read => last_read,
---  data => data,
---  stream => stream,
---  ready => ready,
---  valid => mca_valid,
---  last => mca_last
---);
-
 --------------------------------------------------------------------------------
 -- control registers
 --------------------------------------------------------------------------------
@@ -159,7 +141,7 @@ if rising_edge(clk) then
     can_swap_int <= FALSE; 
     clearing <= TRUE;
   else
-    if clearing and mca_ready then
+    if clearing and mca_intialised then
       can_swap_int <= TRUE;
       clearing <= FALSE;
     end if;

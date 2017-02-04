@@ -206,8 +206,8 @@ bytestream_last <= bytestream_int(8)='1';
 
 --register settings
 global.mtu <= to_unsigned(1500,MTU_BITS);
-global.tick_latency <= to_unsigned(250000,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(250000,TICK_PERIOD_BITS);
+global.tick_latency <= to_unsigned(2**15,TICK_LATENCY_BITS);
+global.tick_period <= to_unsigned(2**15,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
@@ -409,7 +409,7 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(sample_clk);
---		adc_samples(0) <= to_std_logic(sample, 14);
+		adc_samples(0) <= to_std_logic(sample, 14);
 		--sample_reg <= resize(sample_in, 14);
 		adc_samples(1) <= (others => '0'); -- adc_samples(0);
 		if clk_count mod 10000 = 0 then
@@ -430,7 +430,7 @@ begin
     end if;
   end if;
 end process ramp;
-adc_samples(0) <= std_logic_vector(adc_count);
+--adc_samples(0) <= std_logic_vector(adc_count);
 --adc_samples(0) <= (others => '0');
 
 mcaControlStimulus:process

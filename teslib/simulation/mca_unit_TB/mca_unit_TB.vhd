@@ -15,6 +15,8 @@ use ieee.numeric_std.all;
 
 library extensions;
 use extensions.boolean_vector.all;
+use extensions.logic.all;
+use extensions.debug.all;
 
 library streamlib;
 use streamlib.types.all;
@@ -28,7 +30,7 @@ use work.events.all;
 entity mca_unit_TB is
 generic(
   CHANNELS:integer:=2;
-  ADDRESS_BITS:integer:=4;
+  ADDRESS_BITS:integer:=MCA_ADDRESS_BITS;
   COUNTER_BITS:integer:=32;
   VALUE_BITS:integer:=32;
   TOTAL_BITS:integer:=64;
@@ -80,22 +82,36 @@ signal simvalid:boolean;
 signal mca_value:signed(VALUE_BITS-1 downto 0);
 signal mca_value_valid:boolean;
 
+--simulation signals
+signal count1,count2:unsigned(ADDRESS_BITS-1 downto 0);
+signal pseudo_rand:std_logic_vector(31 downto 0);
+signal end_series:boolean;
+signal sim_signal:signed(SIGNAL_BITS-1 downto 0);
+
+
+signal clk_count:integer:=-2;
+file stream_file:integer_file;
+file trace_file:integer_file;
+
 begin
-	
 clk <= not clk after CLK_PERIOD/2;
 
-sim:process (clk) is
+rnd:process(clk)
+  -- maximal length 32-bit xnor LFSR based on xilinx app note XAPP210
+function lfsr32(x:std_logic_vector(31 downto 0)) return std_logic_vector  is
+begin
+  return x(30 downto 0) & (x(0) xnor x(1) xnor x(21) xnor x(31));
+end function;
+
 begin
   if rising_edge(clk) then
-    if reset = '1' then
-      simcount <= (others => '0');
+    if reset='1' then
+      pseudo_rand <= (others => '0');
     else
-      simcount <= simcount+1;
+      pseudo_rand <= lfsr32(pseudo_rand);
     end if;
   end if;
-end process sim;
-simvalid <= simcount(0) = '1'; 
-
+end process rnd; 
 
 -- each channel has a value mux that can be located near measurement
 -- then there is a pipeline (DEPTH-2) to the channel mux near the MCA
@@ -103,12 +119,9 @@ simvalid <= simcount(0) = '1';
 -- to operate need a pre tick signal
 
 chanGen:for c in CHANNELS-1 downto 0 generate
-  m(c).filtered.sample <= resize(signed(simcount+c),SIGNAL_BITS);
-  m(c).filtered.area <= resize(signed(simcount+c),AREA_BITS);
-  m(c).filtered.neg_0xing <= simvalid;
-  m(c).filtered.pos_0xing <= simvalid;
-  m(c).filtered.extrema <= resize(signed(simcount+c+1),SIGNAL_BITS);
-  m(c).filtered.zero_xing <= simcount(1 downto 0)="00"; 
+  m(c).filtered.sample <= sim_signal+1+c;
+  m(c).raw.sample <= sim_signal+c;
+  m(c).slope.sample <= sim_signal+2+c;
   
   -- latency 1
   valueMux:entity work.mca_value_selector3
@@ -157,62 +170,119 @@ port map(
 );
 
 UUT:entity work.mca_unit3
-  generic map(
-    CHANNELS => CHANNELS,
-    ADDRESS_BITS => ADDRESS_BITS,
-    COUNTER_BITS => COUNTER_BITS,
-    VALUE_BITS => VALUE_BITS,
-    TOTAL_BITS => TOTAL_BITS,
-    TICKCOUNT_BITS => TICKCOUNT_BITS,
-    TICKPERIOD_BITS => 32,
-    MIN_TICK_PERIOD => MIN_TICK_PERIOD,
-    DEPTH => VALUE_PIPE_DEPTH+2,
-    ENDIANNESS => ENDIANNESS
-  )
-  port map(
-    clk => clk,
-    reset => reset,
-    initialising => initialising,
-    update_asap => update_asap,
-    update_on_completion => update_on_completion,
-    updated => updated,
-    registers => registers,
-    tick_period => tick_period,
-    channel_select => channel_select,
-    value_select => value_select,
-    trigger_select => trigger_select,
-    qualifier_select => qualifier_select,
-    value => mca_value,
-    value_valid => mca_value_valid,
-    stream => stream,
-    valid => valid,
-    ready => ready
-  );
+generic map(
+  CHANNELS => CHANNELS,
+  ADDRESS_BITS => ADDRESS_BITS,
+  COUNTER_BITS => COUNTER_BITS,
+  VALUE_BITS => VALUE_BITS,
+  TOTAL_BITS => TOTAL_BITS,
+  TICKCOUNT_BITS => TICKCOUNT_BITS,
+  TICKPERIOD_BITS => 32,
+  MIN_TICK_PERIOD => MIN_TICK_PERIOD,
+  DEPTH => VALUE_PIPE_DEPTH+2,
+  ENDIANNESS => ENDIANNESS
+)
+port map(
+  clk => clk,
+  reset => reset,
+  initialising => initialising,
+  update_asap => update_asap,
+  update_on_completion => update_on_completion,
+  updated => updated,
+  registers => registers,
+  tick_period => tick_period,
+  channel_select => channel_select,
+  value_select => value_select,
+  trigger_select => trigger_select,
+  qualifier_select => qualifier_select,
+  value => mca_value,
+  value_valid => mca_value_valid,
+  stream => stream,
+  valid => valid,
+  ready => ready
+);
+
+sim:process (clk) is
+begin
+  if rising_edge(clk) then
+    if reset  = '1' then
+      count1 <= (others => '0');
+      count2 <= (others => '0');
+    else
+      if count2=count1 then
+        count1 <= count1+1;
+        count2 <= (others => '0');
+      else
+        count2 <= count2+1;
+      end if;
+    end if;
+  end if;
+end process sim;
+end_series <= count2=to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS);
+sim_signal <= resize(signed('0' & count1),SIGNAL_BITS) when count2(0)='1' else
+             (others => '0');
+--mca_value <= to_signed(clk_count,VALUE_BITS);
+--mca_value_valid <= TRUE;
+
+file_open(stream_file,"../stream",WRITE_MODE);
+streamWriter:process
+begin
+	while TRUE loop
+    wait until rising_edge(clk);
+    if valid and ready then
+    	writeInt(stream_file,stream.data(63 downto 32),"LITTLE"); --swaps
+    	writeInt(stream_file,stream.data(31 downto 0),"LITTLE");
+      if stream.last(0) then
+    		write(stream_file, -clk_count); 
+    	else
+    		write(stream_file, clk_count);
+    	end if;
+    end if;
+	end loop;
+end process streamWriter;
+
+file_open(trace_file, "../traces",WRITE_MODE);
+traceWriter:process
+begin
+	while TRUE loop
+    wait until rising_edge(clk);
+	  writeInt(trace_file,m(0).raw.sample,"BIG");
+	end loop;
+end process traceWriter; 
+
+clkCount:process is
+begin
+  wait until rising_edge(clk);
+  clk_count <= clk_count+1;
+end process clkCount;
+ready <= clk_count mod 8=0;
 
 stimulus:process is
 begin
 registers.bin_n <= to_unsigned(0,MCA_BIN_N_BITS);
 registers.channel <= (0 => '0', others => '0');
-registers.value <= MCA_FILTERED_SIGNAL_D;
-registers.trigger <= CLOCK_MCA_TRIGGER_D;
-registers.last_bin <= to_unsigned(2**ADDRESS_BITS-1,MCA_ADDRESS_BITS);
-registers.lowest_value 
-  <= (MCA_VALUE_BITS-1 downto SIM_WIDTH-1 => '1', others => '0');
+registers.value <= MCA_RAW_SIGNAL_D;
+registers.trigger <= DISABLED_MCA_TRIGGER_D;
+registers.last_bin <= to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS);
+registers.lowest_value <= to_signed(1,VALUE_BITS); 
 registers.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
-tick_period <= to_unsigned(32,TICK_PERIOD_BITS);
+tick_period <= to_unsigned(2**15,TICK_PERIOD_BITS);
 update_asap <= FALSE;
 update_on_completion <= FALSE;
 
 --value <= (others => '0');
 --value_valid <= TRUE;
-ready <= TRUE;
 wait for CLK_PERIOD;
 reset <= '0';
 wait for CLK_PERIOD;
 wait until not initialising;
+registers.trigger <= CLOCK_MCA_TRIGGER_D;
+registers.value <= MCA_RAW_SIGNAL_D;
 update_asap <= TRUE;
 wait for CLK_PERIOD;
 update_asap <= FALSE;
+wait;
+
 wait until updated;
 registers.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
 registers.value <= MCA_FILTERED_EXTREMA_D;

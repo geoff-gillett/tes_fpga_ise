@@ -72,6 +72,7 @@ end entity mapped_mca;
 architecture RTL of mapped_mca is
   
 signal bin,last_bin_reg,last_bin_temp:unsigned(ADDRESS_BITS-1 downto 0);
+signal last_valid_bin:unsigned(ADDRESS_BITS-1 downto 0);
 signal bin_n_reg,bin_n_temp:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal bin_valid,swap_int,swapping,MCA_can_swap,can_swap_int,just_reset:boolean;
 signal lowest_value_reg,offset_value:signed(VALUE_BITS-1 downto 0);
@@ -114,6 +115,7 @@ if rising_edge(clk) then
     end if;
     if swap_pipe(DEPTH-1) then
       last_bin_reg <= last_bin_temp;
+      last_valid_bin <= last_bin_temp-1;
       just_reset <= not enabled_pipe(DEPTH-1);
       swap_int <= not just_reset and enabled_pipe(DEPTH-1);
     end if;
@@ -156,7 +158,7 @@ end if;
 end process valueBin;
 
 --swap+3
-overflow <= bin_value >= resize(signed('0' & last_bin_reg),VALUE_BITS);
+overflow <= bin_value >= resize(signed('0' & last_valid_bin),VALUE_BITS);
 underflow <= bin_value(VALUE_BITS-1)='1';
 
 binOut:process(clk)

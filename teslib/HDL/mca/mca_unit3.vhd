@@ -337,7 +337,7 @@ when DISABLED =>
   end if;
   
 when RUN =>
-  swap_pipe(0) <= last_tick and tick and can_swap;
+  swap_pipe(0) <= last_tick and tick and can_swap and stream_state=IDLE;
   update_pipe(0) <= FALSE;
   if update_asap then   
     control_nextstate <= ASAP;
@@ -348,7 +348,7 @@ when RUN =>
   end if;
   
 when ASAP =>
-  swap_pipe(0) <= tick and can_swap; 
+  swap_pipe(0) <= tick and can_swap and stream_state=IDLE; 
   update_pipe(0) <= tick and can_swap;
   if update_on_completion then
     control_nextstate <= ON_COMPLETION;
@@ -359,7 +359,7 @@ when ASAP =>
   end if;
   
 when ON_COMPLETION => 
-  swap_pipe(0) <= last_tick and tick and can_swap;
+  swap_pipe(0) <= last_tick and tick and can_swap and stream_state=IDLE;
   update_pipe(0) <= tick and last_tick and can_swap;
   if tick and last_tick and can_swap then
     control_nextstate <= RUN; 
