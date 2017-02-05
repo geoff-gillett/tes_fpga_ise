@@ -21,7 +21,6 @@ use extensions.debug.all;
 library streamlib;
 use streamlib.types.all;
 
---use work.protocol.all;
 use work.registers.all;
 use work.measurements.all;
 use work.types.all;
@@ -76,9 +75,6 @@ type value_valid_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
 signal value_pipe:value_pipe_t;
 signal value_valid_pipe:value_valid_pipe_t;
 
-constant SIM_WIDTH:natural:=ADDRESS_BITS;
-signal simcount:unsigned(SIM_WIDTH-1 downto 0);
-signal simvalid:boolean;
 signal mca_value:signed(VALUE_BITS-1 downto 0);
 signal mca_value_valid:boolean;
 
@@ -255,7 +251,7 @@ begin
   wait until rising_edge(clk);
   clk_count <= clk_count+1;
 end process clkCount;
-ready <= clk_count mod 8=0;
+ready <= clk_count mod 16=0;
 
 stimulus:process is
 begin
