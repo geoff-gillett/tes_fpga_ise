@@ -17,7 +17,7 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
-entity serialiser2 is
+entity serialiser3 is
 generic(
   WIDTH:natural:=32
   --ADDRESS_BITS:natural:=14
@@ -42,19 +42,23 @@ port (
   
   
 );
-end entity serialiser2;
+end entity serialiser3;
 
-architecture RTL of serialiser2 is
+architecture RTL of serialiser3 is
 
 --constant LATENCY:natural:=2; --ram read latency
 signal read_pipe,last_pipe:boolean_vector(1 to 2):=(others => FALSE);
 
 signal one_pending,two_pending,none_pending:boolean;
-signal reg_ready,reg_valid,reg1_w,reg2_w:boolean;
+signal reg_ready,reg_valid,reg1_w,reg2_w,reg3_w:boolean;
 signal read_int:boolean;
-signal reg1,reg2:std_logic_vector(WIDTH downto 0);
+signal reg1,reg2,reg3, shift:std_logic_vector(WIDTH downto 0);
 signal reg_stream,stream_int:std_logic_vector(WIDTH downto 0);
 signal ram_valid,ram_ready,last_int:boolean;
+
+type reg_pipe is array (1 to 3) of std_logic_vector(WIDTH downto 0);
+signal pipe:reg_pipe;
+
 
 type FSMstate is (EMPTY_S,REG1_S,REG2_S);
 signal state,nextstate:FSMstate;
@@ -83,6 +87,10 @@ begin
       end if;
       
       if reg2_w then
+        reg2 <= reg1;
+      end if;
+      
+      if reg3_w then
         reg2 <= reg1;
       end if;
       
