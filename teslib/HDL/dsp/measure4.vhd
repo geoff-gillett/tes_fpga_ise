@@ -375,7 +375,7 @@ port map(
 maxSlopeXing:entity dsp.crossing
 generic map(
   WIDTH => WIDTH,
-  STRICT => STRICT_CROSSING
+  STRICT => FALSE
 )
 port map(
   clk => clk,
@@ -539,16 +539,19 @@ begin
           size <= pre_size;
           
           valid_peak0 <= valid_peak_pipe(DEPTH-1);
-          valid_peak1 <= FALSE;
-          valid_peak2 <= FALSE;
           
           peak_address <= (1 => '1', others => '0'); -- start at 2
           peak_address_n <= (1 downto 0 => '1', others => '0');
         else
-          valid_peak0 <= FALSE;
-          valid_peak1 <= flags.peak_number=1 and valid_peak_pipe(DEPTH);
-          valid_peak2 <= flags.peak_number=2 and valid_peak_pipe(DEPTH);
+          valid_peak1 <= flags.peak_number=1 and valid_peak_pipe(DEPTH-1);
+          valid_peak2 <= flags.peak_number=2 and valid_peak_pipe(DEPTH-1);
         end if;
+      end if;
+      
+      if max_pipe(DEPTH) then
+        valid_peak0 <= FALSE;
+        valid_peak1 <= FALSE;
+        valid_peak2 <= FALSE;
       end if;
       
       if m.slope.neg_0xing and m.valid_peak then -- maxima

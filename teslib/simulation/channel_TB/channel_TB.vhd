@@ -70,7 +70,7 @@ signal baseline_config:fir_control_in_t;
 signal baseline_events:fir_control_out_t;
 signal simenable:boolean:=FALSE;
 
-constant CF:integer:=2**17/20;
+constant CF:integer:=2**17/5; --20%
 
 begin
 clk <= not clk after CLK_PERIOD/2;
