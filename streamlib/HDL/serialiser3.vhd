@@ -27,9 +27,10 @@ port (
   reset:in std_logic;
   
   --start:in boolean; 
-  hold:in boolean; --equiv empty
+  empty:in boolean; --equiv empty
+  write:in boolean;
   
-  last_read:in boolean;
+  last_address:in boolean;
   read:out boolean;
   -- move address outside
   -- address:out std_logic_vector(ADDRESS_BITS-1 downto 0);
@@ -44,24 +45,25 @@ port (
 );
 end entity serialiser3;
 
-architecture RTL of serialiser3 is
+architecture beh of serialiser3 is
 
---constant LATENCY:natural:=2; --ram read latency
-signal read_pipe,last_pipe:boolean_vector(1 to 2):=(others => FALSE);
-
-signal one_pending,two_pending,none_pending:boolean;
-signal reg_ready,reg_valid,reg1_w,reg2_w,reg3_w:boolean;
+signal one_pending,two_pending,none_pending,three_pending:boolean;
+signal data_valid:boolean;
 signal read_int:boolean;
-signal reg1,reg2,reg3, shift:std_logic_vector(WIDTH downto 0);
-signal reg_stream,stream_int:std_logic_vector(WIDTH downto 0);
-signal ram_valid,ram_ready,last_int:boolean;
+signal shift:boolean;
+signal data:std_logic_vector(WIDTH downto 0);
+signal ram_valid,ram_used,last_int:boolean;
 
-type reg_pipe is array (1 to 3) of std_logic_vector(WIDTH downto 0);
+constant DEPTH:natural:=3;
+type reg_pipe is array (1 to DEPTH) of std_logic_vector(WIDTH downto 0);
 signal pipe:reg_pipe;
+signal read_pipe,last_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 
-
-type FSMstate is (EMPTY_S,REG1_S,REG2_S);
+type FSMstate is (RAM_S,REG1_S,REG2_S,REG3_S);
 signal state,nextstate:FSMstate;
+
+--output register signals
+signal ready_int,valid_int,output_handshake,output_empty:boolean;
 
 begin
 read <= read_int;
@@ -70,132 +72,185 @@ FSMoutput:process(clk)
 begin
   if rising_edge(clk) then
     if reset='1' then
-      state <= EMPTY_S;
+      state <= RAM_S;
     else
       
       state <= nextstate;
-      read_pipe <= (read_int and not hold) & read_pipe(1);
-      last_pipe <= (read_int and not hold and last_read) & last_pipe(1);
       
-      if (ram_valid and ram_ready) or not ram_valid then
-        ram_valid <= read_pipe(2);
-        last_int <= last_pipe(2);
+      read_pipe <= ((read_int and not empty) or (write and empty))  &
+                   read_pipe(1 to DEPTH-1);
+      last_pipe <= (read_int and not empty and last_address) & 
+                   last_pipe(1 to DEPTH-1); 
+                   
+      if ram_used or not ram_valid then
+        ram_valid <= read_pipe(DEPTH);
+        last_int <= last_pipe(DEPTH);
       end if;
       
-      if reg1_w then
-        reg1 <= to_std_logic(last_int) & ram_data;
-      end if;
-      
-      if reg2_w then
-        reg2 <= reg1;
-      end if;
-      
-      if reg3_w then
-        reg2 <= reg1;
+      if shift then 
+        pipe <= (to_std_logic(last_int) & ram_data) & pipe(1 to DEPTH-1);
       end if;
       
     end if;
   end if;
 end process FSMoutput;
 
-none_pending <= not read_pipe(1) and not read_pipe(2);
-one_pending  <= read_pipe(1) xor read_pipe(2);
-two_pending <= read_pipe(1) and read_pipe(2);
+--TODO replace with two output LUTS
+none_pending <= not read_pipe(1) and not read_pipe(2) and not read_pipe(3);
+one_pending  <= (read_pipe(1) and not read_pipe(2) and not read_pipe(3)) or
+                (read_pipe(2) and not read_pipe(1) and not read_pipe(3)) or
+                (read_pipe(3) and not read_pipe(1) and not read_pipe(2));
+two_pending <= (read_pipe(1) and read_pipe(2) and not read_pipe(3)) or
+               (read_pipe(2) and read_pipe(3) and not read_pipe(1)) or
+               (read_pipe(1) and read_pipe(3) and not read_pipe(2));
+three_pending <= read_pipe(1) and read_pipe(2) and read_pipe(3);
 
 fsmTransition:process(
-  state,ram_valid,ram_data,reg1,reg2,two_pending,none_pending,reg_ready, hold, 
-  last_int
+  state,ram_valid,ram_data,two_pending,none_pending,empty,pipe, 
+  last_int,output_empty,one_pending,three_pending,read_pipe
 )
 begin
   
   nextstate <= state;
-  reg1_w <= FALSE;
-  reg2_w <= FALSE;
+  shift <= FALSE;
+  read_int <= FALSE;
+  ram_used <= FALSE;
   
   case state is 
-  when EMPTY_S =>
+  when RAM_S =>
     
-    reg_valid <= ram_valid;
-    reg_stream <= to_std_logic(last_int) & ram_data;
-    ram_ready <= TRUE;
-    
-    if ram_valid then 
-      if reg_ready then
-        read_int <= not hold;
-      else
-        nextstate <= REG1_S;
-        reg1_w <= TRUE;
-        read_int <= none_pending and not hold; --not will_empty
-      end if;
+    data_valid <= ram_valid;
+    data <= to_std_logic(last_int) & ram_data;
+     
+    if output_empty then
+      read_int <= not empty;
+      ram_used <= TRUE;
     else
-      read_int <= not two_pending and not hold;-- and not empty_commit;
+      if ram_valid then
+        read_int <= not three_pending and not empty;
+      else
+        read_int <= not empty;
+      end if;
+        
+      if read_pipe(DEPTH) and ram_valid then
+        nextstate <= REG1_S;
+        shift <= TRUE;
+        ram_used <= TRUE;
+      end if;
     end if;
     
   when REG1_S =>
     
-    reg_valid <= TRUE;
-    reg_stream <= reg1;
-    ram_ready <= TRUE;
+    data_valid <= TRUE;
+    data <= pipe(1);
+    --ram_used <= TRUE;
     
-    if ram_valid then
-      if reg_ready then
-        read_int <= not two_pending and not hold;
-        reg1_w <= TRUE;
+    if output_empty then
+      if ram_valid then
+        if read_pipe(DEPTH) then
+          read_int <= not three_pending and not empty;
+          shift <= TRUE;
+          ram_used <= TRUE;
+        else
+          nextstate <= RAM_S;
+          read_int <= not empty;
+        end if;
       else
-        nextstate <= REG2_S;
-        reg1_w <= TRUE;
-        reg2_w <= TRUE;
-        read_int <= FALSE;
+        read_int <= not empty;
+        nextstate <= RAM_S;
       end if;
     else
-      if reg_ready then
-        nextstate <= EMPTY_S;
-        read_int <= not hold;-- and not empty_commit;
+      if ram_valid then
+        read_int <= (none_pending or one_pending) and not empty;
+        if read_pipe(DEPTH) then
+          nextstate <= REG2_S;
+          shift <= TRUE;
+          ram_used <= TRUE;
+        end if;
       else
-        read_int <= none_pending and not hold;-- and not empty_commit;
+        read_int <= not three_pending and not empty;
       end if;
     end if;
     
   when REG2_S =>
     
-    reg_valid <= TRUE;
-    reg_stream <= reg2;
-    ram_ready <= reg_ready;
+    data_valid <= TRUE;
+    data <= pipe(2);
     
-    if ram_valid then
-      if reg_ready then
-        reg1_w <= TRUE;
-        reg2_w <= TRUE;
-        read_int <= none_pending and not hold;
+    if output_empty then
+      if ram_valid then
+        if read_pipe(DEPTH) then
+          read_int <= (none_pending or one_pending) and not empty;
+          shift <= TRUE;
+          ram_used <= TRUE;
+        else
+          read_int <= (not three_pending) and not empty;
+          nextstate <= REG1_S;
+        end if;
       else
-        read_int <= FALSE;
+        read_int <= (not three_pending) and not empty;
+        nextstate <= REG1_S;
       end if;
     else
-      if reg_ready then
-        nextstate <= REG1_S;
-        read_int <= none_pending and not hold;
+      if ram_valid then
+        if read_pipe(DEPTH) then
+          read_int <= none_pending and not empty;
+          nextstate <= REG3_S;
+          shift <= TRUE;
+          ram_used <= TRUE;
+        else
+          read_int <= (none_pending or one_pending) and not empty;
+          --nextstate <= REG1_S;
+        end if;
       else
-        read_int <= FALSE;
-      end if; 
+        read_int <= (none_pending or one_pending) and not empty;
+      end if;
     end if;
+   
+  when REG3_S =>
+    
+    data_valid <= TRUE;
+    --ram_used <= output_empty;
+    data <= pipe(3);
+    
+    if output_empty then
+      if ram_valid then
+        read_int <= none_pending and not empty;
+        shift <= TRUE;
+        ram_used <= TRUE;
+      else
+        read_int <= (none_pending or one_pending) and not empty;
+        nextstate <= REG2_S;
+      end if;
+    else
+      if read_pipe(DEPTH) and ram_valid then
+        assert FALSE report "new ram data while full" severity FAILURE;
+      end if;
+      if not ram_valid then
+        read_int <= none_pending and not empty;
+      end if;
+    end if;
+    
   end case;
 end process fsmTransition;
 
-streamReg:entity work.stream_register
-generic map(
-  WIDTH => WIDTH+1 --add last as MSB
-)
-port map(
-  clk => clk,
-  reset => reset,
-  stream_in => reg_stream,
-  ready_out => reg_ready,
-  valid_in => reg_valid,
-  stream => stream_int,
-  ready => ready,
-  valid => valid
-);
-last <= stream_int(WIDTH)='1';
-stream <= stream_int(WIDTH-1 downto 0);
+output_empty <= output_handshake or not valid_int;
+output_handshake <= ready and valid_int;
+outputReg:process(clk)
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			ready_int <= TRUE;
+			valid_int <= FALSE;
+		else
+      if output_handshake or not valid_int then
+        stream <= data(WIDTH-1 downto 0);
+        last <= to_boolean(data(WIDTH)) and data_valid;
+        valid_int <= data_valid;
+			end if;
+		end if;
+	end if;
+end process outputReg;
+valid <= valid_int;
 
-end architecture RTL;
+end architecture beh;

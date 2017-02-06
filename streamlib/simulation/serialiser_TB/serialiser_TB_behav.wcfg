@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="serialiser_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="boolean_vector" />
+            <top_module name="logic" />
+            <top_module name="serialiser_TB" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="47450000fs"></ZoomStartTime>
+      <ZoomEndTime time="146750001fs"></ZoomEndTime>
+      <Cursor1Time time="108000000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="2" />
+   <wvobject fp_name="group17" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/empty" type="other">
+         <obj_property name="ElementShortName">empty</obj_property>
+         <obj_property name="ObjectShortName">empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/write" type="other">
+         <obj_property name="ElementShortName">write</obj_property>
+         <obj_property name="ObjectShortName">write</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/read" type="other">
+         <obj_property name="ElementShortName">read</obj_property>
+         <obj_property name="ObjectShortName">read</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/ram_data" type="array">
+         <obj_property name="ElementShortName">ram_data[3:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_data[3:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/last_address" type="other">
+         <obj_property name="ElementShortName">last_address</obj_property>
+         <obj_property name="ObjectShortName">last_address</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/sim_data" type="array">
+         <obj_property name="ElementShortName">sim_data[3:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_data[3:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/stream" type="array">
+         <obj_property name="ElementShortName">stream[3:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[3:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/valid" type="other">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/ready" type="other">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/last" type="other">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/sim_pipe" type="array">
+         <obj_property name="ElementShortName">sim_pipe[1:4][3:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_pipe[1:4][3:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/CLK_PERIOD" type="other">
+         <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
+         <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group18" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/write" type="other">
+         <obj_property name="ElementShortName">write</obj_property>
+         <obj_property name="ObjectShortName">write</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/last_address" type="other">
+         <obj_property name="ElementShortName">last_address</obj_property>
+         <obj_property name="ObjectShortName">last_address</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/empty" type="other">
+         <obj_property name="ElementShortName">empty</obj_property>
+         <obj_property name="ObjectShortName">empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/read" type="other">
+         <obj_property name="ElementShortName">read</obj_property>
+         <obj_property name="ObjectShortName">read</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/read_pipe" type="array">
+         <obj_property name="ElementShortName">read_pipe[1:3]</obj_property>
+         <obj_property name="ObjectShortName">read_pipe[1:3]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/last_int" type="other">
+         <obj_property name="ElementShortName">last_int</obj_property>
+         <obj_property name="ObjectShortName">last_int</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/ram_used" type="other">
+         <obj_property name="ElementShortName">ram_used</obj_property>
+         <obj_property name="ObjectShortName">ram_used</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/ram_data" type="array">
+         <obj_property name="ElementShortName">ram_data[3:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_data[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/ram_valid" type="other">
+         <obj_property name="ElementShortName">ram_valid</obj_property>
+         <obj_property name="ObjectShortName">ram_valid</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/output_empty" type="other">
+         <obj_property name="ElementShortName">output_empty</obj_property>
+         <obj_property name="ObjectShortName">output_empty</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/shift" type="other">
+         <obj_property name="ElementShortName">shift</obj_property>
+         <obj_property name="ObjectShortName">shift</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/pipe" type="array">
+         <obj_property name="ElementShortName">pipe[1:3][4:0]</obj_property>
+         <obj_property name="ObjectShortName">pipe[1:3][4:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/data" type="array">
+         <obj_property name="ElementShortName">data[4:0]</obj_property>
+         <obj_property name="ObjectShortName">data[4:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/data_valid" type="other">
+         <obj_property name="ElementShortName">data_valid</obj_property>
+         <obj_property name="ObjectShortName">data_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/stream" type="array">
+         <obj_property name="ElementShortName">stream[3:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/valid" type="other">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/ready" type="other">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/last" type="other">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/output_handshake" type="other">
+         <obj_property name="ElementShortName">output_handshake</obj_property>
+         <obj_property name="ObjectShortName">output_handshake</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/none_pending" type="other">
+         <obj_property name="ElementShortName">none_pending</obj_property>
+         <obj_property name="ObjectShortName">none_pending</obj_property>
+         <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/one_pending" type="other">
+         <obj_property name="ElementShortName">one_pending</obj_property>
+         <obj_property name="ObjectShortName">one_pending</obj_property>
+         <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/two_pending" type="other">
+         <obj_property name="ElementShortName">two_pending</obj_property>
+         <obj_property name="ObjectShortName">two_pending</obj_property>
+         <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/three_pending" type="other">
+         <obj_property name="ElementShortName">three_pending</obj_property>
+         <obj_property name="ObjectShortName">three_pending</obj_property>
+         <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/read_int" type="other">
+         <obj_property name="ElementShortName">read_int</obj_property>
+         <obj_property name="ObjectShortName">read_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/last_pipe" type="array">
+         <obj_property name="ElementShortName">last_pipe[1:3]</obj_property>
+         <obj_property name="ObjectShortName">last_pipe[1:3]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/nextstate" type="other">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/ready_int" type="other">
+         <obj_property name="ElementShortName">ready_int</obj_property>
+         <obj_property name="ObjectShortName">ready_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/valid_int" type="other">
+         <obj_property name="ElementShortName">valid_int</obj_property>
+         <obj_property name="ObjectShortName">valid_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/serialiser_TB/UUT/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

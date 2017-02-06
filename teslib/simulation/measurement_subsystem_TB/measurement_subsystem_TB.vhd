@@ -409,7 +409,7 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(sample_clk);
-		adc_samples(0) <= to_std_logic(sample, 14);
+		--adc_samples(0) <= to_std_logic(sample, 14);
 		--sample_reg <= resize(sample_in, 14);
 		adc_samples(1) <= (others => '0'); -- adc_samples(0);
 		if clk_count mod 10000 = 0 then
@@ -430,7 +430,7 @@ begin
     end if;
   end if;
 end process ramp;
---adc_samples(0) <= std_logic_vector(adc_count);
+adc_samples(0) <= std_logic_vector(adc_count);
 --adc_samples(0) <= (others => '0');
 
 mcaControlStimulus:process
