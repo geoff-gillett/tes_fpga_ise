@@ -79,20 +79,20 @@ end entity mca_unit4;
 --
 architecture RTL of mca_unit4 is
   
-component count_buffer
-port(
-  wr_clk:in std_logic;
-  wr_rst:in std_logic;
-  rd_clk:in std_logic;
-  rd_rst:in std_logic;
-  din:in std_logic_vector(32 downto 0);
-  wr_en:in std_logic;
-  rd_en:in std_logic;
-  dout:out std_logic_vector(65 downto 0);
-  full:out std_logic;
-  empty:out std_logic
-);
-end component;
+--component count_buffer
+--port(
+--  wr_clk:in std_logic;
+--  wr_rst:in std_logic;
+--  rd_clk:in std_logic;
+--  rd_rst:in std_logic;
+--  din:in std_logic_vector(32 downto 0);
+--  wr_en:in std_logic;
+--  rd_en:in std_logic;
+--  dout:out std_logic_vector(65 downto 0);
+--  full:out std_logic;
+--  empty:out std_logic
+--);
+--end component;
 
 -- control registers -----------------------------------------------------------
 signal ticks_remaining:unsigned(TICKCOUNT_BITS-1 downto 0);
@@ -112,7 +112,7 @@ signal tick_pipe:boolean_vector(0 to 2);
 
 signal stream_state,stream_nextstate:streamFSMstate;
 signal mca_axi_valid,mca_axi_ready:boolean;
-signal mca_axi_stream:std_logic_vector(COUNTER_BITS-1 downto 0);
+signal mca_axi_stream,counts:std_logic_vector(COUNTER_BITS-1 downto 0);
 signal can_swap,swap_buffer:boolean;
 signal update_registers:boolean;
 signal tick,mca_axi_last:boolean;
@@ -130,15 +130,16 @@ signal updating:boolean;
 signal bin_n:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal last_bin:unsigned(ADDRESS_BITS-1 downto 0);
 signal lowest_value:signed(VALUE_BITS-1 downto 0);
-signal buff_din:std_logic_vector(32 downto 0);
-signal buff_wr_en:std_logic;
-signal buff_rd_en:std_logic;
-signal buff_dout:std_logic_vector(65 downto 0);
-signal buff_full:std_logic;
-signal buff_empty:std_logic;
-signal counts_ready:boolean;
-signal counts_valid:boolean;
-signal counts:std_logic_vector(65 downto 0);
+--signal buff_din:std_logic_vector(32 downto 0);
+--signal buff_wr_en:std_logic;
+--signal buff_rd_en:std_logic;
+--signal buff_dout:std_logic_vector(65 downto 0);
+--signal buff_full:std_logic;
+--signal buff_empty:std_logic;
+--signal counts_ready:boolean;
+--signal counts_valid,upper,counts_last:boolean;
+signal countstream_handshake,countstream_empty,upper:boolean;
+--signal counts:std_logic_vector(65 downto 0);
 --------------------------------------------------------------------------------
 -- MCA protocol
 --------------------------------------------------------------------------------
@@ -312,7 +313,7 @@ end process controlFSMnextstate;
 
 controlFSMtransition:process(
   control_state,update_asap,update_on_completion,can_swap,tick,
-  swap_buffer,updated_reg.trigger,last_tick
+  swap_buffer,updated_reg.trigger,last_tick,stream_state
 )
 begin
   
@@ -490,9 +491,10 @@ begin
 	end if;
 end process startup;
 
-streamFSMtransition:process(stream_state,readable,countstream,
-														countstream_valid,outstream_ready,
-														header,active)
+streamFSMtransition:process(
+  stream_state,readable,countstream,countstream_valid,outstream_ready,header,
+  active,countstream_handshake
+)
 begin
 stream_nextstate <= stream_state;
 outstream.discard <= (others => FALSE);
@@ -544,7 +546,7 @@ when DISTRIBUTION =>
   	outstream_valid <= countstream_valid;
     outstream <= countstream;
     countstream_ready <= outstream_ready;
-    if countstream.last(0) and countstream_valid and outstream_ready then
+    if countstream.last(0) and countstream_handshake then
       stream_nextstate <= IDLE;
     end if;
 end case;
@@ -586,47 +588,43 @@ port map(
   last => mca_axi_last
 );
 
-mca_axi_ready <= buff_full='0';
-
-buff_din <= to_std_logic(mca_axi_last) & 
-  set_endianness(resize(mca_axi_stream,32), ENDIANNESS);
-  
-buff_wr_en <= to_std_logic(mca_axi_valid and mca_axi_ready);  
-
---FIXME replace with registers
-countBuffer:count_buffer
-port map (
-  wr_clk => clk,
-  wr_rst => reset,
-  rd_clk => clk,
-  rd_rst => reset,
-  din => buff_din,
-  wr_en => buff_wr_en,
-  rd_en => buff_rd_en,
-  dout => buff_dout,
-  full => buff_full,
-  empty => buff_empty
-);
-
-buff_rd_en <= to_std_logic(counts_ready and counts_valid);
-counts_valid <= buff_empty='0';
-
-countstreamReg:entity streamlib.stream_register
-generic map(WIDTH => 66)
-port map(
-  clk => clk,
-  reset => reset,
-  stream_in => buff_dout,
-  ready_out => counts_ready,
-  valid_in => counts_valid,
-  stream => counts,
-  ready => countstream_ready,
-  valid => countstream_valid
-);
-
-countstream.data <= counts(64 downto 33) & counts(31 downto 0);
-countstream.discard <= (others => FALSE);
-countstream.last <= (0 => to_boolean(counts(32)), others => FALSE);
+mca_axi_ready <= upper or countstream_empty;
+countRegister:process(clk)
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      countstream.data <= (others => '-');
+      countstream.last  <= (others => FALSE); 
+      countstream.discard  <= (others => FALSE); 
+      countstream_valid <= FALSE;
+      upper <= TRUE;
+    else
+      if mca_axi_valid then
+        if upper then
+          counts <=  mca_axi_stream; 
+          upper  <= FALSE; 
+          if countstream_handshake then
+            countstream_valid <= FALSE;
+          end if;
+        elsif countstream_empty then
+          countstream.data(31 downto 0) 
+            <= set_endianness(mca_axi_stream,ENDIANNESS);
+          countstream.data(63 downto 32) <= set_endianness(counts,ENDIANNESS);
+          countstream.last(0) <= mca_axi_last;
+          upper <= TRUE;
+          countstream_valid <= TRUE;
+        end if;
+      else
+          if countstream_handshake then
+            countstream_valid <= FALSE;
+          end if;
+      end if;
+          
+    end if;
+  end if;
+end process countRegister;
+countstream_handshake <= countstream_valid and countstream_ready;
+countstream_empty <= not countstream_valid or countstream_handshake;
 
 outstreamReg:entity streamlib.streambus_register_slice
 port map(

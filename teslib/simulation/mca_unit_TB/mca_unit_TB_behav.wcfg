@@ -20,9 +20,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="944166666fs"></ZoomStartTime>
-      <ZoomEndTime time="1011166667fs"></ZoomEndTime>
-      <Cursor1Time time="952367000fs"></Cursor1Time>
+      <ZoomStartTime time="1111980533334fs"></ZoomStartTime>
+      <ZoomEndTime time="1112049333335fs"></ZoomEndTime>
+      <Cursor1Time time="1111992000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="4" />
    <wave_markers>
@@ -227,6 +227,7 @@
    <wvobject fp_name="group171" type="group">
       <obj_property name="label">UUT</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -238,14 +239,6 @@
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/initialising" type="other">
          <obj_property name="ElementShortName">initialising</obj_property>
          <obj_property name="ObjectShortName">initialising</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/sim_signal" type="array">
-         <obj_property name="ElementShortName">sim_signal[15:0]</obj_property>
-         <obj_property name="ObjectShortName">sim_signal[15:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/registers" type="array">
-         <obj_property name="ElementShortName">registers</obj_property>
-         <obj_property name="ObjectShortName">registers</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/update_asap" type="other">
          <obj_property name="ElementShortName">update_asap</obj_property>
@@ -259,25 +252,9 @@
          <obj_property name="ElementShortName">updated</obj_property>
          <obj_property name="ObjectShortName">updated</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/updated_reg" type="array">
-         <obj_property name="ElementShortName">updated_reg</obj_property>
-         <obj_property name="ObjectShortName">updated_reg</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/current_reg" type="array">
-         <obj_property name="ElementShortName">current_reg</obj_property>
-         <obj_property name="ObjectShortName">current_reg</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/control_state" type="other">
-         <obj_property name="ElementShortName">control_state</obj_property>
-         <obj_property name="ObjectShortName">control_state</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/enabled" type="other">
-         <obj_property name="ElementShortName">enabled</obj_property>
-         <obj_property name="ObjectShortName">enabled</obj_property>
-         <obj_property name="CustomSignalColor">#FF0000</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/registers" type="array">
+         <obj_property name="ElementShortName">registers</obj_property>
+         <obj_property name="ObjectShortName">registers</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/tick_period" type="array">
          <obj_property name="ElementShortName">tick_period[31:0]</obj_property>
@@ -286,68 +263,32 @@
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/channel_select" type="array">
          <obj_property name="ElementShortName">channel_select[1:0]</obj_property>
          <obj_property name="ObjectShortName">channel_select[1:0]</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/value_select" type="array">
          <obj_property name="ElementShortName">value_select[11:0]</obj_property>
          <obj_property name="ObjectShortName">value_select[11:0]</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/trigger_select" type="array">
          <obj_property name="ElementShortName">trigger_select[11:0]</obj_property>
          <obj_property name="ObjectShortName">trigger_select[11:0]</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/qualifier_select" type="array">
          <obj_property name="ElementShortName">qualifier_select[9:0]</obj_property>
          <obj_property name="ObjectShortName">qualifier_select[9:0]</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/value" type="array">
          <obj_property name="ElementShortName">value[31:0]</obj_property>
          <obj_property name="ObjectShortName">value[31:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/value_valid" type="other">
          <obj_property name="ElementShortName">value_valid</obj_property>
          <obj_property name="ObjectShortName">value_valid</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/readable" type="other">
-         <obj_property name="ElementShortName">readable</obj_property>
-         <obj_property name="ObjectShortName">readable</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header" type="array">
-         <obj_property name="ElementShortName">header</obj_property>
-         <obj_property name="ObjectShortName">header</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/timestamp" type="array">
-         <obj_property name="ElementShortName">timestamp[63:0]</obj_property>
-         <obj_property name="ObjectShortName">timestamp[63:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/tick" type="other">
-         <obj_property name="ElementShortName">tick</obj_property>
-         <obj_property name="ObjectShortName">tick</obj_property>
-         <obj_property name="CustomSignalColor">#FF0000</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/swap_buffer" type="other">
-         <obj_property name="ElementShortName">swap_buffer</obj_property>
-         <obj_property name="ObjectShortName">swap_buffer</obj_property>
-         <obj_property name="CustomSignalColor">#FF0000</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/stream" type="array">
          <obj_property name="ElementShortName">stream</obj_property>
          <obj_property name="ObjectShortName">stream</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <obj_property name="CustomSignalColor">#00FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/stream.discard" type="array">
@@ -365,7 +306,7 @@
          <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/stream.data" type="array">
             <obj_property name="ElementShortName">.data[63:0]</obj_property>
             <obj_property name="ObjectShortName">stream.data[63:0]</obj_property>
-            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
             <obj_property name="CustomSignalColor">#00FFFF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
@@ -382,13 +323,29 @@
          <obj_property name="CustomSignalColor">#00FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/ticks_remaining" type="array">
+         <obj_property name="ElementShortName">ticks_remaining[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ticks_remaining[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/last_tick" type="other">
+         <obj_property name="ElementShortName">last_tick</obj_property>
+         <obj_property name="ObjectShortName">last_tick</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/enabled" type="other">
          <obj_property name="ElementShortName">enabled</obj_property>
          <obj_property name="ObjectShortName">enabled</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/readable" type="other">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/total" type="array">
          <obj_property name="ElementShortName">total[63:0]</obj_property>
          <obj_property name="ObjectShortName">total[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/control_state" type="other">
+         <obj_property name="ElementShortName">control_state</obj_property>
+         <obj_property name="ObjectShortName">control_state</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/control_nextstate" type="other">
          <obj_property name="ElementShortName">control_nextstate</obj_property>
@@ -398,6 +355,10 @@
          <obj_property name="ElementShortName">update_pipe[0:5]</obj_property>
          <obj_property name="ObjectShortName">update_pipe[0:5]</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/swap_pipe" type="array">
+         <obj_property name="ElementShortName">swap_pipe[0:5]</obj_property>
+         <obj_property name="ObjectShortName">swap_pipe[0:5]</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/tick_pipe" type="array">
          <obj_property name="ElementShortName">tick_pipe[0:2]</obj_property>
          <obj_property name="ObjectShortName">tick_pipe[0:2]</obj_property>
@@ -405,8 +366,10 @@
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/stream_state" type="other">
          <obj_property name="ElementShortName">stream_state</obj_property>
          <obj_property name="ObjectShortName">stream_state</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/stream_nextstate" type="other">
+         <obj_property name="ElementShortName">stream_nextstate</obj_property>
+         <obj_property name="ObjectShortName">stream_nextstate</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/mca_axi_valid" type="other">
          <obj_property name="ElementShortName">mca_axi_valid</obj_property>
@@ -416,23 +379,33 @@
          <obj_property name="ElementShortName">mca_axi_ready</obj_property>
          <obj_property name="ObjectShortName">mca_axi_ready</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/mca_axi_last" type="other">
-         <obj_property name="ElementShortName">mca_axi_last</obj_property>
-         <obj_property name="ObjectShortName">mca_axi_last</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/mca_axi_stream" type="array">
          <obj_property name="ElementShortName">mca_axi_stream[31:0]</obj_property>
          <obj_property name="ObjectShortName">mca_axi_stream[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/counts" type="array">
+         <obj_property name="ElementShortName">counts[31:0]</obj_property>
+         <obj_property name="ObjectShortName">counts[31:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/can_swap" type="other">
          <obj_property name="ElementShortName">can_swap</obj_property>
          <obj_property name="ObjectShortName">can_swap</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/swap_buffer" type="other">
+         <obj_property name="ElementShortName">swap_buffer</obj_property>
+         <obj_property name="ObjectShortName">swap_buffer</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/update_registers" type="other">
+         <obj_property name="ElementShortName">update_registers</obj_property>
+         <obj_property name="ObjectShortName">update_registers</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/tick" type="other">
          <obj_property name="ElementShortName">tick</obj_property>
          <obj_property name="ObjectShortName">tick</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/mca_axi_last" type="other">
+         <obj_property name="ElementShortName">mca_axi_last</obj_property>
+         <obj_property name="ObjectShortName">mca_axi_last</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/max_count" type="array">
          <obj_property name="ElementShortName">max_count[31:0]</obj_property>
@@ -442,6 +415,10 @@
          <obj_property name="ElementShortName">most_frequent[13:0]</obj_property>
          <obj_property name="ObjectShortName">most_frequent[13:0]</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/timestamp" type="array">
+         <obj_property name="ElementShortName">timestamp[63:0]</obj_property>
+         <obj_property name="ObjectShortName">timestamp[63:0]</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/start_time" type="array">
          <obj_property name="ElementShortName">start_time[63:0]</obj_property>
          <obj_property name="ObjectShortName">start_time[63:0]</obj_property>
@@ -449,6 +426,18 @@
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/stop_time" type="array">
          <obj_property name="ElementShortName">stop_time[63:0]</obj_property>
          <obj_property name="ObjectShortName">stop_time[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/updated_reg" type="array">
+         <obj_property name="ElementShortName">updated_reg</obj_property>
+         <obj_property name="ObjectShortName">updated_reg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header_reg" type="array">
+         <obj_property name="ElementShortName">header_reg</obj_property>
+         <obj_property name="ObjectShortName">header_reg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/current_reg" type="array">
+         <obj_property name="ElementShortName">current_reg</obj_property>
+         <obj_property name="ObjectShortName">current_reg</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/outstream" type="array">
          <obj_property name="ElementShortName">outstream</obj_property>
@@ -458,29 +447,21 @@
          <obj_property name="ElementShortName">countstream</obj_property>
          <obj_property name="ObjectShortName">countstream</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/countstream_valid" type="other">
-         <obj_property name="ElementShortName">countstream_valid</obj_property>
-         <obj_property name="ObjectShortName">countstream_valid</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/countstream_ready" type="other">
-         <obj_property name="ElementShortName">countstream_ready</obj_property>
-         <obj_property name="ObjectShortName">countstream_ready</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/outstream_valid" type="other">
          <obj_property name="ElementShortName">outstream_valid</obj_property>
          <obj_property name="ObjectShortName">outstream_valid</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/outstream_ready" type="other">
          <obj_property name="ElementShortName">outstream_ready</obj_property>
          <obj_property name="ObjectShortName">outstream_ready</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/countstream_valid" type="other">
+         <obj_property name="ElementShortName">countstream_valid</obj_property>
+         <obj_property name="ObjectShortName">countstream_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/countstream_ready" type="other">
+         <obj_property name="ElementShortName">countstream_ready</obj_property>
+         <obj_property name="ObjectShortName">countstream_ready</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/active" type="other">
          <obj_property name="ElementShortName">active</obj_property>
@@ -502,95 +483,21 @@
          <obj_property name="ElementShortName">lowest_value[31:0]</obj_property>
          <obj_property name="ObjectShortName">lowest_value[31:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/buff_din" type="array">
-         <obj_property name="ElementShortName">buff_din[32:0]</obj_property>
-         <obj_property name="ObjectShortName">buff_din[32:0]</obj_property>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/countstream_handshake" type="other">
+         <obj_property name="ElementShortName">countstream_handshake</obj_property>
+         <obj_property name="ObjectShortName">countstream_handshake</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/buff_wr_en" type="logic">
-         <obj_property name="ElementShortName">buff_wr_en</obj_property>
-         <obj_property name="ObjectShortName">buff_wr_en</obj_property>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/countstream_empty" type="other">
+         <obj_property name="ElementShortName">countstream_empty</obj_property>
+         <obj_property name="ObjectShortName">countstream_empty</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/buff_rd_en" type="logic">
-         <obj_property name="ElementShortName">buff_rd_en</obj_property>
-         <obj_property name="ObjectShortName">buff_rd_en</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/buff_dout" type="array">
-         <obj_property name="ElementShortName">buff_dout[65:0]</obj_property>
-         <obj_property name="ObjectShortName">buff_dout[65:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/buff_full" type="logic">
-         <obj_property name="ElementShortName">buff_full</obj_property>
-         <obj_property name="ObjectShortName">buff_full</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/buff_empty" type="logic">
-         <obj_property name="ElementShortName">buff_empty</obj_property>
-         <obj_property name="ObjectShortName">buff_empty</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/counts_ready" type="other">
-         <obj_property name="ElementShortName">counts_ready</obj_property>
-         <obj_property name="ObjectShortName">counts_ready</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/counts_valid" type="other">
-         <obj_property name="ElementShortName">counts_valid</obj_property>
-         <obj_property name="ObjectShortName">counts_valid</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/counts" type="array">
-         <obj_property name="ElementShortName">counts[65:0]</obj_property>
-         <obj_property name="ObjectShortName">counts[65:0]</obj_property>
-         <obj_property name="Radix">HEXRADIX</obj_property>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/upper" type="other">
+         <obj_property name="ElementShortName">upper</obj_property>
+         <obj_property name="ObjectShortName">upper</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header" type="array">
          <obj_property name="ElementShortName">header</obj_property>
          <obj_property name="ObjectShortName">header</obj_property>
-         <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header.size" type="array">
-            <obj_property name="ElementShortName">.size[15:0]</obj_property>
-            <obj_property name="ObjectShortName">header.size[15:0]</obj_property>
-            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header.last_bin" type="array">
-            <obj_property name="ElementShortName">.last_bin[15:0]</obj_property>
-            <obj_property name="ObjectShortName">header.last_bin[15:0]</obj_property>
-            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header.flags" type="array">
-            <obj_property name="ElementShortName">.flags</obj_property>
-            <obj_property name="ObjectShortName">header.flags</obj_property>
-            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header.lowest_value" type="array">
-            <obj_property name="ElementShortName">.lowest_value[31:0]</obj_property>
-            <obj_property name="ObjectShortName">header.lowest_value[31:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header.most_frequent" type="array">
-            <obj_property name="ElementShortName">.most_frequent[15:0]</obj_property>
-            <obj_property name="ObjectShortName">header.most_frequent[15:0]</obj_property>
-            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header.total" type="array">
-            <obj_property name="ElementShortName">.total[63:0]</obj_property>
-            <obj_property name="ObjectShortName">header.total[63:0]</obj_property>
-            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header.start_time" type="array">
-            <obj_property name="ElementShortName">.start_time[63:0]</obj_property>
-            <obj_property name="ObjectShortName">header.start_time[63:0]</obj_property>
-            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/header.stop_time" type="array">
-            <obj_property name="ElementShortName">.stop_time[63:0]</obj_property>
-            <obj_property name="ObjectShortName">header.stop_time[63:0]</obj_property>
-            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/CHANNELS" type="other">
          <obj_property name="ElementShortName">CHANNELS</obj_property>
@@ -623,6 +530,10 @@
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MIN_TICK_PERIOD" type="other">
          <obj_property name="ElementShortName">MIN_TICK_PERIOD</obj_property>
          <obj_property name="ObjectShortName">MIN_TICK_PERIOD</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/ENDIANNESS" type="array">
          <obj_property name="ElementShortName">ENDIANNESS[1:6]</obj_property>

@@ -376,7 +376,7 @@ port map(
   ready => muxstream_ready
 );
 
-mca:entity work.mca_unit3
+mca:entity work.mca_unit4
 generic map(
   CHANNELS => DSP_CHANNELS,
   ADDRESS_BITS => MCA_ADDRESS_BITS,

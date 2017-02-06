@@ -165,7 +165,7 @@ port map(
   valid => mca_value_valid
 );
 
-UUT:entity work.mca_unit3
+UUT:entity work.mca_unit4
 generic map(
   CHANNELS => CHANNELS,
   ADDRESS_BITS => ADDRESS_BITS,
@@ -215,8 +215,9 @@ begin
   end if;
 end process sim;
 end_series <= count2=to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS);
-sim_signal <= resize(signed('0' & count1),SIGNAL_BITS) when count2(0)='1' else
-             (others => '0');
+--sim_signal <= resize(signed('0' & count1),SIGNAL_BITS) when count2(0)='1' else
+--             (others => '0');
+sim_signal <= resize(signed('0' & count1),SIGNAL_BITS);
 --mca_value <= to_signed(clk_count,VALUE_BITS);
 --mca_value_valid <= TRUE;
 
