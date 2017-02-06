@@ -21,11 +21,11 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="80654560000fs"></ZoomStartTime>
-      <ZoomEndTime time="101854560001fs"></ZoomEndTime>
-      <Cursor1Time time="11182833000fs"></Cursor1Time>
+      <ZoomStartTime time="30095185600fs"></ZoomStartTime>
+      <ZoomEndTime time="447595185601fs"></ZoomEndTime>
+      <Cursor1Time time="426328000000fs"></Cursor1Time>
    </zoom_setting>
-   <WVObjectSize size="7" />
+   <WVObjectSize size="8" />
    <wave_markers>
       <marker time="13224000000" label="" />
    </wave_markers>
@@ -129,7 +129,6 @@
    <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measurements" type="array">
       <obj_property name="ElementShortName">measurements</obj_property>
       <obj_property name="ObjectShortName">measurements</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measurements.raw" type="array">
          <obj_property name="ElementShortName">.raw</obj_property>
          <obj_property name="ObjectShortName">measurements.raw</obj_property>
@@ -453,58 +452,22 @@
          <obj_property name="ElementShortName">reset2</obj_property>
          <obj_property name="ObjectShortName">reset2</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_pipe" type="array">
-         <obj_property name="ElementShortName">raw_pipe[1:5][15:0]</obj_property>
-         <obj_property name="ObjectShortName">raw_pipe[1:5][15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_pipe[1]" type="array">
-            <obj_property name="ElementShortName">[1][15:0]</obj_property>
-            <obj_property name="ObjectShortName">raw_pipe[1][15:0]</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_pipe[2]" type="array">
-            <obj_property name="ElementShortName">[2][15:0]</obj_property>
-            <obj_property name="ObjectShortName">raw_pipe[2][15:0]</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_pipe[3]" type="array">
-            <obj_property name="ElementShortName">[3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">raw_pipe[3][15:0]</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_pipe[4]" type="array">
-            <obj_property name="ElementShortName">[4][15:0]</obj_property>
-            <obj_property name="ObjectShortName">raw_pipe[4][15:0]</obj_property>
-            <obj_property name="Radix">REALRADIX</obj_property>
-            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-            <obj_property name="radix_fractionWidth">1</obj_property>
-            <obj_property name="radix_otherWidth">0</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_pipe[5]" type="array">
-            <obj_property name="ElementShortName">[5][15:0]</obj_property>
-            <obj_property name="ObjectShortName">raw_pipe[5][15:0]</obj_property>
-            <obj_property name="Radix">REALRADIX</obj_property>
-            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-            <obj_property name="radix_fractionWidth">1</obj_property>
-            <obj_property name="radix_otherWidth">0</obj_property>
-         </wvobject>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/adc_sample" type="array">
-         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
-         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/registers" type="array">
          <obj_property name="ElementShortName">registers</obj_property>
          <obj_property name="ObjectShortName">registers</obj_property>
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/registers.baseline" type="array">
             <obj_property name="ElementShortName">.baseline</obj_property>
             <obj_property name="ObjectShortName">registers.baseline</obj_property>
+            <obj_property name="isExpanded"></obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/registers.capture" type="array">
             <obj_property name="ElementShortName">.capture</obj_property>
             <obj_property name="ObjectShortName">registers.capture</obj_property>
-            <obj_property name="isExpanded"></obj_property>
          </wvobject>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/event_enable" type="other">
+         <obj_property name="ElementShortName">event_enable</obj_property>
+         <obj_property name="ObjectShortName">event_enable</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/stage1_config" type="array">
          <obj_property name="ElementShortName">stage1_config</obj_property>
@@ -530,10 +493,6 @@
          <obj_property name="ElementShortName">baseline_events</obj_property>
          <obj_property name="ObjectShortName">baseline_events</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measurements" type="array">
-         <obj_property name="ElementShortName">measurements</obj_property>
-         <obj_property name="ObjectShortName">measurements</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/start" type="other">
          <obj_property name="ElementShortName">start</obj_property>
          <obj_property name="ObjectShortName">start</obj_property>
@@ -546,23 +505,21 @@
          <obj_property name="ElementShortName">dump</obj_property>
          <obj_property name="ObjectShortName">dump</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/framer_overflow" type="other">
+         <obj_property name="ElementShortName">framer_overflow</obj_property>
+         <obj_property name="ObjectShortName">framer_overflow</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/framer_error" type="other">
+         <obj_property name="ElementShortName">framer_error</obj_property>
+         <obj_property name="ObjectShortName">framer_error</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/measurements" type="array">
+         <obj_property name="ElementShortName">measurements</obj_property>
+         <obj_property name="ObjectShortName">measurements</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/stream" type="array">
          <obj_property name="ElementShortName">stream</obj_property>
          <obj_property name="ObjectShortName">stream</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/stream.discard" type="array">
-            <obj_property name="ElementShortName">.discard[3:0]</obj_property>
-            <obj_property name="ObjectShortName">stream.discard[3:0]</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/stream.last" type="array">
-            <obj_property name="ElementShortName">.last[3:0]</obj_property>
-            <obj_property name="ObjectShortName">stream.last[3:0]</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/stream.data" type="array">
-            <obj_property name="ElementShortName">.data[63:0]</obj_property>
-            <obj_property name="ObjectShortName">stream.data[63:0]</obj_property>
-            <obj_property name="Radix">HEXRADIX</obj_property>
-         </wvobject>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/valid" type="other">
          <obj_property name="ElementShortName">valid</obj_property>
@@ -572,94 +529,243 @@
          <obj_property name="ElementShortName">ready</obj_property>
          <obj_property name="ObjectShortName">ready</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/sample_in" type="array">
-         <obj_property name="ElementShortName">sample_in[17:0]</obj_property>
-         <obj_property name="ObjectShortName">sample_in[17:0]</obj_property>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/adc_sample" type="array">
+         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
+         <obj_property name="AnalogYRangeMin">-500.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">3000.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/sample_inv" type="array">
+         <obj_property name="ElementShortName">sample_inv[13:0]</obj_property>
+         <obj_property name="ObjectShortName">sample_inv[13:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/registers.baseline.offset" type="array">
+         <obj_property name="ElementShortName">.offset[17:0]</obj_property>
+         <obj_property name="ObjectShortName">registers.baseline.offset[17:0]</obj_property>
          <obj_property name="Radix">REALRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
-      <wvobject fp_name="group387" type="group">
-         <obj_property name="label">wave forms</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw" type="array">
-            <obj_property name="ElementShortName">raw[17:0]</obj_property>
-            <obj_property name="ObjectShortName">raw[17:0]</obj_property>
-            <obj_property name="Radix">REALRADIX</obj_property>
-            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-            <obj_property name="radix_fractionWidth">3</obj_property>
-            <obj_property name="radix_otherWidth">0</obj_property>
-            <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-            <obj_property name="CellHeight">100</obj_property>
-            <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-            <obj_property name="AnalogYRangeMin">-500.000000</obj_property>
-            <obj_property name="AnalogYRRangeMax">1500.000000</obj_property>
-            <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-            <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-            <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/filtered" type="array">
-            <obj_property name="ElementShortName">filtered[17:0]</obj_property>
-            <obj_property name="ObjectShortName">filtered[17:0]</obj_property>
-            <obj_property name="Radix">REALRADIX</obj_property>
-            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-            <obj_property name="radix_fractionWidth">3</obj_property>
-            <obj_property name="radix_otherWidth">0</obj_property>
-            <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-            <obj_property name="CellHeight">100</obj_property>
-            <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
-            <obj_property name="AnalogYRangeMin">0.000000</obj_property>
-            <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
-            <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-            <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-            <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/slope" type="array">
-            <obj_property name="ElementShortName">slope[17:0]</obj_property>
-            <obj_property name="ObjectShortName">slope[17:0]</obj_property>
-            <obj_property name="Radix">REALRADIX</obj_property>
-            <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-            <obj_property name="radix_fractionWidth">8</obj_property>
-            <obj_property name="radix_otherWidth">0</obj_property>
-            <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-            <obj_property name="CellHeight">100</obj_property>
-            <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
-            <obj_property name="AnalogYRangeMin">0.000000</obj_property>
-            <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
-            <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-            <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-            <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baseline_sample" type="array">
+         <obj_property name="ElementShortName">baseline_sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_sample[13:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baseline_estimate" type="array">
          <obj_property name="ElementShortName">baseline_estimate[17:0]</obj_property>
          <obj_property name="ObjectShortName">baseline_estimate[17:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="Radix">REALRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
+         <obj_property name="AnalogYRangeMin">-100.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">100.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/sample_in" type="array">
+         <obj_property name="ElementShortName">sample_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">sample_in[17:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw" type="array">
+         <obj_property name="ElementShortName">raw[17:0]</obj_property>
+         <obj_property name="ObjectShortName">raw[17:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
+         <obj_property name="AnalogYRangeMin">-500.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">3000.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/filtered" type="array">
+         <obj_property name="ElementShortName">filtered[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/slope" type="array">
+         <obj_property name="ElementShortName">slope[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope[17:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">8</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
+         <obj_property name="AnalogYRangeMin">-30.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">30.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/sample_d" type="array">
+         <obj_property name="ElementShortName">sample_d[17:0]</obj_property>
+         <obj_property name="ObjectShortName">sample_d[17:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/sample" type="array">
-         <obj_property name="ElementShortName">sample[17:0]</obj_property>
-         <obj_property name="ObjectShortName">sample[17:0]</obj_property>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/dsp_m" type="array">
+         <obj_property name="ElementShortName">dsp_m</obj_property>
+         <obj_property name="ObjectShortName">dsp_m</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/frac_offset" type="array">
+         <obj_property name="ElementShortName">frac_offset[17:0]</obj_property>
+         <obj_property name="ObjectShortName">frac_offset[17:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/range_error" type="other">
          <obj_property name="ElementShortName">range_error</obj_property>
          <obj_property name="ObjectShortName">range_error</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_x" type="array">
+         <obj_property name="ElementShortName">raw_x[17:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_x[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_0_pos_x" type="other">
+         <obj_property name="ElementShortName">raw_0_pos_x</obj_property>
+         <obj_property name="ObjectShortName">raw_0_pos_x</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_0_neg_x" type="other">
+         <obj_property name="ElementShortName">raw_0_neg_x</obj_property>
+         <obj_property name="ObjectShortName">raw_0_neg_x</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_0xing" type="other">
+         <obj_property name="ElementShortName">raw_0xing</obj_property>
+         <obj_property name="ObjectShortName">raw_0xing</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_rounded" type="array">
+         <obj_property name="ElementShortName">raw_rounded[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_rounded[15:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_pipe" type="array">
+         <obj_property name="ElementShortName">raw_pipe[1:5][15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_pipe[1:5][15:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_0_pos_pipe" type="array">
+         <obj_property name="ElementShortName">raw_0_pos_pipe[1:5]</obj_property>
+         <obj_property name="ObjectShortName">raw_0_pos_pipe[1:5]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/raw_0_neg_pipe" type="array">
+         <obj_property name="ElementShortName">raw_0_neg_pipe[1:5]</obj_property>
+         <obj_property name="ObjectShortName">raw_0_neg_pipe[1:5]</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/CHANNEL" type="other">
          <obj_property name="ElementShortName">CHANNEL</obj_property>
          <obj_property name="ObjectShortName">CHANNEL</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/BASELINE_BITS" type="other">
+         <obj_property name="ElementShortName">BASELINE_BITS</obj_property>
+         <obj_property name="ObjectShortName">BASELINE_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/FRAC" type="other">
+         <obj_property name="ElementShortName">FRAC</obj_property>
+         <obj_property name="ObjectShortName">FRAC</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/WIDTH_OUT" type="other">
+         <obj_property name="ElementShortName">WIDTH_OUT</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/FRAC_OUT" type="other">
+         <obj_property name="ElementShortName">FRAC_OUT</obj_property>
+         <obj_property name="ObjectShortName">FRAC_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/SLOPE_FRAC" type="other">
+         <obj_property name="ElementShortName">SLOPE_FRAC</obj_property>
+         <obj_property name="ObjectShortName">SLOPE_FRAC</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/SLOPE_FRAC_OUT" type="other">
+         <obj_property name="ElementShortName">SLOPE_FRAC_OUT</obj_property>
+         <obj_property name="ObjectShortName">SLOPE_FRAC_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/ADC_WIDTH" type="other">
+         <obj_property name="ElementShortName">ADC_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">ADC_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/AREA_WIDTH" type="other">
+         <obj_property name="ElementShortName">AREA_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">AREA_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/AREA_FRAC" type="other">
+         <obj_property name="ElementShortName">AREA_FRAC</obj_property>
+         <obj_property name="ObjectShortName">AREA_FRAC</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/ENDIAN" type="array">
          <obj_property name="ElementShortName">ENDIAN[1:6]</obj_property>
          <obj_property name="ObjectShortName">ENDIAN[1:6]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/STRICT_CROSSING" type="other">
+         <obj_property name="ElementShortName">STRICT_CROSSING</obj_property>
+         <obj_property name="ObjectShortName">STRICT_CROSSING</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/RAW_DELAY" type="other">
+         <obj_property name="ElementShortName">RAW_DELAY</obj_property>
+         <obj_property name="ObjectShortName">RAW_DELAY</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/DEBUG" type="array">
+         <obj_property name="ElementShortName">DEBUG[1:5]</obj_property>
+         <obj_property name="ObjectShortName">DEBUG[1:5]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/ALAT" type="other">
+         <obj_property name="ElementShortName">ALAT</obj_property>
+         <obj_property name="ObjectShortName">ALAT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/RLAT" type="other">
+         <obj_property name="ElementShortName">RLAT</obj_property>
+         <obj_property name="ObjectShortName">RLAT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/XLAT" type="other">
+         <obj_property name="ElementShortName">XLAT</obj_property>
+         <obj_property name="ObjectShortName">XLAT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/ELAT" type="other">
+         <obj_property name="ElementShortName">ELAT</obj_property>
+         <obj_property name="ObjectShortName">ELAT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group81" type="group">
@@ -674,8 +780,8 @@
          <obj_property name="ObjectShortName">reset</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/sample" type="array">
-         <obj_property name="ElementShortName">sample[17:0]</obj_property>
-         <obj_property name="ObjectShortName">sample[17:0]</obj_property>
+         <obj_property name="ElementShortName">sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[13:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/sample_valid" type="other">
@@ -695,8 +801,12 @@
          <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/threshold" type="array">
-         <obj_property name="ElementShortName">threshold[10:0]</obj_property>
-         <obj_property name="ObjectShortName">threshold[10:0]</obj_property>
+         <obj_property name="ElementShortName">threshold[9:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[9:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">UNSIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/count_threshold" type="array">
          <obj_property name="ElementShortName">count_threshold[17:0]</obj_property>
@@ -711,23 +821,26 @@
          <obj_property name="ObjectShortName">baseline_estimate[17:0]</obj_property>
          <obj_property name="CustomSignalColor">#FF0000</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
          <obj_property name="CellHeight">100</obj_property>
          <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-         <obj_property name="AnalogYRangeMin">-2000.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">2000.000000</obj_property>
+         <obj_property name="AnalogYRangeMin">-100.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">100.000000</obj_property>
          <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
          <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
          <obj_property name="AnalogHorizLine">0.000000</obj_property>
          <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/range_error" type="other">
          <obj_property name="ElementShortName">range_error</obj_property>
          <obj_property name="ObjectShortName">range_error</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/baseline_sample" type="array">
-         <obj_property name="ElementShortName">baseline_sample[11:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline_sample[11:0]</obj_property>
+         <obj_property name="ElementShortName">baseline_sample[10:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_sample[10:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/baseline_sample_valid" type="other">
@@ -735,13 +848,13 @@
          <obj_property name="ObjectShortName">baseline_sample_valid</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/most_frequent" type="array">
-         <obj_property name="ElementShortName">most_frequent[11:0]</obj_property>
-         <obj_property name="ObjectShortName">most_frequent[11:0]</obj_property>
+         <obj_property name="ElementShortName">most_frequent[10:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[10:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/previous_mf" type="array">
-         <obj_property name="ElementShortName">previous_mf[11:0]</obj_property>
-         <obj_property name="ObjectShortName">previous_mf[11:0]</obj_property>
+         <obj_property name="ElementShortName">previous_mf[10:0]</obj_property>
+         <obj_property name="ObjectShortName">previous_mf[10:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/av_enable" type="other">
          <obj_property name="ElementShortName">av_enable</obj_property>
@@ -751,10 +864,6 @@
          <obj_property name="ElementShortName">most_frequent_av[17:0]</obj_property>
          <obj_property name="ObjectShortName">most_frequent_av[17:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/new_most_frequent" type="other">
-         <obj_property name="ElementShortName">new_most_frequent</obj_property>
-         <obj_property name="ObjectShortName">new_most_frequent</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/new_mf_value" type="other">
          <obj_property name="ElementShortName">new_mf_value</obj_property>
@@ -1649,6 +1758,107 @@
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/framer/CHUNKS" type="other">
          <obj_property name="ElementShortName">CHUNKS</obj_property>
          <obj_property name="ObjectShortName">CHUNKS</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group1809" type="group">
+      <obj_property name="label">most frequent</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/timeconstant" type="array">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/threshold" type="array">
+         <obj_property name="ElementShortName">threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/sample" type="array">
+         <obj_property name="ElementShortName">sample[10:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[10:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/sample_valid" type="other">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/most_frequent" type="array">
+         <obj_property name="ElementShortName">most_frequent[10:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent[10:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/new_value" type="other">
+         <obj_property name="ElementShortName">new_value</obj_property>
+         <obj_property name="ObjectShortName">new_value</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/mca_ready" type="other">
+         <obj_property name="ElementShortName">mca_ready</obj_property>
+         <obj_property name="ObjectShortName">mca_ready</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/nextstate" type="other">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/timer" type="array">
+         <obj_property name="ElementShortName">timer[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timer[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/timeout" type="other">
+         <obj_property name="ElementShortName">timeout</obj_property>
+         <obj_property name="ObjectShortName">timeout</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/readable" type="other">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/most_frequent_int" type="array">
+         <obj_property name="ElementShortName">most_frequent_int[10:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_int[10:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/max_count" type="array">
+         <obj_property name="ElementShortName">max_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_count[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/new_max" type="other">
+         <obj_property name="ElementShortName">new_max</obj_property>
+         <obj_property name="ObjectShortName">new_max</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/address_to_clear" type="array">
+         <obj_property name="ElementShortName">address_to_clear[10:0]</obj_property>
+         <obj_property name="ObjectShortName">address_to_clear[10:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/clear_mca" type="other">
+         <obj_property name="ElementShortName">clear_mca</obj_property>
+         <obj_property name="ObjectShortName">clear_mca</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/clear_done" type="other">
+         <obj_property name="ElementShortName">clear_done</obj_property>
+         <obj_property name="ObjectShortName">clear_done</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/ADDRESS_BITS" type="other">
+         <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
+         <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/COUNTER_BITS" type="other">
+         <obj_property name="ElementShortName">COUNTER_BITS</obj_property>
+         <obj_property name="ObjectShortName">COUNTER_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/TIMECONSTANT_BITS" type="other">
+         <obj_property name="ElementShortName">TIMECONSTANT_BITS</obj_property>
+         <obj_property name="ObjectShortName">TIMECONSTANT_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/baselineEstimator/mostFrequent/MIN_TIMECONSTANT" type="other">
+         <obj_property name="ElementShortName">MIN_TIMECONSTANT</obj_property>
+         <obj_property name="ObjectShortName">MIN_TIMECONSTANT</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

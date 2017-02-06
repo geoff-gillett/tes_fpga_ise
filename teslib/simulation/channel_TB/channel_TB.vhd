@@ -20,15 +20,18 @@ use work.measurements.all;
 entity channel_TB is
 generic(
   CHANNEL:natural:=0;
+  BASELINE_BITS:natural:=11;
   WIDTH:natural:=18;
   FRAC:natural:=3;
   WIDTH_OUT:natural:=16;
-  FRAC_OUT:natural:=1;
+  FRAC_OUT:natural:=3;
+  SLOPE_FRAC:natural:=8; --internal precision
+  SLOPE_FRAC_OUT:natural:=8;
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  CFD_DELAY:natural:=1026;
-  ENDIAN:string:="LITTLE"
+  ENDIAN:string:="LITTLE";
+  STRICT_CROSSING:boolean:=TRUE
 );
 end entity channel_TB;
 
@@ -39,11 +42,13 @@ signal reset1:std_logic:='1';
 signal reset2:std_logic:='1';
 constant CLK_PERIOD:time:=4 ns;
 
-signal adc_sample:unsigned(ADC_WIDTH-1 downto 0);
+signal adc_sample:signed(ADC_WIDTH-1 downto 0);
 signal registers:channel_registers_t;
 signal start:boolean;
 signal commit:boolean;
 signal dump:boolean;
+signal framer_overflow:boolean;
+signal framer_error:boolean;
 signal m:measurements_t;
 signal stream:streambus_t;
 signal valid:boolean;
@@ -65,22 +70,26 @@ signal baseline_config:fir_control_in_t;
 signal baseline_events:fir_control_out_t;
 signal simenable:boolean:=FALSE;
 
-constant CF:integer:=2**17/10;
+constant CF:integer:=2**17/20;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
   
-UUT:entity work.channel_FIR71
+UUT:entity work.channel
 generic map(
   CHANNEL => CHANNEL,
+  BASELINE_BITS => BASELINE_BITS,
   WIDTH => WIDTH,
   FRAC => FRAC,
   WIDTH_OUT => WIDTH_OUT,
   FRAC_OUT => FRAC_OUT,
+  SLOPE_FRAC => SLOPE_FRAC,
+  SLOPE_FRAC_OUT => SLOPE_FRAC_OUT,
   ADC_WIDTH => ADC_WIDTH,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  ENDIAN  => ENDIAN
+  ENDIAN  => ENDIAN,
+  STRICT_CROSSING => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -98,6 +107,8 @@ port map(
   start => start,
   commit => commit,
   dump => dump,
+  framer_overflow => framer_overflow,
+  framer_error => framer_error,
   measurements => m,
   stream => stream,
   valid => valid,
@@ -105,7 +116,7 @@ port map(
 );
 
 file_open(stream_file,"../stream",WRITE_MODE);
-byteStreamWriter:process
+StreamWriter:process
 begin
 	while TRUE loop
     wait until rising_edge(clk);
@@ -119,7 +130,7 @@ begin
     	end if;
     end if;
 	end loop;
-end process byteStreamWriter;
+end process StreamWriter;
 
 file_open(trace_file, "../traces",WRITE_MODE);
 traceWriter:process
@@ -158,6 +169,26 @@ end process clkCount;
 --wait;
 --end process stimulusFile;
 
+stimulusFile:process
+	file sample_file:integer_file is in 
+	     "../input_signals/50mvCh1on_amp_100khzdiode_250_1.bin";
+	variable sample:integer;
+	--variable sample_in:std_logic_vector(13 downto 0);
+begin
+	while not endfile(sample_file) loop
+		read(sample_file, sample);
+		wait until rising_edge(clk);
+		adc_sample <= to_signed(sample, 14);
+		--sample_reg <= resize(sample_in, 14);
+		--adc_samples(1) <= (others => '0'); -- adc_samples(0);
+		if clk_count mod 10000 = 0 then
+			report "sample " & integer'image(clk_count);
+		end if;
+		--assert false report str_sample severity note;
+	end loop;
+	wait;
+end process stimulusFile;
+
 simsquare:process (clk) is
 begin
   if rising_edge(clk) then
@@ -171,7 +202,7 @@ end process simsquare;
 squaresig <= to_unsigned(10,ADC_WIDTH)
              when sim_count(SIM_WIDTH-1)='0' 
              else to_unsigned(400,ADC_WIDTH);
-adc_sample <= squaresig;
+--adc_sample <= squaresig;
 
 stimulus:process
 begin
@@ -190,19 +221,19 @@ baseline_config.config_valid <= '0';
 baseline_config.reload_data <= (others => '0');
 baseline_config.reload_last <= '0';
 baseline_config.reload_valid <= '0';
-registers.baseline.offset <= to_unsigned(1500,WIDTH-1);
-registers.baseline.count_threshold <= to_unsigned(20,BASELINE_COUNTER_BITS);
+registers.baseline.offset <= to_signed(761*8+6,WIDTH);
+registers.baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
 registers.baseline.new_only <= TRUE;
 registers.baseline.subtraction <= TRUE;
-registers.baseline.timeconstant <= to_unsigned(2**11,32);
+registers.baseline.timeconstant <= to_unsigned(250000,32);
 
-registers.capture.constant_fraction  <= to_unsigned(0,DSP_BITS-1);
-registers.capture.slope_threshold <= to_unsigned(3300,DSP_BITS-1); --2300
-registers.capture.pulse_threshold <= to_unsigned(400,DSP_BITS-1);
+registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
+registers.capture.slope_threshold <= to_unsigned(22*256,DSP_BITS-1); --2300
+registers.capture.pulse_threshold <= to_unsigned(350*8,DSP_BITS-1);
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
-registers.capture.detection <= TEST_DETECTION_D;
+registers.capture.detection <= PEAK_DETECTION_D;
 registers.capture.timing <= CFD_LOW_TIMING_D;
 registers.capture.height <= CFD_HEIGHT_D;
 registers.capture.cfd_rel2min <= TRUE;

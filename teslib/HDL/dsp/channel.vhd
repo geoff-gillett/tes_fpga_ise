@@ -120,8 +120,8 @@ if rising_edge(clk) then
     else
       sample_inv <= adc_sample; 
     end if;
-    baseline_sample 
-      <= sample_inv - registers.baseline.offset(ADC_WIDTH-1 downto 0); --(ADC_WIDTH+FRAC-1 downto FRAC);
+    baseline_sample <= sample_inv - 
+      resize(shift_right(registers.baseline.offset,FRAC),ADC_WIDTH);
   end if;
 end if;
 end process sampleoffset;
