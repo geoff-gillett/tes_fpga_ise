@@ -251,7 +251,7 @@ begin
   wait until rising_edge(clk);
   clk_count <= clk_count+1;
 end process clkCount;
-ready <= clk_count mod 16=0;
+ready <= clk_count mod 8=0;
 
 stimulus:process is
 begin
@@ -293,7 +293,6 @@ wait until updated;
 registers.value <= MCA_PULSE_AREA_D;
 update_asap <= TRUE;
 wait for CLK_PERIOD;
-update_asap <= FALSE;
 update_asap <= FALSE;
 wait until updated;
 registers.trigger <= SLOPE_0XING_MCA_TRIGGER_D;

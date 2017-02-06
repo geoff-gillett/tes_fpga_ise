@@ -49,7 +49,7 @@ begin
 
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.streaming_mca2
+UUT:entity work.streaming_mca3
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
   COUNTER_BITS => COUNTER_BITS,

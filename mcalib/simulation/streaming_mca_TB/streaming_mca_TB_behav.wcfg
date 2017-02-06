@@ -13,15 +13,14 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1678200000fs"></ZoomStartTime>
-      <ZoomEndTime time="1809000001fs"></ZoomEndTime>
-      <Cursor1Time time="1700000000fs"></Cursor1Time>
+      <ZoomStartTime time="631083333fs"></ZoomStartTime>
+      <ZoomEndTime time="742583334fs"></ZoomEndTime>
+      <Cursor1Time time="724000000fs"></Cursor1Time>
    </zoom_setting>
-   <WVObjectSize size="2" />
+   <WVObjectSize size="3" />
    <wvobject fp_name="group23" type="group">
       <obj_property name="label">testbench</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -123,9 +122,10 @@
          <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
       </wvobject>
    </wvobject>
-   <wvobject fp_name="group24" type="group">
+   <wvobject fp_name="group66" type="group">
       <obj_property name="label">UUT</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -174,25 +174,33 @@
          <obj_property name="ElementShortName">readable</obj_property>
          <obj_property name="ObjectShortName">readable</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/stream" type="array">
          <obj_property name="ElementShortName">stream[31:0]</obj_property>
          <obj_property name="ObjectShortName">stream[31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/valid" type="other">
          <obj_property name="ElementShortName">valid</obj_property>
          <obj_property name="ObjectShortName">valid</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/last" type="other">
-         <obj_property name="ElementShortName">last</obj_property>
-         <obj_property name="ObjectShortName">last</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/ready" type="other">
          <obj_property name="ElementShortName">ready</obj_property>
          <obj_property name="ObjectShortName">ready</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/state" type="other">
-         <obj_property name="ElementShortName">state</obj_property>
-         <obj_property name="ObjectShortName">state</obj_property>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/last" type="other">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/nextstate" type="other">
          <obj_property name="ElementShortName">nextstate</obj_property>
@@ -202,9 +210,17 @@
          <obj_property name="ElementShortName">bin_to_read[3:0]</obj_property>
          <obj_property name="ObjectShortName">bin_to_read[3:0]</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/last_read" type="other">
+         <obj_property name="ElementShortName">last_read</obj_property>
+         <obj_property name="ObjectShortName">last_read</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/last_bin_reg" type="array">
          <obj_property name="ElementShortName">last_bin_reg[3:0]</obj_property>
          <obj_property name="ObjectShortName">last_bin_reg[3:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/last_bin_reg_m1" type="array">
+         <obj_property name="ElementShortName">last_bin_reg_m1[3:0]</obj_property>
+         <obj_property name="ObjectShortName">last_bin_reg_m1[3:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/count" type="array">
          <obj_property name="ElementShortName">count[31:0]</obj_property>
@@ -214,9 +230,9 @@
          <obj_property name="ElementShortName">data[31:0]</obj_property>
          <obj_property name="ObjectShortName">data[31:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/mca_ready" type="other">
-         <obj_property name="ElementShortName">mca_ready</obj_property>
-         <obj_property name="ObjectShortName">mca_ready</obj_property>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/mca_intialised" type="other">
+         <obj_property name="ElementShortName">mca_intialised</obj_property>
+         <obj_property name="ObjectShortName">mca_intialised</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/mca_valid" type="other">
          <obj_property name="ElementShortName">mca_valid</obj_property>
@@ -250,25 +266,21 @@
          <obj_property name="ElementShortName">read_count</obj_property>
          <obj_property name="ObjectShortName">read_count</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/read_bin_valid" type="other">
-         <obj_property name="ElementShortName">read_bin_valid</obj_property>
-         <obj_property name="ObjectShortName">read_bin_valid</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/can_swap_int" type="other">
          <obj_property name="ElementShortName">can_swap_int</obj_property>
          <obj_property name="ObjectShortName">can_swap_int</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/last_read" type="other">
-         <obj_property name="ElementShortName">last_read</obj_property>
-         <obj_property name="ObjectShortName">last_read</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/read_bin" type="other">
          <obj_property name="ElementShortName">read_bin</obj_property>
          <obj_property name="ObjectShortName">read_bin</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/hold" type="other">
-         <obj_property name="ElementShortName">hold</obj_property>
-         <obj_property name="ObjectShortName">hold</obj_property>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/empty" type="other">
+         <obj_property name="ElementShortName">empty</obj_property>
+         <obj_property name="ObjectShortName">empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/start" type="other">
+         <obj_property name="ElementShortName">start</obj_property>
+         <obj_property name="ObjectShortName">start</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/ADDRESS_BITS" type="other">
          <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
@@ -283,8 +295,161 @@
          <obj_property name="ObjectShortName">TOTAL_BITS</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/DEBUG" type="array">
-         <obj_property name="ElementShortName">DEBUG[1:4]</obj_property>
-         <obj_property name="ObjectShortName">DEBUG[1:4]</obj_property>
+         <obj_property name="ElementShortName">DEBUG[1:5]</obj_property>
+         <obj_property name="ObjectShortName">DEBUG[1:5]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group108" type="group">
+      <obj_property name="label">serialiser</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/empty" type="other">
+         <obj_property name="ElementShortName">empty</obj_property>
+         <obj_property name="ObjectShortName">empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/write" type="other">
+         <obj_property name="ElementShortName">write</obj_property>
+         <obj_property name="ObjectShortName">write</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/last_address" type="other">
+         <obj_property name="ElementShortName">last_address</obj_property>
+         <obj_property name="ObjectShortName">last_address</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/last_int" type="other">
+         <obj_property name="ElementShortName">last_int</obj_property>
+         <obj_property name="ObjectShortName">last_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/read" type="other">
+         <obj_property name="ElementShortName">read</obj_property>
+         <obj_property name="ObjectShortName">read</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/ram_data" type="array">
+         <obj_property name="ElementShortName">ram_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/stream" type="array">
+         <obj_property name="ElementShortName">stream[31:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/valid" type="other">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/ready" type="other">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/last" type="other">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/one_pending" type="other">
+         <obj_property name="ElementShortName">one_pending</obj_property>
+         <obj_property name="ObjectShortName">one_pending</obj_property>
+         <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/two_pending" type="other">
+         <obj_property name="ElementShortName">two_pending</obj_property>
+         <obj_property name="ObjectShortName">two_pending</obj_property>
+         <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/none_pending" type="other">
+         <obj_property name="ElementShortName">none_pending</obj_property>
+         <obj_property name="ObjectShortName">none_pending</obj_property>
+         <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/three_pending" type="other">
+         <obj_property name="ElementShortName">three_pending</obj_property>
+         <obj_property name="ObjectShortName">three_pending</obj_property>
+         <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/data_valid" type="other">
+         <obj_property name="ElementShortName">data_valid</obj_property>
+         <obj_property name="ObjectShortName">data_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/read_int" type="other">
+         <obj_property name="ElementShortName">read_int</obj_property>
+         <obj_property name="ObjectShortName">read_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/shift" type="other">
+         <obj_property name="ElementShortName">shift</obj_property>
+         <obj_property name="ObjectShortName">shift</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/data" type="array">
+         <obj_property name="ElementShortName">data[32:0]</obj_property>
+         <obj_property name="ObjectShortName">data[32:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/ram_valid" type="other">
+         <obj_property name="ElementShortName">ram_valid</obj_property>
+         <obj_property name="ObjectShortName">ram_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/ram_used" type="other">
+         <obj_property name="ElementShortName">ram_used</obj_property>
+         <obj_property name="ObjectShortName">ram_used</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/pipe" type="array">
+         <obj_property name="ElementShortName">pipe[1:3][32:0]</obj_property>
+         <obj_property name="ObjectShortName">pipe[1:3][32:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/read_pipe" type="array">
+         <obj_property name="ElementShortName">read_pipe[1:3]</obj_property>
+         <obj_property name="ObjectShortName">read_pipe[1:3]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/last_pipe" type="array">
+         <obj_property name="ElementShortName">last_pipe[1:3]</obj_property>
+         <obj_property name="ObjectShortName">last_pipe[1:3]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/nextstate" type="other">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/ready_int" type="other">
+         <obj_property name="ElementShortName">ready_int</obj_property>
+         <obj_property name="ObjectShortName">ready_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/valid_int" type="other">
+         <obj_property name="ElementShortName">valid_int</obj_property>
+         <obj_property name="ObjectShortName">valid_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/output_handshake" type="other">
+         <obj_property name="ElementShortName">output_handshake</obj_property>
+         <obj_property name="ObjectShortName">output_handshake</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/output_empty" type="other">
+         <obj_property name="ElementShortName">output_empty</obj_property>
+         <obj_property name="ObjectShortName">output_empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/streaming_mca_TB/UUT/fwft/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

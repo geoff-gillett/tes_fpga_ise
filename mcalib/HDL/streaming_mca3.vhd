@@ -62,11 +62,11 @@ subtype MCA_count is unsigned(COUNTER_BITS-1 downto 0);
 subtype MCA_bin is unsigned(ADDRESS_BITS-1 downto 0); -- RAM buffer address
 type FSMstate is (IDLE,STREAMING,CLEAR);
 signal state,nextstate:FSMstate;
-signal bin_to_read,last_bin_reg:MCA_bin;
+signal bin_to_read,last_bin_reg,last_bin_reg_m1:MCA_bin;
 signal count:MCA_Count;
 signal data:std_logic_vector(COUNTER_BITS-1 downto 0);
-signal mca_intialised,mca_valid,last_addr,last_MCA_addr,swap_buffer_int:boolean;
-signal mca_last,clearing,readable_int:boolean;
+signal mca_intialised,last_MCA_addr,swap_buffer_int:boolean;
+signal clearing,readable_int:boolean;
 signal read_count,can_swap_int:boolean;
 signal last_read,read_bin,empty:boolean;
 signal start:boolean;
@@ -80,8 +80,8 @@ attribute mark_debug of count:signal is DEBUG;
 
 begin
   
-valid <= mca_valid;
-last <= mca_last;
+--valid <= mca_valid;
+--last <= mca_last;
 can_swap <= can_swap_int; 
 readable <= readable_int;
 swap_buffer_int <= can_swap_int and mca_intialised and swap_buffer;
@@ -110,11 +110,11 @@ port map(
   count => count
 );
 data <= std_logic_vector(count);
-last_read <= last_addr and state=STREAMING;
+--last_read <= last_addr and state=STREAMING;
 
 --read_bin_valid <= state=STREAMING;
 empty <= not (state=STREAMING);
-
+start <= state=IDLE and readable_int;
 fwft:entity streamlib.serialiser3
 generic map(
   WIDTH => COUNTER_BITS
@@ -128,9 +128,9 @@ port map(
   read => read_count,
   ram_data => data,
   stream => stream,
-  valid => mca_valid,
+  valid => valid,
   ready => ready,
-  last => mca_last
+  last => last
 );
 --------------------------------------------------------------------------------
 -- control registers
@@ -140,6 +140,7 @@ begin
 if rising_edge(clk) then
   if reset = '1' then
     last_bin_reg <= last_bin;
+    last_bin_reg_m1 <= last_bin-1;
     can_swap_int <= FALSE; 
     clearing <= TRUE;
   else
@@ -149,6 +150,7 @@ if rising_edge(clk) then
     end if;
     if swap_buffer_int then
       last_bin_reg <= last_bin;
+      last_bin_reg_m1 <= last_bin-1;
       can_swap_int <= FALSE;
     elsif last_MCA_addr and read_bin then
       can_swap_int <= TRUE;
@@ -171,7 +173,7 @@ if rising_edge(clk) then
 end if;
 end process fsmNextstate;
 
-fsmTransition:process(state,readable_int,last_MCA_addr,last_addr,read_count)
+fsmTransition:process(state,readable_int,last_MCA_addr,last_read,read_count)
 begin
   nextstate <= state;
   case state is 
@@ -182,7 +184,7 @@ begin
     when STREAMING =>
       if last_MCA_addr and read_count then
         nextstate <= IDLE;
-      elsif last_addr and read_count then
+      elsif last_read and read_count then
         nextstate <= CLEAR;
       end if;
     when CLEAR =>
@@ -195,16 +197,17 @@ end process fsmTransition;
 --------------------------------------------------------------------------------
 -- Stream address
 --------------------------------------------------------------------------------
-last_addr <= bin_to_read=to_0IfX(last_bin_reg);  --last bin to put on stream
-last_MCA_addr <= bin_to_read=to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS);
+--last_addr <= bin_to_read=to_0IfX(last_bin_reg);  --last bin to put on stream
+last_MCA_addr <= bin_to_read=to_unsigned(2**ADDRESS_BITS-2,ADDRESS_BITS);
 read_bin <= (state=STREAMING and read_count) or state=CLEAR;
+last_read <= bin_to_read=to_0ifX(last_bin_reg_m1);
 streamAddress:process(clk)
 begin
 if rising_edge(clk) then
   if reset='1' then
     bin_to_read <= (others => '0');
   else  
-    if state=IDLE and readable_int then
+    if start then
       bin_to_read <= (others => '0');
     elsif read_bin then
     	bin_to_read <= bin_to_read+1;
