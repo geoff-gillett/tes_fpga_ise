@@ -28,7 +28,7 @@ use work.registers.all;
 use work.types.all;
 use work.functions.all;
 
-entity mca_unit3 is
+entity mca_unit4 is
 generic(
   CHANNELS:integer:=8;
   ADDRESS_BITS:integer:=14;
@@ -75,9 +75,9 @@ port(
   valid:out boolean;
   ready:in boolean
 );
-end entity mca_unit3;
+end entity mca_unit4;
 --
-architecture RTL of mca_unit3 is
+architecture RTL of mca_unit4 is
   
 component count_buffer
 port(

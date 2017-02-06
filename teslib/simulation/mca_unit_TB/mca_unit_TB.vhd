@@ -251,7 +251,7 @@ begin
   wait until rising_edge(clk);
   clk_count <= clk_count+1;
 end process clkCount;
-ready <= clk_count mod 8=0;
+ready <= clk_count mod 1=0;
 
 stimulus:process is
 begin

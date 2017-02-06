@@ -176,7 +176,7 @@ if rising_edge(clk) then
 end if;
 end process binOut;
 
-MCA:entity work.streaming_mca2
+MCA:entity work.streaming_mca3
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
   COUNTER_BITS => COUNTER_BITS,

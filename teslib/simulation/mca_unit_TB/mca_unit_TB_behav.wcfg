@@ -20,11 +20,11 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="5777909750000fs"></ZoomStartTime>
-      <ZoomEndTime time="5778042050001fs"></ZoomEndTime>
-      <Cursor1Time time="5777972000000fs"></Cursor1Time>
+      <ZoomStartTime time="944166666fs"></ZoomStartTime>
+      <ZoomEndTime time="1011166667fs"></ZoomEndTime>
+      <Cursor1Time time="952367000fs"></Cursor1Time>
    </zoom_setting>
-   <WVObjectSize size="5" />
+   <WVObjectSize size="4" />
    <wave_markers>
       <marker time="5384756000000" label="" />
    </wave_markers>
@@ -223,10 +223,6 @@
          <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
          <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/SIM_WIDTH" type="other">
-         <obj_property name="ElementShortName">SIM_WIDTH</obj_property>
-         <obj_property name="ObjectShortName">SIM_WIDTH</obj_property>
-      </wvobject>
    </wvobject>
    <wvobject fp_name="group171" type="group">
       <obj_property name="label">UUT</obj_property>
@@ -309,13 +305,6 @@
          <obj_property name="ElementShortName">qualifier_select[9:0]</obj_property>
          <obj_property name="ObjectShortName">qualifier_select[9:0]</obj_property>
          <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/simvalid" type="other">
-         <obj_property name="ElementShortName">simvalid</obj_property>
-         <obj_property name="ObjectShortName">simvalid</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         <obj_property name="CustomSignalColor">#FF0000</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/value" type="array">
@@ -869,7 +858,6 @@
    <wvobject fp_name="group308" type="group">
       <obj_property name="label">streaming MCA</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -954,10 +942,6 @@
          <obj_property name="CustomSignalColor">#FF00FF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/hold" type="other">
-         <obj_property name="ElementShortName">hold</obj_property>
-         <obj_property name="ObjectShortName">hold</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/read_count" type="other">
          <obj_property name="ElementShortName">read_count</obj_property>
          <obj_property name="ObjectShortName">read_count</obj_property>
@@ -974,14 +958,6 @@
          <obj_property name="ElementShortName">data[31:0]</obj_property>
          <obj_property name="ObjectShortName">data[31:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/mca_valid" type="other">
-         <obj_property name="ElementShortName">mca_valid</obj_property>
-         <obj_property name="ObjectShortName">mca_valid</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/last_addr" type="other">
-         <obj_property name="ElementShortName">last_addr</obj_property>
-         <obj_property name="ObjectShortName">last_addr</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/last_MCA_addr" type="other">
          <obj_property name="ElementShortName">last_MCA_addr</obj_property>
          <obj_property name="ObjectShortName">last_MCA_addr</obj_property>
@@ -989,10 +965,6 @@
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/swap_buffer_int" type="other">
          <obj_property name="ElementShortName">swap_buffer_int</obj_property>
          <obj_property name="ObjectShortName">swap_buffer_int</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/mca_last" type="other">
-         <obj_property name="ElementShortName">mca_last</obj_property>
-         <obj_property name="ObjectShortName">mca_last</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/clearing" type="other">
          <obj_property name="ElementShortName">clearing</obj_property>
@@ -1033,171 +1005,6 @@
       <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/DEBUG" type="array">
          <obj_property name="ElementShortName">DEBUG[1:5]</obj_property>
          <obj_property name="ObjectShortName">DEBUG[1:5]</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group227" type="group">
-      <obj_property name="label">serialiser</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/clk" type="logic">
-         <obj_property name="ElementShortName">clk</obj_property>
-         <obj_property name="ObjectShortName">clk</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/reset" type="logic">
-         <obj_property name="ElementShortName">reset</obj_property>
-         <obj_property name="ObjectShortName">reset</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/hold" type="other">
-         <obj_property name="ElementShortName">hold</obj_property>
-         <obj_property name="ObjectShortName">hold</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/last_read" type="other">
-         <obj_property name="ElementShortName">last_read</obj_property>
-         <obj_property name="ObjectShortName">last_read</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/read" type="other">
-         <obj_property name="ElementShortName">read</obj_property>
-         <obj_property name="ObjectShortName">read</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/read_int" type="other">
-         <obj_property name="ElementShortName">read_int</obj_property>
-         <obj_property name="ObjectShortName">read_int</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/bin_to_read" type="array">
-         <obj_property name="ElementShortName">bin_to_read[13:0]</obj_property>
-         <obj_property name="ObjectShortName">bin_to_read[13:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/none_pending" type="other">
-         <obj_property name="ElementShortName">none_pending</obj_property>
-         <obj_property name="ObjectShortName">none_pending</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/one_pending" type="other">
-         <obj_property name="ElementShortName">one_pending</obj_property>
-         <obj_property name="ObjectShortName">one_pending</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/two_pending" type="other">
-         <obj_property name="ElementShortName">two_pending</obj_property>
-         <obj_property name="ObjectShortName">two_pending</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/read_pipe" type="array">
-         <obj_property name="ElementShortName">read_pipe[1:2]</obj_property>
-         <obj_property name="ObjectShortName">read_pipe[1:2]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/ram_data" type="array">
-         <obj_property name="ElementShortName">ram_data[31:0]</obj_property>
-         <obj_property name="ObjectShortName">ram_data[31:0]</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/ram_valid" type="other">
-         <obj_property name="ElementShortName">ram_valid</obj_property>
-         <obj_property name="ObjectShortName">ram_valid</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/ram_ready" type="other">
-         <obj_property name="ElementShortName">ram_ready</obj_property>
-         <obj_property name="ObjectShortName">ram_ready</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/reg1" type="array">
-         <obj_property name="ElementShortName">reg1[32:0]</obj_property>
-         <obj_property name="ObjectShortName">reg1[32:0]</obj_property>
-         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/reg2" type="array">
-         <obj_property name="ElementShortName">reg2[32:0]</obj_property>
-         <obj_property name="ObjectShortName">reg2[32:0]</obj_property>
-         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/reg_ready" type="other">
-         <obj_property name="ElementShortName">reg_ready</obj_property>
-         <obj_property name="ObjectShortName">reg_ready</obj_property>
-         <obj_property name="CustomSignalColor">#FFA500</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/reg_valid" type="other">
-         <obj_property name="ElementShortName">reg_valid</obj_property>
-         <obj_property name="ObjectShortName">reg_valid</obj_property>
-         <obj_property name="CustomSignalColor">#FFA500</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/reg_stream" type="array">
-         <obj_property name="ElementShortName">reg_stream[32:0]</obj_property>
-         <obj_property name="ObjectShortName">reg_stream[32:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FFA500</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/state" type="other">
-         <obj_property name="ElementShortName">state</obj_property>
-         <obj_property name="ObjectShortName">state</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/stream" type="array">
-         <obj_property name="ElementShortName">stream[31:0]</obj_property>
-         <obj_property name="ObjectShortName">stream[31:0]</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/valid" type="other">
-         <obj_property name="ElementShortName">valid</obj_property>
-         <obj_property name="ObjectShortName">valid</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/ready" type="other">
-         <obj_property name="ElementShortName">ready</obj_property>
-         <obj_property name="ObjectShortName">ready</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/last" type="other">
-         <obj_property name="ElementShortName">last</obj_property>
-         <obj_property name="ObjectShortName">last</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/last_pipe" type="array">
-         <obj_property name="ElementShortName">last_pipe[1:2]</obj_property>
-         <obj_property name="ObjectShortName">last_pipe[1:2]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/reg1_w" type="other">
-         <obj_property name="ElementShortName">reg1_w</obj_property>
-         <obj_property name="ObjectShortName">reg1_w</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/reg2_w" type="other">
-         <obj_property name="ElementShortName">reg2_w</obj_property>
-         <obj_property name="ObjectShortName">reg2_w</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/stream_int" type="array">
-         <obj_property name="ElementShortName">stream_int[32:0]</obj_property>
-         <obj_property name="ObjectShortName">stream_int[32:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/last_int" type="other">
-         <obj_property name="ElementShortName">last_int</obj_property>
-         <obj_property name="ObjectShortName">last_int</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/WIDTH" type="other">
-         <obj_property name="ElementShortName">WIDTH</obj_property>
-         <obj_property name="ObjectShortName">WIDTH</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/MCA/MCA/serialiser2/nextstate" type="other">
-         <obj_property name="ElementShortName">nextstate</obj_property>
-         <obj_property name="ObjectShortName">nextstate</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/mca_unit_TB/UUT/stream_nextstate" type="other">
-         <obj_property name="ElementShortName">stream_nextstate</obj_property>
-         <obj_property name="ObjectShortName">stream_nextstate</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
