@@ -205,9 +205,9 @@ bytestream_last <= bytestream_int(8)='1';
 
 --register settings
 global.mtu <= to_unsigned(1500,MTU_BITS);
-global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
-global.mca.ticks <= to_unsigned(20,MCA_TICKCOUNT_BITS);
+global.tick_latency <= to_unsigned(250000,TICK_LATENCY_BITS);
+global.tick_period <= to_unsigned(250000,TICK_PERIOD_BITS);
+global.mca.ticks <= to_unsigned(10,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
 global.mca.last_bin <= (others => '1');
@@ -220,7 +220,7 @@ global.mca.qualifier <= ALL_MCA_QUAL_D;
 global.window <= to_unsigned(40, TIME_BITS);
 
 global.channel_enable <= "00000011";
---global.channel_enable <= "00000000";
+--global.channel_enable <= "00000011";
 
 filter_config(0).config_data <= (others => '0');
 filter_config(0).config_valid <= '0';
