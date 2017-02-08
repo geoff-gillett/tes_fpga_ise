@@ -170,7 +170,7 @@ ticked <= ticked_reg;
 --------------------------------------------------------------------------------
 -- queue commits or dumps to match with starts
 --------------------------------------------------------------------------------
-commitDump:for i in 0 to CHANNELS-1 generate
+commitDump:for i in CHANNELS-1 downto 0 generate
 begin
   commitDumpFIFO:component commit_dump_fifo
   port map(

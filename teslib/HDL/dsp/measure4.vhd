@@ -569,6 +569,7 @@ begin
       end if;
     
       case flags.timing is
+      -- if pulse threshold is used for timing poieak will use 
       when PULSE_THRESH_TIMING_D =>
         pre_stamp_pulse <= pulse_t_pos_pipe(DEPTH-2);
         if first_peak_pipe(DEPTH-2) then
@@ -579,20 +580,23 @@ begin
         
       when SLOPE_THRESH_TIMING_D =>
         
-        pre_stamp_pulse <= slope_t_pos_pipe(DEPTH-2);
-        if first_peak_pipe(DEPTH-2) then
-          pre_stamp_peak <= slope_t_pos_pipe(DEPTH-2);
-        else
-          pre_stamp_peak <= min_pipe(DEPTH-2);
-        end if;
+        pre_stamp_pulse <= slope_t_pos_pipe(DEPTH-2) and 
+                           first_peak_pipe(DEPTH-2);
+        --if first_peak_pipe(DEPTH-2) then
+        pre_stamp_peak <= slope_t_pos_pipe(DEPTH-2);
+        --else
+          --pre_stamp_peak <= min_pipe(DEPTH-2);
+        --end if;
           
       --this will not fire a pulse start
       when CFD_LOW_TIMING_D =>
         pre_stamp_peak <= cfd_low_pos_pipe(DEPTH-2);
-        pre_stamp_pulse <= cfd_low_pos_pipe(DEPTH-2) and first_peak_pipe(DEPTH-2);
+        pre_stamp_pulse <= cfd_low_pos_pipe(DEPTH-2) and 
+                           first_peak_pipe(DEPTH-2);
         
       when SLOPE_MAX_TIMING_D =>
-        pre_stamp_pulse <= max_slope_pipe(DEPTH-2);
+        pre_stamp_pulse <= max_slope_pipe(DEPTH-2) and 
+                           first_peak_pipe(DEPTH-2);
         pre_stamp_peak <= max_slope_pipe(DEPTH-2);
       end case;
       

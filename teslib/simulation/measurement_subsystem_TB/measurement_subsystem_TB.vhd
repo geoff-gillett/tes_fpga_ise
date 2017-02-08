@@ -205,8 +205,8 @@ bytestream_last <= bytestream_int(8)='1';
 
 --register settings
 global.mtu <= to_unsigned(1500,MTU_BITS);
-global.tick_latency <= to_unsigned(250000,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(250000,TICK_PERIOD_BITS);
+global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
+global.tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(10,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
@@ -257,14 +257,14 @@ chan_reg(0).baseline.offset <= to_signed(761*8+6,DSP_BITS);
 chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(0).baseline.threshold <= (others => '1');
 chan_reg(0).baseline.new_only <= TRUE;
-chan_reg(0).baseline.subtraction <= TRUE;
+chan_reg(0).baseline.subtraction <= FALSE;
 chan_reg(0).baseline.timeconstant <= to_unsigned(250000,32);
 
 chan_reg(1).baseline.offset <= to_signed(761*8+6,DSP_BITS);
 chan_reg(1).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(1).baseline.threshold <= (others => '1');
 chan_reg(1).baseline.new_only <= TRUE;
-chan_reg(1).baseline.subtraction <= TRUE;
+chan_reg(1).baseline.subtraction <= FALSE;
 chan_reg(1).baseline.timeconstant <= to_unsigned(250000,32);
 
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
@@ -272,9 +272,9 @@ chan_reg(0).capture.delay <= (others => '0');
 chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 chan_reg(0).capture.slope_threshold <= to_unsigned(22*256,DSP_BITS-1);
 chan_reg(0).capture.pulse_threshold <= to_unsigned(350*8,DSP_BITS-1);
-chan_reg(0).capture.area_threshold <= to_unsigned(300000,AREA_WIDTH-1);
+chan_reg(0).capture.area_threshold <= to_unsigned(200000,AREA_WIDTH-1);
 chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
-chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+chan_reg(0).capture.detection <= PEAK_DETECTION_D;
 chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= TRUE;
@@ -284,12 +284,12 @@ chan_reg(1).capture.delay <= (others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF, DSP_BITS-1);
 chan_reg(1).capture.slope_threshold <= to_unsigned(22*256,DSP_BITS-1);
 chan_reg(1).capture.pulse_threshold <= to_unsigned(350*8,DSP_BITS-1);
-chan_reg(1).capture.area_threshold <= to_unsigned(300000,AREA_WIDTH-1);
+chan_reg(1).capture.area_threshold <= to_unsigned(200000,AREA_WIDTH-1);
 chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 chan_reg(1).capture.detection <= PEAK_DETECTION_D;
-chan_reg(1).capture.timing <= CFD_LOW_TIMING_D;
+chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
-chan_reg(1).capture.cfd_rel2min <= TRUE;
+chan_reg(1).capture.cfd_rel2min <= FALSE;
 
 file_open(bytestream_file,"../bytestream",WRITE_MODE);
 byteStreamWriter:process

@@ -75,7 +75,7 @@ signal reltime_stamp:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal started,commited,dumped:std_logic_vector(CHANNELS-1 downto 0);
 signal req,gnt:std_logic_vector(CHANNELS-1 downto 0);
 signal handled:std_logic_vector(CHANNELS downto 0);
-signal sel,sel_int:std_logic_vector(CHANNELS downto 0);
+signal sel:std_logic_vector(CHANNELS downto 0);
 
 signal ticked,tick,time_valid,read_next:boolean;
 --type FSMstate is (IDLE,HEAD,TAIL,NEXT_TIME);
@@ -236,12 +236,8 @@ pulses_done <= started = handled(CHANNELS downto 1);-- and time_valid;
 time_done <= pulses_done and to_std_logic(ticked) = handled(0);
 read_next <= arb_state=NEXT_TIME;
 
--- clk1 req
--- clk2 gnt onehot index 
--- clk3 sel
-
 req <= started and commited and not handled(CHANNELS downto 1);
-sel_int <= gnt & to_std_logic(ticked and pulses_done);
+
 arbiter:process(clk)
 begin
 if rising_edge(clk) then
@@ -254,6 +250,9 @@ if rising_edge(clk) then
     	handled <= (others => '0');		
     elsif muxstream_last_handshake then
       handled(CHANNELS downto 1) <= handled(CHANNELS downto 1) or gnt or 
+      															(dumped and started);
+    else
+      handled(CHANNELS downto 1) <= handled(CHANNELS downto 1) or 
       															(dumped and started);
     end if;
     													
@@ -278,7 +277,8 @@ end if;
 end process fsmNextstate;
 
 arbFSMtransition:process(arb_state,time_valid,sel,muxstream_int_ready,
-  pulses_done,ticked,gnt,muxstream_int.last(0),muxstream_int_valid
+  pulses_done,ticked,gnt,muxstream_int.last(0),muxstream_int_valid, 
+  muxstream_last_handshake
 )
 begin
 	arb_nextstate <= arb_state;
@@ -301,20 +301,37 @@ begin
 		end if;
 	when SEL_STREAM =>
 		sel <= gnt & '0';
-		if muxstream_int_ready then
-			readys <= to_boolean(sel);
-      if muxstream_int_valid and muxstream_int.last(0) then
-        if pulses_done then
-          if ticked then
-            arb_nextstate <= SEL_TICK;
-          else
-            arb_nextstate <= NEXT_TIME;
-          end if;
-        else
-          arb_nextstate <= ARBITRATE;
-        end if;
+		
+    if pulses_done then
+      if ticked then
+        arb_nextstate <= SEL_TICK;
+      else
+        arb_nextstate <= NEXT_TIME;
+      end if;
+    else
+      if muxstream_last_handshake then
+        arb_nextstate <= ARBITRATE;
       end if;
     end if;
+		
+		if muxstream_int_ready then
+			readys <= to_boolean(sel);
+		end if;
+		
+--		if muxstream_int_ready then
+--			readys <= to_boolean(sel);
+--      if muxstream_int_valid and muxstream_int.last(0) then
+--        if pulses_done then
+--          if ticked then
+--            arb_nextstate <= SEL_TICK;
+--          else
+--            arb_nextstate <= NEXT_TIME;
+--          end if;
+--        else
+--          arb_nextstate <= ARBITRATE;
+--        end if;
+--      end if;
+--    end if;
 	when SEL_TICK =>
 		sel <= (0 => '1', others => '0');
 		if muxstream_int_ready then

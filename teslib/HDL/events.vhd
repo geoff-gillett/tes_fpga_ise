@@ -80,7 +80,7 @@ function to_std_logic(f:tickflags_t) return std_logic_vector;
 
 ---------------------------- peak event 8 bytes --------------------------------
 -- |   16   |   16   |  16   |  16  |
--- | height |  rise  | flags | time |
+-- | height | minima | flags | time |
 type peak_detection_t is record -- entire peak only event
   height:signal_t; 
   minima:signal_t; -- FIXME change to minima 
@@ -166,8 +166,8 @@ function to_streambus(
 	endianness:string
 ) return streambus_t;
 
---  |   16   |   16   |  16  |  16  |
---  | height | minima | rise | time |
+--  |   16   |   16   |   16   |  16  |
+--  | height |  rise  | minima | time |
 type pulse_peak_t is
 record
 	height:signal_t;
@@ -420,8 +420,8 @@ function to_std_logic(p:pulse_peak_t;endianness:string)
 return std_logic_vector is
 begin
 	return set_endianness(p.height,endianness) &
-	       set_endianness(p.rise_time,endianness) &
 	       set_endianness(p.minima,endianness) &
+	       set_endianness(p.rise_time,endianness) &
 	       set_endianness(p.timestamp,endianness);
 end function;
 
