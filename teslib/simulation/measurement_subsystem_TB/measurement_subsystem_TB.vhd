@@ -205,14 +205,14 @@ bytestream_last <= bytestream_int(8)='1';
 
 --register settings
 global.mtu <= to_unsigned(1500,MTU_BITS);
-global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
-global.mca.ticks <= to_unsigned(10,MCA_TICKCOUNT_BITS);
+global.tick_latency <= to_unsigned(2**17,TICK_LATENCY_BITS);
+global.tick_period <= to_unsigned(2**17,TICK_PERIOD_BITS);
+global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
 global.mca.last_bin <= (others => '1');
 --global.mca.lowest_value <= to_signed(-2500,MCA_VALUE_BITS);
-global.mca.lowest_value <= to_signed(-1000,MCA_VALUE_BITS);
+global.mca.lowest_value <= to_signed(-2000,MCA_VALUE_BITS);
 global.mca.qualifier <= ALL_MCA_QUAL_D;
 --TODO normalise these type names
 --global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
@@ -257,7 +257,7 @@ chan_reg(0).baseline.offset <= to_signed(761*8+6,DSP_BITS);
 chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(0).baseline.threshold <= (others => '1');
 chan_reg(0).baseline.new_only <= TRUE;
-chan_reg(0).baseline.subtraction <= FALSE;
+chan_reg(0).baseline.subtraction <= True;
 chan_reg(0).baseline.timeconstant <= to_unsigned(250000,32);
 
 chan_reg(1).baseline.offset <= to_signed(761*8+6,DSP_BITS);
@@ -400,7 +400,7 @@ end process clkCount;
 
 stimulusFile:process
 	file sample_file:int_file is in 
-	     "../input_signals/50mvCh1on_amp_100khzdiode_250_1.bin";
+	     "../input_signals/100mvCh1on_amp_100khzdiode_250-132mv.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
