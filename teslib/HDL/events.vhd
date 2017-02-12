@@ -336,7 +336,7 @@ begin
 end function;
 
 -- TODO add the extra 8 bytes
--------------------------- tick event 16 bytes----------------------------------
+-------------------------- tick event 24 bytes----------------------------------
 --     |                   32                |  16  |  16  |
 -- w=0 |                  period             | flags| time |
 -- w=1 |                    full time-stamp                |

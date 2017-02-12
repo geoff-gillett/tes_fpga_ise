@@ -26,12 +26,11 @@ use work.types.all;
 use work.events.all;
 use work.registers.all;
 
-
 entity ethernet_framer_TB is
 generic(
 	MTU_BITS:integer:=16;
 	TICK_LATENCY_BITS:integer:=16;
-	FRAMER_ADDRESS_BITS:integer:=8;
+	FRAMER_ADDRESS_BITS:integer:=10;
 	DEFAULT_MTU:unsigned:=to_unsigned(128,16);
 	DEFAULT_TICK_LATENCY:unsigned:=to_unsigned(512,16);
 	ENDIANNESS:string:="LITTLE"
@@ -66,7 +65,6 @@ signal tick_latency:unsigned(TICK_LATENCY_BITS-1 downto 0);
 signal eventstream:streambus_t;
 signal eventstream_valid:boolean;
 signal eventstream_ready:boolean;
-signal eventlast:boolean;
 signal mcastream:streambus_t;
 signal mcastream_valid:boolean;
 signal mcastream_ready:boolean;
@@ -79,14 +77,13 @@ signal bytestream_valid:boolean;
 signal bytestream_ready:boolean;
 signal bytestream_last:boolean;
 
-signal event_count:unsigned(31 downto 0);
-signal mca_count:unsigned(31 downto 0);
-signal etype:event_type_t;
-signal ticktog:boolean;
-signal tick:boolean;
+signal event_count:integer;
+signal mca_count:integer;
+signal tick_count:integer range 0 to 2;
+signal tick:boolean:=FALSE;
 
-constant TICKPERIOD:integer:=2048;
 constant MCALEN:integer:=2048;
+
 signal cdc_din:std_logic_vector(71 downto 0);
 signal cdc_wr_en:std_logic;
 signal cdc_rd_en:std_logic;
@@ -96,8 +93,11 @@ signal cdc_empty:std_logic;
 signal cdc_valid:boolean;
 signal cdc_ready:boolean;
 signal bytestream_int:std_logic_vector(8 downto 0);
-signal clk_count:unsigned(31 downto 0);
-signal tick_count:unsigned(1 downto 0);
+signal clk_count:integer;
+
+
+signal tick_event:tick_event_t;
+signal peak_event:peak_detection_t;
 
 type int_file is file of integer;
 file bytestream_file:int_file;
@@ -107,61 +107,84 @@ begin
 signal_clk <= not signal_clk after SIGNAL_PERIOD/2;
 io_clk <= not io_clk after IO_PERIOD/2;
 
-eventstream.data <= to_std_logic(event_count) & 
-                    to_std_logic(0,12) &
-                    to_std_logic(etype) & '0' &
-                    to_std_logic(0,16);
-                    
-eventstream.discard <= (others => FALSE);
-eventstream.last <= (0 => eventlast, others => FALSE);
-eventlast <= not tick or (tick and tick_count="10");
 
-mcastream.data <= to_std_logic(resize(mca_count,64));
+tick_event.flags <= (FALSE, (PEAK_DETECTION_D, TRUE));
+tick_event.period <= to_unsigned(clk_count,TICK_PERIOD_BITS);
+tick_event.rel_timestamp <= to_unsigned(clk_count,TIME_BITS);
+tick_event.full_timestamp <= to_unsigned(clk_count,TIMESTAMP_BITS);
+tick_event.events_lost <= to_boolean(to_unsigned(clk_count,8));
+tick_event.framer_overflows <= to_boolean(to_unsigned(clk_count,8));
+tick_event.measurement_overflows <= to_boolean(to_unsigned(clk_count,8));
+tick_event.mux_overflows <= to_boolean(to_unsigned(clk_count,8));
+tick_event.framer_errors <= to_boolean(to_unsigned(clk_count,8));
+tick_event.time_overflows <= to_boolean(to_unsigned(clk_count,8));
+tick_event.baseline_underflows <= to_boolean(to_unsigned(clk_count,8));
+tick_event.cfd_errors <= to_boolean(to_unsigned(clk_count,8));
+
+peak_event.height <= to_signed(event_count,SIGNAL_BITS); 
+peak_event.minima <= to_signed(event_count,SIGNAL_BITS); 
+peak_event.flags <= (
+  "0000",FALSE,PEAK_HEIGHT_D,CFD_LOW_TIMING_D,"000",
+  (PEAK_DETECTION_D,FALSE),TRUE
+);
+
+
+eventstreamSim:process(tick,peak_event,tick_count,tick_event)
+begin
+  if tick then
+    eventstream <= to_streambus(tick_event,tick_count,ENDIANNESS);
+  else
+    eventstream <= to_streambus(peak_event,ENDIANNESS);
+  end if;
+end process eventstreamSim;
+
+mcastream.data <= to_std_logic(mca_count,64);
 mcastream.discard <= (others => FALSE);
 mcastream.last <= (0 => mcalast, others => FALSE);
 mcalast <= mca_count=to_unsigned(MCALEN,32);
 
-etype.detection <= PEAK_DETECTION_D;
-etype.tick <= tick;
-
-eventstream_valid <= tick;
-
-tickGen:process(signal_clk)
+sim:process(signal_clk)
 begin
   if rising_edge(signal_clk) then
     if reset = '1' then
+      clk_count <= 0; 
       tick <= FALSE;
-      tick_count <= (others => '0');
+      tick_count <= 0;
+      event_count <= 0;
+      mca_count <= 0;
     else
-      if clk_count(10 downto 0)="00000000000" then
+      
+      clk_count <= clk_count+1;
+      
+      if clk_count mod 25000=0 then 
         tick <= TRUE;
-        tick_count <= (others => '0');
-      elsif eventstream_ready and eventstream_valid then
-        tick_count <= tick_count + 1;
-        if tick_count="10" then
-          tick <= FALSE;
+        tick_count <= 0;
+      end if;
+      
+      if (eventstream_valid and eventstream_ready) then 
+        if tick then
+          if tick_count=2 then
+            tick <= FALSE;
+          else
+            tick_count <= tick_count+1;
+          end if;
+        else
+          event_count <= event_count+1;
         end if;
       end if;
-    end if;
-  end if;
-end process tickGen;
-
-simCount:process(signal_clk) is
-begin
-  if rising_edge(signal_clk) then
-    if reset = '1' then
-      event_count <= (others => '0');
-      mca_count <= (others => '0');
-    else
-      if (eventstream_valid and eventstream_ready) then 
-        event_count <= event_count+1;
-      end if;
+      
       if (mcastream_valid and mcastream_ready) then
-        mca_count <= mca_count+1;
+        if mcalast then
+          mca_count <= 0;
+        else
+          mca_count <= mca_count+1;
+        end if;
       end if;
+      
     end if;
   end if;
-end process simCount;
+end process sim;
+
 
 UUT:entity work.ethernet_framer
 generic map(
@@ -243,32 +266,23 @@ begin
     if bytestream_valid and bytestream_ready then
     	write(bytestream_file, to_integer(unsigned(bytestream)));
       if bytestream_last then
-    		write(bytestream_file, -to_integer(clk_count)); --identify last by -ve value
+    		write(bytestream_file, -clk_count); 
     	else
-    		write(bytestream_file, to_integer(clk_count));
+    		write(bytestream_file, clk_count);
     	end if;
     end if;
 	end loop;
 end process byteStreamWriter;
 
-validSim:process(signal_clk)
-begin
-  if rising_edge(signal_clk) then
-    if reset = '1' then
-      clk_count <= (others => '0'); 
-    else
-      clk_count <= clk_count+1;
-    end if;
-  end if;
-end process validSim;
+--mcastream_valid <= clk_count mod 23=0;
+mcastream_valid <= TRUE;
+eventstream_valid <= clk_count mod 15=0;
 
-mcastream_valid <= clk_count(0)='1' and clk_count(11)='1';
---eventstream_valid <= clk_count(3 downto 0)="0000";
 
 stimulus:process
 begin
-mtu <= to_unsigned(128,MTU_BITS);
-tick_latency <= to_unsigned(2048, TICK_LATENCY_BITS);
+mtu <= to_unsigned(1496,MTU_BITS);
+tick_latency <= to_unsigned(25000, TICK_LATENCY_BITS);
 wait for IO_PERIOD;
 reset <= '0';
 bytestream_ready <= TRUE;

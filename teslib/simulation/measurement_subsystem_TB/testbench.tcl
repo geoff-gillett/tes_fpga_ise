@@ -9,17 +9,23 @@ namespace import ::sim::*
 # set up wave database
 
 restart
-vcd dumpfile ../dump.vcd
 
-vcd dumpvars -m / -l 1
-vcd dumpvars -m /UUT -l 1
-#vcd dumpvars -m /UUT/mca -l 1
-#vcd dumpvars -m /UUT/mca/MCA -l 1
-vcd dumpvars -m /UUT/mux -l 1
-vcd dumpvars -m /UUT/mux/Buffers/ -l 1
-vcd dumpvars -m /UUT/enet -l 1
-vcd dumpvars -m /UUT/enet/framer -l 1
-#vcd dumpvars -m /UUT/nopacketgen/enet/framer/frameRam -l 1
+log_wave -r [get_objects /measurement_subsystem_TB/*]
+log_wave -r [get_objects /measurement_subsystem_TB/UUT/*]
+log_wave -r [get_objects /measurement_subsystem_TB/UUT/*]
+log_wave -r [get_objects /measurement_subsystem_TB/UUT/mux/*]
+log_wave -r [get_objects /measurement_subsystem_TB/UUT/mux/buffers/*]
+log_wave -r [get_objects /measurement_subsystem_TB/UUT/enet/*]
+log_wave -r [get_objects /measurement_subsystem_TB/UUT/mca/*]
+log_wave -r [get_objects /measurement_subsystem_TB/UUT/mca/MCA/*]
+log_wave -r [get_objects /measurement_subsystem_TB/UUT/mca/MCA/MCA/*]
 
-run 16 ms
-vcd dumpflush
+current_scope /measurement_subsystem_TB/UUT/\\tesChannel(0)\\/processingChannel
+log_wave -r [get_objects]
+current_scope /measurement_subsystem_TB/UUT/\\tesChannel(0)\\/processingChannel/framer
+log_wave -r [get_objects]
+current_scope /measurement_subsystem_TB/UUT/\\tesChannel(0)\\/processingChannel/measure
+log_wave -r [get_objects]
+
+run 100 us
+exit
