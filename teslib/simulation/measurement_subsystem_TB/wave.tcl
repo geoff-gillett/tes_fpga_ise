@@ -8,7 +8,6 @@ namespace import ::sim::*
 
 # set up wave database
 
-restart
 
 log_wave -r [get_objects /measurement_subsystem_TB/*]
 log_wave -r [get_objects /measurement_subsystem_TB/UUT/*]
@@ -26,6 +25,3 @@ current_scope /measurement_subsystem_TB/UUT/\\tesChannel(0)\\/processingChannel/
 log_wave -r [get_objects]
 current_scope /measurement_subsystem_TB/UUT/\\tesChannel(0)\\/processingChannel/measure
 log_wave -r [get_objects]
-
-run 100 us
-exit

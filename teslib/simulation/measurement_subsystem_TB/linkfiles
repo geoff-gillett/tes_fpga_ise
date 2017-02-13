@@ -1,2 +1,2 @@
-../simulation/measurement_subsystem_TB/testbench.tcl
+../simulation/measurement_subsystem_TB/wave.tcl
 ../../input_signals
