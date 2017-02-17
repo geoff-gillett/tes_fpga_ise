@@ -17,48 +17,47 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
-entity serialiser3 is
+--streams data from a RAM 
+entity ram_stream is
 generic(
   WIDTH:natural:=32;
-  READ_LATENCY:natural:=3
-  --ADDRESS_BITS:natural:=14
+  LATENCY:natural:=2 -- ram read latency
 );
 port (
   clk:in std_logic;
   reset:in std_logic;
+ 
+  --the current RAM address is empty (data not valid) 
+  empty:in boolean; 
+  --a write when empty inserts a read in the pipeline
+  --deassert empty when after writen data becomes valid
+  write:in boolean; 
   
-  --start:in boolean; 
-  empty:in boolean; --equiv empty
-  write:in boolean;
-  
-  last_address:in boolean;
-  read:out boolean;
-  -- move address outside
-  -- address:out std_logic_vector(ADDRESS_BITS-1 downto 0);
+  last_incr_addr:in boolean; -- assert last with the data from the next address 
+  incr_addr:out boolean; -- advance to the next address
   ram_data:in std_logic_vector(WIDTH-1 downto 0);
   
+  --stream out
   stream:out std_logic_vector(WIDTH-1 downto 0);
   valid:out boolean;
   ready:in boolean;
   last:out boolean
-  
-  
 );
-end entity serialiser3;
+end entity ram_stream;
 
-architecture beh of serialiser3 is
+architecture beh of ram_stream is
 
-signal one_pending,two_pending,none_pending,three_pending:boolean;
+signal one_pending,pipe_empty,pipe_full:boolean;
 signal data_valid:boolean;
 signal read_int:boolean;
 signal shift:boolean;
 signal data:std_logic_vector(WIDTH downto 0);
 signal ram_valid,ram_used,last_int:boolean;
 
-constant DEPTH:natural:=READ_LATENCY;
+constant DEPTH:natural:=3; -- number of register stages DON'T change
 type reg_pipe is array (1 to DEPTH) of std_logic_vector(WIDTH downto 0);
 signal pipe:reg_pipe;
-signal read_pipe,last_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
+signal read_pipe,last_pipe:boolean_vector(1 to LATENCY):=(others => FALSE);
 
 type FSMstate is (RAM_S,REG1_S,REG2_S,REG3_S);
 signal state,nextstate:FSMstate;
@@ -67,7 +66,10 @@ signal state,nextstate:FSMstate;
 signal ready_int,valid_int,output_handshake,output_empty:boolean;
 
 begin
-read <= read_int;
+assert LATENCY > 1 and LATENCY < 4 
+       report "READ_LATENCY must be 2 or 3" severity FAILURE;
+
+incr_addr <= read_int;
   
 FSMoutput:process(clk)
 begin
@@ -79,13 +81,13 @@ begin
       state <= nextstate;
       
       read_pipe <= ((read_int and not empty) or (write and empty))  &
-                   read_pipe(1 to DEPTH-1);
-      last_pipe <= (read_int and not empty and last_address) & 
-                   last_pipe(1 to DEPTH-1); 
+                   read_pipe(1 to LATENCY-1);
+      last_pipe <= (read_int and not empty and last_incr_addr) & 
+                   last_pipe(1 to LATENCY-1); 
                    
       if ram_used or not ram_valid then
-        ram_valid <= read_pipe(DEPTH);
-        last_int <= last_pipe(DEPTH);
+        ram_valid <= read_pipe(LATENCY);
+        last_int <= last_pipe(LATENCY);
       end if;
       
       if shift then 
@@ -97,18 +99,28 @@ begin
 end process FSMoutput;
 
 --TODO replace with two output LUTS
-none_pending <= not read_pipe(1) and not read_pipe(2) and not read_pipe(3);
-one_pending  <= (read_pipe(1) and not read_pipe(2) and not read_pipe(3)) or
-                (read_pipe(2) and not read_pipe(1) and not read_pipe(3)) or
-                (read_pipe(3) and not read_pipe(1) and not read_pipe(2));
-two_pending <= (read_pipe(1) and read_pipe(2) and not read_pipe(3)) or
-               (read_pipe(2) and read_pipe(3) and not read_pipe(1)) or
-               (read_pipe(1) and read_pipe(3) and not read_pipe(2));
-three_pending <= read_pipe(1) and read_pipe(2) and read_pipe(3);
+pipeOccupancy:process(read_pipe)
+begin
+  if LATENCY=3 then
+    pipe_empty <= not read_pipe(1) and not read_pipe(2) and not read_pipe(3);
+    one_pending  <= (read_pipe(1) and not read_pipe(2) and not read_pipe(3)) or
+                    (read_pipe(2) and not read_pipe(1) and not read_pipe(3)) or
+                    (read_pipe(3) and not read_pipe(1) and not read_pipe(2));
+--    two_pending <= (read_pipe(1) and read_pipe(2) and not read_pipe(3)) or
+--                   (read_pipe(2) and read_pipe(3) and not read_pipe(1)) or
+--                   (read_pipe(1) and read_pipe(3) and not read_pipe(2));
+    pipe_full <= read_pipe(1) and read_pipe(2) and read_pipe(3);
+  else
+    pipe_empty <= not read_pipe(1) and not read_pipe(2);
+    one_pending  <= read_pipe(1) xor read_pipe(2);
+    pipe_full <= read_pipe(1) and read_pipe(2);
+  end if;
+end process pipeOccupancy;
+
 
 fsmTransition:process(
-  state,ram_valid,ram_data,two_pending,none_pending,empty,pipe, 
-  last_int,output_empty,one_pending,three_pending,read_pipe
+  state,ram_valid,ram_data,pipe_empty,empty,pipe,last_int,output_empty,
+  one_pending,pipe_full,read_pipe
 )
 begin
   
@@ -128,16 +140,19 @@ begin
       ram_used <= TRUE;
     else
       if ram_valid then
-        read_int <= not three_pending and not empty;
+        read_int <= not pipe_full and not empty;
+        nextstate <= REG1_S;
+        shift <= TRUE;
+        ram_used <= TRUE;
       else
         read_int <= not empty;
       end if;
         
-      if read_pipe(DEPTH) and ram_valid then
-        nextstate <= REG1_S;
-        shift <= TRUE;
-        ram_used <= TRUE;
-      end if;
+--      if read_pipe(LATENCY) and ram_valid then
+--        nextstate <= REG1_S;
+--        shift <= TRUE;
+--        ram_used <= TRUE;
+--      end if;
     end if;
     
   when REG1_S =>
@@ -148,28 +163,28 @@ begin
     
     if output_empty then
       if ram_valid then
-        if read_pipe(DEPTH) then
-          read_int <= not three_pending and not empty;
+--        if read_pipe(LATENCY) then
+          read_int <= not pipe_full and not empty;
           shift <= TRUE;
           ram_used <= TRUE;
-        else
-          nextstate <= RAM_S;
-          read_int <= not empty;
-        end if;
+--        else
+--          nextstate <= RAM_S;
+--          read_int <= not empty;
+--        end if;
       else
         read_int <= not empty;
         nextstate <= RAM_S;
       end if;
     else
       if ram_valid then
-        read_int <= (none_pending or one_pending) and not empty;
-        if read_pipe(DEPTH) then
+        read_int <= (pipe_empty or one_pending) and not empty;
+--        if read_pipe(LATENCY) then
           nextstate <= REG2_S;
           shift <= TRUE;
           ram_used <= TRUE;
-        end if;
+--        end if;
       else
-        read_int <= not three_pending and not empty;
+        read_int <= not pipe_full and not empty;
       end if;
     end if;
     
@@ -180,31 +195,31 @@ begin
     
     if output_empty then
       if ram_valid then
-        if read_pipe(DEPTH) then
-          read_int <= (none_pending or one_pending) and not empty;
+--        if read_pipe(LATENCY) then
+          read_int <= (pipe_empty or one_pending) and not empty;
           shift <= TRUE;
           ram_used <= TRUE;
-        else
-          read_int <= (not three_pending) and not empty;
-          nextstate <= REG1_S;
-        end if;
+--        else
+--          read_int <= (not pipe_full) and not empty;
+--          nextstate <= REG1_S;
+--        end if;
       else
-        read_int <= (not three_pending) and not empty;
+        read_int <= (not pipe_full) and not empty;
         nextstate <= REG1_S;
       end if;
     else
       if ram_valid then
-        if read_pipe(DEPTH) then
-          read_int <= none_pending and not empty;
+--        if read_pipe(LATENCY) then
+          read_int <= pipe_empty and not empty;
           nextstate <= REG3_S;
           shift <= TRUE;
           ram_used <= TRUE;
-        else
-          read_int <= (none_pending or one_pending) and not empty;
-          --nextstate <= REG1_S;
-        end if;
+--        else
+--          read_int <= (pipe_empty or one_pending) and not empty;
+--          --nextstate <= REG1_S;
+--        end if;
       else
-        read_int <= (none_pending or one_pending) and not empty;
+        read_int <= (pipe_empty or one_pending) and not empty;
       end if;
     end if;
    
@@ -216,19 +231,19 @@ begin
     
     if output_empty then
       if ram_valid then
-        read_int <= none_pending and not empty;
+        read_int <= pipe_empty and not empty;
         shift <= TRUE;
         ram_used <= TRUE;
       else
-        read_int <= (none_pending or one_pending) and not empty;
+        read_int <= (pipe_empty or one_pending) and not empty;
         nextstate <= REG2_S;
       end if;
     else
-      if read_pipe(DEPTH) and ram_valid then
+      if read_pipe(LATENCY) and ram_valid then
         assert FALSE report "new ram data while full" severity FAILURE;
       end if;
       if not ram_valid then
-        read_int <= none_pending and not empty;
+        read_int <= pipe_empty and not empty;
       end if;
     end if;
     

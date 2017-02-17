@@ -347,21 +347,22 @@ signal filter_events,slope_events,baseline_events:
 --debug
 --signal adc_sample0:adc_sample_t;
 --signal adc_enable:boolean_vector(ADC_CHANNELS-1 downto 0);
-signal raw0_debug:signal_t;
-signal adc0_debug:std_logic_vector(ADC_BITS-1 downto 0);
+--signal raw0_debug:signal_t;
+--signal adc0_debug:std_logic_vector(ADC_BITS-1 downto 0);
 
-constant DEBUG:string:="FALSE";
+constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
-attribute MARK_DEBUG of raw0_debug:signal is DEBUG;
-attribute MARK_DEBUG of adc0_debug:signal is DEBUG;
-attribute MARK_DEBUG of enables_reg:signal is DEBUG;
-attribute MARK_DEBUG of bytestream:signal is DEBUG;
-attribute MARK_DEBUG of bytestream_ready:signal is DEBUG;
-attribute MARK_DEBUG of bytestream_valid:signal is DEBUG;
-attribute MARK_DEBUG of ethernetstream_ready:signal is DEBUG;
-attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
-attribute MARK_DEBUG of cdc_ready:signal is DEBUG;
-attribute MARK_DEBUG of cdc_valid:signal is DEBUG;
+--attribute MARK_DEBUG of raw0_debug:signal is DEBUG;
+--attribute MARK_DEBUG of adc0_debug:signal is DEBUG;
+--attribute MARK_DEBUG of enables_reg:signal is DEBUG;
+--attribute MARK_DEBUG of bytestream:signal is DEBUG;
+--attribute MARK_DEBUG of bytestream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of bytestream_valid:signal is DEBUG;
+--attribute MARK_DEBUG of ethernetstream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of ethernetstream_valid:signal is DEBUG;
+--attribute MARK_DEBUG of cdc_ready:signal is DEBUG;
+--attribute MARK_DEBUG of cdc_valid:signal is DEBUG;
+attribute MARK_DEBUG of cdc_full:signal is DEBUG;
 
 --attribute MARK_DEBUG of enables_reg2:signal is DEBUG;
 --attribute MARK_DEBUG of adc_sample0:signal is DEBUG;
@@ -388,8 +389,8 @@ attribute MARK_DEBUG of cdc_valid:signal is DEBUG;
 --signal overflow_LEDs:std_logic_vector(7 downto 0):=(others => '0');
 
 begin
-raw0_debug <= measurements(0).raw.sample;
-adc0_debug <= adc_samples(0);
+--raw0_debug <= measurements(0).raw.sample;
+--adc0_debug <= adc_samples(0);
 --adc_sample0 <= adc_samples(0);
 --adc_enable <= to_boolean(global.adc_enable);
 

@@ -160,23 +160,30 @@ signal framestream_ready:boolean;
 --signal filtered_0xing,raw_0xing:boolean;
 --signal peak_count:unsigned(PEAK_COUNT_BITS-1 downto 0);
 
-signal flags:std_logic_vector(15 downto 0);
-signal height_valid:boolean;
-signal height:signal_t;
-signal rise_time:time_t;
+--signal flags:std_logic_vector(15 downto 0);
+--signal height_valid:boolean;
+--signal height:signal_t;
+--signal rise_time:time_t;
+--signal framestream_firstbyte:std_logic_vector(7 downto 0);
+--signal framestream_last,new_frame:boolean;
 
-signal mca_value_debug:signed(MCA_VALUE_BITS-1 downto 0);
-signal mca_value_valid_debug:boolean;
 
-constant DEBUG:string:="FALSE";
-attribute MARK_DEBUG:string;
-attribute MARK_DEBUG of mca_value_debug:signal is DEBUG;
-attribute MARK_DEBUG of mca_value_valid_debug:signal is DEBUG;
+--signal mca_value_debug:signed(MCA_VALUE_BITS-1 downto 0);
+--signal mca_value_valid_debug:boolean;
+
+--constant DEBUG:string:="FALSE";
+--attribute MARK_DEBUG:string;
+--attribute MARK_DEBUG of mca_value_debug:signal is DEBUG;
+--attribute MARK_DEBUG of mca_value_valid_debug:signal is DEBUG;
 --attribute MARK_DEBUG of framestream:signal is DEBUG;
-attribute MARK_DEBUG of framestream_valid:signal is DEBUG;
-attribute MARK_DEBUG of framestream_ready:signal is DEBUG;
-attribute MARK_DEBUG of muxstream_valid:signal is DEBUG;
-attribute MARK_DEBUG of muxstream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of framestream_valid:signal is DEBUG;
+--attribute MARK_DEBUG of framestream_ready:signal is DEBUG;
+--attribute MARK_DEBUG of framestream_firstbyte:signal is DEBUG;
+--attribute MARK_DEBUG of framestream_last:signal is DEBUG;
+--attribute MARK_DEBUG of new_frame:signal is DEBUG;
+
+--attribute MARK_DEBUG of muxstream_valid:signal is DEBUG;
+--attribute MARK_DEBUG of muxstream_ready:signal is DEBUG;
 
 --attribute MARK_DEBUG of value_select:signal is DEBUG;
 --attribute MARK_DEBUG of channel_select:signal is DEBUG;
@@ -204,13 +211,28 @@ begin
 -- raw_0xing <= m(0).raw.zero_xing;
 -- filtered_0xing <= m(0).filtered.zero_xing;
  --peak_count <= m(0).eflags.peak_count;
- mca_value_debug <= mca_values(0);
- mca_value_valid_debug <= mca_value_valids(0);
+-- framestream_firstbyte <= framestream.data(63 downto 56);
+-- framestream_last <= framestream.last(0);
+-- frameStart : process (clk) is
+-- begin
+--   if rising_edge(clk) then
+--     if reset1 = '1' then
+--       new_frame <= FALSE;
+--     else
+--       if framestream_ready and framestream_valid then
+--         new_frame <= framestream_last;
+--       end if;
+--     end if;
+--   end if;
+-- end process frameStart;
  
- flags <= to_std_logic(m(0).eflags);
- height_valid <= m(0).height_valid;
- height <= m(0).height;
- rise_time <= m(0).rise_time;
+-- mca_value_debug <= mca_values(0);
+-- mca_value_valid_debug <= mca_value_valids(0);
+-- 
+-- flags <= to_std_logic(m(0).eflags);
+-- height_valid <= m(0).height_valid;
+-- height <= m(0).height;
+-- rise_time <= m(0).rise_time;
  
 --------------------------------------------------------------------------------
 -- processing channels

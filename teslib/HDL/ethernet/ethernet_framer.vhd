@@ -216,8 +216,19 @@ end function;
 --------------------------------------------------------------------------------
 -- Debugging
 --------------------------------------------------------------------------------
---constant DEBUG:string:="FALSE";
---attribute MARK_DEBUG:string;
+signal framestream:streambus_t;
+signal framestream_firstbyte:std_logic_vector(7 downto 0);
+signal framestream_last,new_frame,framestream_ready,framestream_valid:boolean;
+
+constant DEBUG:string:="TRUE";
+attribute MARK_DEBUG:string;
+
+attribute MARK_DEBUG of framestream_firstbyte:signal is DEBUG;
+attribute MARK_DEBUG of new_frame:signal is DEBUG;
+attribute MARK_DEBUG of framer_free:signal is DEBUG;
+attribute MARK_DEBUG of framer_ready:signal is DEBUG;
+attribute MARK_DEBUG of framestream_valid:signal is DEBUG;
+attribute MARK_DEBUG of framestream_ready:signal is DEBUG;
 
 --attribute MARK_DEBUG of arbiter_state_v:signal is DEBUG;
 --attribute MARK_DEBUG of frame_state_v:signal is DEBUG;
@@ -229,6 +240,21 @@ end function;
 
 begin
 --------------------------------------------------------------------------------
+ framestream_firstbyte <= framestream.data(63 downto 56);
+ framestream_last <= framestream.last(0);
+ frameStart : process (clk) is
+ begin
+   if rising_edge(clk) then
+     if reset = '1' then
+       new_frame <= FALSE;
+     else
+       if framestream_ready and framestream_valid then
+         new_frame <= framestream_last;
+       end if;
+     end if;
+   end if;
+ end process frameStart;
+ 
 --simulation only (for VCD dump)
 --synthesis translate_off
 --arbiter_state_v <= to_std_logic(arbiter_state,2);
@@ -581,7 +607,6 @@ begin
 					end if;
 				end if;
 			else
-				-- FIXME this should probably only terminate if mca_valid
 				if not lookahead_valid and event_head and not frame_under and 
 				    mca_s_valid then
 					frame_nextstate <= TERMINATE;
@@ -660,9 +685,13 @@ port map(
   length => frame_length,
   commit => commit_frame,
   free => framer_free,
-  stream => ethernetstream,
-  valid => ethernetstream_valid,
-  ready => ethernetstream_ready
+  stream => framestream,
+  valid => framestream_valid,
+  ready => framestream_ready
 );
+
+ethernetstream <= framestream;
+ethernetstream_valid <= framestream_valid;
+framestream_ready <= ethernetstream_ready;
 
 end architecture RTL;

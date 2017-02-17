@@ -57,6 +57,7 @@ port(
   count:out unsigned(COUNTER_BITS-1 downto 0)
 );
 end entity MCA_buffer;
+
 architecture blockram of MCA_buffer is
 --
 --------------------------------------------------------------------------------
@@ -139,6 +140,7 @@ begin
     end if;
   end if;
 end process addressCollision; 
+
 -- pipeline collisions:is bin already in the pipeline?
 collisions:process(clk)
 variable col:boolean_vector(1 to 3);
@@ -162,8 +164,8 @@ if rising_edge(clk) then
 end if;
 end process collisions;
 -- Check counter saturation ???
-saturated <= incremented_count(COUNTER_BITS)='1' 
-             or (not incremented_count(COUNTER_BITS-1 downto 0))=0; --???
+saturated <= incremented_count(COUNTER_BITS)='1';
+             
 -- Adder pipeline calculates the increment to the count while waiting for the 
 -- old count to be read and processed.
 adderPipeline:process(clk)
