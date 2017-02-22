@@ -92,7 +92,7 @@ signal reg_data:AXI_data_array(11 downto 0);
 type bit_array is array (natural range <>) of std_logic_vector(11 downto 0);
 signal reg_bits:bit_array(AXI_DATA_BITS-1 downto 0);
 
-signal resetn:std_logic;
+--signal resetn:std_logic;
 signal value_int:register_data_t;
 signal last_mising:std_logic;
 signal reload_done:std_logic;
@@ -125,8 +125,8 @@ if rising_edge(clk) then
 		--reg.capture.threshold_rel2min <= DEFAULT_THRESHOLD_REL2MIN;
 		reg.capture.timing <= DEFAULT_TIMING;
 		reg.capture.detection <= DEFAULT_DETECTION;
-		reg.capture.trace0 <= DEFAULT_TRACE0; --FIXME remove
-		reg.capture.trace1 <= DEFAULT_TRACE1; --FIXME remove
+--		reg.capture.trace0 <= DEFAULT_TRACE0; --FIXME remove
+--		reg.capture.trace1 <= DEFAULT_TRACE1; --FIXME remove
 		reg.capture.delay <= DEFAULT_DELAY;
 		reg.capture.adc_select <= (CHANNEL => '1',others => '0');
   else
@@ -140,8 +140,8 @@ if rising_edge(clk) then
       	reg.capture.timing <= to_timing_d(data(3 downto 2));
       	reg.capture.max_peaks <= unsigned(data(7 downto 4));
       	reg.capture.height <= to_height_d(data(9 downto 8));
-      	reg.capture.trace0 <= to_trace_d(data(11 downto 10)); --FIXME remove
-      	reg.capture.trace1 <= to_trace_d(data(13 downto 12)); --FIXME remove
+--      	reg.capture.trace0 <= to_trace_d(data(11 downto 10)); --FIXME remove
+--      	reg.capture.trace1 <= to_trace_d(data(13 downto 12)); --FIXME remove
       end if;
       if address(PULSE_THRESHOLD_ADDR_BIT)='1' then
         reg.capture.pulse_threshold 
@@ -205,6 +205,8 @@ reg_data(SLOPE_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.capture.slope_threshold,AXI_DATA_BITS));
 reg_data(CONSTANT_FRACTION_ADDR_BIT)(AXI_DATA_BITS-1)
    <= to_std_logic(reg.capture.cfd_rel2min);
+reg_data(CONSTANT_FRACTION_ADDR_BIT)(AXI_DATA_BITS-2 downto CFD_BITS-1)
+   <= (others => '0');
 reg_data(CONSTANT_FRACTION_ADDR_BIT)(CFD_BITS-2 downto 0)      
    <= to_std_logic(reg.capture.constant_fraction);
 reg_data(AREA_THRESHOLD_ADDR_BIT)
@@ -281,5 +283,5 @@ begin
 	end if;
 end process valueReg;
 
-resetn <= not reset;
+--resetn <= not reset;
 end architecture RTL;

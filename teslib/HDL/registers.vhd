@@ -210,9 +210,6 @@ type capture_registers_t is record
 	height:height_d;
 	timing:timing_d;
 	detection:detection_d;
-	full_trace:boolean;
-	trace0:trace_d;
-	trace1:trace_d;
 	delay:unsigned(DELAY_BITS-1 downto 0);
 	adc_select:std_logic_vector(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
 	invert:boolean;
@@ -631,8 +628,7 @@ begin
 	s(3 downto 2):=to_std_logic(r.timing,2);
 	s(7 downto 4):=to_std_logic(r.max_peaks);
 	s(9 downto 8):=to_std_logic(r.height,2);
-	s(11 downto 10):=to_std_logic(r.trace0,2);
-	s(13 downto 12):=to_std_logic(r.trace1,2);
+	s(13 downto 10):=(others => '0');
 	return s;
 end function; 
 

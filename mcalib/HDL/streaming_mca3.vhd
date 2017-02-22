@@ -53,7 +53,7 @@ port(
   ready:in boolean
 );
 end entity streaming_mca3;
---
+
 architecture double_buffered_blockram of streaming_mca3 is
 --------------------------------------------------------------------------------
 --constant STREAM_BITS:integer:=STREAM_CHUNKS*CHUNK_DATABITS;

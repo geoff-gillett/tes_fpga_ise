@@ -32,7 +32,7 @@ end sdp_bram_delay;
 
 architecture rtl of sdp_bram_delay is
 
-constant ADDRWIDTH:integer:=ceillog2(DELAY-2);
+constant ADDRWIDTH:integer:=ceillog2(DELAY-3);
 
 signal addr:unsigned(ADDRWIDTH-1 downto 0):=(others => '0');
 signal dout_reg:std_logic_vector(WIDTH-1 downto 0);

@@ -63,7 +63,7 @@ type FSMstate is (RAM_S,REG1_S,REG2_S,REG3_S);
 signal state,nextstate:FSMstate;
 
 --output register signals
-signal ready_int,valid_int,output_handshake,output_empty:boolean;
+signal valid_int,output_handshake,output_empty:boolean;
 
 begin
 assert LATENCY > 1 and LATENCY < 4 
@@ -256,7 +256,7 @@ outputReg:process(clk)
 begin
 	if rising_edge(clk) then
 		if reset = '1' then
-			ready_int <= TRUE;
+			--ready_int <= TRUE;
 			valid_int <= FALSE;
 		else
       if output_handshake or not valid_int then

@@ -57,6 +57,9 @@ begin
 		mux_inputs(bit)(chan) <= input_streamvectors(chan)(bit);
 	end generate;
 	
+	mux_inputs(BUS_BITS-1)(CHANNELS-1) 
+	  <= input_streamvectors(CHANNELS-1)(BUS_BITS-1);
+	
 	selector:entity work.select_1of12
   port map(
     input => mux_inputs(bit),

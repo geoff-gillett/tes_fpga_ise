@@ -104,7 +104,7 @@ signal q_rd_en:std_logic;
 signal q_dout:std_logic_vector(71 downto 0);
 signal q_full:std_logic;
 signal q_empty:std_logic;
-signal full_i,full_d:boolean;
+signal full_i:boolean;
 signal flags_i:boolean_vector(8 downto 0);
 signal flags_d,flags_i_s:std_logic_vector(8 downto 0);
 signal filtered_d:std_logic_vector(WIDTH-1 downto 0);
@@ -344,7 +344,7 @@ begin
 if rising_edge(clk) then
   if reset = '1' then
     overrun_d <= FALSE;
-    full_d <= FALSE;
+    --full_d <= FALSE;
     armed_d <= FALSE;
     above_d <= FALSE;
     pulse_t_p_d <= FALSE;
@@ -360,7 +360,7 @@ if rising_edge(clk) then
   else
     overrun_d <= to_boolean(flags_d(8));
     overrun <= overrun_d;
-    full_d <= to_boolean(flags_d(7)); -- how does this help?
+    --full_d <= to_boolean(flags_d(7)); -- how does this help?
     max_d <= to_boolean(flags_d(6));
     max <= max_d;
     min_d <= to_boolean(flags_d(5));

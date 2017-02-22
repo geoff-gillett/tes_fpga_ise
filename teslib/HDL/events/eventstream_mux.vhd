@@ -135,12 +135,10 @@ muxstream <= muxstream_out;
 
 tickstreamer:entity work.tickstream
 generic map(
-  --CHANNEL_BITS => CHANNEL_BITS,
   CHANNELS => CHANNELS,
   TICKPERIOD_BITS => TICKPERIOD_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
   MINIMUM_PERIOD => MIN_TICKPERIOD,
-  --TICKPIPE_DEPTH => TICKPIPE_DEPTH
   TICKPIPE_DEPTH => 1
 )
 port map(
@@ -151,7 +149,7 @@ port map(
   tick_period => tick_period,
   mux_overflows => mux_overflows,
   cfd_errors => cfd_errors,
-  baseline_underflows => baseline_underflows,
+  baseline_underflows => baseline_underflows, --FIXME:use for something else
   framer_overflows => framer_overflows,
   measurement_overflows => measurement_overflows,
   framer_errors => framer_errors,

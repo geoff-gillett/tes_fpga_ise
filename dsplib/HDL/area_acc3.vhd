@@ -47,7 +47,7 @@ signal d:std_logic_vector(24 downto 0);
 signal p_int:std_logic_vector(47 downto 0);
 signal accum_opmode:std_logic_vector(6 downto 0):="0001100";
 
-signal cround:std_logic_vector(47 downto 0);
+--signal cround:std_logic_vector(47 downto 0);
 
 begin
 assert WIDTH <= 18 
@@ -134,7 +134,7 @@ port map (
   -- Data: 30-bit (each) input: Data Ports
   A => a,                           -- 30-bit input: A data input
   B => (0 => '1', others => '0'),           -- 18-bit input: B data input
-  C => cround,                           -- 48-bit input: C data input
+  C => (others => '0'), --cround,                           -- 48-bit input: C data input
   CARRYIN => '0',               -- 1-bit input: Carry input signal
   D => d,                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs

@@ -13,26 +13,21 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library extensions;
-use extensions.logic.all;
-
-entity axi_mca_TB is
+entity double_buffered_axi_mca_TB is
 generic(
   ADDRESS_BITS:natural:=4;
   COUNTER_BITS:natural:=32;
-  VALUE_BITS:natural:=32;
   TOTAL_BITS:natural:=64
 );
-end entity axi_mca_TB;
+end entity double_buffered_axi_mca_TB;
 
-architecture testbench of axi_mca_TB is
-
-constant BIN_N_BITS:natural:=ceilLog2(ADDRESS_BITS);
+architecture testbench of double_buffered_axi_mca_TB is
 
 signal clk:std_logic:='1';  
 signal reset:std_logic:='1';  
 constant CLK_PERIOD:time:=4 ns;
 signal bin:unsigned(ADDRESS_BITS-1 downto 0);
+signal bin_valid:boolean;
 signal out_of_bounds:boolean;
 signal last_bin:unsigned(ADDRESS_BITS-1 downto 0);
 signal swap:boolean;
@@ -45,39 +40,32 @@ signal valid:boolean;
 signal ready:boolean;
 signal last:boolean;
 signal new_most_frequent_bin:boolean;
-signal value:signed(VALUE_BITS-1 downto 0);
-signal value_valid:boolean;
-signal enabled:boolean;
-signal can_swap:boolean;
-signal bin_n:unsigned(BIN_N_BITS-1 downto 0);
-signal lowest_value:signed(VALUE_BITS-1 downto 0);
-signal swapped:boolean;
 
 --simulation signals
-signal count1,count2:unsigned(ADDRESS_BITS-1 downto 0);
+signal count1,count2,count3:unsigned(ADDRESS_BITS-1 downto 0);
 signal clk_count:natural:=0;
-
+signal stop:boolean;
+signal can_swap:boolean;
+signal swapped:boolean;
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.axi_mca
+UUT:entity work.double_buffered_axi_mca
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
-  TOTAL_BITS => TOTAL_BITS,
-  VALUE_BITS => VALUE_BITS,
-  COUNTER_BITS => COUNTER_BITS
+  COUNTER_BITS => COUNTER_BITS,
+  TOTAL_BITS   => TOTAL_BITS
 )
 port map(
   clk => clk,
   reset => reset,
-  value => value,
-  value_valid => value_valid,
-  swap => swap,
-  enabled => enabled,
-  can_swap => can_swap,
-  bin_n => bin_n,
+  bin => bin,
+  bin_valid => bin_valid,
+  out_of_bounds => out_of_bounds,
   last_bin => last_bin,
-  lowest_value => lowest_value,
+  swap => swap,
+  stop => stop,
+  can_swap => can_swap,
   total_in_bounds => total_in_bounds,
   most_frequent_bin => most_frequent_bin,
   new_most_frequent_bin => new_most_frequent_bin,
@@ -86,19 +74,21 @@ port map(
   swapped => swapped,
   stream => stream,
   valid => valid,
-  ready => ready,
-  last => last
+  last => last,
+  ready => ready
 );  
-  
+
 sim:process(clk)
 begin
   if rising_edge(clk) then
     if reset  = '1' then
       count1 <= (others => '0');
       count2 <= (others => '0');
+      count3 <= (others => '0');
     else
       clk_count <= clk_count+1;
-      if value_valid then
+      if bin_valid then
+        count3 <= count3+1;
         if count2=count1 then
           count1 <= count1+1;
           count2 <= (others => '0');
@@ -109,21 +99,16 @@ begin
     end if;
   end if;
 end process sim;
-bin <= count1;
+bin <= count2;
 --ready <= clk_count mod 3/=0;
 ready <= TRUE;
 --bin <= (others => '0');
---out_of_bounds <= bin=0 or bin=last_bin;
-out_of_bounds <= FALSE;
-value <= resize(signed('0' & bin),VALUE_BITS);
+out_of_bounds <= bin=0 or bin=last_bin;
 
 stimulus:process is
 begin
 last_bin <= to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS);
-bin_n <= to_unsigned(0,BIN_N_BITS);
-lowest_value <= to_signed(1,VALUE_BITS);
-enabled <= TRUE;
-value_valid <= FALSE;
+stop <= FALSE;
 --ready <= TRUE;
 wait for CLK_PERIOD;
 reset <= '0';
@@ -131,7 +116,7 @@ wait until can_swap;
 swap <= TRUE;
 wait for CLK_PERIOD;
 swap <= FALSE;
-value_valid <= TRUE;
+bin_valid <= TRUE;
 wait until count2=2**ADDRESS_BITS-1;
 swap <= TRUE;
 wait for CLK_PERIOD;
@@ -140,12 +125,9 @@ wait until count2=2**ADDRESS_BITS-1;
 swap <= TRUE;
 wait for CLK_PERIOD;
 swap <= FALSE;
---wait until count2=2**ADDRESS_BITS-1;
-wait until can_swap;
-swap <= TRUE;
-enabled <= FALSE;
+stop <= TRUE;
 wait for CLK_PERIOD;
-swap <= FALSE;
+stop <= FALSE;
 wait;
 end process stimulus;
 

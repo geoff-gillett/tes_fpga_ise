@@ -81,6 +81,9 @@ signal time_stamp:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal tick_pipe:boolean_vector(0 to TICKPIPE_DEPTH);
 signal current_period:unsigned(TICKPERIOD_BITS-1 downto 0);
 
+--attribute equivalent_register_removal:string;
+--attribute equivalent_register_removal of tickCounter:entity is "no";
+
 begin
 tick <= tick_int;
 tick_event.rel_timestamp <= (others => '-');
@@ -89,7 +92,7 @@ tick_event.flags.event_type.detection <= PEAK_DETECTION_D;
 
 timestamp <= time_stamp;
 
---FIXME this is a waste of 2 BRAMS
+--FIXME is this a waste of 2 BRAMS?
 --Only need to buffer a few ticks
 framer:entity streamlib.framer
 generic map(

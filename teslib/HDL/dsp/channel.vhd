@@ -66,12 +66,12 @@ architecture fixed_16_3 of channel is
   
 constant RAW_DELAY:natural:=1026;
   
-signal sample_in,corrected_sample,raw,filtered,slope:signed(WIDTH-1 downto 0);
+signal sample_in,raw,filtered,slope:signed(WIDTH-1 downto 0);
 signal sample_d:std_logic_vector(WIDTH-1 downto 0);
 signal m,dsp_m:measurements_t;
 signal baseline_sample,sample_inv:signed(ADC_WIDTH-1 downto 0);
-signal baseline_estimate,frac_offset:signed(WIDTH-1 downto 0);
-signal range_error:boolean;
+signal baseline_estimate:signed(WIDTH-1 downto 0);
+--signal range_error:boolean;
 
 --debug
 constant DEBUG:string:="FALSE";
@@ -148,7 +148,7 @@ port map(
   count_threshold => registers.baseline.count_threshold,
   new_only => registers.baseline.new_only,
   baseline_estimate => baseline_estimate,
-  range_error => range_error
+  range_error => open
 );
 
 --FIXME subtract off the frac part if using the correction

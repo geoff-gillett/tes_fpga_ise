@@ -55,6 +55,8 @@ begin
 	begin
 		inputs(b)(c) <= values(c)(b);
 	end generate;
+	-- bug fix for XST misses the last iteration of a double for
+	inputs(MCA_VALUE_BITS-1)(CHANNELS-1) <= values(CHANNELS-1)(MCA_VALUE_BITS-1);
 	selector:entity work.select_1of12
 		port map(
 			input => inputs(b),

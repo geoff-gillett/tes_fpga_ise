@@ -92,8 +92,8 @@ signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0):=
 --signal frame_we:boolean;
 signal mtu_int:unsigned(MTU_BITS-1 downto 0):=
 			 to_unsigned(to_integer(DEFAULT_MTU/8),MTU_BITS);
-signal mtu_m1:unsigned(MTU_BITS-1 downto 0):=
-			 to_unsigned(to_integer(DEFAULT_MTU/8)-1,MTU_BITS);
+--signal mtu_m1:unsigned(MTU_BITS-1 downto 0):=
+--			 to_unsigned(to_integer(DEFAULT_MTU/8)-1,MTU_BITS);
 signal tick_latency_count:unsigned(TICK_LATENCY_BITS-1 downto 0);
 signal tick_latency_int:unsigned(TICK_LATENCY_BITS-1 downto 0):=
 			 DEFAULT_TICK_LATENCY;
@@ -103,7 +103,7 @@ signal lookahead:streambus_t;
 signal lookahead_valid:boolean;
 --
 signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
-signal frame_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
+--signal frame_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_length:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_free_m1:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_last:boolean;
@@ -220,7 +220,7 @@ signal framestream:streambus_t;
 signal framestream_firstbyte:std_logic_vector(7 downto 0);
 signal framestream_last,new_frame,framestream_ready,framestream_valid:boolean;
 
-constant DEBUG:string:="TRUE";
+constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
 
 attribute MARK_DEBUG of framestream_firstbyte:signal is DEBUG;
@@ -278,7 +278,7 @@ begin
 	if rising_edge(clk) then
     if arbiter_state=IDLE then
       mtu_int <= shift_right(mtu,3); --MTU in 8byte blocks
-      mtu_m1 <= shift_right(mtu,3)-1; --MTU in 8byte blocks
+--      mtu_m1 <= shift_right(mtu,3)-1; --MTU in 8byte blocks
       tick_latency_int <= tick_latency;
     end if;
 	end if;
@@ -640,8 +640,8 @@ begin
 			next_address <= (0 => '1', others => '0');
 			last_frame_address <= (others => '0');
 			--FIXME is the -1 correct for frame free?
-			frame_free 
-				<= to_unsigned(to_integer(DEFAULT_MTU/8),FRAMER_ADDRESS_BITS+1);
+--			frame_free 
+--				<= to_unsigned(to_integer(DEFAULT_MTU/8),FRAMER_ADDRESS_BITS+1);
 			frame_free_m1 
 				<= to_unsigned(to_integer(DEFAULT_MTU/8)-1,FRAMER_ADDRESS_BITS+1);
 			framer_ready <= FALSE;
@@ -650,7 +650,7 @@ begin
 			if commit_frame then
 				frame_address <= (others => '0');
 				next_address <= (0 => '1', others => '0');
-				frame_free <= resize(mtu_int,FRAMER_ADDRESS_BITS+1);
+--				frame_free <= resize(mtu_int,FRAMER_ADDRESS_BITS+1);
 				frame_free_m1 <= resize(mtu_int-1,FRAMER_ADDRESS_BITS+1);
 			elsif inc_address then
 				last_frame_word <= framer_word;
@@ -660,7 +660,7 @@ begin
 				next_address <= next_address+1;
 				frame_address <= next_address;
 				--framer_ready <= framer_free > next_address;
-        frame_free <= frame_free_m1;
+--        frame_free <= frame_free_m1;
         frame_free_m1 <= frame_free_m1-1;
         frame_last <= frame_free_m1 = 1;
         frame_under <= next_address < MIN_FRAME;

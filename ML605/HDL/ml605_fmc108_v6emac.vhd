@@ -222,18 +222,22 @@ signal fifo_valid,enables_valid:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal fifo_rd_en:std_logic_vector(ADC_CHANNELS-1 downto 0);
 signal enables_reg,enables_reg2:std_logic_vector(ADC_CHANNELS-1 downto 0);
 
-constant ADCPIPE_DEPTH:integer:=2; 
-type adcpipe is array(1 to ADCPIPE_DEPTH) of adc_sample_t;
-type adcpipe_array is array(natural range <>) of adcpipe;
-signal adc_pipes:adcpipe_array(ADC_CHANNELS-1 downto 0);
 
-type adc_pipeline is array (ADCPIPE_DEPTH-1 downto 0) 
-	of adc_sample_array(ADC_CHANNELS-1 downto 0);
-signal adc_dout_pipe:adc_pipeline;
+--constant ADCPIPE_DEPTH:integer:=2; 
+--type adcpipe is array(1 to ADCPIPE_DEPTH) of adc_sample_t;
+--type adcpipe_array is array(natural range <>) of adcpipe;
+--signal adc_pipes:adcpipe_array(ADC_CHANNELS-1 downto 0);
+--
+--type adc_pipeline is array (ADCPIPE_DEPTH-1 downto 0) 
+--	of adc_sample_array(ADC_CHANNELS-1 downto 0);
+--signal adc_dout_pipe:adc_pipeline;
 
-attribute shreg_extract:string;
-attribute shreg_extract of adc_pipes:signal is "no";
-attribute shreg_extract of adc_dout_pipe:signal is "no";
+--attribute equivalent_register_removal:string;
+--attribute shreg_extract:string;
+--attribute shreg_extract of adc_pipes:signal is "no";
+--attribute shreg_extract of adc_dout_pipe:signal is "no";
+--attribute equivalent_register_removal of adc_pipes:signal is "FALSE";
+--attribute equivalent_register_removal of adc_dout_pipe:signal is "FALSE";
 
 signal adc_samples:adc_sample_array(ADC_CHANNELS-1 downto 0);
 signal fifo_dout:adc_sample_array(ADC_CHANNELS-1 downto 0);
@@ -244,7 +248,6 @@ signal fifo_dout:adc_sample_array(ADC_CHANNELS-1 downto 0);
 --signal input_selects:input_sel_array;
 	
 signal fifo_empty:std_logic_vector(ADC_CHANNELS-1 downto 0);
-
 signal FMC_present:std_logic;
 
 --------------------------------------------------------------------------------
@@ -313,7 +316,7 @@ signal cdc_ready:boolean;
 signal cdc_valid:boolean;
 signal bytestream_int:std_logic_vector(8 downto 0);
 signal bytestream:std_logic_vector(7 downto 0);
-signal bytestream_last:boolean;
+--signal bytestream_last:boolean;
 
 --attribute S:string;
 --attribute S of bytestream:signal is "TRUE";
@@ -350,7 +353,7 @@ signal filter_events,slope_events,baseline_events:
 --signal raw0_debug:signal_t;
 --signal adc0_debug:std_logic_vector(ADC_BITS-1 downto 0);
 
-constant DEBUG:string:="TRUE";
+constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
 --attribute MARK_DEBUG of raw0_debug:signal is DEBUG;
 --attribute MARK_DEBUG of adc0_debug:signal is DEBUG;
@@ -764,7 +767,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 end generate tesChannel;
 --------------------------------------------------------------------------------
 
-measurementSubsystem:entity tes.measurement_subsystem
+measurementSubsystem:entity tes.measurement_subsystem3
 generic map(
   DSP_CHANNELS => DSP_CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
@@ -775,7 +778,6 @@ port map(
   clk => signal_clk,
   reset1 => reset1_sclk,
   reset2 => reset2_sclk,
-  mca_initialising => open,
   samples => adc_samples,
   channel_reg => channel_registers,
   global_reg => global,
@@ -836,7 +838,7 @@ port map(
 );
 
 bytestream <= bytestream_int(7 downto 0);
-bytestream_last <= bytestream_int(8)='1';
+--bytestream_last <= bytestream_int(8)='1';
 
 emac:entity work.v6_emac_v2_3
 port map(

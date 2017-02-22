@@ -15,7 +15,7 @@ use ieee.math_real.all;
 
 entity clock is
 generic(
-	TIME_BITS:integer:=32;
+	TIME_BITS:integer:=64;
 	INIT:integer:=0
 );
 port (
@@ -35,7 +35,7 @@ signal time_counter:unsigned(TIME_BITS-1 downto 0);
 
 begin
 time_stamp <= time_counter;
-rolling_over <= to_integer(not time_counter)=0;
+rolling_over <= (not time_counter)=0;
 
 count:process (clk) is
 begin

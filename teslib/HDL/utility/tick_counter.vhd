@@ -19,16 +19,16 @@ generic (
   MINIMUM_PERIOD:integer:=2**14;
   TICK_BITS:integer:=32;
   TIMESTAMP_BITS:integer:=64;
-  INIT:integer:=0
+  INIT:integer:=0 --negative or 0 number of clocks+2 after reset for first tick
 );
 port (
   clk:in std_logic;
   reset:in std_logic;
-  --
+  period:in unsigned(TICK_BITS-1 downto 0);
+
   tick:out boolean;
   time_stamp:out unsigned(TIMESTAMP_BITS-1 downto 0);
-  period:in unsigned(TICK_BITS-1 downto 0);
-  --
+  
   current_period:out unsigned(TICK_BITS-1 downto 0)
 );
 end entity tick_counter;
@@ -38,6 +38,7 @@ constant MIN_PERIOD:unsigned(TICK_BITS-1 downto 0)
                    :=to_unsigned(MINIMUM_PERIOD,TICK_BITS);
 signal tickcount,current_period_int:unsigned(TICK_BITS-1 downto 0);
 signal tick_int:boolean;
+signal rollover:boolean;
 
 begin
 tick <= tick_int;
@@ -60,15 +61,15 @@ tickTimer:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      tickcount <= (others => '0'); 
-      tick_int <= TRUE;
+      tickcount <= unsigned(to_signed(-INIT, TICK_BITS));
+      tick_int <= FALSE;
     else
-      if tickcount=current_period_int then
-        tickcount <= (others => '0');
+      if tickcount=0 then
+        tickcount <= current_period_int;
         tick_int <= TRUE;
       else
 	      tick_int <= FALSE;
-        tickcount <= tickcount+1;
+        tickcount <= tickcount-1;
       end if;
     end if;
   end if;
@@ -77,14 +78,14 @@ end process tickTimer;
 globalTime:entity work.clock
 generic map(
 	TIME_BITS => TIMESTAMP_BITS,
-	INIT => INIT
+	INIT => INIT-1
 )
 port map(
   clk => clk,
   reset => reset,
   --initialise_to_1 => FALSE,
   te => TRUE,
-  rolling_over => open,
+  rolling_over => rollover,
   time_stamp => time_stamp
 );
 end architecture RTL;

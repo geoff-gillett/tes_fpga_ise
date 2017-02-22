@@ -39,7 +39,7 @@ use work.registers.all;
 use work.measurements.all;
 use work.events.all;
 
-entity measurement_subsystem is
+entity measurement_subsystem3 is
 generic(
   DSP_CHANNELS:natural:=2;
   ADC_CHANNELS:natural:=2;
@@ -61,7 +61,6 @@ port(
   reset1:in std_logic;
   reset2:in std_logic;
   
-  mca_initialising:out boolean;
   mca_interrupt:out boolean;
   
   samples:in adc_sample_array(ADC_CHANNELS-1 downto 0);
@@ -82,10 +81,12 @@ port(
   ethernetstream_valid:out boolean;
   ethernetstream_ready:in boolean
 );
-end entity measurement_subsystem;
+end entity measurement_subsystem3;
 
-architecture fixed_16_3 of measurement_subsystem is
+architecture fixed_16_3 of measurement_subsystem3 is
 	
+attribute equivalent_register_removal:string;
+
 signal adc_delayed,adc_mux:adc_sample_array(DSP_CHANNELS-1 downto 0);
 
 -- MCA
@@ -105,10 +106,17 @@ signal value_pipe:value_pipe_t;
 type value_valid_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
      boolean_vector(DSP_CHANNELS-1 downto 0);
 signal value_valid_pipe:value_valid_pipe_t;
---
+attribute equivalent_register_removal of value_pipe,value_valid_pipe:signal is
+          "FALSE";
+
+--constant ADCPIPE_DEPTH:natural:=1; --TODO add DEPTH
+type adc_pipeline is array (DSP_CHANNELS-1 downto 0) 
+	   of adc_sample_array(ADC_CHANNELS-1 downto 0);
+signal adc_pipe:adc_pipeline;
+attribute equivalent_register_removal of adc_pipe:signal is "FALSE";
+
 signal mca_value_valids:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal mca_value_valids_int:boolean_vector(DSP_CHANNELS-1 downto 0);
---signal mca_value_valids_reg:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal dumps:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal commits:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal starts:boolean_vector(DSP_CHANNELS-1 downto 0);
@@ -144,7 +152,6 @@ signal c_reg:channel_register_array(DSP_CHANNELS-1 downto 0);
 signal g_reg:global_registers_t;
 
 signal tick_period_mux,tick_period_mca:unsigned(TICK_PERIOD_BITS-1 downto 0);
-attribute equivalent_register_removal:string;
 attribute equivalent_register_removal of tick_period_mux,tick_period_mca:signal
           is "no";
 
@@ -239,29 +246,36 @@ begin
 -- processing channels
 --------------------------------------------------------------------------------
 measurements <= m;
---TODO expose the .3 signals to mca 
--- move selectors inside
 
 -- helps timing and P&R
 chanReg:process(clk)
 begin
   if rising_edge(clk) then
-    c_reg <= channel_reg;
+--    c_reg <= channel_reg;
     tick_period_mux <= global_reg.tick_period;
     tick_period_mca <= global_reg.tick_period;
-    g_reg <= global_reg;
+--    g_reg <= global_reg;
   end if;
 end process chanReg;
+c_reg <= channel_reg;
+g_reg <= global_reg;
 
 tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
-
+  
+  adcPipe:process(clk)
+  begin
+    if rising_edge(clk) then
+      adc_pipe(c) <= samples;
+    end if;
+  end process adcPipe;
+  
   inputMux:entity work.input_mux
   generic map(
     CHANNELS => ADC_CHANNELS
   )
   port map(
     clk => clk,
-    samples_in => samples,
+    samples_in => adc_pipe(c),
     sel => resize(c_reg(c).capture.adc_select,ADC_CHANNELS),
     sample_out => adc_mux(c)
   );
@@ -362,7 +376,6 @@ begin
   end if;
 end process mcaValue;
 
-
 mcaChanSel:entity work.mca_channel_selector
 generic map(
   CHANNELS => DSP_CHANNELS,
@@ -372,8 +385,8 @@ port map(
   clk => clk,
   reset => reset1,
   channel_select => channel_select,
-  values => value_pipe(VALUE_PIPE_DEPTH),
-  valids => value_valid_pipe(VALUE_PIPE_DEPTH),
+  values => mca_values_int,
+  valids => mca_value_valids_int,
   value => mca_value,
   valid => mca_value_valid
 );
@@ -381,7 +394,6 @@ port map(
 --------------------------------------------------------------------------------
 -- 
 --------------------------------------------------------------------------------
-
 mux:entity work.eventstream_mux
 generic map(
   --CHANNEL_BITS => CHANNEL_BITS,
@@ -407,13 +419,13 @@ port map(
   measurement_overflows => measurement_overflows,
   framer_errors => framer_errors,
   time_overflows => time_overflows,
-  baseline_underflows => baseline_errors,
+  baseline_underflows => baseline_errors, -- use for something else
   muxstream => muxstream,
   valid => muxstream_valid,
   ready => muxstream_ready
 );
 
-mca:entity work.mca_unit4
+mca:entity work.mca
 generic map(
   CHANNELS => DSP_CHANNELS,
   ADDRESS_BITS => MCA_ADDRESS_BITS,
@@ -422,21 +434,15 @@ generic map(
   TOTAL_BITS => MCA_TOTAL_BITS,
   TICKCOUNT_BITS => MCA_TICKCOUNT_BITS,
   TICKPERIOD_BITS => TICK_PERIOD_BITS,
-  MIN_TICK_PERIOD => MIN_TICK_PERIOD,
-  DEPTH => VALUE_PIPE_DEPTH+2,
+  VALUE_PIPE_DEPTH => VALUE_PIPE_DEPTH,
+  MINIMUM_TICK_PERIOD => MIN_TICK_PERIOD,
   ENDIANNESS => ENDIANNESS
 )
 port map(
   clk => clk,
   reset => reset1,
-  initialising => mca_initialising,
-  --TODO remove redundant register port
-  update_asap => g_reg.mca.update_asap,
-  --TODO remove redundant register port
-  update_on_completion => g_reg.mca.update_on_completion,
-  updated => mca_interrupt, --TODO implement CPU interupt
+  updated => mca_interrupt,
   registers => g_reg.mca,
-  --TODO remove redundant register port
   tick_period => g_reg.tick_period,
   channel_select => channel_select,
   value_select => value_select,

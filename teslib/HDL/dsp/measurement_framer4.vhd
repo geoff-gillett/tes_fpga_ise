@@ -72,7 +72,7 @@ signal peak_we:boolean_vector(CHUNKS-1 downto 0);
 --signal pulse_h0_we_reg,pulse_h1_we_reg:boolean_vector(CHUNKS-1 downto 0);
 signal area_we:boolean_vector(CHUNKS-1 downto 0);
 signal dump_int:boolean;
-signal lost:boolean;
+signal error_int:boolean;
 signal start_int:boolean;
 signal filtered_reg:signed(DSP_BITS-1 downto 0);
 signal minima:signal_t;
@@ -89,7 +89,7 @@ signal free_after_commit:unsigned(FRAMER_ADDRESS_BITS downto 0);
 begin
 m <= measurements;
 overflow <= overflow_int;
-error <= lost;
+error <= error_int;
 commit <= frame_commit;
 start <= start_int;
 dump <= dump_int;
@@ -161,9 +161,11 @@ begin
       
       if m.eflags.event_type.detection=PEAK_DETECTION_D or 
          m.eflags.event_type.detection=TEST_DETECTION_D then
-        lost <= m.peak_start and (state/=IDLE_S or framer_full);
+         error_int <= m.peak_start and state/=IDLE_S;
+         overflow_int <= m.peak_start and framer_full;
       else
-        lost <= m.pulse_start and (state/=IDLE_S or framer_full);
+        error_int <= m.pulse_start and state/=IDLE_S;
+        overflow_int <= m.pulse_start and framer_full;
       end if;
       
       -- defaults
@@ -341,7 +343,7 @@ begin
         if m.stamp_peak then
           if stamped then
             dump_int <= TRUE;
-            lost <= TRUE;
+            error_int <= TRUE;
             state <= IDLE_S;
           else
             frame_word <= to_streambus(test,1,ENDIAN);

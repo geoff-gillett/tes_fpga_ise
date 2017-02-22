@@ -69,7 +69,7 @@ constant SLOPE_BIT:natural:=28;
 constant BASELINE_BIT:natural:=27;
 
 signal state,nextstate:FSMstate;
-signal error_int:std_logic;
+--signal error_int:std_logic;
 
 begin
 
@@ -85,9 +85,9 @@ begin
 end process FSMnextstate;
 
 done <= '1' when state=IDLE else '0';
-error_int <= filter_events.last_missing or filter_events.last_unexpected or
-             slope_events.last_missing or slope_events.last_unexpected or
-             baseline_events.last_missing or baseline_events.last_unexpected;
+--error_int <= filter_events.last_missing or filter_events.last_unexpected or
+--             slope_events.last_missing or slope_events.last_unexpected or
+--             baseline_events.last_missing or baseline_events.last_unexpected;
   
 FSMtransition:process(
   state,write,data,baseline_events.reload_ready,filter_events.reload_ready, 

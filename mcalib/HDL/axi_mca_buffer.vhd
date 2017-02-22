@@ -39,7 +39,7 @@ port(
   bin_valid:in boolean; -- increment this bin
   out_of_bounds:in boolean; --oob are not counted for most frequent or total
   
-  -- probability distribution maxima
+  -- probability distribution statistics
   most_frequent_bin:out unsigned(ADDRESS_BITS-1 downto 0);
   new_most_frequent_bin:out boolean; -- new bin, may have same count as previous
   most_frequent_count:out unsigned(COUNTER_BITS-1 downto 0);
@@ -74,11 +74,13 @@ signal last_bin_reg:unsigned(ADDRESS_BITS-1 downto 0);
 signal readable:boolean;
 signal last_clear:boolean;
 signal clear:boolean;
+signal buffer_idle:boolean;
 
 begin
 valid <= valid_int;
 last <= last_int;  
 swapped <= state=INIT_STREAM;
+mca_idle <= state=IDLE;
 
 lastBinReg: process (clk) is
 begin
@@ -90,7 +92,7 @@ begin
   end if;
 end process lastBinReg;
 
-mcaBuffer:entity work.mca_buffer2
+mcaBuffer:entity work.mca_buffer3
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
   COUNTER_BITS => COUNTER_BITS,
@@ -99,7 +101,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  mca_idle => mca_idle,
+  mca_idle => buffer_idle,
   swap => swap,
   bin => bin,
   bin_valid => bin_valid,
@@ -127,7 +129,9 @@ begin
   end if;
 end process fsmNextstate;
 
-fsmTransition:process(swap,state,incr_addr,last_incr_addr,readable)
+fsmTransition:process(
+  swap,state,incr_addr,last_incr_addr,readable,last_int,ready,valid_int
+)
 begin
   nextstate <= state;
   clear <= FALSE;
@@ -149,9 +153,12 @@ begin
       end if;
       clear <= incr_addr;
     when STREAM_END => 
-      nextstate <= IDLE;
+--      nextstate <= IDLE;
       clear <= TRUE;
       last_clear <= TRUE;
+      if valid_int and ready and last_int then
+        nextstate <= IDLE;
+      end if;
   end case;
 end process fsmTransition;
 
@@ -162,7 +169,7 @@ start <= state=INIT_STREAM;
 streamer:entity streamlib.ram_stream
 generic map(
   WIDTH => COUNTER_BITS,
-  LATENCY => 2
+  LATENCY => 3
 )
 port map(
   clk => clk,
