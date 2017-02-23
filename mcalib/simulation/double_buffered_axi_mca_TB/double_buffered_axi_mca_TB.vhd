@@ -99,11 +99,12 @@ begin
     end if;
   end if;
 end process sim;
-bin <= count2;
+bin <= count1;
 --ready <= clk_count mod 3/=0;
 ready <= TRUE;
 --bin <= (others => '0');
-out_of_bounds <= bin=0 or bin=last_bin;
+--out_of_bounds <= bin=0 or bin=last_bin;
+out_of_bounds <= FALSE;
 
 stimulus:process is
 begin

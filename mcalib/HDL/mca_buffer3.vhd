@@ -326,10 +326,10 @@ if rising_edge(clk) then
       total_int <= total_int + inc_pipe(1);
     end if;
       
-    if (din >= mf_count_int) and wr_en and not oob_pipe(DEPTH) then 
+    if (din >= mf_count_int) and wr_en and not oob_pipe(COL_DEPTH) then 
       mf_count_int <= din;
       mf_int <= wr_addr;
-      new_mf <= (din > mf_count_int) or mf_int/=wr_addr;
+      new_mf <= TRUE;
       new_mf_bin <=  mf_int/=wr_addr;
     end if;
   end if;

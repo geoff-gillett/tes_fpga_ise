@@ -16,15 +16,8 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
---use work.types.all;
---use work.functions.all;
-
 library mcalib;
 
---FIXME description is wrong
---! the distribution is collected in a MCA over timeconstant clks
---! and the average of the maximum of of the last two distributions is the
---! baseline.
 entity most_frequent2 is
 generic(
   --number of bins (channels) = 2**ADDRESS_BITS
@@ -36,15 +29,18 @@ generic(
 port(
   clk:in std_logic;
   reset:in std_logic;
-  --
+
   timeconstant:in unsigned(TIMECONSTANT_BITS-1 downto 0);
+  
   -- count threshold before most frequent value is used in the average
-  threshold:in unsigned(COUNTER_BITS-1 downto 0);
+  count_threshold:in unsigned(COUNTER_BITS-1 downto 0);
   sample:in std_logic_vector(ADDRESS_BITS-1 downto 0);
   sample_valid:in boolean;
-  --
-  most_frequent:out std_logic_vector(ADDRESS_BITS-1 downto 0);
-  new_value:out boolean
+  
+  most_frequent_bin:out unsigned(ADDRESS_BITS-1 downto 0);
+  new_most_frequent_bin:out boolean;
+  most_frequent_count:out unsigned(COUNTER_BITS-1 downto 0);
+  new_most_frequent:out boolean
 );
 end entity most_frequent2;
 --
@@ -52,49 +48,34 @@ architecture MCA of most_frequent2 is
 -- TODO modify clear so that smaller minimum time constants are possible
 -- ie do partial clears threshold needs some thought
 --------------------------------------------------------------------------------
-constant MIN_TIMECONSTANT:integer:=2**ADDRESS_BITS+8;
---------------------------------------------------------------------------------
 -- shift register functions
-signal mca_ready:boolean;
-type FSMstate is (INIT,WRITE,WAITREADABLE,CLEAR);
+type FSMstate is (INIT,BUFF0,BUFF1);
+type CLRstate is (IDLE,BUFF0,BUFF1);
 signal state,nextstate:FSMstate;
+signal clr_state,clr_nextstate:CLRstate;
 signal timer:unsigned(TIMECONSTANT_BITS-1 downto 0);
 signal timeout:boolean;
-signal readable:boolean;
-signal most_frequent_int:unsigned(ADDRESS_BITS-1 downto 0);
-signal max_count:unsigned(COUNTER_BITS-1 downto 0);
-signal new_max:boolean;
 signal address_to_clear:unsigned(ADDRESS_BITS-1 downto 0);
-signal clear_mca:boolean;
 signal clear_done:boolean;
+--
+signal idle0,idle1:boolean;
+signal swap0,swap1:boolean;
+signal bin:unsigned(ADDRESS_BITS-1 downto 0);
+signal bin_valid0,bin_valid1:boolean;
+signal most_frequent_bin0,most_frequent_bin1:unsigned(ADDRESS_BITS-1 downto 0);
+signal new_most_frequent_bin0:boolean;
+signal new_most_frequent_bin1:boolean;
+signal most_frequent_count0:unsigned(COUNTER_BITS-1 downto 0);
+signal most_frequent_count1:unsigned(COUNTER_BITS-1 downto 0);
+signal new_most_frequent0,new_most_frequent1:boolean;
+signal readable0,readable1:boolean;
+signal clear0,clear1:boolean;
+--signal bin_to_read:unsigned(ADDRESS_BITS-1 downto 0);
 
 begin
-	
---mca:entity mcalib.mca
---generic map(
---  ADDRESS_BITS => ADDRESS_BITS,
---  COUNTER_BITS => COUNTER_BITS,
---  TOTAL_BITS => 1
---)
---port map(
---  clk => clk,
---  reset => reset,
---  ready => mca_ready,
---  bin => unsigned(sample),
---  bin_valid => sample_valid,
---  out_of_bounds => FALSE, --FIXME add overflow when
---  swap_buffer => timeout,
---  readable => readable,
---  total => open,
---  most_frequent => most_frequent_int,
---  max_count => max_count,
---  new_max => new_max,
---  bin_to_read => address_to_clear,
---  read_bin => clear_mca,
---  count => open
---);
+bin <= unsigned(sample);
 
-buff0:entity work.mca_buffer2
+buffer0:entity work.mca_buffer3
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
   COUNTER_BITS => COUNTER_BITS,
@@ -106,21 +87,21 @@ port map(
   mca_idle => idle0,
   swap => swap0,
   bin => bin,
-  bin_valid => bin_valid,
-  out_of_bounds => out_of_bounds,
+  bin_valid => bin_valid0,
+  out_of_bounds => FALSE,
   most_frequent_bin => most_frequent_bin0,
   new_most_frequent_bin => new_most_frequent_bin0,
   most_frequent_count => most_frequent_count0,
   new_most_frequent => new_most_frequent0,
   total_in_bounds => open,
   readable => readable0,
-  last_clear => last_clear0,
+  last_clear => clear_done,
   clear => clear0,
-  bin_to_read => bin_to_read0,
+  bin_to_read => address_to_clear,
   count => open
 );
 
-buff1:entity work.mca_buffer2
+buffer1:entity work.mca_buffer3
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
   COUNTER_BITS => COUNTER_BITS,
@@ -132,36 +113,19 @@ port map(
   mca_idle => idle1,
   swap => swap1,
   bin => bin,
-  bin_valid => bin_valid,
-  out_of_bounds => out_of_bounds,
+  bin_valid => bin_valid1,
+  out_of_bounds => FALSE,
   most_frequent_bin => most_frequent_bin1,
   new_most_frequent_bin => new_most_frequent_bin1,
   most_frequent_count => most_frequent_count1,
   new_most_frequent => new_most_frequent1,
   total_in_bounds => open,
   readable => readable1,
-  last_clear => last_clear1,
+  last_clear => clear_done,
   clear => clear1,
-  bin_to_read => bin_to_read1,
+  bin_to_read => address_to_clear,
   count => open
 );
-
-clear_mca <= state=CLEAR;
-clear_done <= address_to_clear=to_unsigned((2**ADDRESS_BITS)-1,ADDRESS_BITS);
-clearAddress:process(clk)
-begin
-if rising_edge(clk) then
-  if reset = '1' then
-    address_to_clear <= (others => '0');
-  else
-    if clear_done then
-      address_to_clear <= (others => '0');
-    elsif state=CLEAR then
-      address_to_clear <= address_to_clear+1;
-    end if;
-  end if;
-end if;
-end process clearAddress;
 
 --------------------------------------------------------------------------------
 -- FSM 
@@ -171,69 +135,132 @@ begin
   if rising_edge(clk) then
     if reset = '1' then
       state <= INIT;
+      clr_state <= IDLE;
     else
       state <= nextstate;
+      clr_state <= clr_nextstate;
     end if;
   end if;
 end process FSMnextstate;
 
-FsmTransition:process(clear_done,mca_ready,timeout,readable,state)
+FsmTransition:process(
+  state,idle1,timeout,idle0,sample_valid,clear_done,clr_state
+)
 begin
   nextstate <= state;
-  case state is 
+  clr_nextstate <= clr_state;
+  swap0 <= FALSE;
+  swap1 <= FALSE;
+  case state is
   when INIT =>
-    if mca_ready then
-      nextstate <= WRITE;
+    nextstate <= BUFF0;
+    swap0 <= TRUE;
+    bin_valid1 <= FALSE;
+    bin_valid0 <= FALSE;
+  when BUFF0 =>
+    bin_valid0 <= sample_valid;
+    bin_valid1 <= FALSE;
+    if timeout and idle1 then
+      nextstate <= BUFF1;
+      clr_nextstate <= BUFF0;
+      swap0 <= TRUE;
+      swap1 <= TRUE;
     end if;
-  when WRITE =>
-    if timeout then
-      nextstate <= WAITREADABLE;
-    end if;
-  when WAITREADABLE =>
-    if readable then
-      nextstate <= CLEAR;
-    end if;
-  when CLEAR =>
-    if clear_done then
-      nextstate <= WRITE;
+  when BUFF1 =>
+    bin_valid1 <= sample_valid;
+    bin_valid0 <= FALSE;
+    if timeout and idle0 then
+      clr_nextstate <= BUFF1;
+      nextstate <= BUFF0;
+      swap0 <= TRUE;
+      swap1 <= TRUE;
     end if;
   end case;
+  if clear_done then
+    clr_nextstate <= IDLE;
+  end if;
 end process;
 
-outputReg:process(clk)
+FSMoutput:process(clk)
 begin
 if rising_edge(clk) then
-  if new_max and to_0IfX(max_count) >= threshold then
-    most_frequent <= to_std_logic(most_frequent_int);
-    new_value <= TRUE;
-  else
-    new_value <= FALSE;
-  end if;
+  case state is 
+  when INIT =>
+      most_frequent_bin <= (others => '-');
+      new_most_frequent_bin <= FALSE;
+      most_frequent_count <= (others => '-');
+      new_most_frequent <= FALSE;
+  when BUFF0 =>
+    if most_frequent_count0 >= count_threshold then
+      most_frequent_bin <= most_frequent_bin0;
+      new_most_frequent_bin <= new_most_frequent_bin0;
+      most_frequent_count <= most_frequent_count0;
+      new_most_frequent <= new_most_frequent0;
+    end if;
+  when BUFF1 =>
+    if most_frequent_count1 >= count_threshold then
+      most_frequent_bin <= most_frequent_bin1;
+      new_most_frequent_bin <= new_most_frequent_bin1;
+      most_frequent_count <= most_frequent_count1;
+      new_most_frequent <= new_most_frequent1;
+    end if;
+  end case;
 end if;
-end process outputReg;
+end process FSMoutput;
 
+clear_done <= address_to_clear=to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS);
+clearFSMaddr:process (clk) is
+begin
+  if rising_edge(clk) then
+    case clr_state is 
+    when IDLE =>
+      address_to_clear <= (others => '0');
+    when BUFF0 =>
+      if readable0 then
+        address_to_clear <= address_to_clear+1;
+      end if;
+    when BUFF1 =>
+      if readable1 then
+        address_to_clear <= address_to_clear+1;
+      end if;
+    end case;
+  end if;
+end process clearFSMaddr;
+
+clearFSM:process(clr_state,readable0,readable1)
+begin
+  clear0 <= FALSE;
+  clear1 <= FALSE;
+  case clr_state is 
+  when IDLE =>
+    clear0 <= FALSE;
+    clear1 <= FALSE;
+  when BUFF0 =>
+    if readable0 then
+      clear0 <= TRUE;
+      clear1 <= FALSE;
+    end if;
+  when BUFF1 =>
+    if readable1 then
+      clear1 <= TRUE;
+      clear0 <= FALSE;
+    end if;
+  end case;
+end process clearFSM;
 --------------------------------------------------------------------------------
 -- Time
 --------------------------------------------------------------------------------
-timeout <= timer=0;
+timeout <= timer >= timeconstant;
 timing:process(clk)
 begin
 if rising_edge(clk) then
-  if reset='1' then
-    if timeconstant<MIN_TIMECONSTANT then
-      timer <= to_unsigned(MIN_TIMECONSTANT,TIMECONSTANT_BITS);
-    else
-      timer <= timeconstant;
-    end if;
+  if state=INIT then
+    timer <= (others => '0');
   else
-    if timeout then 
-      if timeconstant<MIN_TIMECONSTANT then
-        timer <= to_unsigned(MIN_TIMECONSTANT,TIMECONSTANT_BITS);
-      else
-        timer <= timeconstant;
-      end if;
-    elsif mca_ready and not timeout then
-      timer <= timer-1;
+    if swap0 or swap1 then
+      timer <= (others => '0');
+    elsif not timeout  then
+      timer <= timer+1;
     end if;
   end if;
 end if;

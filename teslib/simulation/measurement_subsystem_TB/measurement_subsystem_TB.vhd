@@ -121,7 +121,7 @@ reset1 <= '0' after 10*IO_CLK_PERIOD;
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
 bytestream_ready <= TRUE after 2*IO_CLK_PERIOD;
 
-UUT:entity work.measurement_subsystem
+UUT:entity work.measurement_subsystem3
 generic map(
   DSP_CHANNELS => CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
@@ -140,7 +140,7 @@ port map(
   clk => sample_clk,
   reset1 => reset1,
   reset2 => reset2,
-  mca_initialising => mca_initialising,
+  mca_interrupt => mca_interrupt,
   samples => adc_samples,
   channel_reg => chan_reg,
   global_reg => global,
@@ -151,7 +151,6 @@ port map(
   baseline_config => baseline_config,
   baseline_events => open,
   measurements => m,
-  mca_interrupt => mca_interrupt,
   ethernetstream => ethernetstream,
   ethernetstream_valid => ethernetstream_valid,
   ethernetstream_ready => ethernetstream_ready
@@ -205,15 +204,15 @@ bytestream_last <= bytestream_int(8)='1';
 
 --register settings
 global.mtu <= to_unsigned(1500,MTU_BITS);
-global.tick_latency <= to_unsigned(2**17,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(2**17,TICK_PERIOD_BITS);
+global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
+global.tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
 global.mca.last_bin <= (others => '1');
 --global.mca.lowest_value <= to_signed(-2500,MCA_VALUE_BITS);
 global.mca.lowest_value <= to_signed(-2000,MCA_VALUE_BITS);
-global.mca.qualifier <= ALL_MCA_QUAL_D;
+global.mca.qualifier <= VALID_PEAK0_MCA_QUAL_D;
 --TODO normalise these type names
 --global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 --global.mca.value <= MCA_RAW_SIGNAL_D;
@@ -254,18 +253,18 @@ baseline_config(1).reload_last <= '0';
 baseline_config(1).reload_valid <= '0';
 
 chan_reg(0).baseline.offset <= to_signed(-1000*8,DSP_BITS);
-chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
-chan_reg(0).baseline.threshold <= (others => '1');
-chan_reg(0).baseline.new_only <= TRUE;
+chan_reg(0).baseline.count_threshold <= to_unsigned(15,BASELINE_COUNTER_BITS);
+chan_reg(0).baseline.threshold <= to_unsigned(700,BASELINE_BITS-1);--(others => '1');
+chan_reg(0).baseline.new_only <= FALSE;
 chan_reg(0).baseline.subtraction <= TRUE;
-chan_reg(0).baseline.timeconstant <= to_unsigned(250000,32);
+chan_reg(0).baseline.timeconstant <= to_unsigned(25000,32);
 
 chan_reg(1).baseline.offset <= to_signed(-1000*8,DSP_BITS);
-chan_reg(1).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
-chan_reg(1).baseline.threshold <= (others => '1');
-chan_reg(1).baseline.new_only <= TRUE;
+chan_reg(1).baseline.count_threshold <= to_unsigned(15,BASELINE_COUNTER_BITS);
+chan_reg(1).baseline.threshold <= to_unsigned(700,BASELINE_BITS-1);--(others => '1');
+chan_reg(1).baseline.new_only <= FALSE;
 chan_reg(1).baseline.subtraction <= TRUE;
-chan_reg(1).baseline.timeconstant <= to_unsigned(250000,32);
+chan_reg(1).baseline.timeconstant <= to_unsigned(25000,32);
 
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
 chan_reg(0).capture.delay <= (others => '0');
@@ -455,7 +454,7 @@ begin
   wait;
   wait until mca_interrupt;
 	global.mca.value <= MCA_FILTERED_SIGNAL_D;
-	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+	global.mca.trigger <= SLOPE_NEG_0XING_MCA_TRIGGER_D;
 	global.mca.update_asap <= TRUE;
 	wait for SAMPLE_CLK_PERIOD;
 	global.mca.update_asap <= FALSE;

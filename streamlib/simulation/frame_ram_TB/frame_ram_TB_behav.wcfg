@@ -13,11 +13,11 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="310350000fs"></ZoomStartTime>
-      <ZoomEndTime time="416250001fs"></ZoomEndTime>
-      <Cursor1Time time="328000000fs"></Cursor1Time>
+      <ZoomStartTime time="119516667fs"></ZoomStartTime>
+      <ZoomEndTime time="218416668fs"></ZoomEndTime>
+      <Cursor1Time time="136000000fs"></Cursor1Time>
    </zoom_setting>
-   <WVObjectSize size="2" />
+   <WVObjectSize size="3" />
    <wvobject fp_name="group37" type="group">
       <obj_property name="label">testbench</obj_property>
       <obj_property name="DisplayName">label</obj_property>
@@ -72,7 +72,6 @@
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/streambus_in" type="array">
          <obj_property name="ElementShortName">streambus_in</obj_property>
          <obj_property name="ObjectShortName">streambus_in</obj_property>
-         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/streambus_out" type="array">
          <obj_property name="ElementShortName">streambus_out</obj_property>
@@ -107,6 +106,7 @@
    <wvobject fp_name="group38" type="group">
       <obj_property name="label">UUT</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -142,22 +142,42 @@
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/stream" type="array">
          <obj_property name="ElementShortName">stream[71:0]</obj_property>
          <obj_property name="ObjectShortName">stream[71:0]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/valid" type="other">
          <obj_property name="ElementShortName">valid</obj_property>
          <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/ready" type="other">
          <obj_property name="ElementShortName">ready</obj_property>
          <obj_property name="ObjectShortName">ready</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/frame_ram" type="array">
          <obj_property name="ElementShortName">frame_ram[0:63][71:0]</obj_property>
          <obj_property name="ObjectShortName">frame_ram[0:63][71:0]</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/we" type="array">
+         <obj_property name="ElementShortName">we[3:0]</obj_property>
+         <obj_property name="ObjectShortName">we[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/input_word" type="array">
          <obj_property name="ElementShortName">input_word[71:0]</obj_property>
          <obj_property name="ObjectShortName">input_word[71:0]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/wr_addr" type="array">
+         <obj_property name="ElementShortName">wr_addr[6:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_addr[6:0]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/ram_dout" type="array">
          <obj_property name="ElementShortName">ram_dout[71:0]</obj_property>
@@ -167,37 +187,23 @@
          <obj_property name="ElementShortName">ram_data[71:0]</obj_property>
          <obj_property name="ObjectShortName">ram_data[71:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/reg1" type="array">
-         <obj_property name="ElementShortName">reg1[71:0]</obj_property>
-         <obj_property name="ObjectShortName">reg1[71:0]</obj_property>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/empty" type="other">
+         <obj_property name="ElementShortName">empty</obj_property>
+         <obj_property name="ObjectShortName">empty</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/reg2" type="array">
-         <obj_property name="ElementShortName">reg2[71:0]</obj_property>
-         <obj_property name="ObjectShortName">reg2[71:0]</obj_property>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/will_empty" type="other">
+         <obj_property name="ElementShortName">will_empty</obj_property>
+         <obj_property name="ObjectShortName">will_empty</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/reg_stream" type="array">
-         <obj_property name="ElementShortName">reg_stream[71:0]</obj_property>
-         <obj_property name="ObjectShortName">reg_stream[71:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/reg_ready" type="other">
-         <obj_property name="ElementShortName">reg_ready</obj_property>
-         <obj_property name="ObjectShortName">reg_ready</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/reg_valid" type="other">
-         <obj_property name="ElementShortName">reg_valid</obj_property>
-         <obj_property name="ObjectShortName">reg_valid</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/reg1_w" type="other">
-         <obj_property name="ElementShortName">reg1_w</obj_property>
-         <obj_property name="ObjectShortName">reg1_w</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/reg2_w" type="other">
-         <obj_property name="ElementShortName">reg2_w</obj_property>
-         <obj_property name="ObjectShortName">reg2_w</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/we" type="array">
-         <obj_property name="ElementShortName">we[3:0]</obj_property>
-         <obj_property name="ObjectShortName">we[3:0]</obj_property>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/read_next" type="other">
+         <obj_property name="ElementShortName">read_next</obj_property>
+         <obj_property name="ObjectShortName">read_next</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/rd_ptr" type="array">
          <obj_property name="ElementShortName">rd_ptr[6:0]</obj_property>
@@ -206,10 +212,6 @@
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/rd_ptr_next" type="array">
          <obj_property name="ElementShortName">rd_ptr_next[6:0]</obj_property>
          <obj_property name="ObjectShortName">rd_ptr_next[6:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/wr_addr" type="array">
-         <obj_property name="ElementShortName">wr_addr[6:0]</obj_property>
-         <obj_property name="ObjectShortName">wr_addr[6:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/wr_ptr" type="array">
          <obj_property name="ElementShortName">wr_ptr[6:0]</obj_property>
@@ -231,18 +233,6 @@
          <obj_property name="ElementShortName">address_reg[5:0]</obj_property>
          <obj_property name="ObjectShortName">address_reg[5:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/read_next" type="other">
-         <obj_property name="ElementShortName">read_next</obj_property>
-         <obj_property name="ObjectShortName">read_next</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/empty" type="other">
-         <obj_property name="ElementShortName">empty</obj_property>
-         <obj_property name="ObjectShortName">empty</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/ram_valid" type="other">
-         <obj_property name="ElementShortName">ram_valid</obj_property>
-         <obj_property name="ObjectShortName">ram_valid</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/good_commit" type="other">
          <obj_property name="ElementShortName">good_commit</obj_property>
          <obj_property name="ObjectShortName">good_commit</obj_property>
@@ -263,41 +253,9 @@
          <obj_property name="ElementShortName">ptr_next_equal</obj_property>
          <obj_property name="ObjectShortName">ptr_next_equal</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/will_empty" type="other">
-         <obj_property name="ElementShortName">will_empty</obj_property>
-         <obj_property name="ObjectShortName">will_empty</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/ram_ready" type="other">
-         <obj_property name="ElementShortName">ram_ready</obj_property>
-         <obj_property name="ObjectShortName">ram_ready</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/one_pending" type="other">
-         <obj_property name="ElementShortName">one_pending</obj_property>
-         <obj_property name="ObjectShortName">one_pending</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/two_pending" type="other">
-         <obj_property name="ElementShortName">two_pending</obj_property>
-         <obj_property name="ObjectShortName">two_pending</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/none_pending" type="other">
-         <obj_property name="ElementShortName">none_pending</obj_property>
-         <obj_property name="ObjectShortName">none_pending</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/commit_reg" type="other">
          <obj_property name="ElementShortName">commit_reg</obj_property>
          <obj_property name="ObjectShortName">commit_reg</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/read_pipe" type="array">
-         <obj_property name="ElementShortName">read_pipe[1:2]</obj_property>
-         <obj_property name="ObjectShortName">read_pipe[1:2]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/state" type="other">
-         <obj_property name="ElementShortName">state</obj_property>
-         <obj_property name="ObjectShortName">state</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/nextstate" type="other">
-         <obj_property name="ElementShortName">nextstate</obj_property>
-         <obj_property name="ObjectShortName">nextstate</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/CHUNKS" type="other">
          <obj_property name="ElementShortName">CHUNKS</obj_property>
@@ -310,6 +268,139 @@
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/ADDRESS_BITS" type="other">
          <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
          <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group80" type="group">
+      <obj_property name="label">RAM streamer</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/empty" type="other">
+         <obj_property name="ElementShortName">empty</obj_property>
+         <obj_property name="ObjectShortName">empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/write" type="other">
+         <obj_property name="ElementShortName">write</obj_property>
+         <obj_property name="ObjectShortName">write</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/last_incr_addr" type="other">
+         <obj_property name="ElementShortName">last_incr_addr</obj_property>
+         <obj_property name="ObjectShortName">last_incr_addr</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/incr_addr" type="other">
+         <obj_property name="ElementShortName">incr_addr</obj_property>
+         <obj_property name="ObjectShortName">incr_addr</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/ram_data" type="array">
+         <obj_property name="ElementShortName">ram_data[71:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_data[71:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/stream" type="array">
+         <obj_property name="ElementShortName">stream[71:0]</obj_property>
+         <obj_property name="ObjectShortName">stream[71:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/valid" type="other">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/ready" type="other">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/last" type="other">
+         <obj_property name="ElementShortName">last</obj_property>
+         <obj_property name="ObjectShortName">last</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/one_pending" type="other">
+         <obj_property name="ElementShortName">one_pending</obj_property>
+         <obj_property name="ObjectShortName">one_pending</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/pipe_empty" type="other">
+         <obj_property name="ElementShortName">pipe_empty</obj_property>
+         <obj_property name="ObjectShortName">pipe_empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/pipe_full" type="other">
+         <obj_property name="ElementShortName">pipe_full</obj_property>
+         <obj_property name="ObjectShortName">pipe_full</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/data_valid" type="other">
+         <obj_property name="ElementShortName">data_valid</obj_property>
+         <obj_property name="ObjectShortName">data_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/read_int" type="other">
+         <obj_property name="ElementShortName">read_int</obj_property>
+         <obj_property name="ObjectShortName">read_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/shift" type="other">
+         <obj_property name="ElementShortName">shift</obj_property>
+         <obj_property name="ObjectShortName">shift</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/data" type="array">
+         <obj_property name="ElementShortName">data[72:0]</obj_property>
+         <obj_property name="ObjectShortName">data[72:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/ram_valid" type="other">
+         <obj_property name="ElementShortName">ram_valid</obj_property>
+         <obj_property name="ObjectShortName">ram_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/ram_used" type="other">
+         <obj_property name="ElementShortName">ram_used</obj_property>
+         <obj_property name="ObjectShortName">ram_used</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/last_int" type="other">
+         <obj_property name="ElementShortName">last_int</obj_property>
+         <obj_property name="ObjectShortName">last_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/pipe" type="array">
+         <obj_property name="ElementShortName">pipe[1:3][72:0]</obj_property>
+         <obj_property name="ObjectShortName">pipe[1:3][72:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/read_pipe" type="array">
+         <obj_property name="ElementShortName">read_pipe[1:2]</obj_property>
+         <obj_property name="ObjectShortName">read_pipe[1:2]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/last_pipe" type="array">
+         <obj_property name="ElementShortName">last_pipe[1:2]</obj_property>
+         <obj_property name="ObjectShortName">last_pipe[1:2]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/nextstate" type="other">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/valid_int" type="other">
+         <obj_property name="ElementShortName">valid_int</obj_property>
+         <obj_property name="ObjectShortName">valid_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/output_handshake" type="other">
+         <obj_property name="ElementShortName">output_handshake</obj_property>
+         <obj_property name="ObjectShortName">output_handshake</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/output_empty" type="other">
+         <obj_property name="ElementShortName">output_empty</obj_property>
+         <obj_property name="ObjectShortName">output_empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/LATENCY" type="other">
+         <obj_property name="ElementShortName">LATENCY</obj_property>
+         <obj_property name="ObjectShortName">LATENCY</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

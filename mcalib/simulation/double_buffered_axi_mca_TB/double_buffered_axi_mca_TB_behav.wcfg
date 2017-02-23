@@ -13,13 +13,14 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="99800001fs"></ZoomEndTime>
-      <Cursor1Time time="36000000fs"></Cursor1Time>
+      <ZoomStartTime time="191541666fs"></ZoomStartTime>
+      <ZoomEndTime time="235291667fs"></ZoomEndTime>
+      <Cursor1Time time="224000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
       <marker time="72000000" label="" />
+      <marker time="104000000" label="" />
    </wave_markers>
    <wvobject fp_name="group27" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -140,6 +141,7 @@
    <wvobject fp_name="group28" type="group">
       <obj_property name="label">UUT</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -803,6 +805,14 @@
          <obj_property name="ElementShortName">dout[31:0]</obj_property>
          <obj_property name="ObjectShortName">dout[31:0]</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/inc_pipe[1]" type="array">
+         <obj_property name="ElementShortName">[1][1:0]</obj_property>
+         <obj_property name="ObjectShortName">inc_pipe[1][1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/oob_pipe[2]" type="other">
+         <obj_property name="ElementShortName">[2]</obj_property>
+         <obj_property name="ObjectShortName">oob_pipe[2]</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/valid_pipe[2]" type="other">
          <obj_property name="ElementShortName">[2]</obj_property>
          <obj_property name="ObjectShortName">valid_pipe[2]</obj_property>
@@ -897,6 +907,10 @@
          <obj_property name="CustomSignalColor">#F0E68C</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/valid_pipe[5]" type="other">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">valid_pipe[5]</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/wr_addr" type="array">
          <obj_property name="ElementShortName">wr_addr[3:0]</obj_property>
          <obj_property name="ObjectShortName">wr_addr[3:0]</obj_property>
@@ -936,26 +950,32 @@
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/most_frequent_bin" type="array">
          <obj_property name="ElementShortName">most_frequent_bin[3:0]</obj_property>
          <obj_property name="ObjectShortName">most_frequent_bin[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/most_frequent_count" type="array">
          <obj_property name="ElementShortName">most_frequent_count[31:0]</obj_property>
          <obj_property name="ObjectShortName">most_frequent_count[31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/new_most_frequent" type="other">
          <obj_property name="ElementShortName">new_most_frequent</obj_property>
          <obj_property name="ObjectShortName">new_most_frequent</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/new_most_frequent_bin" type="other">
          <obj_property name="ElementShortName">new_most_frequent_bin</obj_property>
          <obj_property name="ObjectShortName">new_most_frequent_bin</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/total_in_bounds" type="array">
          <obj_property name="ElementShortName">total_in_bounds[63:0]</obj_property>
          <obj_property name="ObjectShortName">total_in_bounds[63:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/readable" type="other">
-         <obj_property name="ElementShortName">readable</obj_property>
-         <obj_property name="ObjectShortName">readable</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/last_clear" type="other">
          <obj_property name="ElementShortName">last_clear</obj_property>
@@ -972,6 +992,24 @@
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/nextstate" type="other">
          <obj_property name="ElementShortName">nextstate</obj_property>
          <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/inc_pipe[1]" type="array">
+         <obj_property name="ElementShortName">[1][1:0]</obj_property>
+         <obj_property name="ObjectShortName">inc_pipe[1][1:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/oob_pipe[2]" type="other">
+         <obj_property name="ElementShortName">[2]</obj_property>
+         <obj_property name="ObjectShortName">oob_pipe[2]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/valid_pipe[2]" type="other">
+         <obj_property name="ElementShortName">[2]</obj_property>
+         <obj_property name="ObjectShortName">valid_pipe[2]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/mf_count_int" type="array">
          <obj_property name="ElementShortName">mf_count_int[31:0]</obj_property>
@@ -1000,6 +1038,10 @@
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/total_int" type="array">
          <obj_property name="ElementShortName">total_int[63:0]</obj_property>
          <obj_property name="ObjectShortName">total_int[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/readable" type="other">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/double_buffered_axi_mca_TB/UUT/buffer0/mcaBuffer/ADDRESS_BITS" type="other">
          <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
