@@ -29,6 +29,7 @@ function to_unsigned(b:boolean) return unsigned;
 function to_integer(b:boolean) return integer;
 function to_integer(b:boolean_vector) return integer;
 function resize(b:boolean_vector;s:natural) return boolean_vector;
+function resize(b:boolean_vector;s:natural) return std_logic_vector;
 --------------------------------------------------------------------------------
 -- Bitwise boolean logic on boolean_vector
 --------------------------------------------------------------------------------
@@ -107,6 +108,11 @@ end function;
 function resize(b:boolean_vector;s:natural) return boolean_vector is
 begin
 	return to_boolean(resize(to_unsigned(b),s));
+end function;
+
+function resize(b:boolean_vector;s:natural) return std_logic_vector is
+begin
+	return std_logic_vector(resize(to_unsigned(b),s));
 end function;
 --------------------------------------------------------------------------------
 -- Bitwise boolean logic on boolean_vector

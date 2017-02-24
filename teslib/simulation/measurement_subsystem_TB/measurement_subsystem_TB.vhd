@@ -75,7 +75,6 @@ signal reset2:std_logic:='1';
 constant SAMPLE_CLK_PERIOD:time:=4 ns;
 constant IO_CLK_PERIOD:time:=8 ns;
 
-signal mca_initialising:boolean;
 signal adc_samples:adc_sample_array(CHANNELS-1 downto 0)
        :=(others => (others => '0'));
 signal chan_reg:channel_register_array(CHANNELS-1 downto 0);
@@ -127,7 +126,7 @@ generic map(
   ADC_CHANNELS => ADC_CHANNELS,
   ENDIAN => ENDIAN,
   PACKET_GEN => PACKET_GEN,
-  ADC_WIDTH => ADC_BITS,
+  ADC_WIDTH => ADC_WIDTH,
   WIDTH => WIDTH,
   FRAC => FRAC,
   WIDTH_OUT => WIDTH_OUT,
@@ -253,16 +252,16 @@ baseline_config(1).reload_last <= '0';
 baseline_config(1).reload_valid <= '0';
 
 chan_reg(0).baseline.offset <= to_signed(-1000*8,DSP_BITS);
-chan_reg(0).baseline.count_threshold <= to_unsigned(15,BASELINE_COUNTER_BITS);
+chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(0).baseline.threshold <= to_unsigned(700,BASELINE_BITS-1);--(others => '1');
-chan_reg(0).baseline.new_only <= FALSE;
+chan_reg(0).baseline.new_only <= TRUE;
 chan_reg(0).baseline.subtraction <= TRUE;
 chan_reg(0).baseline.timeconstant <= to_unsigned(25000,32);
 
 chan_reg(1).baseline.offset <= to_signed(-1000*8,DSP_BITS);
-chan_reg(1).baseline.count_threshold <= to_unsigned(15,BASELINE_COUNTER_BITS);
+chan_reg(1).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(1).baseline.threshold <= to_unsigned(700,BASELINE_BITS-1);--(others => '1');
-chan_reg(1).baseline.new_only <= FALSE;
+chan_reg(1).baseline.new_only <= TRUE;
 chan_reg(1).baseline.subtraction <= TRUE;
 chan_reg(1).baseline.timeconstant <= to_unsigned(25000,32);
 
@@ -435,15 +434,19 @@ begin
 --  chan_reg(0).baseline.offset <= to_signed(6,DSP_BITS);
   global.mca.update_asap <= FALSE;
   global.mca.update_on_completion <= FALSE;
-	wait until not mca_initialising;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.value <= MCA_SLOPE_SIGNAL_D;
-	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
-  global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD*20;
+	global.mca.value <= MCA_FILTERED_SIGNAL_D;
+	global.mca.trigger <= SLOPE_NEG_0XING_MCA_TRIGGER_D;
+	global.mca.update_asap <= TRUE;
 	wait for SAMPLE_CLK_PERIOD;
   global.mca.update_asap <= FALSE;
-  wait;
   wait until mca_interrupt;
+	global.mca.value <= MCA_FILTERED_SIGNAL_D;
+	global.mca.trigger <= DISABLED_MCA_TRIGGER_D;
+	global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+  wait;
 --  chan_reg(0).baseline.offset <= to_signed(5,DSP_BITS);
   wait until mca_interrupt;
 --  chan_reg(0).baseline.offset <= to_signed(4,DSP_BITS);

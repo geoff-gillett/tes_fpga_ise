@@ -14,7 +14,7 @@ use work.measurements.all;
 use work.events.all;
 use work.registers.all;
 
-entity measurement_framer4 is
+entity measurement_framer5 is
 generic(
   FRAMER_ADDRESS_BITS:integer:=11;
   ENDIAN:string:="LITTLE"
@@ -24,7 +24,8 @@ port (
   reset:in std_logic;
   
   measurements:in measurements_t;
-  
+ 
+  mux_full:in boolean; 
   --signals to MUX
   start:out boolean;
   commit:out boolean;
@@ -36,9 +37,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity measurement_framer4;
+end entity measurement_framer5;
 
-architecture RTL of measurement_framer4 is
+architecture RTL of measurement_framer5 is
   
 constant CHUNKS:integer:=4;
  
@@ -154,10 +155,10 @@ begin
       if m.eflags.event_type.detection=PEAK_DETECTION_D or 
          m.eflags.event_type.detection=TEST_DETECTION_D then
          error_int <= m.peak_start and state/=IDLE_S;
-         overflow_int <= m.peak_start and framer_full;
+         overflow_int <= m.peak_start and (framer_full or mux_full);
       else
         error_int <= m.pulse_start and state/=IDLE_S;
-        overflow_int <= m.pulse_start and framer_full;
+        overflow_int <= m.pulse_start and (framer_full or mux_full);
       end if;
       
       -- defaults
@@ -170,7 +171,7 @@ begin
       when IDLE_S => 
         case m.eflags.event_type.detection is
         when PEAK_DETECTION_D => 
-          if m.peak_start and not framer_full then
+          if m.peak_start and not (framer_full or mux_full) then
             state <= PEAK_S;
             frame_word <= to_streambus(peak,ENDIAN);
             frame_we <= peak_we;
@@ -178,7 +179,7 @@ begin
             frame_length <= (0 => '1', others => '0');
           end if;
         when AREA_DETECTION_D =>
-          if m.pulse_start and not framer_full then
+          if m.pulse_start and not (framer_full or mux_full) then
             state <= AREA_S;
             frame_word <= to_streambus(area,ENDIAN);
             frame_we <= area_we;
@@ -188,7 +189,7 @@ begin
         when PULSE_DETECTION_D =>
           -- first write the peak then the headers
           -- FIXME see if wait states can be removed
-          if m.pulse_start then
+          if m.pulse_start and not (framer_full or mux_full) then
             state <= PULSE_PEAK_S;
             frame_word <= to_streambus(pulse_peak,m.last_peak,ENDIAN);
             frame_we <= pulse_peak_we;
@@ -200,7 +201,7 @@ begin
             stamped <= m.stamp_pulse;
           end if;
         when TEST_DETECTION_D =>
-          if m.peak_start and not framer_full then
+          if m.peak_start and not (framer_full or mux_full) then
             state <= TEST_S;
             frame_address <= (0 => '1', others => '0');
             frame_word <= to_streambus(test,1,ENDIAN);

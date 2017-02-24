@@ -99,7 +99,7 @@ begin
 if rising_edge(clk) then
   lowest:=-HALF_RANGE;
   highest:=HALF_RANGE-1;
-  baseline_sample <= resize(unsigned(sample+HALF_RANGE+1),BASELINE_BITS);
+  baseline_sample <= resize(unsigned(sample+HALF_RANGE),BASELINE_BITS);
   if sample_valid then 
     if (sample > resize(signed('0' & threshold), ADC_WIDTH)) then 
       baseline_sample_valid <= FALSE;
@@ -119,7 +119,7 @@ if rising_edge(clk) then
 end if;
 end process baselineControl;
 
-mostFrequen:entity mcalib.most_frequent2
+mostFrequent:entity mcalib.most_frequent2
 generic map(
   ADDRESS_BITS => BASELINE_BITS,
   COUNTER_BITS => COUNTER_BITS,
@@ -141,7 +141,7 @@ port map(
 newOnly:process (clk) is
 begin
 	if rising_edge(clk) then
-    mf_value <= resize(most_frequent_bin,24);
+    mf_value <= resize(signed('0' & most_frequent_bin)-HALF_RANGE,24);
     if new_only then
       av_enable <=  new_most_frequent_bin;
     else

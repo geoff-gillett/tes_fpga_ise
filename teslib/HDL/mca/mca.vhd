@@ -43,17 +43,14 @@ generic(
 port(
   clk:in std_logic;
   reset:in std_logic;
-  -- update registers to current input values on next tick
-  --update_asap:in boolean; --updates when can swap 
-  -- update registers to current input values when ticks are complete
-  --update_on_completion:in boolean; 
-  --FIXME add 4 clk hold
+  
   updated:out boolean; --high for 4 clk after the update is done (CPU interrupt)
   ------------------------------------------------------------------------------
   -- control signals
   ------------------------------------------------------------------------------
   registers:in mca_registers_t;
   tick_period:in unsigned(TICKPERIOD_BITS-1 downto 0);
+  
   ------------------------------------------------------------------------------
   -- selects out to muxs
   ------------------------------------------------------------------------------
@@ -61,11 +58,13 @@ port(
   value_select:out std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
   trigger_select:out std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
   qualifier_select:out std_logic_vector(NUM_MCA_QUAL_D-1 downto 0);
+  
   ------------------------------------------------------------------------------
   -- inputs from channels
   ------------------------------------------------------------------------------
   value:in signed(VALUE_BITS-1 downto 0);
   value_valid:in boolean;
+  
   ------------------------------------------------------------------------------
   -- stream output (stream includes last and keep)
   ------------------------------------------------------------------------------
@@ -82,6 +81,7 @@ constant DEPTH:integer:=VALUE_PIPE_DEPTH+3;
 signal ticks_remaining:unsigned(TICKCOUNT_BITS-1 downto 0);
 signal last_tick:boolean;
 signal registers_enabled,updated_enabled,current_enabled,header_enabled:boolean;
+
 -- FSM signals -----------------------------------------------------------------
 type controlFSMstate is (IDLE,ASAP,ON_COMPLETION,RUN);
 signal control_state,control_nextstate:controlFSMstate;
@@ -99,7 +99,7 @@ signal update:boolean;
 signal timestamp,start_time,stop_time:unsigned(TIMESTAMP_BITS-1 downto 0);
 -- registers saved when update asserted
 signal updated_reg,header_reg,current_reg:mca_registers_t;
---signal disabled:boolean;
+
 -- register values for the current MCA frame
 signal outstream,countstream:streambus_t;
 signal outstream_valid,outstream_ready:boolean;
@@ -210,7 +210,7 @@ signal bin_n:unsigned(ceilLog2(ADDRESS_BITS)-1 downto 0);
 signal last_bin:unsigned(ADDRESS_BITS-1 downto 0);
 
 --attribute equivalent_register_removal:string;
---attribute equivalent_register_removal of work.tick_counter:entity is "FALSE";
+--attribute equivalent_register_removal of :entity is "no";
 begin
   
 --------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ if rising_edge(clk) then
 	  
 	  -- updated used for CPU interrupt needs to stay high for 4 clocks.
 		if update_pipe(DEPTH-1) then
-		  updated_count <= 3;
+		  updated_count <= 4;
 		elsif updated_count/=0 then
 		  updated_count <= updated_count-1;
 		end if;
@@ -294,7 +294,7 @@ end if;
 end process controlFSMnextstate;
 
 registers_enabled 
-  <= registers.trigger/=DISABLED_MCA_TRIGGER_D or registers.ticks/=0;
+  <= registers.trigger/=DISABLED_MCA_TRIGGER_D and registers.ticks/=0;
 
 controlFSMtransition:process(
   control_state,registers.update_asap,registers.update_on_completion,can_swap,

@@ -120,9 +120,7 @@ signal mca_value_valids_int:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal dumps:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal commits:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal starts:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal baseline_errors:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal cfd_errors:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal time_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal framer_errors:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal framer_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal channel_select:std_logic_vector(DSP_CHANNELS-1 downto 0);
@@ -143,8 +141,6 @@ signal muxstream_valid:boolean;
 signal muxstream_ready:boolean;
 
 signal mux_full:boolean;
-signal mux_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal measurement_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 
 --signal m,m_reg:measurements_array(DSP_CHANNELS-1 downto 0);
 signal m:measurements_array(DSP_CHANNELS-1 downto 0);
@@ -292,7 +288,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     delayed => adc_delayed(c)
   );
 
-  processingChannel:entity work.channel2
+  processingChannel:entity work.channel3
   generic map(
     CHANNEL => c,
     ENDIAN => ENDIAN,
@@ -321,6 +317,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     stage2_events => slope_events(c),
     baseline_config => baseline_config(c),
     baseline_events => baseline_events(c),
+    mux_full => mux_full,
     start => starts(c),
     commit => commits(c),
     dump => dumps(c),
@@ -394,7 +391,7 @@ port map(
 --------------------------------------------------------------------------------
 -- 
 --------------------------------------------------------------------------------
-mux:entity work.eventstream_mux
+mux:entity work.eventstream_mux2
 generic map(
   --CHANNEL_BITS => CHANNEL_BITS,
   CHANNELS => DSP_CHANNELS,
@@ -415,11 +412,7 @@ port map(
   window => g_reg.window,
   cfd_errors => cfd_errors,
   framer_overflows => framer_overflows,
-  mux_overflows => mux_overflows,
-  measurement_overflows => measurement_overflows,
   framer_errors => framer_errors,
-  time_overflows => time_overflows,
-  baseline_underflows => baseline_errors, -- use for something else
   muxstream => muxstream,
   valid => muxstream_valid,
   ready => muxstream_ready
@@ -455,7 +448,7 @@ port map(
   ready => mcastream_ready
 );
 
-enet:entity work.ethernet_framer
+enet:entity work.ethernet_framer2
 generic map(
   MTU_BITS => MTU_BITS,
   FRAMER_ADDRESS_BITS => ETHERNET_FRAMER_ADDRESS_BITS,

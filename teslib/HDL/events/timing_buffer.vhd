@@ -180,7 +180,7 @@ begin
     wr_en => commit_wr_en(i),
     rd_en => commit_rd_en(i),
     dout => commit_out(i downto i),
-    full => commit_full(i),
+    full => commit_full(i), --FIXME check this never fills-timefifo fills first 
     empty => commit_empty(i)
   );
   dumped_int(i) <= not commit_out(i) and not commit_empty(i);

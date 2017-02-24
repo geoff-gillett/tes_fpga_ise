@@ -23,7 +23,7 @@ use work.events.all;
 
 --TODO optimise to remove wait states
 -- merges instreams keeping temporal order and incorporates tickstream
-entity eventstream_mux is
+entity eventstream_mux2 is
 generic(
   --CHANNEL_BITS:integer:=3;
   CHANNELS:integer:=8;
@@ -52,10 +52,10 @@ port(
   cfd_errors:in boolean_vector(CHANNELS-1 downto 0);
   framer_overflows:in boolean_vector(CHANNELS-1 downto 0);
   framer_errors:in boolean_vector(CHANNELS-1 downto 0);
-  mux_overflows:in boolean_vector(CHANNELS-1 downto 0);
-  measurement_overflows:in boolean_vector(CHANNELS-1 downto 0);
-  time_overflows:in boolean_vector(CHANNELS-1 downto 0);
-  baseline_underflows:in boolean_vector(CHANNELS-1 downto 0);
+  --mux_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  --measurement_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  --time_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  --baseline_underflows:in boolean_vector(CHANNELS-1 downto 0);
 	
   window:in unsigned(TIME_BITS-1 downto 0);
   
@@ -63,9 +63,9 @@ port(
   valid:out boolean;
   ready:in boolean
 );
-end entity eventstream_mux;
+end entity eventstream_mux2;
 --
-architecture RTL of eventstream_mux is
+architecture RTL of eventstream_mux2 is
 	
 --constant CHANNELS:integer:=2**CHANNEL_BITS;
 
@@ -82,7 +82,6 @@ signal ticked,tick,time_valid,read_next:boolean;
 --signal state,nextstate:FSMstate;
 type arbFSMstate is (IDLE,ARBITRATE,SEL_STREAM,SEL_TICK,NEXT_TIME);
 signal arb_state,arb_nextstate:arbFSMstate;
-signal arb_state_v:std_logic_vector(2 downto 0);
 signal tickstream:streambus_t;
 signal muxstream_int_valid,muxstream_int_ready,muxstream_last:boolean;
 signal tickstream_valid:boolean;
@@ -102,11 +101,7 @@ signal new_window:boolean;
 signal window_start:boolean;
 signal valid_out:boolean;
 signal muxstream_out:streambus_t;
-
-function to_std_logic(s:arbFSMstate;w:integer) return std_logic_vector is
-begin
-  return to_std_logic(arbFSMstate'pos(s),w);
-end function;
+signal time_full:boolean;
 
 --------------------------------------------------------------------------------
 -- debug
@@ -129,17 +124,18 @@ begin
 --tick_s_valid <= valids(0);
 --tick_s_ready <= readys(0);
 --muxstream_out_last <= muxstream_out.last(0);
-arb_state_v <= to_std_logic(arb_state,3);
+--arb_state_v <= to_std_logic(arb_state,3);
 valid <= valid_out;
 muxstream <= muxstream_out;
+full <= time_full;
 
-tickstreamer:entity work.tickstream
+tickstreamer:entity work.tickstream2
 generic map(
   CHANNELS => CHANNELS,
   TICKPERIOD_BITS => TICKPERIOD_BITS,
   TIMESTAMP_BITS => TIMESTAMP_BITS,
   MINIMUM_PERIOD => MIN_TICKPERIOD,
-  TICKPIPE_DEPTH => 1
+  TICKPIPE_DEPTH => TICKPIPE_DEPTH
 )
 port map(
   clk => clk,
@@ -147,13 +143,10 @@ port map(
   tick => tick,
   timestamp => timestamp,
   tick_period => tick_period,
-  mux_overflows => mux_overflows,
-  cfd_errors => cfd_errors,
-  baseline_underflows => baseline_underflows, --FIXME:use for something else
+  mux_full => time_full,
   framer_overflows => framer_overflows,
-  measurement_overflows => measurement_overflows,
   framer_errors => framer_errors,
-  time_overflows => time_overflows,
+  cfd_errors => cfd_errors,
   tickstream => tickstream,
   valid => tickstream_valid,
   ready => tickstream_ready
@@ -184,7 +177,7 @@ port map(
   dumped => dumped,
   valid => time_valid,
   read_next => read_next,
-  full => full
+  full => time_full
 );
 
 --FIXME are these register slices needed?	
@@ -413,7 +406,6 @@ littleEndian:if endianness="LITTLE" generate
                   else muxstream_int.data;
 end generate;
  
-
 -- FIXME new_window when not first_event:
 									 
 stream_int.last <= muxstream_int.last;
