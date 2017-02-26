@@ -31,6 +31,8 @@ port (
   
   current_period:out unsigned(TICK_BITS-1 downto 0)
 );
+--attribute equivalent_register_removal:string;
+--attribute equivalent_register_removal of tick_counter:entity is "no";
 end entity tick_counter;
 
 architecture RTL of tick_counter is

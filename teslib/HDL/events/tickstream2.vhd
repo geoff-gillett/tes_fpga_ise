@@ -52,6 +52,8 @@ port (
   valid:out boolean;
   ready:in boolean
 );
+--attribute equivalent_register_removal:string;
+--attribute equivalent_register_removal of tickstream2:entity is "no";
 end entity tickstream2;
 
 architecture aligned of tickstream2 is
@@ -78,8 +80,6 @@ signal tick_pipe:boolean_vector(0 to TICKPIPE_DEPTH);
 signal current_period:unsigned(TICKPERIOD_BITS-1 downto 0);
 signal events_lost:boolean;
 
---attribute equivalent_register_removal:string;
---attribute equivalent_register_removal of tickCounter:entity is "no";
 
 begin
 tick <= tick_int;

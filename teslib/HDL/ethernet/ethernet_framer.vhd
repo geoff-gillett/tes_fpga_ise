@@ -160,7 +160,7 @@ begin
 	when 1 =>
 		slv := to_std_logic(e.destination_address(31 downto 0)) &
 					 to_std_logic(e.ethernet_type) &
-           to_std_logic(0,16); --length added later
+					 "----------------";
 	when 2 => 
     slv := set_endianness(e.frame_sequence,endianness) &
            set_endianness(e.protocol_sequence,endianness) &

@@ -79,10 +79,11 @@ end record;
 
 function to_std_logic(f:tickflags_t) return std_logic_vector;
 
---------------------------- tick flags 16 bits ---------------------------------
+--TODO: make 16 bits and consistent with event_type
+--------------------------- tick flags 8 bits ---------------------------------
 -- First byte
--- |1|    1     |      1      |     1     |      3     |1|
--- |0| mux_full | events_lost | tick_lost | type_flags |0|
+-- |1|    1     |      1      |     1     |     3     |1|
+-- |0| mux_full | events_lost | tick_lost |type_flags |0|
 
 type tickflags2_t is record 
 	tick_lost:boolean;
@@ -306,21 +307,18 @@ begin
 end function;
 
 ----------------------- event_flags_t - 16 bits---------------------------------
---|    4     |      1       |   3   ||   2   	|    2   |     3      |     1    |
---|peak_count|  cfd_rel2min |channel||timing_d|height_d|event_type_t|new_window|
+--|    4     |     1       |   3   ||   2    |   2    |     3      |     1    |
+--|peak_count| cfd_rel2min |channel||timing_d|height_d|event_type_t|new_window|
 function to_std_logic(f:detection_flags_t) return std_logic_vector is 
-	variable slv:std_logic_vector(15 downto 0);
 begin    
 				 -- first transmitted byte
-  slv(15 downto 12) := to_std_logic(f.peak_number);
-  slv(11) := to_std_logic(f.cfd_rel2min);
-  slv(10 downto 8) := to_std_logic(f.channel);
+  return to_std_logic(f.peak_number) &
+         to_std_logic(f.cfd_rel2min) &
+         to_std_logic(f.channel) &
 				 -- second transmitted byte
-  slv(7 downto 6) := to_std_logic(f.timing,2);
-  slv(5 downto 4) := to_std_logic(f.height,2);
-  slv(3 downto 1) := to_std_logic(f.event_type);
-  slv(0) := to_std_logic(f.new_window);
-  return slv;
+         to_std_logic(f.timing,2) &
+         to_std_logic(f.height,2) &
+         to_std_logic(f.event_type) & '-';
 end function;
 
 ------------------------- tick flags - 8 bits ---------------------------------
@@ -337,21 +335,18 @@ begin
 	return slv;
 end function;
 
---------------------------- tick flags2 8 bits ---------------------------------
+--------------------------- tick flags2 16 bits ---------------------------------
 -- First byte
--- |1|    1     |      1      |     1     |      3     |1|
--- |0| mux_full | events_lost | tick_lost | type_flags |0|
+-- |5|    1     |      1      |     1     |   4   |      3     |1|
+-- |0| mux_full | events_lost | tick_lost |   0   | type_flags |0|
 function to_std_logic(f:tickflags2_t) 
 return std_logic_vector is 
-variable slv:std_logic_vector(7 downto 0);
 begin
-  slv := '0' &
+  return to_std_logic(0,5) &
          to_std_logic(f.mux_full) &
          to_std_logic(f.events_lost) &
          to_std_logic(f.tick_lost) &
-         to_std_logic(f.event_type) &
-         '0';
-	return slv;
+         to_std_logic(0,6) & '1' & '-';
 end function;
 
 ---------------------------- peak event 8 bytes --------------------------------
@@ -363,8 +358,8 @@ return	streambus_t is
 begin
   sb.data := set_endianness(e.height,endianness) &
              set_endianness(e.minima,endianness) &
-             set_endianness(to_std_logic(e.flags),endianness) & 
-             "0000000000000000"; 
+             to_std_logic(e.flags) & 
+             "----------------"; 
 	sb.discard := (others => FALSE);
 	sb.last := (0 => TRUE, others => FALSE);
 	return sb;
@@ -378,8 +373,8 @@ return	streambus_t is
 	variable sb:streambus_t;
 begin
   sb.data := set_endianness(a.area,endianness) &
-             set_endianness(to_std_logic(a.flags),endianness) & 
-             "0000000000000000"; -- replaced with rel_timestamp by mux
+             to_std_logic(a.flags) & 
+             "----------------"; -- replaced with rel_timestamp by mux
 	sb.discard := (others => FALSE);
 	sb.last := (0 => TRUE, others => FALSE);
 	return sb;
@@ -444,18 +439,16 @@ end function;
 -- w=1 |                    full time-stamp                      |
 -- last word only when TICK_BUSWORDS=3
 --     |     8      |     8     |     8     |     8    |        32         |
--- w=2 | framer_ovf | framer_er | cfd_error |   lost   |    events_lost    |
+-- w=2 | framer_ovf | framer_er | cfd_error |    res   |    events_lost    |
 function to_streambus(t:tick_event2_t;w:natural range 0 to 2;endianness:string) 
 return streambus_t is
 variable sb:streambus_t;
 begin
 	case w is
 	when 0 =>
-      sb.data := set_endianness(t.period,endianness) &
-                 to_std_logic(0,8) & -- reserved
-                 to_std_logic(t.flags) &
-                 "----------------"; -- replaced with rel_timestamp by mux
-      
+    sb.data := set_endianness(t.period,endianness) &
+               to_std_logic(t.flags) &
+               "----------------"; -- replaced with rel_timestamp by mux
     sb.discard := (others => FALSE);
     sb.last := (others => FALSE);
   when 1 =>
@@ -489,9 +482,9 @@ begin
 	case w is
 	when 0 =>
   	sb.data(63 downto 48) := set_endianness(p.size,endianness);
-		sb.data(47 downto 32) := (others => '0');
-		sb.data(31 downto 16) := set_endianness(to_std_logic(p.flags),endianness); 
-		sb.data(15 downto 0) := (others => '0');
+		sb.data(47 downto 32) := (others => '-');
+		sb.data(31 downto 16) := to_std_logic(p.flags); 
+		sb.data(15 downto 0) := (others => '-');
 	when 1 =>
 		sb.data(63 downto 32) := set_endianness(p.area,endianness);
 		sb.data(31 downto 16) := set_endianness(p.length,endianness);
@@ -538,8 +531,8 @@ begin
   when 0 => 
   	sb.data(63 downto 48) := set_endianness(t.rise_time,endianness);
 		sb.data(47 downto 32) := set_endianness(t.minima,endianness);
-		sb.data(31 downto 16) := set_endianness(to_std_logic(t.flags),endianness); 
-		sb.data(15 downto 0) := (others => '0');
+		sb.data(31 downto 16) := to_std_logic(t.flags); 
+		sb.data(15 downto 0) := (others => '-');
     sb.last := (others => FALSE);
   when 1 => 
     sb.data(63 downto 54) := (others => '0');

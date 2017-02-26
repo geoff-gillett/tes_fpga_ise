@@ -63,6 +63,10 @@ signal frame_length:unsigned(FRAMER_ADDRESS_BITS downto 0);
 
 signal framer_full:boolean;
 
+signal mux_full_reg:boolean;
+attribute equivalent_register_removal:string;
+attribute equivalent_register_removal of mux_full_reg:signal is "no";
+
 signal peak_we:boolean_vector(CHUNKS-1 downto 0);
 signal area_we:boolean_vector(CHUNKS-1 downto 0);
 signal dump_int:boolean;
@@ -142,6 +146,7 @@ begin
       --framer_free can only decrease after commit
       --This FSM needs to be cleaned up it should be possible to avoid errors
       --At least for peak and area
+      mux_full_reg <= mux_full;
       
       free_after_commit <= framer_free - frame_length;
       if state=COMMIT_S then -- problem if commit and pulse/peak start
@@ -155,10 +160,10 @@ begin
       if m.eflags.event_type.detection=PEAK_DETECTION_D or 
          m.eflags.event_type.detection=TEST_DETECTION_D then
          error_int <= m.peak_start and state/=IDLE_S;
-         overflow_int <= m.peak_start and (framer_full or mux_full);
+         overflow_int <= m.peak_start and (framer_full or mux_full_reg);
       else
         error_int <= m.pulse_start and state/=IDLE_S;
-        overflow_int <= m.pulse_start and (framer_full or mux_full);
+        overflow_int <= m.pulse_start and (framer_full or mux_full_reg);
       end if;
       
       -- defaults
@@ -171,7 +176,7 @@ begin
       when IDLE_S => 
         case m.eflags.event_type.detection is
         when PEAK_DETECTION_D => 
-          if m.peak_start and not (framer_full or mux_full) then
+          if m.peak_start and not (framer_full or mux_full_reg) then
             state <= PEAK_S;
             frame_word <= to_streambus(peak,ENDIAN);
             frame_we <= peak_we;
@@ -179,7 +184,7 @@ begin
             frame_length <= (0 => '1', others => '0');
           end if;
         when AREA_DETECTION_D =>
-          if m.pulse_start and not (framer_full or mux_full) then
+          if m.pulse_start and not (framer_full or mux_full_reg) then
             state <= AREA_S;
             frame_word <= to_streambus(area,ENDIAN);
             frame_we <= area_we;
@@ -189,7 +194,7 @@ begin
         when PULSE_DETECTION_D =>
           -- first write the peak then the headers
           -- FIXME see if wait states can be removed
-          if m.pulse_start and not (framer_full or mux_full) then
+          if m.pulse_start and not (framer_full or mux_full_reg) then
             state <= PULSE_PEAK_S;
             frame_word <= to_streambus(pulse_peak,m.last_peak,ENDIAN);
             frame_we <= pulse_peak_we;
@@ -201,7 +206,7 @@ begin
             stamped <= m.stamp_pulse;
           end if;
         when TEST_DETECTION_D =>
-          if m.peak_start and not (framer_full or mux_full) then
+          if m.peak_start and not (framer_full or mux_full_reg) then
             state <= TEST_S;
             frame_address <= (0 => '1', others => '0');
             frame_word <= to_streambus(test,1,ENDIAN);

@@ -71,6 +71,8 @@ signal new_most_frequent0,new_most_frequent1:boolean;
 signal readable0,readable1:boolean;
 signal clear0,clear1:boolean;
 --signal bin_to_read:unsigned(ADDRESS_BITS-1 downto 0);
+attribute equivalent_register_removal:string;
+attribute equivalent_register_removal of timer:signal is "no";
 
 begin
 bin <= unsigned(sample);

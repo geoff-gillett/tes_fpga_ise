@@ -213,7 +213,7 @@ type capture_registers_t is record
 	delay:unsigned(DELAY_BITS-1 downto 0);
 	adc_select:std_logic_vector(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
 	invert:boolean;
-	stream_enable:boolean;
+	--stream_enable:boolean;
 end record;
 
 type channel_registers_t is record

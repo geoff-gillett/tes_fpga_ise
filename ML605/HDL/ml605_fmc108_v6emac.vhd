@@ -192,9 +192,9 @@ end component;
 --------------------------------------------------------------------------------
 signal global_reset_boot_clk,IO_clk,signal_clk,axi_clk,boot_clk:std_logic;
 signal reset0,reset1,reset2:std_logic;
-signal reset0_sclk,reset1_sclk,reset2_sclk:std_logic;
-signal reset0_refclk:std_logic;
-signal reset1_ioclk,reset2_ioclk:std_logic;
+signal reset1_sclk,reset2_sclk:std_logic;
+--signal reset0_refclk:std_logic;
+signal reset1_ioclk:std_logic;
 
 signal ref_clk:std_logic;
 signal onboard_mmcm_locked,fmc108_mmcm_locked:std_logic;
@@ -898,12 +898,12 @@ port map(
   output => global_write
 );
 
-reset0SignalSync:entity tes.sync_2FF
-port map(
-  out_clk => signal_clk,
-  input => reset0,
-  output => reset0_sclk
-);
+--reset0SignalSync:entity tes.sync_2FF
+--port map(
+--  out_clk => signal_clk,
+--  input => reset0,
+--  output => reset0_sclk
+--);
 
 reset1SignalSync:entity tes.sync_2FF
 port map(
@@ -920,12 +920,12 @@ port map(
   output => reset2_sclk
 );
 
-reset0RefSync:entity tes.sync_2FF
-port map(
-  out_clk => ref_clk,
-  input => reset0,
-  output => reset0_refclk
-);
+--reset0RefSync:entity tes.sync_2FF
+--port map(
+--  out_clk => ref_clk,
+--  input => reset0,
+--  output => reset0_refclk
+--);
 
 reset1IOSync:entity tes.sync_2FF
 port map(
@@ -934,12 +934,12 @@ port map(
   output => reset1_ioclk
 );
 
-reset2IOSync:entity tes.sync_2FF
-port map(
-  out_clk => io_clk,
-  input => reset2,
-  output => reset2_ioclk
-);
+--reset2IOSync:entity tes.sync_2FF
+--port map(
+--  out_clk => io_clk,
+--  input => reset2,
+--  output => reset2_ioclk
+--);
 
 --reset0 <= '0';
 ioController:entity tes.main_controller
