@@ -27,7 +27,7 @@ use work.measurements.all;
 entity mca_value_selector3 is
 generic (
 	VALUE_BITS:integer:=MCA_VALUE_BITS;
-	NUM_VALUES:integer:=NUM_MCA_VALUE_D;
+	NUM_VALUES:integer:=NUM_MCA_VALUE_D-1;
 	NUM_VALIDS:integer:=NUM_MCA_TRIGGER_D-1;
 	NUM_QUALS:integer:=NUM_MCA_QUAL_D-1
 );

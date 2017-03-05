@@ -55,9 +55,9 @@ port(
   -- selects out to muxs
   ------------------------------------------------------------------------------
   channel_select:out std_logic_vector(CHANNELS-1 downto 0);
-  value_select:out std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
+  value_select:out std_logic_vector(NUM_MCA_VALUE_D-2 downto 0);
   trigger_select:out std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
-  qualifier_select:out std_logic_vector(NUM_MCA_QUAL_D-1 downto 0);
+  qualifier_select:out std_logic_vector(NUM_MCA_QUAL_D-2 downto 0);
   
   ------------------------------------------------------------------------------
   -- inputs from channels
@@ -211,6 +211,16 @@ signal last_bin:unsigned(ADDRESS_BITS-1 downto 0);
 
 --attribute equivalent_register_removal:string;
 --attribute equivalent_register_removal of :entity is "no";
+
+--debugging
+constant DEBUG:string:="FALSE";
+signal qual:std_logic_vector(MCA_QUAL_D_BITS-1 downto 0);
+signal qualifier_select_int:std_logic_vector(NUM_MCA_QUAL_D-2 downto 0);
+
+attribute mark_debug:string;
+attribute mark_debug of qual:signal is DEBUG;
+attribute mark_debug of qualifier_select_int:signal is DEBUG;
+
 begin
   
 --------------------------------------------------------------------------------
@@ -218,17 +228,19 @@ begin
 --------------------------------------------------------------------------------
 updated <= updated_int;
 update <= registers.update_asap or registers.update_on_completion;
+qualifier_select <= qualifier_select_int;
+qual <= to_std_logic(current_reg.qualifier,MCA_QUAL_D_BITS);
 
 controlReg:process(clk)
 begin 
 if rising_edge(clk) then
 	if reset='1' then
-		current_reg.trigger <= DISABLED_MCA_TRIGGER_D;
+		current_reg.trigger <= MCA_DISABLED_D;
 		current_reg.ticks <= (others => '0');
 		channel_select <= (others => '0');
 		value_select <= (others => '0');
 		trigger_select <= (others => '0');
-		qualifier_select <= (0 => '1',others => '0');
+		qualifier_select_int <= (others => '0');
   	updated_int <= FALSE;
   	updated_count <= 0;
 	else
@@ -255,20 +267,11 @@ if rising_edge(clk) then
       header_reg <= current_reg;
       header_enabled <= current_enabled;
     end if;
---    if swapped then --??? check
---      if control_state=IDLE then
---        header_reg <= updated_reg;
---        header_enabled <= updated_enabled;
---      else
---        header_reg <= current_reg;
---        header_enabled <= current_enabled;
---      end if;
---    end if;
     
     if update_pipe(DEPTH-VALUE_PIPE_DEPTH-2) then
     	trigger_select <= to_onehot(current_reg.trigger);	
     	value_select <= to_onehot(current_reg.value);
-    	qualifier_select <= to_onehot(current_reg.qualifier);
+    	qualifier_select_int <= to_onehot(current_reg.qualifier);
     end if;
     
     if update_pipe(DEPTH-1) then 
@@ -293,8 +296,8 @@ if rising_edge(clk) then
 end if;
 end process controlFSMnextstate;
 
-registers_enabled 
-  <= registers.trigger/=DISABLED_MCA_TRIGGER_D and registers.ticks/=0;
+registers_enabled <= registers.trigger/=MCA_DISABLED_D and 
+                     registers.ticks/=0 and registers.qualifier/=MCA_DISABLED_D;
 
 controlFSMtransition:process(
   control_state,registers.update_asap,registers.update_on_completion,can_swap,

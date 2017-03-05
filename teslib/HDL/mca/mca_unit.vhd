@@ -257,7 +257,7 @@ controlReg:process(clk)
 begin 
 if rising_edge(clk) then
 	if reset='1' then
-		next_registers.trigger <= DISABLED_MCA_TRIGGER_D;
+		next_registers.trigger <= MCA_DISABLED_D;
 		channel_select <= (others => '0');
 		value_select <= (others => '0');
 		trigger_select <= (others => '0');
@@ -298,7 +298,7 @@ if rising_edge(clk) then
     end if;
     
     if tick then
-    	enabled <= next_registers.trigger/=DISABLED_MCA_TRIGGER_D;
+    	enabled <= next_registers.trigger/=MCA_DISABLED_D;
     	ticks_m1 <= next_registers.ticks-1;
     	updating <= FALSE;
     end if;

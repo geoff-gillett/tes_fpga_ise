@@ -93,10 +93,10 @@ signal adc_delayed,adc_mux:adc_sample_array(DSP_CHANNELS-1 downto 0);
 --type value_sel_array is array (natural range <>) of 
 --  std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
   
-signal value_select:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
+signal value_select:std_logic_vector(NUM_MCA_VALUE_D-2 downto 0);
 
 signal trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
-signal qualifier_select:std_logic_vector(NUM_MCA_QUAL_D-1 downto 0);
+signal qualifier_select:std_logic_vector(NUM_MCA_QUAL_D-2 downto 0);
 signal mca_values,mca_values_int:mca_value_array(DSP_CHANNELS-1 downto 0);
 
 --constant VALUE_PIPE_DEPTH:natural:=MCA_VALUE_PIPE_DEPTH;
@@ -158,6 +158,7 @@ signal framestream_ready:boolean;
 --------------------------------------------------------------------------------
 -- test signals
 --------------------------------------------------------------------------------
+
 --signal adc_delayed0,adc_mux0:adc_sample_t;
 --signal adc_select:std_logic_vector(ADC_CHANNELS-1 downto 0);
 --signal raw_sample,filtered_sample:signal_t;
@@ -175,8 +176,11 @@ signal framestream_ready:boolean;
 --signal mca_value_debug:signed(MCA_VALUE_BITS-1 downto 0);
 --signal mca_value_valid_debug:boolean;
 
---constant DEBUG:string:="FALSE";
---attribute MARK_DEBUG:string;
+signal valid_peak:boolean;
+constant DEBUG:string:="FALSE";
+attribute MARK_DEBUG:string;
+attribute MARK_DEBUG of valid_peak:signal is DEBUG;
+attribute MARK_DEBUG of mca_value_valid:signal is DEBUG;
 --attribute MARK_DEBUG of mca_value_debug:signal is DEBUG;
 --attribute MARK_DEBUG of mca_value_valid_debug:signal is DEBUG;
 --attribute MARK_DEBUG of framestream:signal is DEBUG;
@@ -242,6 +246,7 @@ begin
 -- processing channels
 --------------------------------------------------------------------------------
 measurements <= m;
+valid_peak <= m(0).valid_peak;
 
 -- helps timing and P&R
 chanReg:process(clk)
@@ -288,7 +293,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     delayed => adc_delayed(c)
   );
 
-  processingChannel:entity work.channel3
+  processingChannel:entity work.channel4
   generic map(
     CHANNEL => c,
     ENDIAN => ENDIAN,
@@ -331,16 +336,9 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   cfd_errors(c) <= m(c).cfd_error;
   
   valueMux:entity work.mca_value_selector3
-  generic map(
-    VALUE_BITS => MCA_VALUE_BITS,
-    NUM_VALUES => NUM_MCA_VALUE_D,
-    NUM_VALIDS => NUM_MCA_TRIGGER_D-1,
-    NUM_QUALS => NUM_MCA_QUAL_D
-  )
   port map(
     clk => clk,
     reset => reset1,
-    --measurements => m_reg(c),
     measurements => m(c),
     value_select => value_select,
     trigger_select => trigger_select,

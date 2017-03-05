@@ -259,7 +259,7 @@ begin
 registers.bin_n <= to_unsigned(0,MCA_BIN_N_BITS);
 registers.channel <= (0 => '0', others => '0');
 registers.value <= MCA_RAW_SIGNAL_D;
-registers.trigger <= DISABLED_MCA_TRIGGER_D;
+registers.trigger <= MCA_DISABLED_D;
 registers.last_bin <= to_unsigned(2**ADDRESS_BITS-1,ADDRESS_BITS);
 registers.lowest_value <= to_signed(1,VALUE_BITS); 
 registers.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);

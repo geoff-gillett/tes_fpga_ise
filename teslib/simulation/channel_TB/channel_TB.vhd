@@ -61,7 +61,7 @@ signal event_enable:boolean;
 
 constant SIM_WIDTH:natural:=9;
 signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
-signal squaresig:unsigned(ADC_WIDTH-1 downto 0);
+signal squaresig,doublesig:signed(ADC_WIDTH-1 downto 0);
 signal stage1_config:fir_control_in_t;
 signal stage1_events:fir_control_out_t;
 signal stage2_config:fir_control_in_t;
@@ -75,7 +75,7 @@ constant CF:integer:=2**17/5; --20%
 begin
 clk <= not clk after CLK_PERIOD/2;
   
-UUT:entity work.channel
+UUT:entity work.channel4
 generic map(
   CHANNEL => CHANNEL,
   BASELINE_BITS => BASELINE_BITS,
@@ -104,6 +104,7 @@ port map(
   stage2_events => stage2_events,
   baseline_config => baseline_config,
   baseline_events => baseline_events,
+  mux_full => FALSE,
   start => start,
   commit => commit,
   dump => dump,
@@ -178,7 +179,7 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(clk);
-		adc_sample <= to_signed(sample, 14);
+--		adc_sample <= to_signed(sample, 14);
 		--sample_reg <= resize(sample_in, 14);
 		--adc_samples(1) <= (others => '0'); -- adc_samples(0);
 		if clk_count mod 10000 = 0 then
@@ -199,10 +200,24 @@ begin
     end if;
   end if;
 end process simsquare;
-squaresig <= to_unsigned(10,ADC_WIDTH)
+squaresig <= to_signed(-10,ADC_WIDTH)
              when sim_count(SIM_WIDTH-1)='0' 
-             else to_unsigned(400,ADC_WIDTH);
---adc_sample <= squaresig;
+             else to_signed(100,ADC_WIDTH);
+               
+doublesig <= to_signed(-20,ADC_WIDTH)
+             when sim_count < 10
+             else to_signed(100,ADC_WIDTH)
+             when sim_count < 20
+             else to_signed(10,ADC_WIDTH)
+             when sim_count < 60
+             else to_signed(100,ADC_WIDTH)
+             when sim_count < 70 
+             else to_signed(-20,ADC_WIDTH);
+             
+--adc_sample <= signed(squaresig);
+adc_sample <= signed(doublesig);
+
+
 
 stimulus:process
 begin
@@ -221,19 +236,19 @@ baseline_config.config_valid <= '0';
 baseline_config.reload_data <= (others => '0');
 baseline_config.reload_last <= '0';
 baseline_config.reload_valid <= '0';
-registers.baseline.offset <= to_signed(761*8+6,WIDTH);
-registers.baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
+registers.baseline.offset <= to_signed(0,WIDTH);
+registers.baseline.count_threshold <= to_unsigned(10,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
-registers.baseline.new_only <= TRUE;
+registers.baseline.new_only <= FALSE;
 registers.baseline.subtraction <= TRUE;
-registers.baseline.timeconstant <= to_unsigned(250000,32);
+registers.baseline.timeconstant <= to_unsigned(25000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
-registers.capture.slope_threshold <= to_unsigned(22*256,DSP_BITS-1); --2300
-registers.capture.pulse_threshold <= to_unsigned(350*8,DSP_BITS-1);
-registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
+registers.capture.slope_threshold <= to_unsigned(1*256,DSP_BITS-1); --2300
+registers.capture.pulse_threshold <= to_unsigned(20*8,DSP_BITS-1);
+registers.capture.area_threshold <= to_unsigned(3921,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
-registers.capture.detection <= PEAK_DETECTION_D;
+registers.capture.detection <= PULSE_DETECTION_D;
 registers.capture.timing <= CFD_LOW_TIMING_D;
 registers.capture.height <= CFD_HEIGHT_D;
 registers.capture.cfd_rel2min <= TRUE;

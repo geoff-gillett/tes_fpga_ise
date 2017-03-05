@@ -131,7 +131,7 @@ registers.bin_n <= to_unsigned(0,MCA_BIN_N_BITS);
 registers.lowest_value <= to_signed(1,VALUE_BITS);
 registers.channel <= (others => '0');
 registers.qualifier <= ALL_MCA_QUAL_D;
-registers.trigger <= DISABLED_MCA_TRIGGER_D;
+registers.trigger <= MCA_DISABLED_D;
 registers.value <= MCA_FILTERED_SIGNAL_D;
 registers.update_asap <= FALSE;
 registers.update_on_completion <= FALSE;

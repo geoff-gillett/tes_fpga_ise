@@ -97,7 +97,7 @@ signal mtu_int:unsigned(MTU_BITS-1 downto 0):=
 signal tick_latency_count:unsigned(TICK_LATENCY_BITS-1 downto 0);
 signal tick_latency_int:unsigned(TICK_LATENCY_BITS-1 downto 0):=
 			 DEFAULT_TICK_LATENCY;
-signal wait_for_tick:boolean;
+signal wait_for_tick,tick_overdue:boolean;
 --signal event_frame_full:boolean;
 signal lookahead:streambus_t;
 signal lookahead_valid:boolean;
@@ -375,7 +375,7 @@ begin
             when PULSE_DETECTION_D =>
               size := lookahead_size;
             	size_change <= frame_size/=lookahead_size;
-            when TEST_DETECTION_D =>
+            when PULSE2_DETECTION_D =>
               size := to_unsigned(3, SIZE_BITS); --3
             	size_change <= FALSE;
             end case;
@@ -395,11 +395,10 @@ begin
 		if reset = '1' then
 			tick_latency_count <= (others => '0');
 		else
-			if tick_latency_count >= tick_latency_int then
+			if tick_overdue then
 				wait_for_tick <= TRUE;
 			end if;
 			
-			--FIXME huh?
 			if buffer_full then 
 				flush_events <= TRUE;
 			end if;
@@ -407,11 +406,12 @@ begin
 			if buffer_empty then 
 				flush_events <= FALSE;
 			end if;
-			
+		
+		  tick_overdue <= tick_latency_count >= tick_latency_int; 	
       if header.event_type.tick and event_s_last_hs then
         tick_latency_count <= (others => '0');
         wait_for_tick <= FALSE;
-      else
+      elsif not tick_overdue then
         tick_latency_count <= tick_latency_count+1;
       end if;
 			
@@ -598,7 +598,7 @@ begin
 				else
           framer_we <= (others => framer_ready);
           inc_address <= framer_ready;
-					if header.event_type.detection=TEST_DETECTION_D or --??
+					if header.event_type.detection=PULSE2_DETECTION_D or --??
 							header.event_type.tick then
 						framer_word.last(0) <= event_s.last(0);
 						if event_s.last(0) and framer_ready then

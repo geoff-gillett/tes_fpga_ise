@@ -111,6 +111,12 @@ signal baseline_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal m:measurements_array(CHANNELS-1 downto 0);
 signal adc_count:signed(ADC_BITS-1 downto 0);
 
+signal simenable:boolean:=FALSE;
+
+constant SIM_WIDTH:natural:=9;
+signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
+signal doublesig:signed(ADC_WIDTH-1 downto 0);
+
 begin
 	
 sample_clk <= not sample_clk after SAMPLE_CLK_PERIOD/2;
@@ -118,7 +124,7 @@ io_clk <= not IO_clk after IO_CLK_PERIOD/2;
 reset0 <= '0' after 2*IO_CLK_PERIOD; 
 reset1 <= '0' after 10*IO_CLK_PERIOD; 
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
-bytestream_ready <= TRUE after 2*IO_CLK_PERIOD;
+bytestream_ready <= TRUE after 20*IO_CLK_PERIOD;
 
 UUT:entity work.measurement_subsystem3
 generic map(
@@ -204,14 +210,14 @@ bytestream_last <= bytestream_int(8)='1';
 --register settings
 global.mtu <= to_unsigned(1500,MTU_BITS);
 global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
+global.tick_period <= to_unsigned(2**14+500,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
 global.mca.last_bin <= (others => '1');
 --global.mca.lowest_value <= to_signed(-2500,MCA_VALUE_BITS);
 global.mca.lowest_value <= to_signed(-2000,MCA_VALUE_BITS);
-global.mca.qualifier <= VALID_PEAK0_MCA_QUAL_D;
+--global.mca.qualifier <= VALID_PEAK0_MCA_QUAL_D;
 --TODO normalise these type names
 --global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 --global.mca.value <= MCA_RAW_SIGNAL_D;
@@ -251,16 +257,18 @@ baseline_config(1).reload_data <= (others => '0');
 baseline_config(1).reload_last <= '0';
 baseline_config(1).reload_valid <= '0';
 
-chan_reg(0).baseline.offset <= to_signed(-1000*8,DSP_BITS);
+--chan_reg(0).baseline.offset <= to_signed(-1000*8,DSP_BITS);
+chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
-chan_reg(0).baseline.threshold <= to_unsigned(700,BASELINE_BITS-1);--(others => '1');
+chan_reg(0).baseline.threshold <= (others => '1'); --to_unsigned(700,BASELINE_BITS-1);--(others => '1');
 chan_reg(0).baseline.new_only <= TRUE;
 chan_reg(0).baseline.subtraction <= TRUE;
 chan_reg(0).baseline.timeconstant <= to_unsigned(25000,32);
 
-chan_reg(1).baseline.offset <= to_signed(-1000*8,DSP_BITS);
+--chan_reg(1).baseline.offset <= to_signed(-1000*8,DSP_BITS);
+chan_reg(1).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(1).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
-chan_reg(1).baseline.threshold <= to_unsigned(700,BASELINE_BITS-1);--(others => '1');
+chan_reg(1).baseline.threshold <= (others => '1'); --to_unsigned(700,BASELINE_BITS-1);--(others => '1');
 chan_reg(1).baseline.new_only <= TRUE;
 chan_reg(1).baseline.subtraction <= TRUE;
 chan_reg(1).baseline.timeconstant <= to_unsigned(25000,32);
@@ -268,10 +276,13 @@ chan_reg(1).baseline.timeconstant <= to_unsigned(25000,32);
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
 chan_reg(0).capture.delay <= (others => '0');
 chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
-chan_reg(0).capture.slope_threshold <= to_unsigned(30*256,DSP_BITS-1);
-chan_reg(0).capture.pulse_threshold <= to_unsigned(350*8,DSP_BITS-1);
+--chan_reg(0).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);
+chan_reg(0).capture.slope_threshold <= to_unsigned(2*256,DSP_BITS-1);
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
+chan_reg(0).capture.pulse_threshold <= to_unsigned(5*8,DSP_BITS-1);
+--chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
-chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
+chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 chan_reg(0).capture.detection <= PULSE_DETECTION_D;
 chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
@@ -280,11 +291,11 @@ chan_reg(0).capture.cfd_rel2min <= FALSE;
 chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
 chan_reg(1).capture.delay <= (others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF, DSP_BITS-1);
-chan_reg(1).capture.slope_threshold <= to_unsigned(30*256,DSP_BITS-1);
-chan_reg(1).capture.pulse_threshold <= to_unsigned(350*8,DSP_BITS-1);
+chan_reg(1).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);
+chan_reg(1).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
 chan_reg(1).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-chan_reg(1).capture.detection <= PEAK_DETECTION_D;
+chan_reg(1).capture.detection <= PULSE_DETECTION_D;
 chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
 chan_reg(1).capture.cfd_rel2min <= FALSE;
@@ -398,14 +409,15 @@ end process clkCount;
 
 stimulusFile:process
 	file sample_file:int_file is in 
-	     "../input_signals/100mvCh1on_amp_100khzdiode_250-132mv.bin";
+--	     "../input_signals/tes2_250_old.bin";
+	     "../input_signals/50mvCh1on_amp_100khzdiode_250_1.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(sample_clk);
-		adc_samples(0) <= to_std_logic(sample, 14);
+		--adc_samples(0) <= to_std_logic(sample, 14);
 		--sample_reg <= resize(sample_in, 14);
 		adc_samples(1) <= (others => '0'); -- adc_samples(0);
 		if clk_count mod 10000 = 0 then
@@ -426,23 +438,47 @@ begin
     end if;
   end if;
 end process ramp;
+
+simcount:process(sample_clk)
+begin
+  if rising_edge(sample_clk) then
+    if not simenable then
+      sim_count <= (others => '0');
+    else
+      sim_count <= sim_count + 1;
+    end if;
+  end if;
+end process simcount;
+doublesig <= to_signed(-20,ADC_WIDTH)
+             when sim_count < 10
+             else to_signed(100,ADC_WIDTH)
+             when sim_count < 20
+             else to_signed(10,ADC_WIDTH)
+             when sim_count < 60
+             else to_signed(100,ADC_WIDTH)
+             when sim_count < 70 
+             else to_signed(-20,ADC_WIDTH);
+adc_samples(0) <= std_logic_vector(signed(doublesig));
 --adc_samples(0) <= std_logic_vector(adc_count);
 --adc_samples(0) <= (others => '0');
 
 mcaControlStimulus:process
 begin
 --  chan_reg(0).baseline.offset <= to_signed(6,DSP_BITS);
+	wait for SAMPLE_CLK_PERIOD*22;
+  simenable <= TRUE;
   global.mca.update_asap <= FALSE;
   global.mca.update_on_completion <= FALSE;
 	wait for SAMPLE_CLK_PERIOD*20;
 	global.mca.value <= MCA_FILTERED_SIGNAL_D;
-	global.mca.trigger <= SLOPE_NEG_0XING_MCA_TRIGGER_D;
+	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+	global.mca.qualifier <= VALID_PEAK_MCA_QUAL_D;
 	global.mca.update_asap <= TRUE;
 	wait for SAMPLE_CLK_PERIOD;
   global.mca.update_asap <= FALSE;
   wait until mca_interrupt;
 	global.mca.value <= MCA_FILTERED_SIGNAL_D;
-	global.mca.trigger <= DISABLED_MCA_TRIGGER_D;
+	global.mca.trigger <= MCA_DISABLED_D;
 	global.mca.update_asap <= TRUE;
 	wait for SAMPLE_CLK_PERIOD;
 	global.mca.update_asap <= FALSE;

@@ -505,7 +505,7 @@ begin
           pre_size <= (0 => '1', others => '0');
         when PULSE_DETECTION_D => 
           pre_size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
-        when TEST_DETECTION_D => 
+        when PULSE2_DETECTION_D => 
           pre_size <= (1 => '1', others => '0');
         end case;
       end if;
@@ -569,7 +569,7 @@ begin
       end if;
     
       case flags.timing is
-      -- if pulse threshold is used for timing poieak will use 
+      -- if pulse threshold is used for timing secondary peaks use cfd_low
       when PULSE_THRESH_TIMING_D =>
         pre_stamp_pulse <= pulse_t_pos_pipe(DEPTH-2);
         if first_peak_pipe(DEPTH-2) then
@@ -694,7 +694,7 @@ begin
   end if;
 end process pulseMeas;
 
---FIXME it would be usefull in the framer to expose the pipes for some more 
+--FIXME it would be useful in the framer to expose the pipes for some more 
 --signals already done for starts
 --a valid max an pre would help in the framer
 
@@ -741,6 +741,7 @@ m.filtered.area <= filtered_area;
 m.filtered.extrema <= filtered_extrema;
 m.pulse_threshold_pos <= pulse_t_pos_pipe(DEPTH);
 m.pulse_threshold_neg <= pulse_t_neg_pipe(DEPTH);
+m.pre_pulse_threshold_neg <= pulse_t_neg_pipe(DEPTH-1);
 m.pulse_length <= pulse_length;
 m.above_pulse_threshold <= above_pipe(DEPTH);
 m.pulse_area <= pulse_area;

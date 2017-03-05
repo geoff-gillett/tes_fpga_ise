@@ -176,13 +176,16 @@ end record;
 function to_streambus(t:tick_event2_t;w:natural range 0 to 2;endianness:string) 
 return streambus_t;
 -----------------  pulse event - 16 byte header --------------------------------
---  | size | reserved |   flags  |   time   |
---  |      area       |  length  |  offset  |  
+--  | size | low thresh |   flags  |   time   | *low thresh for pulse2
+--  |       area        |  length  |  offset  |  
 --  repeating 8 byte peak records (up to 16) for extra peaks.
 --  | height | rise | minima | time |
+--  | height | low1 |  low2  | time | -- use this for pulse2
+                                      -- low2 is @ time
 type pulse_detection_t is
 record
 	size:unsigned(SIZE_BITS-1 downto 0);
+	threshold:signed(CHUNK_DATABITS-1 downto 0);
 	length:time_t;
 	flags:detection_flags_t;
 	area:area_t;
@@ -207,7 +210,20 @@ end record;
 
 function to_std_logic(p:pulse_peak_t;endianness:string) return std_logic_vector;
 function to_streambus(p:pulse_peak_t;last:boolean;endianness:string) 
-return streambus_t;
+         return streambus_t;
+
+type pulse_peak2_t is
+record
+	height:signal_t;
+	low1:signal_t;
+	low2:signal_t;
+	timestamp:time_t;
+end record;
+
+function to_std_logic(p:pulse_peak2_t;endianness:string) 
+         return std_logic_vector;
+function to_streambus(p:pulse_peak2_t;last:boolean;endianness:string) 
+         return streambus_t;
 
 -- |  7  |  1  ||   2  |  2  	|   4		  |
 -- |resvd|full ||trace0|trace1|max_peaks|
@@ -482,7 +498,7 @@ begin
 	case w is
 	when 0 =>
   	sb.data(63 downto 48) := set_endianness(p.size,endianness);
-		sb.data(47 downto 32) := (others => '-');
+		sb.data(47 downto 32) := set_endianness(p.threshold,endianness);
 		sb.data(31 downto 16) := to_std_logic(p.flags); 
 		sb.data(15 downto 0) := (others => '-');
 	when 1 =>
@@ -517,6 +533,24 @@ begin
 	return sb;
 end function;
 
+function to_std_logic(p:pulse_peak2_t;endianness:string) 
+return std_logic_vector is
+begin
+	return set_endianness(p.height,endianness) &
+	       set_endianness(p.low1,endianness) &
+	       set_endianness(p.low2,endianness) &
+	       set_endianness(p.timestamp,endianness);
+end function;
+
+function to_streambus(p:pulse_peak2_t;last:boolean;endianness:string)
+return streambus_t is
+	variable sb:streambus_t;
+begin
+	sb.data := to_std_logic(p, endianness);
+	sb.last := (0 => last, others => FALSE);
+	sb.discard := (others => FALSE);
+	return sb;
+end function;
 ---------------------------- test event 3*8 bytes --------------------------------
 -- |   16   |   16   |  16   |  16  |
 -- |  min   |  rise  | flags | time |

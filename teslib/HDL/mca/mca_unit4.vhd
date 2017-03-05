@@ -247,7 +247,7 @@ controlReg:process(clk)
 begin 
 if rising_edge(clk) then
 	if reset='1' then
-		current_reg.trigger <= DISABLED_MCA_TRIGGER_D;
+		current_reg.trigger <= MCA_DISABLED_D;
 		channel_select <= (others => '0');
 		value_select <= (others => '0');
 		trigger_select <= (others => '0');
@@ -262,7 +262,7 @@ if rising_edge(clk) then
   		if control_state=DISABLED then
   		  current_reg <= registers;
   		  header_reg <= registers;
-        enabled <= updated_reg.trigger/=DISABLED_MCA_TRIGGER_D;
+        enabled <= updated_reg.trigger/=MCA_DISABLED_D;
   		end if;
     end if;
     
@@ -270,11 +270,11 @@ if rising_edge(clk) then
       if update_registers then  -- whats this
         current_reg <= registers; --current_reg valid after swap
         header_reg <= current_reg;
-        enabled <= registers.trigger/=DISABLED_MCA_TRIGGER_D;
+        enabled <= registers.trigger/=MCA_DISABLED_D;
       else
     	  current_reg <= updated_reg;
         header_reg <= current_reg;
-        enabled <= updated_reg.trigger/=DISABLED_MCA_TRIGGER_D;
+        enabled <= updated_reg.trigger/=MCA_DISABLED_D;
     	end if;
     end if;
     
@@ -344,7 +344,7 @@ when RUN =>
     control_nextstate <= ASAP;
   elsif update_on_completion then 
     control_nextstate <= ON_COMPLETION;
-  elsif swap_buffer and updated_reg.trigger=DISABLED_MCA_TRIGGER_D then
+  elsif swap_buffer and updated_reg.trigger=MCA_DISABLED_D then
     control_nextstate <= DISABLED;
   end if;
   
@@ -355,7 +355,7 @@ when ASAP =>
     control_nextstate <= ON_COMPLETION;
   elsif (tick and can_swap) and not update_asap then 
     control_nextstate <= RUN;
-  elsif swap_buffer and updated_reg.trigger=DISABLED_MCA_TRIGGER_D then
+  elsif swap_buffer and updated_reg.trigger=MCA_DISABLED_D then
     control_nextstate <= DISABLED;
   end if;
   
@@ -366,7 +366,7 @@ when ON_COMPLETION =>
     control_nextstate <= RUN; 
   elsif update_asap then
     control_nextstate <= ASAP;
-  elsif swap_buffer and updated_reg.trigger=DISABLED_MCA_TRIGGER_D then
+  elsif swap_buffer and updated_reg.trigger=MCA_DISABLED_D then
     control_nextstate <= DISABLED;
   end if;
   

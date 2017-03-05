@@ -28,7 +28,6 @@ port (
   cfd_high_threshold:out signed(WIDTH-1 downto 0);
   
   max:out boolean;
-  
   min:out boolean;
   -- valid when min is true
   max_slope:out signed(WIDTH-1 downto 0); 

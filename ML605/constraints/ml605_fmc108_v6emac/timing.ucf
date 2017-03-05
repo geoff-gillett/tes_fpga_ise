@@ -17,6 +17,7 @@ NET "*_mmcm_locked" TIG;
 #NET "tesChannel[?].cpu/reg_write" TNM_NET = "chan_write";
 #TIMESPEC TS_chan_write = FROM "chan_write" 8 ns;
 
+#FIXME 
 INST tesChannel[?].controller TNM = "channel_cpu";
 INST tesChannel[?].registers TNM = "channel_reg";
 TIMESPEC TS_channel_reg2cpu = FROM "channel_reg" TO "channel_cpu" 15.5 ns DATAPATHONLY;

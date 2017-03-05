@@ -252,16 +252,16 @@ end process clearFSM;
 --------------------------------------------------------------------------------
 -- Time
 --------------------------------------------------------------------------------
-timeout <= timer >= timeconstant;
 timing:process(clk)
 begin
 if rising_edge(clk) then
   if state=INIT then
     timer <= (others => '0');
   else
+    timeout <= timer >= timeconstant;
     if swap0 or swap1 then
       timer <= (others => '0');
-    elsif not timeout  then
+    elsif not timer >= timeconstant  then
       timer <= timer+1;
     end if;
   end if;

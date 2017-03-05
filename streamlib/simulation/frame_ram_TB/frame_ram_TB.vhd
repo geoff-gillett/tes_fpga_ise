@@ -69,7 +69,7 @@ length <= resize(count1+1,ADDRESS_BITS+1);
 address <= resize(count2,ADDRESS_BITS);
 din <= to_std_logic(streambus_in);
 
-UUT:entity work.frame_ram2
+UUT:entity work.frame_ram3
 generic map(
   CHUNKS => CHUNKS,
   CHUNK_BITS => CHUNK_BITS,
@@ -88,7 +88,7 @@ port map(
   valid => valid,
   ready => ready
 );
-ready <= clk_count mod 3/=0;
+ready <= clk_count mod 1=0;
 streambus_out <= to_streambus(stream);
 
 stimulus:process is

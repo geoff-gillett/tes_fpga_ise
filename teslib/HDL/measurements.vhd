@@ -124,6 +124,7 @@ type measurements_t is record
 	
   pulse_threshold_pos:boolean;
   pulse_threshold_neg:boolean;
+  pre_pulse_threshold_neg:boolean;
   above_pulse_threshold:boolean;
   pulse_area:area_t;
   above_area_threshold:boolean;
@@ -157,10 +158,12 @@ type measurements_t is record
   eflags:detection_flags_t;
   size:unsigned(15 downto 0);
   pre_size:unsigned(15 downto 0);
+  pre2_size:unsigned(15 downto 0);
   
   -- actually max peaks -1
   --max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
   last_peak:boolean;
+  peak_overflow:boolean;
   peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   
@@ -208,7 +211,7 @@ begin
 end function;
 
 function get_mca_values(m:measurements_t) return mca_value_array is
-variable va:mca_value_array(NUM_MCA_VALUE_D-1 downto 0);
+variable va:mca_value_array(NUM_MCA_VALUE_D-2 downto 0);
 begin
   va(0) := resize(m.filtered.sample,MCA_VALUE_BITS);
   va(1) := resize(m.filtered.area,MCA_VALUE_BITS);
@@ -244,7 +247,7 @@ begin
 end function;
 
 function get_mca_triggers(m:measurements_t) return std_logic_vector is
-variable o:std_logic_vector(NUM_MCA_TRIGGER_D-1 downto 0);
+variable o:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
 begin
   o(0):='1';
   o(1):=to_std_logic(m.pulse_threshold_pos);
@@ -262,7 +265,7 @@ begin
 end function;
 
 function get_mca_quals(m:measurements_t) return std_logic_vector is
-variable o:std_logic_vector(NUM_MCA_TRIGGER_D-1 downto 0);
+variable o:std_logic_vector(NUM_MCA_QUAL_D-2 downto 0);
 begin
   o(0):='1';
   o(1):=to_std_logic(m.valid_peak);

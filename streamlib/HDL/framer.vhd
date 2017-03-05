@@ -51,7 +51,7 @@ begin
 
 din <= to_std_logic(data);
   
-frameRam:entity work.frame_ram2
+frameRam:entity work.frame_ram3
 generic map(
   CHUNKS => BUS_CHUNKS,
   CHUNK_BITS => CHUNK_BITS,

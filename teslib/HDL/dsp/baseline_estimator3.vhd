@@ -83,6 +83,7 @@ signal av_enable:boolean;
 signal av_valid:std_logic;
 signal av_int:std_logic_vector(47 downto 0);
 signal mf_value:std_logic_vector(23 downto 0);
+signal mf_int:signed(BASELINE_BITS downto 0);
 constant HALF_RANGE:signed(ADC_WIDTH-1 downto 0)
          :=to_signed(2**(BASELINE_BITS-1),ADC_WIDTH);
 
@@ -141,7 +142,9 @@ port map(
 newOnly:process (clk) is
 begin
 	if rising_edge(clk) then
-    mf_value <= resize(signed('0' & most_frequent_bin)-HALF_RANGE,24);
+	  mf_int <= signed('0' & most_frequent_bin)-
+	            resize(HALF_RANGE,BASELINE_BITS+1);
+    mf_value <= std_logic_vector(reshape(mf_int,0,24,FRAC));
     if new_only then
       av_enable <=  new_most_frequent_bin;
     else
@@ -172,7 +175,7 @@ port map (
 
 round:entity dsp.round2
 generic map(
-  WIDTH_IN => 48,
+  WIDTH_IN => 46,
   FRAC_IN => 28,
   WIDTH_OUT => WIDTH,
   FRAC_OUT => FRAC
@@ -181,21 +184,8 @@ port map(
   output_threshold => (others => '0'),
   clk => clk,
   reset => reset,
-  input => signed(av_int),
+  input => signed(av_int(45 downto 0)),
   output => baseline_estimate
 );
---most_frequent_av <= mf_average;
-----most_frequent_av <= signed(av_int(42 downto 25));
---
---outputReg:process(clk)
---begin
---if rising_edge(clk) then
---  if reset = '1' then
---    baseline_estimate <= (others => '0');
---  else
---    baseline_estimate <=  most_frequent_av;
---  end if;
---end if;
---end process outputReg;
 
 end architecture most_frequent;

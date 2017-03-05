@@ -13,9 +13,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="119516667fs"></ZoomStartTime>
-      <ZoomEndTime time="218416668fs"></ZoomEndTime>
-      <Cursor1Time time="136000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="61100001fs"></ZoomEndTime>
+      <Cursor1Time time="20000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="3" />
    <wvobject fp_name="group37" type="group">
@@ -157,10 +157,6 @@
          <obj_property name="CustomSignalColor">#00FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/frame_ram" type="array">
-         <obj_property name="ElementShortName">frame_ram[0:63][71:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_ram[0:63][71:0]</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/we" type="array">
          <obj_property name="ElementShortName">we[3:0]</obj_property>
          <obj_property name="ObjectShortName">we[3:0]</obj_property>
@@ -183,10 +179,6 @@
          <obj_property name="ElementShortName">ram_dout[71:0]</obj_property>
          <obj_property name="ObjectShortName">ram_dout[71:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/ram_data" type="array">
-         <obj_property name="ElementShortName">ram_data[71:0]</obj_property>
-         <obj_property name="ObjectShortName">ram_data[71:0]</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/empty" type="other">
          <obj_property name="ElementShortName">empty</obj_property>
          <obj_property name="ObjectShortName">empty</obj_property>
@@ -199,6 +191,10 @@
          <obj_property name="CustomSignalColor">#FF00FF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/rd_ptr_next" type="array">
+         <obj_property name="ElementShortName">rd_ptr_next[6:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_ptr_next[6:0]</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/read_next" type="other">
          <obj_property name="ElementShortName">read_next</obj_property>
          <obj_property name="ObjectShortName">read_next</obj_property>
@@ -209,9 +205,9 @@
          <obj_property name="ElementShortName">rd_ptr[6:0]</obj_property>
          <obj_property name="ObjectShortName">rd_ptr[6:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/rd_ptr_next" type="array">
-         <obj_property name="ElementShortName">rd_ptr_next[6:0]</obj_property>
-         <obj_property name="ObjectShortName">rd_ptr_next[6:0]</obj_property>
+      <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/ram_data" type="array">
+         <obj_property name="ElementShortName">ram_data[71:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_data[71:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/wr_ptr" type="array">
          <obj_property name="ElementShortName">wr_ptr[6:0]</obj_property>
@@ -273,7 +269,6 @@
    <wvobject fp_name="group80" type="group">
       <obj_property name="label">RAM streamer</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/frame_ram_TB/UUT/streamer/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>

@@ -40,7 +40,7 @@ constant BASELINE_COUNTER_BITS:integer:=18;
 constant BASELINE_MAX_AV_ORDER:integer:=6;
 constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=10;
 constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=10;
-constant DELAY_BITS:integer:=13;
+constant DELAY_BITS:integer:=11;
 constant PEAK_COUNT_BITS:integer:=4;
 
 constant MCA_BIN_N_BITS:integer:=5;
@@ -67,7 +67,7 @@ type detection_d is (
 	PEAK_DETECTION_D,
 	AREA_DETECTION_D,
 	PULSE_DETECTION_D, 
-	TEST_DETECTION_D
+	PULSE2_DETECTION_D
 );
 
 constant NUM_DETECTION_D:integer:=detection_d'pos(detection_d'high)+1;
@@ -120,6 +120,7 @@ function to_trace_d(i:natural range 0 to NUM_TRACE_D-1) return trace_d;
 
 -- the value sampled into the MCA
 type mca_value_d is (
+  MCA_ZERO_SIGNAL_D,
 	MCA_FILTERED_SIGNAL_D, -- the output of the dsp filter
   MCA_FILTERED_AREA_D, -- the area between zero crossings
   MCA_FILTERED_EXTREMA_D, -- max or min between zero crossings
@@ -143,8 +144,9 @@ function to_mca_value_d(s:std_logic_vector) return mca_value_d;
 function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector;
 
 -- the trigger that samples a value into the MCA
+--FIXME could make no select bits give clock and add a trigger 
 type mca_trigger_d is (
-	DISABLED_MCA_TRIGGER_D, -- no select bits set
+	MCA_DISABLED_D, -- no select bits set
 	CLOCK_MCA_TRIGGER_D,
   PULSE_THRESHOLD_POS_MCA_TRIGGER_D, 
   PULSE_THRESHOLD_NEG_MCA_TRIGGER_D, 
@@ -166,9 +168,11 @@ function to_mca_trigger_d(i:natural range 0 to NUM_MCA_TRIGGER_D-1)
 return mca_trigger_d;
 function to_mca_trigger_d(s:std_logic_vector) return mca_trigger_d;
 function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector;
-
+  
+--FIXME could make no select bits use ALL
 type mca_qual_d is (
-  ALL_MCA_QUAL_D, -- no select bits
+  MCA_DISABLED_D, -- no select bits
+  ALL_MCA_QUAL_D, 
   VALID_PEAK_MCA_QUAL_D,
   ABOVE_AREA_MCA_QUAL_D,
   ABOVE_PULSE_MCA_QUAL_D,
@@ -442,7 +446,7 @@ constant DEFAULT_MCA_BIN_N:unsigned(MCA_BIN_N_BITS-1 downto 0)
 				 :=to_unsigned(0,MCA_BIN_N_BITS);
 constant DEFAULT_MCA_LAST_BIN:unsigned(MCA_ADDRESS_BITS-1 downto 0)
 				 :=to_unsigned(2**MCA_ADDRESS_BITS-1,MCA_ADDRESS_BITS);
-constant DEFAULT_MCA_TRIGGER:mca_trigger_d:=DISABLED_MCA_TRIGGER_D;
+constant DEFAULT_MCA_TRIGGER:mca_trigger_d:=MCA_DISABLED_D;
 constant DEFAULT_MCA_VALUE:mca_value_d:=MCA_FILTERED_SIGNAL_D;
 constant DEFAULT_MCA_LOWEST_VALUE:signed(MCA_VALUE_BITS-1 downto 0)
 				 :=to_signed(-1000,MCA_VALUE_BITS);
@@ -553,14 +557,13 @@ function to_mca_trigger_d(s:std_logic_vector) return mca_trigger_d is
 begin
 	return to_mca_trigger_d(to_integer(unsigned(s)));
 end function;
+
 --FIXME check the one hot synthesises well
 function to_onehot(t:mca_trigger_d) return std_logic_vector is
-variable o:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0):=(others => '0');
+variable o:std_logic_vector(NUM_MCA_TRIGGER_D-1 downto 0):=(others => '0');
 begin
-	if t/=DISABLED_MCA_TRIGGER_D then
-		o(mca_trigger_d'pos(t)-1) := '1';
-	end if;
-	return o;
+	o(mca_trigger_d'pos(t)) := '1';
+	return o(NUM_MCA_TRIGGER_D-1 downto 1);
 end function;
 
 -- mca_values_d
@@ -586,8 +589,8 @@ end function;
 function to_onehot(v:mca_value_d) return std_logic_vector is
 variable o:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0):=(others => '0');
 begin
-		o(mca_value_d'pos(v)) := '1';
-	return o;
+	o(mca_value_d'pos(v)) := '1';
+	return o(NUM_MCA_VALUE_D-1 downto 1);
 end function;
 
 -- mca_qual_d 
@@ -614,7 +617,7 @@ function to_onehot(t:mca_qual_d) return std_logic_vector is
 variable o:std_logic_vector(NUM_MCA_QUAL_D-1 downto 0):=(others => '0');
 begin
 	o(mca_qual_d'pos(t)) := '1';
-	return o;
+	return o(NUM_MCA_QUAL_D-1 downto 1);
 end function;
 
 --------------------------------------------------------------------------------

@@ -102,7 +102,7 @@ peak.minima <= m.filtered.sample;
 peak.flags <= m.eflags;
 peak_we(3) <= m.height_valid;
 peak_we(2) <= m.peak_start;
-peak_we(1) <= m.peak_start;
+peak_we(1) <= m.height_valid;
 peak_we(0) <= m.peak_start;
 
 area.flags <= m.eflags; 
@@ -158,7 +158,7 @@ begin
       filtered_reg <= m.filtered_long; 
       
       if m.eflags.event_type.detection=PEAK_DETECTION_D or 
-         m.eflags.event_type.detection=TEST_DETECTION_D then
+         m.eflags.event_type.detection=PULSE2_DETECTION_D then
          error_int <= m.peak_start and state/=IDLE_S;
          overflow_int <= m.peak_start and (framer_full or mux_full_reg);
       else
@@ -171,7 +171,8 @@ begin
       dump_int <= FALSE;
       frame_address <= (others => '0');
       frame_we <= (others => FALSE);
-  
+ 
+      --FIXME clear when IDLE? 
       case state is 
       when IDLE_S => 
         case m.eflags.event_type.detection is
@@ -205,7 +206,7 @@ begin
             done <= FALSE;
             stamped <= m.stamp_pulse;
           end if;
-        when TEST_DETECTION_D =>
+        when PULSE2_DETECTION_D =>
           if m.peak_start and not (framer_full or mux_full_reg) then
             state <= TEST_S;
             frame_address <= (0 => '1', others => '0');
