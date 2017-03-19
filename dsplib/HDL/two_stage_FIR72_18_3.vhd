@@ -44,28 +44,30 @@ architecture coregen of two_stage_FIR71_18_3 is
   
 --IP cores FIR compiler 6.3
 component stage1_FIR71_18_3
-  port (
-    aclk:in std_logic;
-    s_axis_data_tvalid:in std_logic;
-    s_axis_data_tready:out std_logic;
-    s_axis_data_tdata:in std_logic_vector(23 downto 0);
-    s_axis_config_tvalid:in std_logic;
-    s_axis_config_tready:out std_logic;
-    s_axis_config_tdata:in std_logic_vector(7 downto 0);
-    s_axis_reload_tvalid:in std_logic;
-    s_axis_reload_tready:out std_logic;
-    s_axis_reload_tlast:in std_logic;
-    s_axis_reload_tdata:in std_logic_vector(23 downto 0);
-    m_axis_data_tvalid:out std_logic;
-    m_axis_data_tdata:out std_logic_vector(47 downto 0);
-    event_s_reload_tlast_missing:out std_logic;
-    event_s_reload_tlast_unexpected:out std_logic
-  );
+port (
+  aclk:in std_logic;
+  aresetn:in std_logic;
+  s_axis_data_tvalid:in std_logic;
+  s_axis_data_tready:out std_logic;
+  s_axis_data_tdata:in std_logic_vector(23 downto 0);
+  s_axis_config_tvalid:in std_logic;
+  s_axis_config_tready:out std_logic;
+  s_axis_config_tdata:in std_logic_vector(7 downto 0);
+  s_axis_reload_tvalid:in std_logic;
+  s_axis_reload_tready:out std_logic;
+  s_axis_reload_tlast:in std_logic;
+  s_axis_reload_tdata:in std_logic_vector(23 downto 0);
+  m_axis_data_tvalid:out std_logic;
+  m_axis_data_tdata:out std_logic_vector(47 downto 0);
+  event_s_reload_tlast_missing:out std_logic;
+  event_s_reload_tlast_unexpected:out std_logic
+);
 end component;
 
 component stage2_fir_23
 port (
   aclk:in std_logic;
+  aresetn:in std_logic;
   s_axis_data_tvalid:in std_logic;
   s_axis_data_tready:out std_logic;
   s_axis_data_tdata:in std_logic_vector(23 downto 0);
@@ -101,6 +103,7 @@ stage1_in <= to_std_logic(resize(sample_in,24));
 stage1FIRfilter:stage1_FIR71_18_3
 port map (
   aclk => clk,
+  aresetn => '1',
   s_axis_data_tvalid => '1',
   s_axis_data_tready => open,
   s_axis_data_tdata => stage1_in,
@@ -138,6 +141,7 @@ stage2_in <= resize(stage1_data,24);
 stage2FIRfilter:stage2_FIR_23
 port map(
   aclk => clk,
+  aresetn => '1',
   s_axis_data_tvalid => '1',
   s_axis_data_tready => open,
   s_axis_data_tdata => stage2_in,

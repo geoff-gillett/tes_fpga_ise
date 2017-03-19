@@ -18,15 +18,17 @@ use dsp.types.all;
 
 library extensions;
 use extensions.logic.all;
+use extensions.boolean_vector.all;
 
 use work.types.all;
 
 -- 
 -- data
 -- 31 = last
--- 30 filter
--- 29 slope
--- 28 baseline
+-- 30 reset
+-- 29 filter
+-- 28 slope
+-- 27 baseline
 -- COEFF_WIDTH-1 downto 0 coefficient 
 -- output errors done
 
@@ -84,10 +86,7 @@ begin
 	end if;
 end process FSMnextstate;
 
-done <= '1' when state=IDLE else '0';
---error_int <= filter_events.last_missing or filter_events.last_unexpected or
---             slope_events.last_missing or slope_events.last_unexpected or
---             baseline_events.last_missing or baseline_events.last_unexpected;
+done <= to_std_logic(state=IDLE);
   
 FSMtransition:process(
   state,write,data,baseline_events.reload_ready,filter_events.reload_ready, 
@@ -105,11 +104,9 @@ when IDLE =>
 	if write='1' then
 	  if data(FILTER_BIT)='1' then
 	    nextstate <= FILTER;
-	  end if;
-	  if data(SLOPE_BIT)='1' then
+	  elsif data(SLOPE_BIT)='1' then
 	    nextstate <= SLOPE;
-	  end if;
-	  if data(BASELINE_BIT)='1' then
+	  elsif data(BASELINE_BIT)='1' then
 	    nextstate <= BASELINE;
 	  end if;
   end if;
@@ -140,7 +137,7 @@ when B_COMMIT =>
 when CHECK_ERROR =>
       nextstate <= IDLE;
       if data(FILTER_BIT)='1' then
-        if data(LAST_BIT)='1' then
+        if data(LAST_BIT)='1' then --FIXME this needed here
           nextstate <= F_COMMIT;
         end if;
         if filter_events.last_missing='1' then
@@ -183,27 +180,27 @@ when UNEXPECTED =>
 end case;
 end process FSMtransition;
 
-last_missing <= '1' when state=MISSING else '0';
-last_unexpected <= '1' when state=UNEXPECTED else '0';
+last_missing <= to_std_logic(state=MISSING);
+last_unexpected <= to_std_logic(state=UNEXPECTED);
 
-filter_config.reload_valid <= '1' when state=FILTER else '0';
+filter_config.reload_valid <= to_std_logic(state=FILTER);
 filter_config.reload_last <= data(LAST_BIT);
 filter_config.reload_data 
   <= resize(data(FILTER_COEF_WIDTH-1 downto 0), AXI_DATA_BITS);
 filter_config.config_data <= (others => '0');
-filter_config.config_valid <= '1' when state=F_COMMIT else '0';
+filter_config.config_valid <= to_std_logic(state=F_COMMIT);
 
-slope_config.reload_valid <= '1' when state=SLOPE else '0';
+slope_config.reload_valid <= to_std_logic(state=SLOPE);
 slope_config.reload_last <= data(LAST_BIT);
 slope_config.reload_data 
   <= resize(data(SLOPE_COEF_WIDTH-1 downto 0), AXI_DATA_BITS);
 slope_config.config_data <= (others => '0');
-slope_config.config_valid <= '1' when state=S_COMMIT else '0';
+slope_config.config_valid <= to_std_logic(state=S_COMMIT);
 
-baseline_config.reload_valid <= '1' when state=BASELINE else '0';
+baseline_config.reload_valid <= to_std_logic(state=BASELINE);
 baseline_config.reload_last <= data(LAST_BIT);
 baseline_config.reload_data 
   <= resize(data(BASELINE_COEF_WIDTH-1 downto 0), AXI_DATA_BITS);
 baseline_config.config_data <= (others => '0');
-baseline_config.config_valid <= '1' when state=B_COMMIT else '0';
+baseline_config.config_valid <= to_std_logic(state=B_COMMIT);
 end architecture RTL;

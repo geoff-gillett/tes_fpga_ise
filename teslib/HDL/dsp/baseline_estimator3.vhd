@@ -58,7 +58,7 @@ architecture most_frequent of baseline_estimator3 is
 component baseline_av
 port (
   aclk:in std_logic;
-  aclken:in std_logic;
+  aresetn:in std_logic;
   s_axis_data_tvalid:in std_logic;
   s_axis_data_tready:out std_logic;
   s_axis_data_tdata:in std_logic_vector(23 downto 0);
@@ -156,8 +156,8 @@ end process newOnly;
 av:baseline_av
 port map (
   aclk => clk,
-  aclken => to_std_logic(av_enable),
-  s_axis_data_tvalid => '1',
+  aresetn => '1', --to_std_logic(av_enable),
+  s_axis_data_tvalid => to_std_logic(av_enable), --'1',
   s_axis_data_tready => open,
   s_axis_data_tdata => mf_value,
   s_axis_config_tvalid => av_config.config_valid,
