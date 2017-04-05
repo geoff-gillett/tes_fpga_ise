@@ -13,7 +13,7 @@ use work.registers.all;
 use work.events.all;
 use work.measurements.all;
 
-entity measure5 is
+entity measure6 is
 generic(
   CHANNEL:natural:=0;
   WIDTH:natural:=18;
@@ -39,9 +39,9 @@ port (
   
   measurements:out measurements_t
 );
-end entity measure5;
+end entity measure6;
 
-architecture RTL of measure5 is
+architecture RTL of measure6 is
 
 -- pipelines to sync signals
 signal cfd_error_cfd,cfd_valid_cfd:boolean;
@@ -153,7 +153,7 @@ constant_fraction <= signed('0' & registers.constant_fraction);
 slope_threshold <= signed('0' & registers.slope_threshold);
 pulse_threshold <= signed('0' & registers.pulse_threshold);
 
-CFD:entity dsp.CFD2
+CFD:entity dsp.CFD3
 generic map(
   WIDTH => WIDTH,
   DELAY => CFD_DELAY,
@@ -408,6 +408,7 @@ begin
           <= cfd_low_pos_x & cfd_low_pos_pipe(1+XLAT to DEPTH-1);
       end if;
       
+      --FIXME this should no longer be needed
       cfd_high_pos_pipe(1+XLAT to DEPTH) 
         <= cfd_high_pos_x & cfd_high_pos_pipe(1+XLAT to DEPTH-1);
         
@@ -439,9 +440,11 @@ begin
         <= above_pulse_threshold_cfd & above_pipe(1 to DEPTH-1);
       armed_pipe <= armed_cfd & armed_pipe(1 to DEPTH-1);
       
+      -- 
+      -- not (cfd_error and (flags.height.cfd_height or flags.timing.cfd_low or not above_pulse_threshold))
       if min_cfd then
         valid_peak <= will_arm_cfd and will_go_above_cfd and not cfd_error_cfd;
-      elsif max_pipe(1) then
+      elsif max_pipe(1) and above_pipe(1) then
         valid_peak <= FALSE;
       end if;
       
@@ -652,7 +655,7 @@ begin
         else
           height <= cfd_high_thresh_rounded; 
         end if;
-        --FIXME should be able to use the max 
+        --FIXME should use the max 
         height_valid <= cfd_high_pos_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
       when SLOPE_INTEGRAL_D =>
         height <= resize(slope_area_m1,16); --FIXME scale?

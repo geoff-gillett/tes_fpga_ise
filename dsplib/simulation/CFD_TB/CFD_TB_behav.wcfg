@@ -1,0 +1,856 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="CFD_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="CFD_TB" />
+            <top_module name="boolean_vector" />
+            <top_module name="logic" />
+            <top_module name="types" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="2428500000fs"></ZoomStartTime>
+      <ZoomEndTime time="9313500001fs"></ZoomEndTime>
+      <Cursor1Time time="6596000000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="4" />
+   <wvobject fp_name="group29" type="group">
+      <obj_property name="label">testbench</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/adc_sample" type="array">
+         <obj_property name="ElementShortName">adc_sample[17:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_sample[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/constant_fraction" type="array">
+         <obj_property name="ElementShortName">constant_fraction[17:0]</obj_property>
+         <obj_property name="ObjectShortName">constant_fraction[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/sim_count" type="array">
+         <obj_property name="ElementShortName">sim_count[9:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_count[9:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/stage1_config" type="array">
+         <obj_property name="ElementShortName">stage1_config</obj_property>
+         <obj_property name="ObjectShortName">stage1_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/stage1_events" type="array">
+         <obj_property name="ElementShortName">stage1_events</obj_property>
+         <obj_property name="ObjectShortName">stage1_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/stage2_config" type="array">
+         <obj_property name="ElementShortName">stage2_config</obj_property>
+         <obj_property name="ObjectShortName">stage2_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/stage2_events" type="array">
+         <obj_property name="ElementShortName">stage2_events</obj_property>
+         <obj_property name="ObjectShortName">stage2_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/sample_in" type="array">
+         <obj_property name="ElementShortName">sample_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">sample_in[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
+         <obj_property name="AnalogYRangeMin">-1500.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">1500.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/simenable" type="other">
+         <obj_property name="ElementShortName">simenable</obj_property>
+         <obj_property name="ObjectShortName">simenable</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/filtered" type="array">
+         <obj_property name="ElementShortName">filtered[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/slope" type="array">
+         <obj_property name="ElementShortName">slope[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/slope_threshold" type="array">
+         <obj_property name="ElementShortName">slope_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/pulse_threshold" type="array">
+         <obj_property name="ElementShortName">pulse_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/cfd_low_threshold" type="array">
+         <obj_property name="ElementShortName">cfd_low_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/cfd_high_threshold" type="array">
+         <obj_property name="ElementShortName">cfd_high_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/max_slope" type="array">
+         <obj_property name="ElementShortName">max_slope[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_slope[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/max" type="other">
+         <obj_property name="ElementShortName">max</obj_property>
+         <obj_property name="ObjectShortName">max</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/min" type="other">
+         <obj_property name="ElementShortName">min</obj_property>
+         <obj_property name="ObjectShortName">min</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/pulse_threshold_pos" type="other">
+         <obj_property name="ElementShortName">pulse_threshold_pos</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold_pos</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/pulse_threshold_neg" type="other">
+         <obj_property name="ElementShortName">pulse_threshold_neg</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold_neg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/slope_threshold_pos" type="other">
+         <obj_property name="ElementShortName">slope_threshold_pos</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold_pos</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/slope_out" type="array">
+         <obj_property name="ElementShortName">slope_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_out[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/filtered_out" type="array">
+         <obj_property name="ElementShortName">filtered_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_out[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/overrun" type="other">
+         <obj_property name="ElementShortName">overrun</obj_property>
+         <obj_property name="ObjectShortName">overrun</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/rel2min" type="other">
+         <obj_property name="ElementShortName">rel2min</obj_property>
+         <obj_property name="ObjectShortName">rel2min</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/will_go_above_pulse_threshold" type="other">
+         <obj_property name="ElementShortName">will_go_above_pulse_threshold</obj_property>
+         <obj_property name="ObjectShortName">will_go_above_pulse_threshold</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/will_arm" type="other">
+         <obj_property name="ElementShortName">will_arm</obj_property>
+         <obj_property name="ObjectShortName">will_arm</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/armed" type="other">
+         <obj_property name="ElementShortName">armed</obj_property>
+         <obj_property name="ObjectShortName">armed</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/above_pulse_threshold" type="other">
+         <obj_property name="ElementShortName">above_pulse_threshold</obj_property>
+         <obj_property name="ObjectShortName">above_pulse_threshold</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/cfd_error" type="other">
+         <obj_property name="ElementShortName">cfd_error</obj_property>
+         <obj_property name="ObjectShortName">cfd_error</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/cfd_valid" type="other">
+         <obj_property name="ElementShortName">cfd_valid</obj_property>
+         <obj_property name="ObjectShortName">cfd_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/DELAY" type="other">
+         <obj_property name="ElementShortName">DELAY</obj_property>
+         <obj_property name="ObjectShortName">DELAY</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/STRICT_CROSSING" type="other">
+         <obj_property name="ElementShortName">STRICT_CROSSING</obj_property>
+         <obj_property name="ObjectShortName">STRICT_CROSSING</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/SIM_WIDTH" type="other">
+         <obj_property name="ElementShortName">SIM_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">SIM_WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/CLK_PERIOD" type="other">
+         <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
+         <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/CF" type="other">
+         <obj_property name="ElementShortName">CF</obj_property>
+         <obj_property name="ObjectShortName">CF</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group71" type="group">
+      <obj_property name="label">UUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope" type="array">
+         <obj_property name="ElementShortName">slope[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/filtered" type="array">
+         <obj_property name="ElementShortName">filtered[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/constant_fraction" type="array">
+         <obj_property name="ElementShortName">constant_fraction[17:0]</obj_property>
+         <obj_property name="ObjectShortName">constant_fraction[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_threshold" type="array">
+         <obj_property name="ElementShortName">slope_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_threshold" type="array">
+         <obj_property name="ElementShortName">pulse_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/rel2min" type="other">
+         <obj_property name="ElementShortName">rel2min</obj_property>
+         <obj_property name="ObjectShortName">rel2min</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/cfd_low_threshold" type="array">
+         <obj_property name="ElementShortName">cfd_low_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/cfd_high_threshold" type="array">
+         <obj_property name="ElementShortName">cfd_high_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/max" type="other">
+         <obj_property name="ElementShortName">max</obj_property>
+         <obj_property name="ObjectShortName">max</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/min" type="other">
+         <obj_property name="ElementShortName">min</obj_property>
+         <obj_property name="ObjectShortName">min</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/max_slope" type="array">
+         <obj_property name="ElementShortName">max_slope[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_slope[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/will_go_above_pulse_threshold" type="other">
+         <obj_property name="ElementShortName">will_go_above_pulse_threshold</obj_property>
+         <obj_property name="ObjectShortName">will_go_above_pulse_threshold</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/will_arm" type="other">
+         <obj_property name="ElementShortName">will_arm</obj_property>
+         <obj_property name="ObjectShortName">will_arm</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/overrun" type="other">
+         <obj_property name="ElementShortName">overrun</obj_property>
+         <obj_property name="ObjectShortName">overrun</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_out" type="array">
+         <obj_property name="ElementShortName">slope_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_out[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_threshold_pos" type="other">
+         <obj_property name="ElementShortName">slope_threshold_pos</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold_pos</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/armed" type="other">
+         <obj_property name="ElementShortName">armed</obj_property>
+         <obj_property name="ObjectShortName">armed</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/above_pulse_threshold" type="other">
+         <obj_property name="ElementShortName">above_pulse_threshold</obj_property>
+         <obj_property name="ObjectShortName">above_pulse_threshold</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/filtered_out" type="array">
+         <obj_property name="ElementShortName">filtered_out[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_out[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_threshold_pos" type="other">
+         <obj_property name="ElementShortName">pulse_threshold_pos</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold_pos</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_threshold_neg" type="other">
+         <obj_property name="ElementShortName">pulse_threshold_neg</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold_neg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/cfd_error" type="other">
+         <obj_property name="ElementShortName">cfd_error</obj_property>
+         <obj_property name="ObjectShortName">cfd_error</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/cfd_valid" type="other">
+         <obj_property name="ElementShortName">cfd_valid</obj_property>
+         <obj_property name="ObjectShortName">cfd_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/started" type="other">
+         <obj_property name="ElementShortName">started</obj_property>
+         <obj_property name="ObjectShortName">started</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_0_p" type="other">
+         <obj_property name="ElementShortName">slope_0_p</obj_property>
+         <obj_property name="ObjectShortName">slope_0_p</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_0_n" type="other">
+         <obj_property name="ElementShortName">slope_0_n</obj_property>
+         <obj_property name="ObjectShortName">slope_0_n</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/cf_int" type="array">
+         <obj_property name="ElementShortName">cf_int[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cf_int[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/p" type="array">
+         <obj_property name="ElementShortName">p[17:0]</obj_property>
+         <obj_property name="ObjectShortName">p[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_t_p" type="other">
+         <obj_property name="ElementShortName">slope_t_p</obj_property>
+         <obj_property name="ObjectShortName">slope_t_p</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_t_n" type="other">
+         <obj_property name="ElementShortName">slope_t_n</obj_property>
+         <obj_property name="ObjectShortName">slope_t_n</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_threshold_int" type="array">
+         <obj_property name="ElementShortName">slope_threshold_int[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold_int[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_threshold_int" type="array">
+         <obj_property name="ElementShortName">pulse_threshold_int[17:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold_int[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/max_slope_i" type="array">
+         <obj_property name="ElementShortName">max_slope_i[17:0]</obj_property>
+         <obj_property name="ObjectShortName">max_slope_i[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_t_p" type="other">
+         <obj_property name="ElementShortName">pulse_t_p</obj_property>
+         <obj_property name="ObjectShortName">pulse_t_p</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_t_n" type="other">
+         <obj_property name="ElementShortName">pulse_t_n</obj_property>
+         <obj_property name="ObjectShortName">pulse_t_n</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/filtered_pipe" type="array">
+         <obj_property name="ElementShortName">filtered_pipe[1:7][17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_pipe[1:7][17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_pipe" type="array">
+         <obj_property name="ElementShortName">slope_pipe[1:7][17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_pipe[1:7][17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/minima_pipe" type="array">
+         <obj_property name="ElementShortName">minima_pipe[1:7][17:0]</obj_property>
+         <obj_property name="ObjectShortName">minima_pipe[1:7][17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_0_n_pipe" type="array">
+         <obj_property name="ElementShortName">slope_0_n_pipe[1:7]</obj_property>
+         <obj_property name="ObjectShortName">slope_0_n_pipe[1:7]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_0_p_pipe" type="array">
+         <obj_property name="ElementShortName">slope_0_p_pipe[1:7]</obj_property>
+         <obj_property name="ObjectShortName">slope_0_p_pipe[1:7]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_t_p_pipe" type="array">
+         <obj_property name="ElementShortName">slope_t_p_pipe[1:7]</obj_property>
+         <obj_property name="ObjectShortName">slope_t_p_pipe[1:7]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_t_p_pipe" type="array">
+         <obj_property name="ElementShortName">pulse_t_p_pipe[1:7]</obj_property>
+         <obj_property name="ObjectShortName">pulse_t_p_pipe[1:7]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_t_n_pipe" type="array">
+         <obj_property name="ElementShortName">pulse_t_n_pipe[1:7]</obj_property>
+         <obj_property name="ObjectShortName">pulse_t_n_pipe[1:7]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_x" type="array">
+         <obj_property name="ElementShortName">slope_x[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_x[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/filtered_x" type="array">
+         <obj_property name="ElementShortName">filtered_x[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_x[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/delay_counter" type="other">
+         <obj_property name="ElementShortName">delay_counter</obj_property>
+         <obj_property name="ObjectShortName">delay_counter</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/overrun_i" type="other">
+         <obj_property name="ElementShortName">overrun_i</obj_property>
+         <obj_property name="ObjectShortName">overrun_i</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/armed_i" type="other">
+         <obj_property name="ElementShortName">armed_i</obj_property>
+         <obj_property name="ObjectShortName">armed_i</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/above_i" type="other">
+         <obj_property name="ElementShortName">above_i</obj_property>
+         <obj_property name="ObjectShortName">above_i</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/overrun_d" type="other">
+         <obj_property name="ElementShortName">overrun_d</obj_property>
+         <obj_property name="ObjectShortName">overrun_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/armed_d" type="other">
+         <obj_property name="ElementShortName">armed_d</obj_property>
+         <obj_property name="ObjectShortName">armed_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/above_d" type="other">
+         <obj_property name="ElementShortName">above_d</obj_property>
+         <obj_property name="ObjectShortName">above_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/cfd_low_i" type="array">
+         <obj_property name="ElementShortName">cfd_low_i[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_i[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/cfd_high_i" type="array">
+         <obj_property name="ElementShortName">cfd_high_i[17:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_i[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/q_reset" type="logic">
+         <obj_property name="ElementShortName">q_reset</obj_property>
+         <obj_property name="ObjectShortName">q_reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/cf_data" type="array">
+         <obj_property name="ElementShortName">cf_data[71:0]</obj_property>
+         <obj_property name="ObjectShortName">cf_data[71:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/q_wr_en" type="logic">
+         <obj_property name="ElementShortName">q_wr_en</obj_property>
+         <obj_property name="ObjectShortName">q_wr_en</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/q_rd_en" type="logic">
+         <obj_property name="ElementShortName">q_rd_en</obj_property>
+         <obj_property name="ObjectShortName">q_rd_en</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/q_dout" type="array">
+         <obj_property name="ElementShortName">q_dout[71:0]</obj_property>
+         <obj_property name="ObjectShortName">q_dout[71:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/q_full" type="logic">
+         <obj_property name="ElementShortName">q_full</obj_property>
+         <obj_property name="ObjectShortName">q_full</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/q_empty" type="logic">
+         <obj_property name="ElementShortName">q_empty</obj_property>
+         <obj_property name="ObjectShortName">q_empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/full_i" type="other">
+         <obj_property name="ElementShortName">full_i</obj_property>
+         <obj_property name="ObjectShortName">full_i</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/flags_i" type="array">
+         <obj_property name="ElementShortName">flags_i[8:0]</obj_property>
+         <obj_property name="ObjectShortName">flags_i[8:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/flags_d" type="array">
+         <obj_property name="ElementShortName">flags_d[8:0]</obj_property>
+         <obj_property name="ObjectShortName">flags_d[8:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/flags_i_s" type="array">
+         <obj_property name="ElementShortName">flags_i_s[8:0]</obj_property>
+         <obj_property name="ObjectShortName">flags_i_s[8:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/filtered_d" type="array">
+         <obj_property name="ElementShortName">filtered_d[17:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_d[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_d" type="array">
+         <obj_property name="ElementShortName">slope_d[17:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_d[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_t_p_d" type="other">
+         <obj_property name="ElementShortName">slope_t_p_d</obj_property>
+         <obj_property name="ObjectShortName">slope_t_p_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_t_p_d" type="other">
+         <obj_property name="ElementShortName">pulse_t_p_d</obj_property>
+         <obj_property name="ObjectShortName">pulse_t_p_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_t_n_d" type="other">
+         <obj_property name="ElementShortName">pulse_t_n_d</obj_property>
+         <obj_property name="ObjectShortName">pulse_t_n_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/overran" type="other">
+         <obj_property name="ElementShortName">overran</obj_property>
+         <obj_property name="ObjectShortName">overran</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/max_d" type="other">
+         <obj_property name="ElementShortName">max_d</obj_property>
+         <obj_property name="ObjectShortName">max_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/min_d" type="other">
+         <obj_property name="ElementShortName">min_d</obj_property>
+         <obj_property name="ObjectShortName">min_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/above_pulse_threshold_d" type="other">
+         <obj_property name="ElementShortName">above_pulse_threshold_d</obj_property>
+         <obj_property name="ObjectShortName">above_pulse_threshold_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_threshold_pos_d" type="other">
+         <obj_property name="ElementShortName">pulse_threshold_pos_d</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold_pos_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/pulse_threshold_neg_d" type="other">
+         <obj_property name="ElementShortName">pulse_threshold_neg_d</obj_property>
+         <obj_property name="ObjectShortName">pulse_threshold_neg_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/slope_threshold_pos_d" type="other">
+         <obj_property name="ElementShortName">slope_threshold_pos_d</obj_property>
+         <obj_property name="ObjectShortName">slope_threshold_pos_d</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/q_was_empty" type="other">
+         <obj_property name="ElementShortName">q_was_empty</obj_property>
+         <obj_property name="ObjectShortName">q_was_empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/wr_count" type="array">
+         <obj_property name="ElementShortName">wr_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_count[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/rd_count" type="array">
+         <obj_property name="ElementShortName">rd_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_count[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/DELAY" type="other">
+         <obj_property name="ElementShortName">DELAY</obj_property>
+         <obj_property name="ObjectShortName">DELAY</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/STRICT_CROSSING" type="other">
+         <obj_property name="ElementShortName">STRICT_CROSSING</obj_property>
+         <obj_property name="ObjectShortName">STRICT_CROSSING</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/UUT/DEBUG" type="other">
+         <obj_property name="ElementShortName">DEBUG</obj_property>
+         <obj_property name="ObjectShortName">DEBUG</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group252" type="group">
+      <obj_property name="label">FIR</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/sample_in" type="array">
+         <obj_property name="ElementShortName">sample_in[17:0]</obj_property>
+         <obj_property name="ObjectShortName">sample_in[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage1_config" type="array">
+         <obj_property name="ElementShortName">stage1_config</obj_property>
+         <obj_property name="ObjectShortName">stage1_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage1_events" type="array">
+         <obj_property name="ElementShortName">stage1_events</obj_property>
+         <obj_property name="ObjectShortName">stage1_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2_config" type="array">
+         <obj_property name="ElementShortName">stage2_config</obj_property>
+         <obj_property name="ObjectShortName">stage2_config</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2_events" type="array">
+         <obj_property name="ElementShortName">stage2_events</obj_property>
+         <obj_property name="ObjectShortName">stage2_events</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage1_in" type="array">
+         <obj_property name="ElementShortName">stage1_in[23:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_in[23:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage1_out" type="array">
+         <obj_property name="ElementShortName">stage1_out[47:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_out[47:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">26</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage1" type="array">
+         <obj_property name="ElementShortName">stage1[17:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1[17:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2_in" type="array">
+         <obj_property name="ElementShortName">stage2_in[23:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_in[23:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2_out" type="array">
+         <obj_property name="ElementShortName">stage2_out[47:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_out[47:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">28</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2" type="array">
+         <obj_property name="ElementShortName">stage2[17:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage1_data" type="array">
+         <obj_property name="ElementShortName">stage1_data[17:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_data[17:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage1_d" type="array">
+         <obj_property name="ElementShortName">stage1_d[17:0]</obj_property>
+         <obj_property name="ObjectShortName">stage1_d[17:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2_data" type="array">
+         <obj_property name="ElementShortName">stage2_data[17:0]</obj_property>
+         <obj_property name="ObjectShortName">stage2_data[17:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage1_valid" type="logic">
+         <obj_property name="ElementShortName">stage1_valid</obj_property>
+         <obj_property name="ObjectShortName">stage1_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/WIDTH_IN" type="other">
+         <obj_property name="ElementShortName">WIDTH_IN</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/FRAC_IN" type="other">
+         <obj_property name="ElementShortName">FRAC_IN</obj_property>
+         <obj_property name="ObjectShortName">FRAC_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/FRAC" type="other">
+         <obj_property name="ElementShortName">FRAC</obj_property>
+         <obj_property name="ObjectShortName">FRAC</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/SLOPE_FRAC" type="other">
+         <obj_property name="ElementShortName">SLOPE_FRAC</obj_property>
+         <obj_property name="ObjectShortName">SLOPE_FRAC</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group274" type="group">
+      <obj_property name="label">slope round</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/input" type="array">
+         <obj_property name="ElementShortName">input[47:0]</obj_property>
+         <obj_property name="ObjectShortName">input[47:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">28</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/output_threshold" type="array">
+         <obj_property name="ElementShortName">output_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">output_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/output" type="array">
+         <obj_property name="ElementShortName">output[17:0]</obj_property>
+         <obj_property name="ObjectShortName">output[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/above_threshold" type="other">
+         <obj_property name="ElementShortName">above_threshold</obj_property>
+         <obj_property name="ObjectShortName">above_threshold</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/a" type="array">
+         <obj_property name="ElementShortName">a[29:0]</obj_property>
+         <obj_property name="ObjectShortName">a[29:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/b" type="array">
+         <obj_property name="ElementShortName">b[17:0]</obj_property>
+         <obj_property name="ObjectShortName">b[17:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/p_out" type="array">
+         <obj_property name="ElementShortName">p_out[47:0]</obj_property>
+         <obj_property name="ObjectShortName">p_out[47:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/ab" type="array">
+         <obj_property name="ElementShortName">ab[47:0]</obj_property>
+         <obj_property name="ObjectShortName">ab[47:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/carryin" type="logic">
+         <obj_property name="ElementShortName">carryin</obj_property>
+         <obj_property name="ObjectShortName">carryin</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/pat" type="logic">
+         <obj_property name="ElementShortName">pat</obj_property>
+         <obj_property name="ObjectShortName">pat</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/patb" type="logic">
+         <obj_property name="ElementShortName">patb</obj_property>
+         <obj_property name="ObjectShortName">patb</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/saturate" type="logic">
+         <obj_property name="ElementShortName">saturate</obj_property>
+         <obj_property name="ObjectShortName">saturate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/rounding" type="array">
+         <obj_property name="ElementShortName">rounding[47:0]</obj_property>
+         <obj_property name="ObjectShortName">rounding[47:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/WIDTH_IN" type="other">
+         <obj_property name="ElementShortName">WIDTH_IN</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/FRAC_IN" type="other">
+         <obj_property name="ElementShortName">FRAC_IN</obj_property>
+         <obj_property name="ObjectShortName">FRAC_IN</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/WIDTH_OUT" type="other">
+         <obj_property name="ElementShortName">WIDTH_OUT</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/FRAC_OUT" type="other">
+         <obj_property name="ElementShortName">FRAC_OUT</obj_property>
+         <obj_property name="ObjectShortName">FRAC_OUT</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/NONZERO_MASKS" type="other">
+         <obj_property name="ElementShortName">NONZERO_MASKS</obj_property>
+         <obj_property name="ObjectShortName">NONZERO_MASKS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/OVERFLOW_MASK" type="array">
+         <obj_property name="ElementShortName">OVERFLOW_MASK[47:0]</obj_property>
+         <obj_property name="ObjectShortName">OVERFLOW_MASK[47:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/CFD_TB/fir/stage2Round/NO_ROUND" type="other">
+         <obj_property name="ElementShortName">NO_ROUND</obj_property>
+         <obj_property name="ObjectShortName">NO_ROUND</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

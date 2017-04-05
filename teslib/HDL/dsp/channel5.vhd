@@ -16,7 +16,7 @@ use work.registers.all;
 use work.measurements.all;
 use work.types.all;
 
-entity channel4 is
+entity channel5 is
 generic(
   CHANNEL:natural:=0;
   BASELINE_BITS:natural:=11;
@@ -61,9 +61,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity channel4;
+end entity channel5;
 
-architecture fixed_16_3 of channel4 is
+architecture fixed_16_3 of channel5 is
   
 constant RAW_DELAY:natural:=1026;
   
@@ -196,7 +196,7 @@ port map(
   stage2 => slope
 );
 
-measure:entity work.measure5
+measure:entity work.measure6
 generic map(
   CHANNEL => CHANNEL,
   WIDTH => WIDTH,

@@ -18,8 +18,9 @@ use work.types.all;
 entity CFD_TB is
 generic(
   WIDTH:integer:=18;
-  DELAY:integer:=1026;
-  SIM_WIDTH:integer:=7
+  DELAY:integer:=200;
+  STRICT_CROSSING:boolean:=TRUE;
+  SIM_WIDTH:integer:=10
 );
 end entity CFD_TB;
 
@@ -32,7 +33,7 @@ constant CLK_PERIOD:time:=4 ns;
 
 signal adc_sample,constant_fraction:signed(WIDTH-1 downto 0);
 
-signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
+signal sim_count:signed(SIM_WIDTH-1 downto 0);
 signal stage1_config:fir_control_in_t;
 signal stage1_events:fir_control_out_t;
 signal stage2_config:fir_control_in_t;
@@ -41,7 +42,7 @@ signal simenable:boolean:=FALSE;
 signal filtered:signed(WIDTH-1 downto 0);
 signal slope:signed(WIDTH-1 downto 0);
 
-constant CF:integer:=2**17/2;
+constant CF:integer:=2**17/5;
 signal slope_threshold:signed(WIDTH-1 downto 0);
 signal pulse_threshold:signed(WIDTH-1 downto 0);
 signal cfd_low_threshold:signed(WIDTH-1 downto 0);
@@ -55,30 +56,42 @@ signal slope_threshold_pos:boolean;
 signal slope_out:signed(WIDTH-1 downto 0);
 signal filtered_out:signed(WIDTH-1 downto 0);
 signal overrun:boolean;
+signal rel2min : boolean;
+signal will_go_above_pulse_threshold : boolean;
+signal will_arm:boolean;
+signal armed:boolean;
+signal above_pulse_threshold : boolean;
+signal cfd_error:boolean;
+signal cfd_valid:boolean;
+signal sample_in:signed(17 downto 0);
 
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-FIR:entity work.two_stage_FIR
+fir:entity work.two_stage_FIR71_18_3
 generic map(
-  WIDTH => WIDTH
+  WIDTH_IN => 18,
+  FRAC_IN => 3,
+  WIDTH => WIDTH,
+  FRAC => 3,
+  SLOPE_FRAC => 8
 )
 port map(
   clk => clk,
-  sample_in => adc_sample,
+  sample_in => sample_in,
   stage1_config => stage1_config,
   stage1_events => stage1_events,
   stage2_config => stage2_config,
   stage2_events => stage2_events,
-  sample_out => open,
   stage1 => filtered,
   stage2 => slope
 );
 
-UUT:entity work.CFD
+UUT:entity work.CFD2
 generic map(
   WIDTH => WIDTH,
-  DELAY => DELAY
+  DELAY => DELAY,
+  STRICT_CROSSING => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -88,20 +101,25 @@ port map(
   constant_fraction => constant_fraction,
   slope_threshold => slope_threshold,
   pulse_threshold => pulse_threshold,
-  
+  rel2min => rel2min,
   cfd_low_threshold => cfd_low_threshold,
   cfd_high_threshold => cfd_high_threshold,
-  max_slope => max_slope,
   max => max,
   min => min,
-  pulse_threshold_pos => pulse_threshold_pos,
-  pulse_threshold_neg => pulse_threshold_neg,
-  slope_threshold_pos => slope_threshold_pos,
+  max_slope => max_slope,
+  will_go_above_pulse_threshold => will_go_above_pulse_threshold,
+  will_arm => will_arm,
   overrun => overrun,
   slope_out => slope_out,
-  filtered_out => filtered_out
+  slope_threshold_pos => slope_threshold_pos,
+  armed => armed,
+  above_pulse_threshold => above_pulse_threshold,
+  filtered_out => filtered_out,
+  pulse_threshold_pos => pulse_threshold_pos,
+  pulse_threshold_neg => pulse_threshold_neg,
+  cfd_error => cfd_error,
+  cfd_valid => cfd_valid
 );
-
 
 simsquare:process (clk) is
 begin
@@ -113,9 +131,11 @@ begin
     end if;
   end if;
 end process simsquare;
-adc_sample <= to_signed(-100,WIDTH) 
-              when sim_count(SIM_WIDTH-1)='0' 
-              else to_signed(1000,WIDTH);
+--adc_sample <= to_signed(-100,WIDTH) 
+--              when sim_count(SIM_WIDTH-1)='0' 
+--              else to_signed(1000,WIDTH);
+                
+sample_in <= resize(sim_count,WIDTH);
 
 
 stimulus:process is

@@ -383,7 +383,7 @@ begin
       -- also this maybe cause of jamming
       free_after_commit <= framer_free - length_reg;
 --      if commit_reg then -- problem if commit_reg and pulse/peak start
-        framer_full <= free_after_commit < m.pre_size; --needs to be next size
+      framer_full <= free_after_commit < m.pre_size; --needs to be next size
 --      else
 --        framer_full <= framer_free < m.size; -- size changes at minima
 --      end if;
