@@ -216,11 +216,11 @@ squaresig <= to_signed(-10,ADC_WIDTH)
 doublesig <= to_signed(-20,ADC_WIDTH)
              when sim_count < 10
              else to_signed(30,ADC_WIDTH)
-             when sim_count < 80
+             when sim_count < 40
              else to_signed(10,ADC_WIDTH)
-             when sim_count < 160
+             when sim_count < 100
              else to_signed(100,ADC_WIDTH)
-             when sim_count < 300 
+             when sim_count < 200
              else to_signed(-20,ADC_WIDTH);
              
 --adc_sample <= signed(squaresig);
@@ -254,7 +254,7 @@ registers.baseline.timeconstant <= to_unsigned(25000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 registers.capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
-registers.capture.pulse_threshold <= to_unsigned(500*8,DSP_BITS-1);
+registers.capture.pulse_threshold <= to_unsigned(1554,DSP_BITS-1);
 registers.capture.area_threshold <= to_unsigned(3921,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 registers.capture.detection <= PULSE_DETECTION_D;

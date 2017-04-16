@@ -219,16 +219,28 @@ end function;
 signal framestream:streambus_t;
 signal framestream_firstbyte:std_logic_vector(7 downto 0);
 signal framestream_last,new_frame,framestream_ready,framestream_valid:boolean;
+signal lookahead_type_s:std_logic_vector(2 downto 0);
+signal estream_s:std_logic_vector(BUS_DATABITS-1 downto 0);
+signal estream_last:boolean;
 
 constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
 
-attribute MARK_DEBUG of framestream_firstbyte:signal is DEBUG;
-attribute MARK_DEBUG of new_frame:signal is DEBUG;
-attribute MARK_DEBUG of framer_free:signal is DEBUG;
-attribute MARK_DEBUG of framer_ready:signal is DEBUG;
-attribute MARK_DEBUG of framestream_valid:signal is DEBUG;
-attribute MARK_DEBUG of framestream_ready:signal is DEBUG;
+attribute MARK_DEBUG of lookahead_type_s:signal is DEBUG;
+attribute MARK_DEBUG of lookahead_valid:signal is DEBUG;
+attribute MARK_DEBUG of buffer_full:signal is DEBUG;
+attribute MARK_DEBUG of lookahead_head:signal is DEBUG;
+attribute MARK_DEBUG of estream_s:signal is DEBUG;
+attribute MARK_DEBUG of event_s_valid:signal is DEBUG;
+attribute MARK_DEBUG of event_s_ready:signal is DEBUG;
+attribute MARK_DEBUG of estream_last:signal is DEBUG;
+
+--attribute MARK_DEBUG of framestream_firstbyte:signal is DEBUG;
+--attribute MARK_DEBUG of new_frame:signal is DEBUG;
+--attribute MARK_DEBUG of framer_free:signal is DEBUG;
+--attribute MARK_DEBUG of framer_ready:signal is DEBUG;
+--attribute MARK_DEBUG of framestream_valid:signal is DEBUG;
+--attribute MARK_DEBUG of framestream_ready:signal is DEBUG;
 
 --attribute MARK_DEBUG of arbiter_state_v:signal is DEBUG;
 --attribute MARK_DEBUG of frame_state_v:signal is DEBUG;
@@ -242,6 +254,10 @@ begin
 --------------------------------------------------------------------------------
  framestream_firstbyte <= framestream.data(63 downto 56);
  framestream_last <= framestream.last(0);
+ lookahead_type_s <= to_std_logic(lookahead_type);
+ estream_s <= event_s.data;
+ estream_last <= event_s.last(0);
+ 
  frameStart : process (clk) is
  begin
    if rising_edge(clk) then
@@ -375,7 +391,7 @@ begin
             when PULSE_DETECTION_D =>
               size := lookahead_size;
             	size_change <= frame_size/=lookahead_size;
-            when PULSE2_DETECTION_D =>
+            when TRACE_DETECTION_D =>
               size := to_unsigned(3, SIZE_BITS); --3
             	size_change <= FALSE;
             end case;
@@ -598,7 +614,7 @@ begin
 				else
           framer_we <= (others => framer_ready);
           inc_address <= framer_ready;
-					if header.event_type.detection=PULSE2_DETECTION_D or --??
+					if header.event_type.detection=TRACE_DETECTION_D or --??
 							header.event_type.tick then
 						framer_word.last(0) <= event_s.last(0);
 						if event_s.last(0) and framer_ready then

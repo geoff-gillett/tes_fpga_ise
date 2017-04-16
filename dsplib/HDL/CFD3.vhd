@@ -139,6 +139,7 @@ signal minima:signed(WIDTH-1 downto 0);
 signal cfd_low_threshold_d,cfd_high_threshold_d:signed(WIDTH-1 downto 0);
 signal max_slope_d:signed(WIDTH-1 downto 0);
 signal will_go_above_pulse_threshold_d,will_arm_d:boolean;
+signal pulse_t_n:boolean;
 
 begin
 --------------------------------------------------------------------------------
@@ -224,7 +225,7 @@ port map(
   threshold => pulse_threshold_int,
   signal_out => filtered_int,
   pos => pulse_t_p,
-  neg => open
+  neg => pulse_t_n
 );
 
 overrun_i <= delay_counter >= DELAY-1;
@@ -251,6 +252,7 @@ begin
       slope_0_p_pipe <= slope_0_p & slope_0_p_pipe(1 to DEPTH-1);
       
       pulse_t_p_pipe(4 to DEPTH) <= pulse_t_p & pulse_t_p_pipe(4 to DEPTH-1);
+      pulse_t_n_pipe(4 to DEPTH) <= pulse_t_n & pulse_t_n_pipe(4 to DEPTH-1);
       slope_t_p_pipe(4 to DEPTH) <= slope_t_p & slope_t_p_pipe(4 to DEPTH-1);
       
       filtered_pipe(4 to DEPTH) <= filtered_int & filtered_pipe(4 to DEPTH-1);

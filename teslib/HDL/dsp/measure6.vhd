@@ -139,7 +139,6 @@ signal last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
 signal peak_start:boolean;
 signal pulse_t_xing:boolean;
 signal pre_pulse_start,pre_peak_start:boolean;
-signal reg:capture_registers_t;
 signal minima:signed(WIDTH_OUT-1 downto 0);
 signal cfd_high_thresh_rounded:signed(WIDTH_OUT-1 downto 0);
 
@@ -408,7 +407,6 @@ begin
           <= cfd_low_pos_x & cfd_low_pos_pipe(1+XLAT to DEPTH-1);
       end if;
       
-      --FIXME this should no longer be needed
       cfd_high_pos_pipe(1+XLAT to DEPTH) 
         <= cfd_high_pos_x & cfd_high_pos_pipe(1+XLAT to DEPTH-1);
         
@@ -440,8 +438,6 @@ begin
         <= above_pulse_threshold_cfd & above_pipe(1 to DEPTH-1);
       armed_pipe <= armed_cfd & armed_pipe(1 to DEPTH-1);
       
-      -- 
-      -- not (cfd_error and (flags.height.cfd_height or flags.timing.cfd_low or not above_pulse_threshold))
       if min_cfd then
         valid_peak <= will_arm_cfd and will_go_above_cfd and not cfd_error_cfd;
       elsif max_pipe(1) and above_pipe(1) then
@@ -476,7 +472,6 @@ begin
       high_pipe <= cfd_high_threshold & high_pipe(1 to DEPTH-1);
       low_pipe <= cfd_low_threshold & low_pipe(1 to DEPTH-1);
       
-      -- minima at start of pulse  
       slope_0xing <= min_pipe(XLAT-1) or max_pipe(XLAT-1); 
       
       pre_pulse_start <= min_pipe(DEPTH-2) and not above_pipe(DEPTH-2) and 
@@ -494,55 +489,44 @@ begin
       end if;
       height_thresh_out <= high_pipe(DEPTH-1);
           
-      --pre minima below pulse threshold 
-      if (min_pipe(DEPTH-3) and not above_pipe(DEPTH-3)) then 
-        reg <= registers;
-        case registers.detection is
-        when PEAK_DETECTION_D | AREA_DETECTION_D => 
-          pre2_size <= (0 => '1', others => '0');
-        when PULSE_DETECTION_D | PULSE2_DETECTION_D => 
-          pre2_size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
-        end case;
-      end if;
-      
-      if (min_pipe(DEPTH-1) and not above_pipe(DEPTH-1)) then 
-        area_threshold <= signed('0' & reg.area_threshold);
-        flags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
-        flags.event_type.detection <= reg.detection;
-        flags.event_type.tick <= FALSE;
-        flags.height <= reg.height;
-        flags.new_window <= FALSE;
-        flags.cfd_rel2min <= reg.cfd_rel2min;
-        flags.timing <= reg.timing;
-        max_peaks <= '0' & reg.max_peaks;
-        last_peak_address <= ('0' & reg.max_peaks)+2;
-        
-      end if;  
-       
-      --minima (max) mutually exclusive)
-      if min_pipe(DEPTH-1) then 
-        
-        minima <= filtered_pipe(DEPTH-1);
-        
-        if first_peak_pipe(DEPTH-1) then
+      if (min_pipe(DEPTH-1)) then 
+        if first_peak_pipe(DEPTH-1) then 
+          
+          case registers.detection is
+          when PEAK_DETECTION_D | AREA_DETECTION_D => 
+            size <= (0 => '1', others => '0');
+          when PULSE_DETECTION_D | TRACE_DETECTION_D => 
+            size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
+          end case;
+          
+          area_threshold <= signed('0' & registers.area_threshold);
+          flags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
+          flags.event_type.detection <= registers.detection;
+          flags.event_type.tick <= FALSE;
+          flags.height <= registers.height;
+          flags.new_window <= FALSE;
+          flags.cfd_rel2min <= registers.cfd_rel2min;
+          flags.timing <= registers.timing;
+          max_peaks <= '0' & registers.max_peaks;
+          last_peak_address <= ('0' & registers.max_peaks)+2;
+
           m.peak_overflow <= FALSE;
           flags.peak_number <= (others => '0');
           peak_number_n <= (0 => '1',others => '0');
-          last_peak <= reg.max_peaks=0;
-          --m.max_peaks <= registers.max_peaks;
+          last_peak <= registers.max_peaks=0;
           time_offset <= (others => '0'); 
-          pre_size <= pre2_size;
-          size <= pre_size;
           
           valid_peak0 <= valid_peak_pipe(DEPTH-1);
           
           peak_address <= (1 => '1', others => '0'); -- start at 2
           peak_address_n <= (1 downto 0 => '1', others => '0');
         else
-          valid_peak1 <= flags.peak_number=1 and valid_peak_pipe(DEPTH-1);
-          valid_peak2 <= flags.peak_number=2 and valid_peak_pipe(DEPTH-1);
-        end if;
-      end if;
+          
+        end if;  
+        
+        minima <= filtered_pipe(DEPTH-1);
+        
+      end if;  
       
       if max_pipe(DEPTH) then
         valid_peak0 <= FALSE;

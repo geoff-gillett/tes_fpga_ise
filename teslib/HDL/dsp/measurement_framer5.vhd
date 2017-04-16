@@ -158,7 +158,7 @@ begin
       filtered_reg <= m.filtered_long; 
       
       if m.eflags.event_type.detection=PEAK_DETECTION_D or 
-         m.eflags.event_type.detection=PULSE2_DETECTION_D then
+         m.eflags.event_type.detection=TRACE_DETECTION_D then
          error_int <= m.peak_start and state/=IDLE_S;
          overflow_int <= m.peak_start and (framer_full or mux_full_reg);
       else
@@ -206,7 +206,7 @@ begin
             done <= FALSE;
             stamped <= m.stamp_pulse;
           end if;
-        when PULSE2_DETECTION_D =>
+        when TRACE_DETECTION_D =>
           if m.peak_start and not (framer_full or mux_full_reg) then
             state <= TEST_S;
             frame_address <= (0 => '1', others => '0');

@@ -375,7 +375,7 @@ begin
             when PULSE_DETECTION_D =>
               size := lookahead_size;
             	size_change <= frame_size/=lookahead_size;
-            when PULSE2_DETECTION_D =>
+            when TRACE_DETECTION_D =>
               size := to_unsigned(3, SIZE_BITS); --3
             	size_change <= FALSE;
             end case;
@@ -598,7 +598,7 @@ begin
 				else
           framer_we <= (others => framer_ready);
           inc_address <= framer_ready;
-					if header.event_type.detection=PULSE2_DETECTION_D or --??
+					if header.event_type.detection=TRACE_DETECTION_D or --??
 							header.event_type.tick then
 						framer_word.last(0) <= event_s.last(0);
 						if event_s.last(0) and framer_ready then

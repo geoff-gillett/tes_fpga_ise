@@ -176,7 +176,7 @@ end record;
 function to_streambus(t:tick_event2_t;w:natural range 0 to 2;endianness:string) 
 return streambus_t;
 -----------------  pulse event - 16 byte header --------------------------------
---  | size | low thresh |   flags  |   time   | *low thresh for pulse2
+--  | size |  reserved  |   flags  |   time   | *low thresh for pulse2
 --  |       area        |  length  |  offset  |  
 --  repeating 8 byte peak records (up to 16) for extra peaks.
 --  | height | rise | minima | time |
@@ -491,6 +491,7 @@ end function;
 --  |     area        |  length  |  offset  |  
 --  repeating 8 byte peak records (up to 16) for extra peaks.
 --  | height | rise | minima | time |
+--  | height | low1 |  low2  | time |  ---pulse2
 function to_streambus(p:pulse_detection_t;w:natural range 0 to 1;
 											endianness:string) return streambus_t is
 	variable sb:streambus_t;

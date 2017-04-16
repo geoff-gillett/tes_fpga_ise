@@ -72,7 +72,6 @@ signal sample_d:std_logic_vector(WIDTH-1 downto 0);
 signal m,dsp_m:measurements_t;
 signal baseline_sample,sample_inv:signed(ADC_WIDTH-1 downto 0);
 signal baseline_estimate:signed(WIDTH-1 downto 0);
---signal range_error:boolean;
 
 --debug
 constant DEBUG:string:="FALSE";

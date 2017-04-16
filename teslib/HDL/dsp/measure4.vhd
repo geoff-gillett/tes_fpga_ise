@@ -505,7 +505,7 @@ begin
           pre_size <= (0 => '1', others => '0');
         when PULSE_DETECTION_D => 
           pre_size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
-        when PULSE2_DETECTION_D => 
+        when TRACE_DETECTION_D => 
           pre_size <= (1 => '1', others => '0');
         end case;
       end if;

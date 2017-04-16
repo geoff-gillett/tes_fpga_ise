@@ -105,7 +105,7 @@ signal commited_int,dumped_int,dumped_reg:std_logic_vector(CHANNELS-1 downto 0);
 signal time_in,time_out,time_out_reg:std_logic_vector(TIMEFIFO_BITS-1 downto 0);
 signal time_vec:std_logic_vector(CHANNELS+TIMESTAMP_BITS downto 0);
 signal buffers_full,time_empty,time_rd_en,time_wr_en:std_logic;
-signal time_full:std_logic;
+--signal time_full:std_logic;
 signal ticked_reg,valid_event,all_dumped,timedif_valid,timefifo_valid:boolean;
 signal no_starts,all_dumped_reg,ticked_int,no_starts_reg:boolean;
 signal started_int:std_logic_vector(CHANNELS-1 downto 0);
@@ -132,7 +132,7 @@ port map(
   wr_en => time_wr_en,
   rd_en => time_rd_en,
   dout => time_out,
-  full => time_full, 
+  full => open, --time_full, 
   almost_full => buffers_full, -- tell measurement unit to block starts
   empty => time_empty
 ); 

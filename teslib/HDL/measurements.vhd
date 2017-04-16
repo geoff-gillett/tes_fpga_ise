@@ -156,6 +156,7 @@ type measurements_t is record
   
   
   eflags:detection_flags_t;
+  --pre_detection:detection_d;
   size:unsigned(15 downto 0);
   pre_size:unsigned(15 downto 0);
   pre2_size:unsigned(15 downto 0);
