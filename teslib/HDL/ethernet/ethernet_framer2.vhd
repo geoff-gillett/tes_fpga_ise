@@ -258,7 +258,7 @@ begin
  estream_s <= event_s.data;
  estream_last <= event_s.last(0);
  
- frameStart : process (clk) is
+ frameStart:process (clk) is
  begin
    if rising_edge(clk) then
      if reset = '1' then
@@ -392,8 +392,8 @@ begin
               size := lookahead_size;
             	size_change <= frame_size/=lookahead_size;
             when TRACE_DETECTION_D =>
-              size := to_unsigned(3, SIZE_BITS); --3
-            	size_change <= FALSE;
+              size := to_unsigned(1, SIZE_BITS); --3
+            	size_change <= TRUE;
             end case;
           end if;
           
@@ -608,7 +608,7 @@ begin
 					elsif event_head then
 						frame_nextstate <= TERMINATE;	
 					else
-						framer_we <= (others => framer_ready);
+						framer_we <= (others => framer_ready); --???
 						inc_address <= framer_ready;
 					end if;
 				else

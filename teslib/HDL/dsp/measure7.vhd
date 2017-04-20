@@ -13,7 +13,7 @@ use work.registers.all;
 use work.events.all;
 use work.measurements.all;
 
-entity measure6 is
+entity measure7 is
 generic(
   CHANNEL:natural:=0;
   WIDTH:natural:=18;
@@ -39,9 +39,9 @@ port (
   
   measurements:out measurements_t
 );
-end entity measure6;
+end entity measure7;
 
-architecture RTL of measure6 is
+architecture RTL of measure7 is
 
 -- pipelines to sync signals
 signal cfd_error_cfd,cfd_valid_cfd:boolean;
@@ -106,7 +106,7 @@ signal area_threshold:signed(AREA_WIDTH-1 downto 0);
 signal slope_area:signed(AREA_WIDTH-1 downto 0);
 signal slope_extrema:signed(WIDTH_OUT-1 downto 0);
 --signal enabled:boolean;
-signal peak_address_n,max_peaks:unsigned(PEAK_COUNT_BITS downto 0);
+signal peak_address_n,max_peaks,pre_max_peaks:unsigned(PEAK_COUNT_BITS downto 0);
 signal pre_stamp_peak,pre_stamp_pulse:boolean;
 
 type long_pipe is array(1 to DEPTH) of signed(WIDTH-1 downto 0);
@@ -127,14 +127,14 @@ signal pulse_length:unsigned(TIME_WIDTH-1 downto 0);
 signal time_offset:unsigned(TIME_WIDTH-1 downto 0);
 signal height_valid:boolean;
 signal height:signed(WIDTH_OUT-1 downto 0);
-signal flags:detection_flags_t;
+signal flags,pre_flags:detection_flags_t;
 signal rise_time,pulse_time:unsigned(TIME_WIDTH-1 downto 0);
 signal stamp_peak,stamp_pulse:boolean;
 signal peak_address:unsigned(PEAK_COUNT_BITS downto 0);
 signal last_peak:boolean;
 signal valid_peak0,valid_peak1,valid_peak2:boolean;
 signal height_thresh_out,timing_thresh_out:signed(WIDTH-1 downto 0);
-signal size,pre_size,pre2_size:unsigned(SIZE_WIDTH-1 downto 0);
+signal size,pre_size:unsigned(SIZE_WIDTH-1 downto 0);
 signal last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
 signal peak_start:boolean;
 signal pulse_t_xing:boolean;
@@ -489,29 +489,28 @@ begin
       end if;
       height_thresh_out <= high_pipe(DEPTH-1);
           
-      if (min_pipe(DEPTH-1)) then 
-        if first_peak_pipe(DEPTH-1) then 
+      if (min_pipe(DEPTH-2)) then 
+        if first_peak_pipe(DEPTH-2) then 
           
           case registers.detection is
           when PEAK_DETECTION_D | AREA_DETECTION_D => 
-            size <= (0 => '1', others => '0');
+            pre_size <= (0 => '1', others => '0');
           when PULSE_DETECTION_D | TRACE_DETECTION_D => 
-            size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
+            pre_size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
           end case;
           
-          area_threshold <= signed('0' & registers.area_threshold);
-          flags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
-          flags.event_type.detection <= registers.detection;
-          flags.event_type.tick <= FALSE;
-          flags.height <= registers.height;
-          flags.new_window <= FALSE;
-          flags.cfd_rel2min <= registers.cfd_rel2min;
-          flags.timing <= registers.timing;
-          max_peaks <= '0' & registers.max_peaks;
-          last_peak_address <= ('0' & registers.max_peaks)+2;
+          --area_threshold <= signed('0' & registers.area_threshold);
+          pre_flags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
+          pre_flags.event_type.detection <= registers.detection;
+          pre_flags.event_type.tick <= FALSE;
+          pre_flags.height <= registers.height;
+          pre_flags.new_window <= FALSE;
+          pre_flags.cfd_rel2min <= registers.cfd_rel2min;
+          pre_flags.timing <= registers.timing;
+          pre_max_peaks <= '0' & registers.max_peaks;
+          --pre_last_peak_address <= ('0' & registers.max_peaks)+2;
 
-          m.peak_overflow <= FALSE;
-          flags.peak_number <= (others => '0');
+          pre_flags.peak_number <= (others => '0');
           peak_number_n <= (0 => '1',others => '0');
           last_peak <= registers.max_peaks=0;
           time_offset <= (others => '0'); 
@@ -520,8 +519,30 @@ begin
           
           peak_address <= (1 => '1', others => '0'); -- start at 2
           peak_address_n <= (1 downto 0 => '1', others => '0');
-        else
+        end if;  
+        
+        minima <= filtered_pipe(DEPTH-1);
+        
+      end if;  
+      
+      if (min_pipe(DEPTH-1)) then 
+        if first_peak_pipe(DEPTH-1) then 
           
+          size <= pre_size;
+          
+          area_threshold <= signed('0' & registers.area_threshold);
+          flags <= pre_flags;
+          max_peaks <= pre_max_peaks;
+          last_peak_address <= pre_max_peaks+2;
+
+          peak_number_n <= (0 => '1',others => '0');
+          last_peak <= pre_max_peaks=0;
+          time_offset <= (others => '0'); 
+          
+          valid_peak0 <= valid_peak_pipe(DEPTH-1);
+          
+          peak_address <= (1 => '1', others => '0'); -- start at 2
+          peak_address_n <= (1 downto 0 => '1', others => '0');
         end if;  
         
         minima <= filtered_pipe(DEPTH-1);
@@ -707,6 +728,7 @@ m.rise_time <= rise_time;
 m.minima <= minima;
 
 m.eflags <= flags;
+m.pre_eflags <= pre_flags;
 m.size <= size;
 m.pre_size <= pre_size;
 --m.pre2_size <= pre2_size;

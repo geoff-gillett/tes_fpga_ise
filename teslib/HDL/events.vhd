@@ -189,7 +189,7 @@ record
 	length:time_t;
 	flags:detection_flags_t;
 	area:area_t;
-	offset:unsigned(15 downto 0);
+	offset:unsigned(CHUNK_DATABITS-1 downto 0);
 end record;
 
 function to_streambus(

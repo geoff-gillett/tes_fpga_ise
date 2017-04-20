@@ -155,11 +155,11 @@ type measurements_t is record
   time_offset:unsigned(15 downto 0); 
   
   
-  eflags:detection_flags_t;
+  eflags,pre_eflags:detection_flags_t;
   --pre_detection:detection_d;
   size:unsigned(15 downto 0);
   pre_size:unsigned(15 downto 0);
-  pre2_size:unsigned(15 downto 0);
+--  pre2_size:unsigned(15 downto 0);
   
   -- actually max peaks -1
   --max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
