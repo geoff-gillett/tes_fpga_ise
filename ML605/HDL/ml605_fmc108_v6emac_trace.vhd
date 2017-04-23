@@ -767,7 +767,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 end generate tesChannel;
 --------------------------------------------------------------------------------
 
-measurementSubsystem:entity tes.measurement_subsystem3
+measurementSubsystem:entity tes.measurement_subsystem4
 generic map(
   DSP_CHANNELS => DSP_CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,

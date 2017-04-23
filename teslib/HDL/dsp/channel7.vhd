@@ -16,6 +16,7 @@ use work.registers.all;
 use work.measurements.all;
 use work.types.all;
 
+--FIXME remove internal precision
 entity channel7 is
 generic(
   CHANNEL:natural:=0;
@@ -178,6 +179,7 @@ port map(
 );
 raw <= signed(sample_d);
 
+--FIXME make this width 16 with dynamic frac
 FIR:entity dsp.two_stage_FIR71_18_3
 generic map(
   WIDTH => WIDTH,
@@ -297,7 +299,7 @@ m.raw.pos_0xing <= raw_0_pos_pipe(DEPTH);
 m.raw.neg_0xing <= raw_0_neg_pipe(DEPTH);
 
 --TODO cleanup this ugly patch
-m.minima <= dsp_m.minima;
+m.min_value <= dsp_m.min_value;
 m.filtered <= dsp_m.filtered;
 m.slope <= dsp_m.slope;
 m.above_area_threshold <= dsp_m.above_area_threshold;
@@ -319,6 +321,7 @@ m.last_peak <= dsp_m.last_peak;
 m.max_slope <= dsp_m.max_slope;
 m.peak_address <= dsp_m.peak_address;
 m.peak_start <= dsp_m.peak_start;
+m.peak_stop <= dsp_m.peak_stop;
 m.pre_peak_start <= dsp_m.pre_peak_start;
 m.pulse_area <= dsp_m.pulse_area;
 m.pulse_length <= dsp_m.pulse_length;
@@ -329,17 +332,23 @@ m.pre_pulse_threshold_neg <= dsp_m.pre_pulse_threshold_neg;
 m.pulse_threshold_pos <= dsp_m.pulse_threshold_pos;
 m.pulse_time <= dsp_m.pulse_time;
 m.rise_time <= dsp_m.rise_time;
+m.time_offset <= dsp_m.time_offset;
+m.peak_time <= dsp_m.peak_time;
 m.size <= dsp_m.size;
 m.pre_size <= dsp_m.pre_size;
 m.slope_threshold_pos <= dsp_m.slope_threshold_pos;
 m.stamp_peak <= dsp_m.stamp_peak;
 m.stamp_pulse <= dsp_m.stamp_pulse;
-m.time_offset <= dsp_m.time_offset;
+m.pre_stamp_peak <= dsp_m.pre_stamp_peak;
+m.pre_stamp_pulse <= dsp_m.pre_stamp_pulse;
+m.peak_stamped <= dsp_m.peak_stamped;
+m.pulse_stamped <= dsp_m.pulse_stamped;
+--m.time_offset <= dsp_m.time_offset;
 m.valid_peak <= dsp_m.valid_peak;
 m.valid_peak0 <= dsp_m.valid_peak0;
 m.valid_peak1 <= dsp_m.valid_peak1;
 m.valid_peak2 <= dsp_m.valid_peak2;
-m.height_threshold <= dsp_m.height_threshold;
+--m.height_threshold <= dsp_m.height_threshold;
 m.timing_threshold <= dsp_m.timing_threshold;
 m.filtered_long <= dsp_m.filtered_long;
 

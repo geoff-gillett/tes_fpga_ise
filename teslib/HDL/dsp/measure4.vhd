@@ -719,7 +719,7 @@ m.time_offset <= time_offset;
 m.height <= height;
 m.height_valid <= height_valid;
 m.rise_time <= rise_time;
-m.minima <= minima;
+m.min_value <= minima;
 
 m.eflags <= flags;
 m.size <= size;

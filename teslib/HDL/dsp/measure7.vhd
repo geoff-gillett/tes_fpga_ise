@@ -113,7 +113,7 @@ type long_pipe is array(1 to DEPTH) of signed(WIDTH-1 downto 0);
 type pipe is array(1 to DEPTH) of signed(WIDTH_OUT-1 downto 0);
 signal high_pipe,low_pipe,filtered_long_pipe,slope_long_pipe:long_pipe;
 signal filtered_pipe,slope_pipe:pipe;
-signal peak_started,pulse_started:boolean;
+signal peak_stamped,pulse_stamped:boolean;
 signal above_area_threshold:boolean;
 signal filtered_0_pos_x,filtered_0_neg_x,filtered_0xing,slope_0xing:boolean;
 signal filtered_0_pos_pipe:boolean_vector(1 to DEPTH);
@@ -124,7 +124,6 @@ signal slope_area_m1:signed(AREA_WIDTH-1 downto 0);
 signal slope_zero_xing : boolean;
 signal filtered_zero_xing : boolean;
 signal pulse_length:unsigned(TIME_WIDTH-1 downto 0);
-signal time_offset:unsigned(TIME_WIDTH-1 downto 0);
 signal height_valid:boolean;
 signal height:signed(WIDTH_OUT-1 downto 0);
 signal flags,pre_flags:detection_flags_t;
@@ -186,18 +185,6 @@ port map(
   cfd_valid => cfd_valid_cfd
 );
 
---enbabledP:process(clk)
---begin
---  if rising_edge(clk) then
---    if reset = '1' then
---      enabled <= FALSE;
---    else
---      if min_cfd then
---        enabled <= enable;
---      end if;
---    end if;
---  end if;
---end process enbabledP;
 
 pulse_t_xing <= pulse_t_pos_pipe(XLAT) or pulse_t_neg_pipe(XLAT);
 pulseArea:entity dsp.area_acc3
@@ -513,16 +500,12 @@ begin
           pre_flags.peak_number <= (others => '0');
           peak_number_n <= (0 => '1',others => '0');
           last_peak <= registers.max_peaks=0;
-          time_offset <= (others => '0'); 
           
           valid_peak0 <= valid_peak_pipe(DEPTH-1);
           
           peak_address <= (1 => '1', others => '0'); -- start at 2
           peak_address_n <= (1 downto 0 => '1', others => '0');
         end if;  
-        
-        minima <= filtered_pipe(DEPTH-1);
-        
       end if;  
       
       if (min_pipe(DEPTH-1)) then 
@@ -537,16 +520,13 @@ begin
 
           peak_number_n <= (0 => '1',others => '0');
           last_peak <= pre_max_peaks=0;
-          time_offset <= (others => '0'); 
           
           valid_peak0 <= valid_peak_pipe(DEPTH-1);
           
           peak_address <= (1 => '1', others => '0'); -- start at 2
           peak_address_n <= (1 downto 0 => '1', others => '0');
         end if;  
-        
         minima <= filtered_pipe(DEPTH-1);
-        
       end if;  
       
       if max_pipe(DEPTH) then
@@ -555,12 +535,11 @@ begin
         valid_peak2 <= FALSE;
       end if;
       
---      if m.slope.neg_0xing and m.valid_peak then -- maxima
-      if height_valid then -- maxima
-        last_peak <= peak_number_n=max_peaks; --FIXME not used
+      if m.slope.neg_0xing and m.valid_peak then -- maxima
+--      if height_valid then -- maxima
+        last_peak <= peak_number_n=max_peaks; 
         if peak_number_n > max_peaks then 
           m.peak_overflow <= TRUE;
-          last_peak <= TRUE; -- FIXME not used
         else
           peak_address <= peak_address_n;
           peak_address_n <= peak_address_n+1;
@@ -570,61 +549,79 @@ begin
           flags.peak_number <= peak_number_n(PEAK_COUNT_BITS-1 downto 0);
           peak_number_n <= peak_number_n + 1;
         else
-          flags.peak_number <= (others => '0');
+          flags.peak_number <= (others => '1');
         end if;
       end if;
     
       case flags.timing is
       -- if pulse threshold is used for timing secondary peaks use cfd_low
       when PULSE_THRESH_TIMING_D =>
-        pre_stamp_pulse <= pulse_t_pos_pipe(DEPTH-2);
+        pre_stamp_pulse <= pulse_t_pos_pipe(DEPTH-2) and 
+                           valid_peak_pipe(DEPTH-2) and 
+                           not pulse_stamped;
+                           
         if first_peak_pipe(DEPTH-2) then
-          pre_stamp_peak <= pulse_t_pos_pipe(DEPTH-2); 
+          
+          pre_stamp_peak <= pulse_t_pos_pipe(DEPTH-2) and 
+                            valid_peak_pipe(DEPTH-2) and
+                            not peak_stamped; 
         else
-          pre_stamp_peak <= cfd_low_pos_pipe(DEPTH-2);
+          pre_stamp_peak <= cfd_low_pos_pipe(DEPTH-2) and 
+                            valid_peak_pipe(DEPTH-2) and
+                            not peak_stamped;
         end if;
         
       when SLOPE_THRESH_TIMING_D =>
         
         pre_stamp_pulse <= slope_t_pos_pipe(DEPTH-2) and 
-                           first_peak_pipe(DEPTH-2);
-        --if first_peak_pipe(DEPTH-2) then
-        pre_stamp_peak <= slope_t_pos_pipe(DEPTH-2);
-        --else
-          --pre_stamp_peak <= min_pipe(DEPTH-2);
-        --end if;
+                           first_peak_pipe(DEPTH-2) and 
+                           valid_peak_pipe(DEPTH-2) and 
+                           not pulse_stamped;
+                           
+        pre_stamp_peak <= slope_t_pos_pipe(DEPTH-2) and 
+                          valid_peak_pipe(DEPTH-2) and
+                          not peak_stamped;
           
-      --this will not fire a pulse start
+      --this will not fire a pulse start ????
       when CFD_LOW_TIMING_D =>
-        pre_stamp_peak <= cfd_low_pos_pipe(DEPTH-2);
+        pre_stamp_peak <= cfd_low_pos_pipe(DEPTH-2) and 
+                          valid_peak_pipe(DEPTH-2) and
+                          not peak_stamped;
+                          
         pre_stamp_pulse <= cfd_low_pos_pipe(DEPTH-2) and 
-                           first_peak_pipe(DEPTH-2);
+                           first_peak_pipe(DEPTH-2) and 
+                           valid_peak_pipe(DEPTH-2) and 
+                           not pulse_stamped;
         
       when SLOPE_MAX_TIMING_D =>
         pre_stamp_pulse <= max_slope_pipe(DEPTH-2) and 
-                           first_peak_pipe(DEPTH-2);
-        pre_stamp_peak <= max_slope_pipe(DEPTH-2);
+                           first_peak_pipe(DEPTH-2) and 
+                           valid_peak_pipe(DEPTH-2) and 
+                           not pulse_stamped;
+                           
+        pre_stamp_peak <= max_slope_pipe(DEPTH-2) and 
+                            valid_peak_pipe(DEPTH-2) and
+                            not peak_stamped;
       end case;
       
-      if pre_stamp_peak and valid_peak_pipe(DEPTH-1) then
-        peak_started <= TRUE;
+      if pre_stamp_peak then
+        peak_stamped <= TRUE;
+        m.peak_time <= pulse_time;
       end if;
-      if max_pipe(DEPTH-1) then
-        peak_started <= FALSE;
+      if pre_stamp_pulse then
+        pulse_stamped <= TRUE;
+        m.time_offset <= pulse_time;
       end if;
-      if pre_stamp_pulse and valid_peak_pipe(DEPTH-1) then
-        pulse_started <= TRUE;
-      end if;
-      if max_pipe(DEPTH-1) then
-        pulse_started <= FALSE;
+      if max_pipe(DEPTH) then
+        pulse_stamped <= FALSE;
+        peak_stamped <= FALSE;
       end if;
         
-      stamp_peak 
-        <= pre_stamp_peak and valid_peak_pipe(DEPTH-1) and not peak_started;
-      stamp_pulse 
-        <= pre_stamp_pulse and valid_peak_pipe(DEPTH-1) and not pulse_started;
+      stamp_peak <= pre_stamp_peak;
+      stamp_pulse <= pre_stamp_pulse;
       
-      if first_peak_pipe(DEPTH-1) and min_pipe(DEPTH-1) then
+      if first_peak_pipe(DEPTH-2) and min_pipe(DEPTH-2) and 
+         valid_peak_pipe(DEPTH-2) then
         pulse_time <= (others => '0');
         pulse_time_n <= (0 => '1', others => '0'); 
       elsif pulse_time_n(16)='1' then
@@ -633,8 +630,9 @@ begin
         pulse_time_n <= pulse_time_n + 1;
         pulse_time <= pulse_time_n(15 downto 0);
       end if;
+      m.pulse_time <= pulse_time;
       
-      if pre_stamp_peak and not peak_started then  
+      if pre_stamp_peak then  
         rise_time <= (others => '0');
         rise_time_n <= (0 => '1', others => '0');
       elsif rise_time_n(16)='1' then
@@ -643,43 +641,47 @@ begin
         rise_time_n <= rise_time_n + 1;
         rise_time <= rise_time_n(15 downto 0);
       end if;
-      --m.rise_time <= rise_time;
     
+      height_valid <= FALSE;
       case flags.height is
       when PEAK_HEIGHT_D =>
-        if flags.cfd_rel2min then
-          height <= filtered_pipe(DEPTH-1)-minima; 
-        else
-          height <= filtered_pipe(DEPTH-1); 
+        if max_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1) then
+          height_valid <= TRUE;
+          m.rise_time <= rise_time;
+          if flags.cfd_rel2min then
+            height <= filtered_pipe(DEPTH-1)-minima; 
+          else
+            height <= filtered_pipe(DEPTH-1); 
+          end if;
         end if;
-        height_valid <= max_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
       when CFD_HEIGHT_D =>
         --FIXME could do subtraction before rounding
-        if flags.cfd_rel2min then
-          height <= cfd_high_thresh_rounded-minima; 
-        else
-          height <= cfd_high_thresh_rounded; 
+        if cfd_high_pos_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1) then
+          height_valid <= TRUE;
+          m.rise_time <= rise_time;
+          if flags.cfd_rel2min then
+            height <= cfd_high_thresh_rounded-minima; 
+          else
+            height <= cfd_high_thresh_rounded; 
+          end if;
         end if;
         --FIXME should use the max 
-        height_valid <= cfd_high_pos_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
       when SLOPE_INTEGRAL_D =>
-        height <= resize(slope_area_m1,16); --FIXME scale?
-        height_valid <= max_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
+        if max_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1) then
+          height_valid <= TRUE;
+          m.rise_time <= rise_time;
+          height <= resize(slope_area_m1,16); --FIXME scale?
+        end if;
       when SLOPE_MAX_D => 
         --FIXME use slope extrema then all heights valid at max
-        height <= slope_pipe(DEPTH-1); 
-        height_valid <= max_slope_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
+        if max_slope_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1) then
+          height_valid <= TRUE;
+          m.rise_time <= rise_time;
+          height <= slope_pipe(DEPTH-1); 
+        end if;
       end case;
       
-      if pre_stamp_pulse and not pulse_started then --FIXME will this be right?
-        if min_pipe(DEPTH-1) and first_peak_pipe(DEPTH-1) then
-          time_offset <= (others => '0');
-        else
-          time_offset <= pulse_time_n(TIME_WIDTH-1 downto 0);
-        end if;
-      end if;
-    
-      if pulse_t_pos_pipe(DEPTH-1) then
+      if pulse_t_pos_pipe(DEPTH-2) then
         pulse_length <= (others => '0');
         pulse_length_n <= (0 => '1', others => '0');
       else
@@ -691,6 +693,12 @@ begin
         end if;
       end if;
       
+--      if pulse_t_neg_pipe(DEPTH-1) then
+--        m.pulse_length <= pulse_length;
+--      end if;
+      
+--      m.minima <= min_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
+      m.peak_stop <= max_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
       filtered_zero_xing <= filtered_0_pos_pipe(DEPTH-1) or 
                             filtered_0_neg_pipe(DEPTH-1);
       slope_zero_xing <= min_pipe(DEPTH-1) or max_pipe(DEPTH-1);
@@ -717,23 +725,28 @@ m.peak_start <= peak_start;
 m.pre_peak_start <= pre_peak_start;
 m.pulse_start <= pulse_start;
 m.pre_pulse_start <= pre_pulse_start;
-m.pulse_time <= pulse_time;
+--m.pulse_time <= pulse_time;
 m.stamp_peak <= stamp_peak;
 m.stamp_pulse <= stamp_pulse;
-m.time_offset <= time_offset;
+m.pre_stamp_peak <= pre_stamp_peak;
+m.pre_stamp_pulse <= pre_stamp_pulse;
+--m.time_offset <= time_offset;
+m.peak_stamped <= peak_stamped;
+m.pulse_stamped <= pulse_stamped;
+m.pulse_length <= pulse_length;
 
 m.height <= height;
 m.height_valid <= height_valid;
-m.rise_time <= rise_time;
-m.minima <= minima;
+--m.rise_time <= rise_time;
+m.min_value <= minima;
 
 m.eflags <= flags;
 m.pre_eflags <= pre_flags;
 m.size <= size;
 m.pre_size <= pre_size;
 --m.pre2_size <= pre2_size;
-m.timing_threshold <= timing_thresh_out;
-m.height_threshold <= height_thresh_out;
+m.timing_threshold <= resize(timing_thresh_out,16);
+--m.height_threshold <= height_thresh_out;
 m.cfd_high <= cfd_high_pos_pipe(DEPTH);
 m.cfd_low <= cfd_low_pos_pipe(DEPTH);
 m.max_slope <= max_slope_pipe(DEPTH);
@@ -750,7 +763,7 @@ m.filtered.extrema <= filtered_extrema;
 m.pulse_threshold_pos <= pulse_t_pos_pipe(DEPTH);
 m.pulse_threshold_neg <= pulse_t_neg_pipe(DEPTH);
 m.pre_pulse_threshold_neg <= pulse_t_neg_pipe(DEPTH-1);
-m.pulse_length <= pulse_length;
+--m.pulse_length <= pulse_length;
 m.above_pulse_threshold <= above_pipe(DEPTH);
 m.pulse_area <= pulse_area;
 m.above_area_threshold <= above_area_threshold;

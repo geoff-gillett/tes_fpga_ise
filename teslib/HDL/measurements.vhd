@@ -131,7 +131,7 @@ type measurements_t is record
   will_go_above:boolean;
   pulse_length:time_t; --time since pulse_pos_Txing
   pulse_time:time_t;   --time since last pulse start
-  minima:signal_t;
+  min_value:signal_t;
   
   slope_threshold_pos:boolean;
   --slope_threshold_neg:boolean;
@@ -145,15 +145,20 @@ type measurements_t is record
   pre_pulse_start:boolean; -- clk before
   peak_start:boolean; --minima at start of pulse
   pre_peak_start:boolean; --minima at start of pulse
+  peak_stop:boolean;
   valid_peak:boolean;
   valid_peak0:boolean;
   valid_peak1:boolean;
   valid_peak2:boolean;
   
+	peak_stamped:boolean; 
+  pulse_stamped:boolean; 
 	stamp_peak:boolean; --peak timing point
   stamp_pulse:boolean; --peak_start and first peak in a pulse
+	pre_stamp_peak:boolean; --peak timing point
+  pre_stamp_pulse:boolean; --peak_start and first peak in a pulse
   time_offset:unsigned(15 downto 0); 
-  
+  peak_time:unsigned(15 downto 0);
   
   eflags,pre_eflags:detection_flags_t;
   --pre_detection:detection_d;
@@ -168,8 +173,7 @@ type measurements_t is record
   peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   
-  timing_threshold:signed(DSP_BITS-1 downto 0);
-  height_threshold:signed(DSP_BITS-1 downto 0);  	
+  timing_threshold:signed(15 downto 0);
 	cfd_error:boolean;
 	cfd_valid:boolean;
 	

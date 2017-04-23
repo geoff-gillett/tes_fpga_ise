@@ -704,14 +704,14 @@ m.time_offset <= time_offset;
 m.height <= height;
 m.height_valid <= height_valid;
 m.rise_time <= rise_time;
-m.minima <= minima;
+m.min_value <= minima;
 
 m.eflags <= flags;
 m.size <= size;
 m.pre_size <= pre_size;
 --m.pre2_size <= pre2_size;
 m.timing_threshold <= timing_thresh_out;
-m.height_threshold <= height_thresh_out;
+--m.height_threshold <= height_thresh_out;
 m.cfd_high <= cfd_high_pos_pipe(DEPTH);
 m.cfd_low <= cfd_low_pos_pipe(DEPTH);
 m.max_slope <= max_slope_pipe(DEPTH);
