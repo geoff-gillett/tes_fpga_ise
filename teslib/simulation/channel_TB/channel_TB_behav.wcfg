@@ -21,9 +21,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="454555199fs"></ZoomStartTime>
-      <ZoomEndTime time="1109088961fs"></ZoomEndTime>
-      <Cursor1Time time="1000000000fs"></Cursor1Time>
+      <ZoomStartTime time="8786666667fs"></ZoomStartTime>
+      <ZoomEndTime time="19666666668fs"></ZoomEndTime>
+      <Cursor1Time time="10828000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
@@ -1913,8 +1913,8 @@
          <obj_property name="radix_otherWidth">0</obj_property>
          <obj_property name="CellHeight">100</obj_property>
          <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-         <obj_property name="AnalogYRangeMin">-400.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">1700.000000</obj_property>
+         <obj_property name="AnalogYRangeMin">-40.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">170.000000</obj_property>
          <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
          <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
          <obj_property name="AnalogHorizLine">0.000000</obj_property>
