@@ -42,6 +42,7 @@ constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=10;
 constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=10;
 constant DELAY_BITS:integer:=11;
 constant PEAK_COUNT_BITS:integer:=4;
+constant TRACE_STRIDE_BITS:integer:=5;
 
 constant MCA_BIN_N_BITS:integer:=5;
 constant MCA_CHANNEL_WIDTH:integer:=3;
@@ -249,8 +250,8 @@ type channel_register_array is array (natural range <>)
 -- 3  downto 2  timing
 -- 7  downto 4  max_peaks
 -- 9  downto 8  height
--- 11 downto 10 trace0
--- 13 downto 12 trace1
+-- 11 downto 10 trace signal
+-- 13 downto 12 trace type
 -- 14           cfd_rel2min
 -- 15           height_rel2min
 -- 16           threshold_rel2min

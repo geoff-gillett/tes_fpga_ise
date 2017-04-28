@@ -126,7 +126,7 @@ reset1 <= '0' after 10*IO_CLK_PERIOD;
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
 bytestream_ready <= TRUE after 20*IO_CLK_PERIOD;
 
-UUT:entity work.measurement_subsystem3
+UUT:entity work.measurement_subsystem4
 generic map(
   DSP_CHANNELS => CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
@@ -336,7 +336,7 @@ begin
     if m(0).slope.pos_0xing or m(0).slope.neg_0xing then
 	    write(minmax_file, to_integer(m(0).filtered.sample));
 	    write(minmax_file, to_integer(m(0).timing_threshold));
-	    write(minmax_file, to_integer(m(0).height_threshold));
+--	    write(minmax_file, to_integer(m(0).height_threshold));
 	    write(minmax_file, to_integer(m(0).slope.extrema));
 	    write(minmax_file, to_integer(m(0).slope.area));
 	    if m(0).slope.pos_0xing then
@@ -449,15 +449,17 @@ begin
     end if;
   end if;
 end process simcount;
+
 doublesig <= to_signed(-20,ADC_WIDTH)
              when sim_count < 10
-             else to_signed(100,ADC_WIDTH)
-             when sim_count < 20
+             else to_signed(30,ADC_WIDTH)
+             when sim_count < 40
              else to_signed(10,ADC_WIDTH)
-             when sim_count < 60
+             when sim_count < 100
              else to_signed(100,ADC_WIDTH)
-             when sim_count < 70 
+             when sim_count < 200
              else to_signed(-20,ADC_WIDTH);
+               
 adc_samples(0) <= std_logic_vector(signed(doublesig));
 --adc_samples(0) <= std_logic_vector(adc_count);
 --adc_samples(0) <= (others => '0');

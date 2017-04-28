@@ -517,6 +517,7 @@ begin
           flags <= pre_flags;
           max_peaks <= pre_max_peaks;
           last_peak_address <= pre_max_peaks+2;
+          m.offset <= resize(pre_max_peaks+3,PEAK_COUNT_BITS);
 
           peak_number_n <= (0 => '1',others => '0');
           last_peak <= pre_max_peaks=0;

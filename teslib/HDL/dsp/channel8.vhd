@@ -17,7 +17,7 @@ use work.measurements.all;
 use work.types.all;
 
 --FIXME remove internal precision
-entity channel7 is
+entity channel8 is
 generic(
   CHANNEL:natural:=0;
   BASELINE_BITS:natural:=11;
@@ -62,11 +62,13 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity channel7;
+end entity channel8;
 
-architecture fixed_16_3 of channel7 is
+architecture fixed_16_3 of channel8 is
   
 constant RAW_DELAY:natural:=1026;
+constant DIVIDE_BITS:integer:=ceillog2(48-WIDTH+1);
+constant BASELINE_N:integer:=18;
   
 signal sample_in,raw,filtered,slope:signed(WIDTH-1 downto 0);
 signal sample_d:std_logic_vector(WIDTH-1 downto 0);
@@ -126,30 +128,44 @@ if rising_edge(clk) then
 end if;
 end process sampleoffset;
 
--- estimate is always fixed 18.3 due to the averaging
-baselineEstimator:entity work.baseline_estimator3
+baselineAv:entity dsp.average_2n
 generic map(
-  BASELINE_BITS => BASELINE_BITS, --FIXME make generic in parent
-  ADC_WIDTH => ADC_WIDTH,
-  COUNTER_BITS => 18,
-  TIMECONSTANT_BITS => 32,
   WIDTH => WIDTH,
-  FRAC => FRAC
+  FRAC  => FRAC
 )
 port map(
   clk => clk,
   reset => reset1,
-  sample => baseline_sample,
-  sample_valid => TRUE,
-  av_config => baseline_config,
-  av_events => baseline_events,
-  timeconstant => registers.baseline.timeconstant,
-  threshold => registers.baseline.threshold,
-  count_threshold => registers.baseline.count_threshold,
-  new_only => registers.baseline.new_only,
-  baseline_estimate => baseline_estimate,
-  range_error => open
+  divide_n => to_unsigned(18,DIVIDE_BITS),
+  threshold => to_signed(2**17-1,WIDTH),
+  sample => resize(baseline_sample,WIDTH),
+  average => baseline_estimate
 );
+
+-- estimate is always fixed 18.3 due to the averaging
+--baselineEstimator:entity work.baseline_estimator3
+--generic map(
+--  BASELINE_BITS => BASELINE_BITS, --FIXME make generic in parent
+--  ADC_WIDTH => ADC_WIDTH,
+--  COUNTER_BITS => 18,
+--  TIMECONSTANT_BITS => 32,
+--  WIDTH => WIDTH,
+--  FRAC => FRAC
+--)
+--port map(
+--  clk => clk,
+--  reset => reset1,
+--  sample => baseline_sample,
+--  sample_valid => TRUE,
+--  av_config => baseline_config,
+--  av_events => baseline_events,
+--  timeconstant => registers.baseline.timeconstant,
+--  threshold => registers.baseline.threshold,
+--  count_threshold => registers.baseline.count_threshold,
+--  new_only => registers.baseline.new_only,
+--  baseline_estimate => baseline_estimate,
+--  range_error => open
+--);
 
 --FIXME subtract off the frac part if using the correction
 baselineSubraction:process(clk)

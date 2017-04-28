@@ -225,14 +225,15 @@ function to_std_logic(p:pulse_peak2_t;endianness:string)
 function to_streambus(p:pulse_peak2_t;last:boolean;endianness:string) 
          return streambus_t;
 
--- |  7  |  1  ||   2  |  2  	|   4		  |
--- |resvd|full ||trace0|trace1|max_peaks|
+-- |  2  |  1  |    5   ||    2   |   2    |   4		 |
+-- | res |multi| stride || trace0 | trace1 |max_peaks|
 type trace_flags_t is
 record
 	trace0:trace_d;
 	trace1:trace_d;
-	max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
+	offset:unsigned(PEAK_COUNT_BITS-1 downto 0);
 	multipulse:boolean;
+	stride:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 end record;
 
 function to_std_logic(f:trace_flags_t) return std_logic_vector;
@@ -250,7 +251,7 @@ record
 	length:time_t; 
 	flags:detection_flags_t;
 	tflags:trace_flags_t;
-	offset:time_t;  -- redundant
+	offset:time_t;  
 	area:area_t;
 end record;
 
@@ -583,15 +584,16 @@ begin
 end function;
   
 ------------------------ trace_flags_t 16 bits ---------------------------------
--- |  7  |   1        ||   2  |  2   |    4    |
--- |resvd| multipulse ||trace0|trace1|max_peaks|
+-- |  2  |  1  |    5   ||    2   |   2    |   4		 |
+-- | res |multi| stride || trace1 | trace0 |max_peaks|
 function to_std_logic(f:trace_flags_t) return std_logic_vector is
-	variable slv:std_logic_vector(15 downto 0):=(others => '0');
+	variable slv:std_logic_vector(CHUNK_DATABITS-1 downto 0):=(others => '0');
 begin
-	slv(8):=to_std_logic(f.multipulse);
-	slv(7 downto 6):=to_std_logic(f.trace0,2);
-	slv(5 downto 4):=to_std_logic(f.trace1,2);
-	slv(3 downto 0):=to_std_logic(f.max_peaks);
+	slv(13):=to_std_logic(f.multipulse);
+	slv(12 downto 8):=to_std_logic(f.stride);
+	slv(7 downto 6):=to_std_logic(f.trace1,2);
+	slv(5 downto 4):=to_std_logic(f.trace0,2);
+	slv(3 downto 0):=to_std_logic(f.offset);
 	return slv;
 end function;
 

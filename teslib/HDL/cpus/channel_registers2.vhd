@@ -15,18 +15,19 @@
 -- 3  downto 2  timing
 -- 7  downto 4  max_peaks
 -- 9  downto 8  height
--- 11 downto 10 trace0
--- 13 downto 12 trace1
--- 14           cfd_rel2min
--- 15           height_rel2min
--- 16           threshold_rel2min
+-- 11 downto 10 trace signal
+-- 13 downto 12 trace type
+-- 18 downto 14 trace stride
+-- 31 downto 18 length -- 14 bits only need 11
+
+-- need to find space for average_n for traces 20 bit
 --
 -- pulse_threshold 						address bit 1
 -- slope_threshold 						address bit 2
 -- constant_fraction 					address bit 3
 -- pulse_area_threshold				address bit 4
 -- delay											address bit 5
--- baseline.offset   					address bit 6				
+-- baseline.offset   					address bit 6	--remove baseline keep offset only
 -- baseline.timeconstant  		address bit 7				
 -- baseline.threshold		  		address bit 8
 -- baseline.count_threshold		address bit 9
