@@ -531,8 +531,8 @@ begin
         end if;
       end case;
       
-      
-      if m.peak_stop then 
+      -- FIXME what if enabled between start and peak
+      if m.peak_stop and enable_reg then 
         if p_state=STARTED_S then 
           if free <= resize(m.peak_address,FRAMER_ADDRESS_BITS) then
             overflow_int <= TRUE;
@@ -582,7 +582,8 @@ begin
         end if;
       end if;
         
-      if m.eflags.event_type.detection=PEAK_DETECTION_D and m.stamp_peak then
+      if m.eflags.event_type.detection=PEAK_DETECTION_D and m.stamp_peak and 
+         enable_reg then
         if mux_full then
           error_int <= TRUE;
         else
@@ -593,7 +594,7 @@ begin
             end if;
           end if;
         end if;
-      elsif p_state=STARTED_S and m.stamp_pulse then
+      elsif p_state=STARTED_S and m.stamp_pulse and enable_reg then
         if mux_full then
           error_int <= TRUE;
         else

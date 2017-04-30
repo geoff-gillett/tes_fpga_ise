@@ -20,13 +20,9 @@ use work.measurements.all;
 entity channel_TB is
 generic(
   CHANNEL:natural:=0;
-  BASELINE_BITS:natural:=11;
-  WIDTH:natural:=18;
+  WIDTH:natural:=16;
   FRAC:natural:=3;
-  WIDTH_OUT:natural:=16;
-  FRAC_OUT:natural:=3;
-  SLOPE_FRAC:natural:=8; --internal precision
-  SLOPE_FRAC_OUT:natural:=8;
+  SLOPE_FRAC:natural:=8; 
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
@@ -68,8 +64,6 @@ signal stage1_config:fir_control_in_t;
 signal stage1_events:fir_control_out_t;
 signal stage2_config:fir_control_in_t;
 signal stage2_events:fir_control_out_t;
-signal baseline_config:fir_control_in_t;
-signal baseline_events:fir_control_out_t;
 signal simenable:boolean:=FALSE;
 signal long:boolean:=TRUE;
 
@@ -78,16 +72,12 @@ constant CF:integer:=2**17/20; --20%
 begin
 clk <= not clk after CLK_PERIOD/2;
   
-UUT:entity work.channel7
+UUT:entity work.channel8
 generic map(
   CHANNEL => CHANNEL,
-  BASELINE_BITS => BASELINE_BITS,
   WIDTH => WIDTH,
   FRAC => FRAC,
-  WIDTH_OUT => WIDTH_OUT,
-  FRAC_OUT => FRAC_OUT,
   SLOPE_FRAC => SLOPE_FRAC,
-  SLOPE_FRAC_OUT => SLOPE_FRAC_OUT,
   ADC_WIDTH => ADC_WIDTH,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
@@ -105,8 +95,6 @@ port map(
   stage1_events => stage1_events,
   stage2_config => stage2_config,
   stage2_events => stage2_events,
-  baseline_config => baseline_config,
-  baseline_events => baseline_events,
   mux_full => FALSE,
   start => start,
   commit => commit,
@@ -240,11 +228,6 @@ stage2_config.config_valid <= '0';
 stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
-baseline_config.config_data <= (others => '0');
-baseline_config.config_valid <= '0';
-baseline_config.reload_data <= (others => '0');
-baseline_config.reload_last <= '0';
-baseline_config.reload_valid <= '0';
 registers.baseline.offset <= to_signed(0,WIDTH);
 registers.baseline.count_threshold <= to_unsigned(10,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');

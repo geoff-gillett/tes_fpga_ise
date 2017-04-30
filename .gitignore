@@ -119,3 +119,9 @@ mcalib/Vivado/mcalib.sim/
 mcalib/Vivado/
 dsplib/Vivado_IP/stage1_FIR_71_15_0/
 dsplib/Vivado_IP/stage1_FIR71_18_3/
+dsplib/Vivado_IP/FIR_141SYM_24_28/FIR_141SYM_24_28.dcp
+dsplib/Vivado_IP/FIR_141SYM_24_28/FIR_141SYM_24_28.mif
+dsplib/Vivado_IP/FIR_141SYM_24_28/
+dsplib/Vivado_IP/FIR_142SYM_24_29/
+dsplib/Vivado_IP/stage1_FIR_71SYM_25_25/
+dsplib/Vivado_IP/stage2_FIR_23_NSYM_25_25/

@@ -12,11 +12,11 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="12160000fs"></ZoomStartTime>
-      <ZoomEndTime time="70110001fs"></ZoomEndTime>
-      <Cursor1Time time="40610000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="70800001fs"></ZoomEndTime>
+      <Cursor1Time time="100000fs"></Cursor1Time>
    </zoom_setting>
-   <WVObjectSize size="8" />
+   <WVObjectSize size="7" />
    <wvobject db_ref_id="1" fp_name="/constant_fraction_TB/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -26,8 +26,9 @@
       <obj_property name="ObjectShortName">reset</obj_property>
    </wvobject>
    <wvobject db_ref_id="1" fp_name="/constant_fraction_TB/min" type="array">
-      <obj_property name="ElementShortName">min[17:0]</obj_property>
-      <obj_property name="ObjectShortName">min[17:0]</obj_property>
+      <obj_property name="ElementShortName">min[15:0]</obj_property>
+      <obj_property name="ObjectShortName">min[15:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject db_ref_id="1" fp_name="/constant_fraction_TB/cf" type="array">
       <obj_property name="ElementShortName">cf[17:0]</obj_property>
@@ -38,23 +39,16 @@
       <obj_property name="radix_otherWidth">0</obj_property>
    </wvobject>
    <wvobject db_ref_id="1" fp_name="/constant_fraction_TB/sig" type="array">
-      <obj_property name="ElementShortName">sig[17:0]</obj_property>
-      <obj_property name="ObjectShortName">sig[17:0]</obj_property>
+      <obj_property name="ElementShortName">sig[15:0]</obj_property>
+      <obj_property name="ObjectShortName">sig[15:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject db_ref_id="1" fp_name="/constant_fraction_TB/p" type="array">
-      <obj_property name="ElementShortName">p[17:0]</obj_property>
-      <obj_property name="ObjectShortName">p[17:0]</obj_property>
+      <obj_property name="ElementShortName">p[15:0]</obj_property>
+      <obj_property name="ObjectShortName">p[15:0]</obj_property>
       <obj_property name="CustomSignalColor">#FF00FF</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject db_ref_id="1" fp_name="/constant_fraction_TB/UUT/p_int" type="array">
-      <obj_property name="ElementShortName">p_int[47:0]</obj_property>
-      <obj_property name="ObjectShortName">p_int[47:0]</obj_property>
-      <obj_property name="Radix">REALRADIX</obj_property>
-      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-      <obj_property name="radix_fractionWidth">17</obj_property>
-      <obj_property name="radix_otherWidth">0</obj_property>
    </wvobject>
    <wvobject db_ref_id="1" fp_name="/constant_fraction_TB/UUT/p_out" type="array">
       <obj_property name="ElementShortName">p_out[47:0]</obj_property>

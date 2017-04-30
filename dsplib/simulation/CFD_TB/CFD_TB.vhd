@@ -17,7 +17,9 @@ use work.types.all;
 
 entity CFD_TB is
 generic(
-  WIDTH:integer:=18;
+  WIDTH:integer:=16;
+  CF_WIDTH:integer:=18;
+  CF_FRAC:integer:=17;
   DELAY:integer:=200;
   STRICT_CROSSING:boolean:=TRUE;
   SIM_WIDTH:integer:=10
@@ -31,7 +33,7 @@ signal reset:std_logic:='1';
 
 constant CLK_PERIOD:time:=4 ns;
 
-signal adc_sample,constant_fraction:signed(WIDTH-1 downto 0);
+signal constant_fraction:signed(CF_WIDTH-1 downto 0);
 
 signal sim_count:signed(SIM_WIDTH-1 downto 0);
 signal stage1_config:fir_control_in_t;
@@ -63,15 +65,13 @@ signal armed:boolean;
 signal above_pulse_threshold : boolean;
 signal cfd_error:boolean;
 signal cfd_valid:boolean;
-signal sample_in:signed(17 downto 0);
+signal sample_in:signed(WIDTH-1 downto 0);
 
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-fir:entity work.two_stage_FIR71_18_3
+fir:entity work.FIR_142SYM_23NSYM_16bit
 generic map(
-  WIDTH_IN => 18,
-  FRAC_IN => 3,
   WIDTH => WIDTH,
   FRAC => 3,
   SLOPE_FRAC => 8
@@ -87,9 +87,11 @@ port map(
   stage2 => slope
 );
 
-UUT:entity work.CFD2
+UUT:entity work.CFD8
 generic map(
   WIDTH => WIDTH,
+  CF_WIDTH => CF_WIDTH,
+  CF_FRAC => CF_FRAC,
   DELAY => DELAY,
   STRICT_CROSSING => STRICT_CROSSING
 )
@@ -135,7 +137,7 @@ end process simsquare;
 --              when sim_count(SIM_WIDTH-1)='0' 
 --              else to_signed(1000,WIDTH);
                 
-sample_in <= resize(sim_count,WIDTH);
+--sample_in <= resize(sim_count,WIDTH);
 
 
 stimulus:process is
@@ -152,17 +154,18 @@ stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 
-constant_fraction <= to_signed(CF,WIDTH);
+constant_fraction <= to_signed(CF,CF_WIDTH);
 --constant_fraction <= (others => '0');
 slope_threshold <= to_signed(2300,WIDTH);
 pulse_threshold <= to_signed(300,WIDTH);
 wait for CLK_PERIOD;
 reset <= '0';
-wait for CLK_PERIOD*32;
-simenable <= TRUE;
---adc_sample <= to_signed(4000,WIDTH);
-wait for CLK_PERIOD;
---adc_sample <= to_signed(0,WIDTH);
+sample_in <= to_signed(0,WIDTH);
+wait for CLK_PERIOD*256;
+--simenable <= TRUE;
+sample_in <= to_signed(10000,WIDTH);
+wait for CLK_PERIOD*1;
+sample_in <= to_signed(0,WIDTH);
 wait;
 end process stimulus;
 

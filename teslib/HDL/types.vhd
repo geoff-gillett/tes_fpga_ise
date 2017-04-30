@@ -41,7 +41,7 @@ constant TIMESTAMP_BITS:integer:=64;
 -- Bits in a relative ADC sample (sample_t)
 constant SAMPLE_BITS:integer:=ADC_BITS+1;
 -- DSP internal
-constant DSP_BITS:integer:=18;
+constant DSP_BITS:integer:=16;
 constant DSP_FRAC:integer:=3;
 constant CFD_BITS:integer:=18;
 constant CFD_FRAC:integer:=17;

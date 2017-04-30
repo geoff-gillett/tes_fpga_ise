@@ -20,13 +20,9 @@ use work.types.all;
 entity channel8 is
 generic(
   CHANNEL:natural:=0;
-  BASELINE_BITS:natural:=11;
-  WIDTH:natural:=18; --internal precision
+  WIDTH:natural:=16; --internal precision
   FRAC:natural:=3; --internal precision
-  WIDTH_OUT:natural:=16; -- precision in measurement packets
-  FRAC_OUT:natural:=3;
   SLOPE_FRAC:natural:=8; --internal precision
-  SLOPE_FRAC_OUT:natural:=8;
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
@@ -46,8 +42,6 @@ port (
   stage1_events:out fir_control_out_t;
   stage2_config:in fir_control_in_t;
   stage2_events:out fir_control_out_t;
-  baseline_config:in fir_control_in_t;
-  baseline_events:out fir_control_out_t;
   
   --mux signals
   mux_full:in boolean;
@@ -92,14 +86,14 @@ attribute mark_debug of sample_in:signal is DEBUG;
 --raw signal measurements
 signal raw_x:signed(WIDTH-1 downto 0);
 signal raw_0_pos_x,raw_0_neg_x,raw_0xing:boolean;
-signal raw_rounded:signed(WIDTH_OUT-1 downto 0);
+signal raw_rounded:signed(WIDTH-1 downto 0);
 --pipelines
 constant ALAT:natural:=5; --accumulator latency
 constant RLAT:natural:=3; --round latency
 constant XLAT:natural:=1; --crossing latency
 constant ELAT:natural:=1; --extrema latency
 constant DEPTH:integer:=ALAT;--5; --main pipeline depth
-type pipe is array (natural range <>) of signed(WIDTH_OUT-1 downto 0);
+type pipe is array (natural range <>) of signed(WIDTH-1 downto 0);
 signal raw_pipe:pipe(1 to DEPTH);
 signal raw_0_pos_pipe,raw_0_neg_pipe:boolean_vector(1 to DEPTH);
 
@@ -136,8 +130,8 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  divide_n => to_unsigned(18,DIVIDE_BITS),
-  threshold => to_signed(2**17-1,WIDTH),
+  divide_n => to_unsigned(BASELINE_N,DIVIDE_BITS),
+  threshold => to_signed(2**17-1,WIDTH),--resize((signed('0' & registers.baseline.threshold)),WIDTH), --to_signed(2**17-1,WIDTH),
   sample => resize(baseline_sample,WIDTH),
   average => baseline_estimate
 );
@@ -196,7 +190,7 @@ port map(
 raw <= signed(sample_d);
 
 --FIXME make this width 16 with dynamic frac
-FIR:entity dsp.two_stage_FIR71_18_3
+FIR:entity dsp.two_stage_FIR71_16_3
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -213,15 +207,12 @@ port map(
   stage2 => slope
 );
 
-measure:entity work.measure7
+measure:entity work.measure8
 generic map(
   CHANNEL => CHANNEL,
   WIDTH => WIDTH,
   FRAC => FRAC,
-  WIDTH_OUT => WIDTH_OUT,
-  FRAC_OUT => FRAC_OUT,
   SLOPE_FRAC => SLOPE_FRAC,
-  SLOPE_FRAC_OUT => SLOPE_FRAC_OUT,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
   CFD_DELAY => RAW_DELAY-101-72,
@@ -281,25 +272,25 @@ port map(
   area => m.raw.area
 );
 
-rawRound:entity dsp.round2
-generic map(
-  WIDTH_IN => WIDTH,
-  FRAC_IN => FRAC,
-  WIDTH_OUT => WIDTH_OUT,
-  FRAC_OUT => FRAC_OUT
-)
-port map(
-  clk => clk,
-  reset => reset1,
-  input => raw,
-  output_threshold => (others => '0'),
-  output => raw_rounded,
-  above_threshold => open
-);
+--rawRound:entity dsp.round2
+--generic map(
+--  WIDTH_IN => WIDTH,
+--  FRAC_IN => FRAC,
+--  WIDTH_OUT => WIDTH_OUT,
+--  FRAC_OUT => FRAC_OUT
+--)
+--port map(
+--  clk => clk,
+--  reset => reset1,
+--  input => raw,
+--  output_threshold => (others => '0'),
+--  output => raw_rounded,
+--  above_threshold => open
+--);
 
 rawExtrema:entity work.extrema
 generic map(
-  WIDTH => WIDTH_OUT
+  WIDTH => WIDTH
 )
 port map(
   clk => clk,
