@@ -138,43 +138,14 @@ port map(
   average => baseline_estimate
 );
 
--- estimate is always fixed 18.3 due to the averaging
---baselineEstimator:entity work.baseline_estimator3
---generic map(
---  BASELINE_BITS => BASELINE_BITS, --FIXME make generic in parent
---  ADC_WIDTH => ADC_WIDTH,
---  COUNTER_BITS => 18,
---  TIMECONSTANT_BITS => 32,
---  WIDTH => WIDTH,
---  FRAC => FRAC
---)
---port map(
---  clk => clk,
---  reset => reset1,
---  sample => baseline_sample,
---  sample_valid => TRUE,
---  av_config => baseline_config,
---  av_events => baseline_events,
---  timeconstant => registers.baseline.timeconstant,
---  threshold => registers.baseline.threshold,
---  count_threshold => registers.baseline.count_threshold,
---  new_only => registers.baseline.new_only,
---  baseline_estimate => baseline_estimate,
---  range_error => open
---);
-
 --FIXME subtract off the frac part if using the correction
 baselineSubraction:process(clk)
 begin
 if rising_edge(clk) then
   if registers.baseline.subtraction then
-    sample_in
-      <= reshape(baseline_sample,0,WIDTH,FRAC) - baseline_estimate;	
---    sample_in
---      <= reshape(sample_inv,0,WIDTH,FRAC) - baseline_estimate;	
+    sample_in <= reshape(baseline_sample,0,WIDTH,FRAC) - baseline_estimate;	
   else
-    sample_in
-      <= reshape(sample_inv,0,WIDTH,FRAC)-registers.baseline.offset;	
+    sample_in <= reshape(sample_inv,0,WIDTH,FRAC)-registers.baseline.offset;	
   end if;
 end if;
 end process baselineSubraction;
@@ -232,8 +203,8 @@ port map(
 pipelines:process (clk) is
 begin
   if rising_edge(clk) then
-    raw_pipe(RLAT-XLAT to DEPTH) 
-      <= raw_rounded & raw_pipe(RLAT-XLAT to DEPTH-1);
+    raw_pipe(XLAT to DEPTH) 
+      <= raw & raw_pipe(XLAT to DEPTH-1);
     raw_0_pos_pipe <= raw_0_pos_x & raw_0_pos_pipe(1 to DEPTH-1);
     raw_0_neg_pipe <= raw_0_neg_x & raw_0_neg_pipe(1 to DEPTH-1);
     m.raw.zero_xing <= raw_0_neg_pipe(DEPTH-1) or raw_0_pos_pipe(DEPTH-1);
@@ -273,22 +244,6 @@ port map(
   above_area_threshold => open,
   area => m.raw.area
 );
-
---rawRound:entity dsp.round2
---generic map(
---  WIDTH_IN => WIDTH,
---  FRAC_IN => FRAC,
---  WIDTH_OUT => WIDTH_OUT,
---  FRAC_OUT => FRAC_OUT
---)
---port map(
---  clk => clk,
---  reset => reset1,
---  input => raw,
---  output_threshold => (others => '0'),
---  output => raw_rounded,
---  above_threshold => open
---);
 
 rawExtrema:entity work.extrema
 generic map(

@@ -185,20 +185,20 @@ squaresig <= to_signed(-10,ADC_WIDTH)
              when sim_count(SIM_WIDTH-1)='0' 
              else to_signed(100,ADC_WIDTH);
                
-doublesig <= to_signed(-200,WIDTH)
+doublesig <= to_signed(-200,ADC_WIDTH)
              when sim_count < 10
-             else to_signed(500,WIDTH)
+             else to_signed(500,ADC_WIDTH)
              when sim_count < 40
-             else to_signed(0,WIDTH)
+             else to_signed(0,ADC_WIDTH)
              when sim_count < 120
-             else to_signed(1000,WIDTH)
+             else to_signed(1000,ADC_WIDTH)
              when sim_count < 300
-             else to_signed(-200,WIDTH);
+             else to_signed(-200,ADC_WIDTH);
              
 --adc_sample <= signed(squaresig);
 --adc_sample <= signed(doublesig);
 --adc_sample <= resize(adc_count,ADC_WIDTH);
-adc_sample <= doublesig;
+--adc_sample <= doublesig;
 
 stimulus:process
 begin
@@ -237,6 +237,11 @@ wait for CLK_PERIOD;
 ready <= TRUE;
 wait for CLK_PERIOD*1500;
 simenable <= TRUE;
+adc_sample <= to_signed(0,ADC_WIDTH);
+wait for CLK_PERIOD;
+adc_sample <= to_signed(1000,ADC_WIDTH);
+wait for CLK_PERIOD;
+adc_sample <= to_signed(0,ADC_WIDTH);
 wait; 
 end process stimulus;
 
