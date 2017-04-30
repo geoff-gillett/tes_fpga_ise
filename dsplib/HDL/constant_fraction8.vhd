@@ -87,7 +87,7 @@ port map (
   BCOUT => open,                   -- 18-bit output: B port cascade output
   CARRYCASCOUT => open,     -- 1-bit output: Cascade carry output
   MULTSIGNOUT => open,       -- 1-bit output: Multiplier sign cascade output
-  PCOUT => p_out,                   -- 48-bit output: Cascade output
+  PCOUT => open,                   -- 48-bit output: Cascade output
   -- Control: 1-bit (each) output: Control Inputs/Status Bits
   OVERFLOW => open,             -- 1-bit output: Overflow in add/acc output
   PATTERNBDETECT => open, -- 1-bit output: Pattern bar detect output
@@ -95,7 +95,7 @@ port map (
   UNDERFLOW => open,           -- 1-bit output: Underflow in add/acc output
   -- Data: 4-bit (each) output: Data Ports
   CARRYOUT => open,             -- 4-bit output: Carry output
-  P => open,                           -- 48-bit output: Primary data output
+  P => p_out,                           -- 48-bit output: Primary data output
   -- Cascade: 30-bit (each) input: Cascade Ports
   ACIN => (others => '0'),                     -- 30-bit input: A cascade data input
   BCIN => (others => '0'),                     -- 18-bit input: B cascade input
