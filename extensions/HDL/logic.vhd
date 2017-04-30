@@ -22,12 +22,15 @@ package logic is
 function unaryOR(arg:boolean_vector) return boolean; 
 function unaryOR(arg:std_logic_vector) return boolean; 
 function unaryOR(arg:unsigned) return boolean; 
+function unaryOR(arg:signed) return boolean; 
+  
 --------------------------------------------------------------------------------
 -- unaryAnd AND all bits in the argument
 --------------------------------------------------------------------------------
 function unaryAND(arg:std_logic_vector) return boolean;
 function unaryAND(arg:boolean_vector) return boolean;
 function unaryAND(arg:unsigned) return boolean;
+function unaryAND(arg:signed) return boolean;
 
 --------------------------------------------------------------------------------
 -- shift registers
@@ -92,6 +95,10 @@ begin
   return unaryOr(std_logic_vector(arg));
 end function;
 
+function unaryOr(arg:signed) return boolean is
+begin
+  return unaryOr(std_logic_vector(arg));
+end function;
 --------------------------------------------------------------------------------
 -- unaryAnd AND all bits in the argument
 --------------------------------------------------------------------------------
@@ -114,6 +121,10 @@ begin
   return unaryAnd(std_logic_vector(arg));
 end function;
 
+function unaryAnd(arg:signed) return boolean is
+begin
+  return unaryAnd(std_logic_vector(arg));
+end function;
 --------------------------------------------------------------------------------
 -- Shift register functions
 --------------------------------------------------------------------------------

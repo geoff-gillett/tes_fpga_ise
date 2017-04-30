@@ -104,7 +104,7 @@ port map (
   PCIN => (others => '0'),                     -- 48-bit input: P cascade input
   -- Control: 4-bit (each) input: Control Inputs/Status Bits
   ALUMODE => "0000",               -- 4-bit input: ALU control input
-  CARRYINSEL => "111",         -- 3-bit input: Carry select input
+  CARRYINSEL => "110",         -- 3-bit input: Carry select input
   CEINMODE => '0',             -- 1-bit input: Clock enable input for INMODEREG
   CLK => clk,                       -- 1-bit input: Clock input
   INMODE => "01101",                 -- 5-bit input: INMODE control input

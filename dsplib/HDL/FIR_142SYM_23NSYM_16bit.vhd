@@ -203,7 +203,7 @@ port map(
 --------------------------------------------------------------------------------
 stage1Delay:entity work.sdp_bram_delay
 generic map(
-  DELAY => 39,
+  DELAY => 38,
   WIDTH => WIDTH
 )
 port map(

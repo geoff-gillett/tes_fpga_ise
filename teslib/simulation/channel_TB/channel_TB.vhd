@@ -198,10 +198,11 @@ doublesig <= to_signed(-200,ADC_WIDTH)
 --adc_sample <= signed(squaresig);
 --adc_sample <= signed(doublesig);
 --adc_sample <= resize(adc_count,ADC_WIDTH);
---adc_sample <= doublesig;
+adc_sample <= doublesig;
 
 stimulus:process
 begin
+--adc_sample <= to_signed(0,ADC_WIDTH);
 stage1_config.config_data <= (others => '0');
 stage1_config.config_valid <= '0';
 stage1_config.reload_data <= (others => '0');
@@ -221,7 +222,7 @@ registers.baseline.timeconstant <= to_unsigned(25000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 registers.capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
-registers.capture.pulse_threshold <= to_unsigned(1554,DSP_BITS-1);
+registers.capture.pulse_threshold <= to_unsigned(63*8+1,DSP_BITS-1);
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 registers.capture.detection <= TRACE_DETECTION_D;
@@ -237,11 +238,11 @@ wait for CLK_PERIOD;
 ready <= TRUE;
 wait for CLK_PERIOD*1500;
 simenable <= TRUE;
-adc_sample <= to_signed(0,ADC_WIDTH);
-wait for CLK_PERIOD;
-adc_sample <= to_signed(1000,ADC_WIDTH);
-wait for CLK_PERIOD;
-adc_sample <= to_signed(0,ADC_WIDTH);
+--adc_sample <= to_signed(0,ADC_WIDTH);
+--wait for CLK_PERIOD;
+--adc_sample <= to_signed(8000,ADC_WIDTH);
+--wait for CLK_PERIOD;
+--adc_sample <= to_signed(0,ADC_WIDTH);
 wait; 
 end process stimulus;
 
