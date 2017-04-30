@@ -22,7 +22,7 @@ generic(
   CF_FRAC:integer:=17;
   DELAY:integer:=200;
   STRICT_CROSSING:boolean:=TRUE;
-  SIM_WIDTH:integer:=10
+  SIM_WIDTH:integer:=9
 );
 end entity CFD_TB;
 
@@ -43,6 +43,7 @@ signal stage2_events:fir_control_out_t;
 signal simenable:boolean:=FALSE;
 signal filtered:signed(WIDTH-1 downto 0);
 signal slope:signed(WIDTH-1 downto 0);
+signal squaresig,doublesig:signed(WIDTH-1 downto 0);
 
 constant CF:integer:=2**17/5;
 signal slope_threshold:signed(WIDTH-1 downto 0);
@@ -139,6 +140,16 @@ end process simsquare;
                 
 --sample_in <= resize(sim_count,WIDTH);
 
+doublesig <= to_signed(-200,WIDTH)
+             when sim_count < 10
+             else to_signed(500,WIDTH)
+             when sim_count < 40
+             else to_signed(0,WIDTH)
+             when sim_count < 120
+             else to_signed(1000,WIDTH)
+             when sim_count < 300
+             else to_signed(-200,WIDTH);
+sample_in <= doublesig;
 
 stimulus:process is
 begin
@@ -156,16 +167,16 @@ stage2_config.reload_valid <= '0';
 
 constant_fraction <= to_signed(CF,CF_WIDTH);
 --constant_fraction <= (others => '0');
-slope_threshold <= to_signed(2300,WIDTH);
-pulse_threshold <= to_signed(300,WIDTH);
+slope_threshold <= to_signed(300,WIDTH);
+pulse_threshold <= to_signed(2000,WIDTH);
 wait for CLK_PERIOD;
 reset <= '0';
-sample_in <= to_signed(0,WIDTH);
+--sample_in <= to_signed(0,WIDTH);
 wait for CLK_PERIOD*256;
---simenable <= TRUE;
-sample_in <= to_signed(10000,WIDTH);
-wait for CLK_PERIOD*1;
-sample_in <= to_signed(0,WIDTH);
+simenable <= TRUE;
+--sample_in <= to_signed(10000,WIDTH);
+--wait for CLK_PERIOD*1;
+--sample_in <= to_signed(0,WIDTH);
 wait;
 end process stimulus;
 

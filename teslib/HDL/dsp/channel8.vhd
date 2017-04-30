@@ -20,6 +20,8 @@ use work.types.all;
 entity channel8 is
 generic(
   CHANNEL:natural:=0;
+  CF_WIDTH:natural:=18;
+  CF_FRAC:natural:=17;
   WIDTH:natural:=16; --internal precision
   FRAC:natural:=3; --internal precision
   SLOPE_FRAC:natural:=8; --internal precision
@@ -190,7 +192,7 @@ port map(
 raw <= signed(sample_d);
 
 --FIXME make this width 16 with dynamic frac
-FIR:entity dsp.two_stage_FIR71_16_3
+FIR:entity dsp.FIR_142SYM_23NSYM_16bit
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,

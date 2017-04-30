@@ -16,6 +16,8 @@ use work.measurements.all;
 entity measure8 is
 generic(
   CHANNEL:natural:=0;
+  CF_WIDTH:natural:=18;
+  CF_FRAC:natural:=17;
   WIDTH:natural:=16;
   FRAC:natural:=3;
   SLOPE_FRAC:natural:=8;
@@ -74,7 +76,7 @@ signal valid_peak_pipe,first_peak_pipe:boolean_vector(1 to DEPTH)
 
 signal pulse_area:signed(AREA_WIDTH-1 downto 0);
 
-signal constant_fraction:signed(WIDTH-1 downto 0);
+signal constant_fraction:signed(CF_WIDTH-1 downto 0);
 signal slope_threshold:signed(WIDTH-1 downto 0);
 signal pulse_threshold:signed(WIDTH-1 downto 0);
 signal valid_peak:boolean;
@@ -148,9 +150,11 @@ constant_fraction <= signed('0' & registers.constant_fraction);
 slope_threshold <= signed('0' & registers.slope_threshold);
 pulse_threshold <= signed('0' & registers.pulse_threshold);
 
-CFD:entity dsp.CFD3
+CFD:entity dsp.CFD8
 generic map(
   WIDTH => WIDTH,
+  CF_WIDTH => CF_WIDTH,
+  CF_FRAC => CF_FRAC,
   DELAY => CFD_DELAY,
   STRICT_CROSSING => STRICT_CROSSING
 )
@@ -406,10 +410,10 @@ begin
         <= slope_cfd & slope_long_pipe(1 to DEPTH-1);
         
       filtered_pipe(1 to DEPTH) 
-        <= filtered_cfd & filtered_pipe(1+RLAT to DEPTH-1);
+        <= filtered_cfd & filtered_pipe(1 to DEPTH-1);
         
       slope_pipe(1 to DEPTH) 
-        <= slope_cfd & slope_pipe(1+RLAT to DEPTH-1);
+        <= slope_cfd & slope_pipe(1 to DEPTH-1);
       
       slope_t_pos_pipe 
         <= slope_threshold_pos_cfd & slope_t_pos_pipe(1 to DEPTH-1);

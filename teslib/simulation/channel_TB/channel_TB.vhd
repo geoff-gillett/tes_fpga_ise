@@ -20,6 +20,8 @@ use work.measurements.all;
 entity channel_TB is
 generic(
   CHANNEL:natural:=0;
+  CF_WIDTH:natural:=18;
+  CF_FRAC:natural:=17;
   WIDTH:natural:=16;
   FRAC:natural:=3;
   SLOPE_FRAC:natural:=8; 
@@ -75,6 +77,8 @@ clk <= not clk after CLK_PERIOD/2;
 UUT:entity work.channel8
 generic map(
   CHANNEL => CHANNEL,
+  CF_WIDTH => CF_WIDTH,
+  CF_FRAC => CF_FRAC,
   WIDTH => WIDTH,
   FRAC => FRAC,
   SLOPE_FRAC => SLOPE_FRAC,
@@ -141,26 +145,6 @@ begin
 		clk_count <= clk_count+1;
 end process clkCount;
 
---stimulusFile:process
---file sample_file:text is in "../input_signals/short";
---variable file_line:line; -- text line buffer 
---variable str_sample:string(4 downto 1);
---variable sample_in:std_logic_vector(15 downto 0);
---begin
---while not endfile(sample_file) loop
---  readline(sample_file, file_line);
---  read(file_line, str_sample);
---  sample_in:=hexstr2vec(str_sample);
---  wait until rising_edge(clk);
---  --adc_sample <= resize(unsigned(sample_in), ADC_WIDTH);
---  if clk_count mod 10000 = 0 then
---    report "clk " & integer'image(clk_count);
---  end if;
---  --assert false report str_sample severity note;
---end loop;
---wait;
---end process stimulusFile;
-
 stimulusFile:process
 	file sample_file:integer_file is in 
 	     "../input_signals/50mvCh1on_amp_100khzdiode_250_1.bin";
@@ -201,15 +185,15 @@ squaresig <= to_signed(-10,ADC_WIDTH)
              when sim_count(SIM_WIDTH-1)='0' 
              else to_signed(100,ADC_WIDTH);
                
-doublesig <= to_signed(-20,ADC_WIDTH)
+doublesig <= to_signed(-200,WIDTH)
              when sim_count < 10
-             else to_signed(30,ADC_WIDTH)
+             else to_signed(500,WIDTH)
              when sim_count < 40
-             else to_signed(10,ADC_WIDTH)
-             when sim_count < 100
-             else to_signed(100,ADC_WIDTH)
-             when sim_count < 200
-             else to_signed(-20,ADC_WIDTH);
+             else to_signed(0,WIDTH)
+             when sim_count < 120
+             else to_signed(1000,WIDTH)
+             when sim_count < 300
+             else to_signed(-200,WIDTH);
              
 --adc_sample <= signed(squaresig);
 --adc_sample <= signed(doublesig);

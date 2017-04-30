@@ -41,7 +41,7 @@ end entity FIR_142SYM_23NSYM_16bit;
 architecture coregen of FIR_142SYM_23NSYM_16bit is
   
 --IP cores FIR compiler 6.3
-component fir_142sym_24_29
+component fir_142sym_24_28
 port (
   aresetn:in std_logic;
   aclk:in std_logic;
@@ -125,7 +125,7 @@ stage1_in <= to_std_logic(sample_in);
 
 --23.23 bit coefficients
   
-stage1FIRfilter:FIR_142SYM_24_29
+stage1FIRfilter:FIR_142SYM_24_28
 port map (
   aclk => clk,
   aresetn => '1',
@@ -149,7 +149,7 @@ port map (
 stage1Round:entity work.round2
 generic map(
   WIDTH_IN => 48,
-  FRAC_IN => 25+FRAC,
+  FRAC_IN => 28+FRAC,
   WIDTH_OUT => WIDTH,
   FRAC_OUT => FRAC
 )
