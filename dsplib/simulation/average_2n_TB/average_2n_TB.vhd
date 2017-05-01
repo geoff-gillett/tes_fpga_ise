@@ -9,7 +9,7 @@ use extensions.logic.all;
 entity average_2n_TB is
 generic(
   WIDTH:natural:=16;
-  FRAC:natural:=3
+  DIVIDE_N:natural:=4
 ); 
 end entity average_2n_TB;
 
@@ -27,7 +27,6 @@ signal sim_count:unsigned(SIM_WIDTH-1 downto 0):=(others => '0');
 constant DEPTH:natural:=3;
 --type pipe is array (1 to DEPTH) of signed(SIM_WIDTH-1 downto 0);
 --signal sim_pipe:pipe;
-signal divide_n:unsigned(DIVIDE_BITS-1 downto 0);
 signal threshold:signed(WIDTH-1 downto 0);
 signal sample:signed(WIDTH-1 downto 0);
 signal average:signed(WIDTH-1 downto 0);
@@ -35,14 +34,14 @@ signal average:signed(WIDTH-1 downto 0);
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.average_2n
+UUT:entity work.average_fixed_n
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  DIVIDE_N => DIVIDE_N
 )
 port map(
   clk => clk,
   reset => reset,
-  divide_n => divide_n,
   threshold => threshold,
   sample => sample,
   average => average
@@ -61,12 +60,11 @@ begin
   end if;
 end process sim;
 --sim_out <= sim_pipe(DEPTH);
-sample <= resize(signed('0' & sim_count),WIDTH);
+sample <= resize(-signed('0' & sim_count),WIDTH);
 --sample <= to_signed(1,WIDTH);
 
 stimulus:process is
 begin
-  divide_n <= to_unsigned(4,DIVIDE_BITS);
 --  threshold <= to_signed(4,WIDTH);
   threshold <= (WIDTH-1 => '0', others => '1');
   --input <= (others => '0');

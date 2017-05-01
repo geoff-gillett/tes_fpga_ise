@@ -217,7 +217,7 @@ registers.baseline.offset <= to_signed(0,WIDTH);
 registers.baseline.count_threshold <= to_unsigned(10,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
 registers.baseline.new_only <= FALSE;
-registers.baseline.subtraction <= FALSE;
+registers.baseline.subtraction <= TRUE;
 registers.baseline.timeconstant <= to_unsigned(25000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);

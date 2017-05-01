@@ -22,50 +22,46 @@ use extensions.logic.all;
 use extensions.boolean_vector.all;
 
 --accumulate 2**n samples that are below threshold then divide by 2**n
-entity average_2n is
+entity average_fixed_n is
 generic(
   WIDTH:integer:=16;
-  FRAC:integer:=3
+  DIVIDE_N:natural:=19
 );
 port(
   clk:in std_logic;
   reset:in std_logic;
   
-  divide_n:in unsigned(ceillog2(48-WIDTH+1)-1 downto 0);
   threshold:in signed(WIDTH-1 downto 0);
   sample:in signed(WIDTH-1 downto 0);
   
   average:out signed(WIDTH-1 downto 0)
 );
-end entity average_2n;
+end entity average_fixed_n;
 
-architecture DSP48 of average_2n is
+architecture DSP48 of average_fixed_n is
 
-constant DIVIDE_BITS:integer:=ceillog2(48-WIDTH+1);
-signal count:unsigned(48-WIDTH-1 downto 0):=to_unsigned(7,48-WIDTH);
-signal rel_threshold_reg:signed(WIDTH downto 0);
-signal threshold_reg,rel_threshold:signed(WIDTH-1 downto 0);
-signal rel_thresh_sign:std_logic;
+signal count:unsigned(DIVIDE_N-1 downto 0);
+signal threshold_reg:signed(WIDTH downto 0);
+signal rel_threshold:signed(WIDTH-1 downto 0);
 --signal n_reg:unsigned(DIVIDE_BITS-1 downto 0):=to_unsigned(3,DIVIDE_BITS);
-constant ONES:unsigned(47 downto 0):=(others => '1');
 signal valid,round_reg:boolean:=FALSE;
-signal average_int,sample_reg:signed(WIDTH-1 downto 0):=(others => '0');
+signal average_int,sample_reg,sample_reg2:signed(WIDTH-1 downto 0)
+       :=(others => '0');
 signal below_threshold:boolean:=TRUE;
-signal n_change:boolean:=FALSE;
+signal thresh_sign:std_logic:='0';
 
 -- DSP48E input signals
 signal a:std_logic_vector(29 downto 0):=(others => '0');
 signal b:std_logic_vector(17 downto 0);
-signal ab:std_logic_vector(47 downto 0);
-signal c,p_out:std_logic_vector(47 downto 0);
-signal round_shift,divide_shift,count_shift:unsigned(DIVIDE_BITS-1 downto 0);
-signal n_reg:unsigned(DIVIDE_BITS-1 downto 0);
-signal rounding_constant:unsigned(47 downto 0)
-       :=(1 downto 0 => '1',others => '0');
-signal carryin:std_ulogic;
+signal ab,p_out:std_logic_vector(47 downto 0);
 signal opmode:std_logic_vector(6 downto 0):="1011111";
+signal carryinsel:std_logic_vector(2 downto 0):="000";
 
-type FSMstate is (NEW_N,NEW_CONST,START,ACCUMULATE,ROUND);
+constant ONES:unsigned(47 downto 0):=(others => '1');
+constant ROUNDING_C:std_logic_vector(47 downto 0)
+         :=std_logic_vector(shift_right('0' & ONES(46 downto 0),48-DIVIDE_N));
+
+type FSMstate is (START,ACCUMULATE,ROUND);
 signal state,nextstate:FSMstate;
 
 begin
@@ -75,29 +71,20 @@ fsmNextstate:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      state <= NEW_N;
+      state <= START;
     else
       state <= nextstate;
-      n_change <= divide_n /= n_reg;
     end if;
   end if;
 end process fsmNextstate;
 
-fsmTransition:process(state,count,below_threshold,n_change,p_out(47))
+fsmTransition:process(state,below_threshold,count)
 begin
   
-  carryin <= '0';
+  carryinsel <= "000";
   nextstate <= state;
   
   case state is 
-  when NEW_N =>
-    
-    opmode <= "0000000"; -- x->0 y->0 z->0
-    nextstate <= NEW_CONST;
-    
-  when NEW_CONST =>
-    opmode <= "0000000"; -- x->0 y->0 z->0
-    nextstate <= START;
     
   when START =>
     
@@ -105,10 +92,7 @@ begin
     nextstate <= ACCUMULATE;
     
   when ACCUMULATE =>
-    
-    if n_change then
-      nextstate <= NEW_N;
-    elsif count=0 then
+    if count=0 then
       nextstate <= ROUND;
     end if;
     
@@ -120,59 +104,41 @@ begin
 
   when ROUND =>
     
-    carryin <= p_out(47);
-    opmode <= "0101100"; -- x->0 y->C z->P
+    carryinsel <= "111";
+    opmode <= "0101111"; -- x->A:B y->C z->P
     nextstate <= START;
     
   end case;
 end process fsmTransition;
 
+thresh_sign <= threshold_reg(WIDTH);
 fsmOutput:process (clk) is
 begin
   if rising_edge(clk) then
     if reset = '1' then
       average_int <= (others => '0');
-      rel_threshold_reg <= (WIDTH downto WIDTH-1 => '0', others => '1');
+      threshold_reg <= (WIDTH downto WIDTH-1 => '0', others => '1');
+      rel_threshold <= (WIDTH-1 => '0', others => '1');
+      count <= (others => '1');
     else
-      threshold_reg <= threshold;
-      rel_threshold_reg <= resize(average_int,WIDTH+1)+threshold_reg; 
-      below_threshold <= sample <= rel_threshold;
-      sample_reg <= sample;
-      
-      -- valid 1 clock after start
-      
-      if state=NEW_N then
-        n_reg <= divide_n;
-        divide_shift <= divide_n-FRAC;
---        if divide_n /= 0 then
-        round_shift <= to_unsigned(48+FRAC,DIVIDE_BITS) - divide_n;
-        count_shift <= to_unsigned(48,DIVIDE_BITS) - divide_n;
---        else
---          round_shift <= to_unsigned(48,DIVIDE_BITS);
---          count_shift <= to_unsigned(48,DIVIDE_BITS);
---        end if;
-      end if;
-      
-      --saturation
-      if rel_threshold_reg(WIDTH)/=rel_threshold_reg(WIDTH-1) then
-        rel_threshold 
-          <= (WIDTH-1 => rel_thresh_sign, others => not rel_thresh_sign);
-      end if;
-      
-      if state=NEW_CONST or state=ROUND then
-        rounding_constant 
-          <= shift_right('0' & ONES(46 downto 0),to_integer(round_shift));
-        count <=  resize(shift_right(ONES,to_integer(count_shift)),48-WIDTH);
-      else
+      if below_threshold then
         count <= count-1;
       end if;
+      
+      threshold_reg <= resize(average_int,WIDTH+1)+resize(threshold,WIDTH+1); 
+      if thresh_sign/=threshold_reg(WIDTH-1) then
+        rel_threshold <= (WIDTH-1 => thresh_sign,others => not thresh_sign);
+      else
+        rel_threshold <= threshold_reg(WIDTH-1 downto 0);
+      end if;
+      below_threshold <= sample <= rel_threshold;
+      sample_reg <= sample;
      
       round_reg <= state=ROUND;
       valid <= round_reg;
       
       if valid then
-        average_int 
-          <= resize(shift_right(signed(p_out),to_integer(divide_shift)),WIDTH);
+        average_int <= signed(p_out(DIVIDE_N+WIDTH-1 downto DIVIDE_N));
       end if;
       
     end if;
@@ -182,7 +148,6 @@ end process fsmOutput;
 ab <= resize(sample_reg,48);
 a <= ab(47 downto 18);
 b <= ab(17 downto 0);
-c <= to_std_logic(rounding_constant);
 
 addRound:DSP48E1
 generic map (
@@ -201,12 +166,12 @@ generic map (
   -- Register Control Attributes: Pipeline Register Configuration
   ACASCREG => 1,                     -- Number of pipeline stages between A/ACIN and ACOUT (0, 1 or 2)
   ADREG => 0,                        -- Number of pipeline stages for pre-adder (0 or 1)
-  ALUMODEREG => 1,                   -- Number of pipeline stages for ALUMODE (0 or 1)
+  ALUMODEREG => 0,                   -- Number of pipeline stages for ALUMODE (0 or 1)
   AREG => 1,                         -- Number of pipeline stages for A (0, 1 or 2)
   BCASCREG => 1,                     -- Number of pipeline stages between B/BCIN and BCOUT (0, 1 or 2)
   BREG => 1,                         -- Number of pipeline stages for B (0, 1 or 2)
   CARRYINREG => 1,                   -- Number of pipeline stages for CARRYIN (0 or 1)
-  CARRYINSELREG => 0,                -- Number of pipeline stages for CARRYINSEL (0 or 1)
+  CARRYINSELREG => 1,                -- Number of pipeline stages for CARRYINSEL (0 or 1)
   CREG => 1,                         -- Number of pipeline stages for C (0 or 1)
   DREG => 0,                         -- Number of pipeline stages for D (0 or 1)
   INMODEREG => 0,                    -- Number of pipeline stages for INMODE (0 or 1)
@@ -238,7 +203,7 @@ port map (
   PCIN => (others => '0'),                     -- 48-bit input: P cascade input
   -- Control: 4-bit (each) input: Control Inputs/Status Bits
   ALUMODE => "0000",               -- 4-bit input: ALU control input
-  CARRYINSEL => "000",         -- 3-bit input: Carry select input
+  CARRYINSEL => carryinsel,         -- 3-bit input: Carry select input
   CEINMODE => '0',             -- 1-bit input: Clock enable input for INMODEREG
   CLK => clk,                       -- 1-bit input: Clock input
   INMODE => "00000",                 -- 5-bit input: INMODE control input
@@ -247,8 +212,8 @@ port map (
   -- Data: 30-bit (each) input: Data Ports
   A => a,                           -- 30-bit input: A data input
   B => b,                           -- 18-bit input: B data input
-  C => c,--OVERFLOW_VALUE,                           -- 48-bit input: C data input
-  CARRYIN => carryin,               -- 1-bit input: Carry input signal
+  C => ROUNDING_C,                  -- 48-bit input: C data input
+  CARRYIN => '0',               -- 1-bit input: Carry input signal
   D => (others => '1'),                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs
   CEA1 => '1',                     -- 1-bit input: Clock enable input for 1st stage AREG

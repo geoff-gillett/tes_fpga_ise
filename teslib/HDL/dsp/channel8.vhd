@@ -22,6 +22,7 @@ generic(
   CHANNEL:natural:=0;
   CF_WIDTH:natural:=18;
   CF_FRAC:natural:=17;
+  BASELINE_N:natural:= 19;
   WIDTH:natural:=16; --internal precision
   FRAC:natural:=3; --internal precision
   SLOPE_FRAC:natural:=8; --internal precision
@@ -63,9 +64,6 @@ end entity channel8;
 architecture fixed_16_3 of channel8 is
   
 constant RAW_DELAY:natural:=1026;
-constant DIVIDE_BITS:integer:=ceillog2(48-WIDTH+1);
-constant BASELINE_N:integer:=18;
-constant ZERO_FRAC:signed(FRAC-1 downto 0):=(others => '0');
   
 signal sample_in,raw,filtered,slope:signed(WIDTH-1 downto 0);
 signal sample_d:std_logic_vector(WIDTH-1 downto 0);
@@ -74,6 +72,7 @@ signal sample_inv,baseline_sample:signed(ADC_WIDTH+FRAC-1 downto 0);
 signal baseline_estimate,baseline_in:signed(WIDTH-1 downto 0);
 signal sat:boolean;
 signal baseline_sign:std_logic;
+signal baseline_threshold:signed(WIDTH-1 downto 0);
 
 --debug
 constant DEBUG:string:="FALSE";
@@ -131,21 +130,22 @@ if rising_edge(clk) then
     else
       baseline_in <= resize(baseline_sample, WIDTH);
     end if;
-    
+    baseline_threshold 
+      <= resize((signed('0' & registers.baseline.threshold)),WIDTH); 
   end if;
 end if;
 end process sampleoffset;
 
-baselineAv:entity dsp.average_2n
+--baseline_threshold <= (WIDTH-1 => '0',others => '1');
+baselineAv:entity dsp.average_fixed_n
 generic map(
   WIDTH => WIDTH,
-  FRAC  => FRAC
+  DIVIDE_N => BASELINE_N
 )
 port map(
   clk => clk,
   reset => reset1,
-  divide_n => to_unsigned(BASELINE_N,DIVIDE_BITS),
-  threshold => to_signed(2**17-1,WIDTH),--resize((signed('0' & registers.baseline.threshold)),WIDTH), --to_signed(2**17-1,WIDTH),
+  threshold => baseline_threshold, 
   sample => baseline_in,
   average => baseline_estimate
 );
@@ -195,6 +195,8 @@ port map(
 measure:entity work.measure8
 generic map(
   CHANNEL => CHANNEL,
+  CF_WIDTH => CF_WIDTH,
+  CF_FRAC => CF_FRAC,
   WIDTH => WIDTH,
   FRAC => FRAC,
   SLOPE_FRAC => SLOPE_FRAC,

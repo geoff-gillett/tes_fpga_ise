@@ -193,13 +193,13 @@ pulse.threshold <= m.timing_threshold;
 --  | height | rise | minima | time |
 --  | height | low1 |  low2  | time | -- use this for pulse2
 tflags.offset <= m.offset;
-tflags.trace0 <= FILTERED_TRACE_D;
-tflags.trace1 <= FILTERED_TRACE_D;
+tflags.trace_signal <= FILTERED_TRACE_D;
+tflags.trace_type <= SINGLE_TRACE_D;
 tflags.stride <= trace_stride;
 
 trace.size <= resize(trace_size,CHUNK_DATABITS);
 trace.flags <= m.eflags;
-trace.tflags <= tflags;
+trace.trace_flags <= tflags;
 trace.length <= m.pulse_length;
 trace.offset <= m.time_offset;
 trace.area <= m.pulse_area;
@@ -333,7 +333,7 @@ begin
             frame_we <= (others => TRUE);
             commit_trace <= FALSE;
             commit_frame <= TRUE;
---            q_state <= IDLE_S;
+            q_state <= IDLE_S;
           end if;
         when TRACE1_S =>
           frame_word <= queue(2);
@@ -374,7 +374,7 @@ begin
         when STORE2 => 
           trace_reg(31 downto 16) <= set_endianness(trace_chunk,ENDIAN);
           trace_chunk_state <= WRITE;
-          can_write_trace <= framer_free > trace_address;
+          can_write_trace <= free > trace_address;
         when WRITE => 
           if can_write_trace then
             trace_chunk_state <= STORE0;

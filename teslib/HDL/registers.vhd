@@ -106,19 +106,33 @@ function to_std_logic(h:height_d;w:integer) return std_logic_vector;
 function to_height_d(s:std_logic_vector) return height_d;
 function to_height_d(i:natural range 0 to NUM_HEIGHT_D-1) return height_d;
 
-type trace_d is(
+type trace_signal_d is(
 	NO_TRACE_D,
 	RAW_TRACE_D,
 	FILTERED_TRACE_D,
 	SLOPE_TRACE_D
 );
 
-constant NUM_TRACE_D:integer:=trace_d'pos(trace_d'high)+1;
+constant NUM_TRACE_D:integer:=trace_signal_d'pos(trace_signal_d'high)+1;
 constant TRACE_D_BITS:integer:=ceilLog2(NUM_TRACE_D);
-function to_std_logic(t:trace_d;w:integer) return std_logic_vector;
-function to_trace_d(s:std_logic_vector) return trace_d;
-function to_trace_d(i:natural range 0 to NUM_TRACE_D-1) return trace_d;
+function to_std_logic(t:trace_signal_d;w:integer) return std_logic_vector;
+function to_trace_signal_d(s:std_logic_vector) return trace_signal_d;
+function to_trace_signal_d(i:natural range 0 to NUM_TRACE_D-1) 
+         return trace_signal_d;
 
+type trace_type_d is(
+	SINGLE_TRACE_D,
+	AVERAGE_TRACE_D,
+	DOT_PRODUCT_D
+);
+
+constant NUM_TRACE_TYPE_D:integer:=trace_type_d'pos(trace_type_d'high)+1;
+constant TRACE_TYPE_D_BITS:integer:=ceilLog2(NUM_TRACE_TYPE_D);
+function to_std_logic(t:trace_type_d;w:integer) return std_logic_vector;
+function to_trace_type_d(s:std_logic_vector) return trace_type_d;
+function to_trace_type_d(i:natural range 0 to NUM_TRACE_TYPE_D-1) 
+         return trace_type_d;
+  
 -- the value sampled into the MCA
 type mca_value_d is (
   MCA_ZERO_SIGNAL_D,
@@ -294,8 +308,8 @@ constant DEFAULT_TIMING:timing_d:=CFD_LOW_TIMING_D;
 constant DEFAULT_MAX_PEAKS:unsigned(PEAK_COUNT_BITS-1 downto 0)
 				 :=(others => '0');
 constant DEFAULT_HEIGHT:height_d:=PEAK_HEIGHT_D;
-constant DEFAULT_TRACE0:trace_d:=NO_TRACE_D;
-constant DEFAULT_TRACE1:trace_d:=NO_TRACE_D;
+constant DEFAULT_TRACE0:trace_signal_d:=NO_TRACE_D;
+constant DEFAULT_TRACE1:trace_signal_d:=NO_TRACE_D;
 constant DEFAULT_CFD_REL2MIN:boolean:=TRUE;
 constant DEFAULT_HEIGHT_REL2MIN:boolean:=TRUE;
 constant DEFAULT_THRESHOLD_REL2MIN:boolean:=FALSE;
@@ -520,23 +534,43 @@ begin
 	return to_detection_d(to_integer(unsigned(s)));
 end function;
 
--- trace_d
-function to_std_logic(t:trace_d;w:integer) return std_logic_vector is
+-- trace_signal_d
+function to_std_logic(t:trace_signal_d;w:integer) return std_logic_vector is
 begin
 	if w < TRACE_D_BITS then
 		assert FALSE report "w to small to represent trace_d" severity ERROR;
 	end if;
-	return to_std_logic(trace_d'pos(t),w);
+	return to_std_logic(trace_signal_d'pos(t),w);
 end function;
 
-function to_trace_d(i:natural range 0 to NUM_TRACE_D-1) return trace_d is
+function to_trace_signal_d(i:natural range 0 to NUM_TRACE_D-1) return trace_signal_d is
 begin
-	return trace_d'val(i);
+	return trace_signal_d'val(i);
 end function;
 
-function to_trace_d(s:std_logic_vector) return trace_d is
+function to_trace_signal_d(s:std_logic_vector) return trace_signal_d is
 begin
-	return to_trace_d(to_integer(unsigned(s)));
+	return to_trace_signal_d(to_integer(unsigned(s)));
+end function;
+
+-- trace_type_d
+function to_std_logic(t:trace_type_d;w:integer) return std_logic_vector is
+begin
+	if w < TRACE_TYPE_D_BITS then
+		assert FALSE report "w to small to represent trace_d" severity ERROR;
+	end if;
+	return to_std_logic(trace_type_d'pos(t),w);
+end function;
+
+function to_trace_type_d(i:natural range 0 to NUM_TRACE_TYPE_D-1) 
+         return trace_type_d is
+begin
+	return trace_type_d'val(i);
+end function;
+
+function to_trace_type_d(s:std_logic_vector) return trace_type_d is
+begin
+	return to_trace_type_d(to_integer(unsigned(s)));
 end function;
 
 -- mca_triggers_d 

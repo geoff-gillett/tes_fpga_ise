@@ -12,9 +12,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="65850000fs"></ZoomStartTime>
-      <ZoomEndTime time="198750001fs"></ZoomEndTime>
-      <Cursor1Time time="110150000fs"></Cursor1Time>
+      <ZoomStartTime time="342625000fs"></ZoomStartTime>
+      <ZoomEndTime time="411475001fs"></ZoomEndTime>
+      <Cursor1Time time="396000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="2" />
    <wvobject fp_name="group17" type="group">
@@ -82,13 +82,14 @@
          <obj_property name="ElementShortName">reset</obj_property>
          <obj_property name="ObjectShortName">reset</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/divide_n" type="array">
-         <obj_property name="ElementShortName">divide_n[5:0]</obj_property>
-         <obj_property name="ObjectShortName">divide_n[5:0]</obj_property>
+      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/DIVIDE_N" type="other">
+         <obj_property name="ElementShortName">DIVIDE_N</obj_property>
+         <obj_property name="ObjectShortName">DIVIDE_N</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/threshold" type="array">
          <obj_property name="ElementShortName">threshold[15:0]</obj_property>
          <obj_property name="ObjectShortName">threshold[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/sample" type="array">
          <obj_property name="ElementShortName">sample[15:0]</obj_property>
@@ -99,8 +100,8 @@
          <obj_property name="ObjectShortName">average[15:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/count" type="array">
-         <obj_property name="ElementShortName">count[31:0]</obj_property>
-         <obj_property name="ObjectShortName">count[31:0]</obj_property>
+         <obj_property name="ElementShortName">count[3:0]</obj_property>
+         <obj_property name="ObjectShortName">count[3:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/threshold_reg" type="array">
          <obj_property name="ElementShortName">threshold_reg[16:0]</obj_property>
@@ -108,25 +109,23 @@
          <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/valid" type="other">
-         <obj_property name="ElementShortName">valid</obj_property>
-         <obj_property name="ObjectShortName">valid</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
+      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/rel_threshold" type="array">
+         <obj_property name="ElementShortName">rel_threshold[15:0]</obj_property>
+         <obj_property name="ObjectShortName">rel_threshold[15:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/below_threshold" type="other">
+         <obj_property name="ElementShortName">below_threshold</obj_property>
+         <obj_property name="ObjectShortName">below_threshold</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/average_int" type="array">
          <obj_property name="ElementShortName">average_int[15:0]</obj_property>
          <obj_property name="ObjectShortName">average_int[15:0]</obj_property>
          <obj_property name="CustomSignalColor">#FF00FF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/n_change" type="other">
-         <obj_property name="ElementShortName">n_change</obj_property>
-         <obj_property name="ObjectShortName">n_change</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/below_threshold" type="other">
          <obj_property name="ElementShortName">below_threshold</obj_property>
@@ -139,12 +138,17 @@
          <obj_property name="ObjectShortName">sample_reg[15:0]</obj_property>
          <obj_property name="CustomSignalColor">#00FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/state" type="other">
          <obj_property name="ElementShortName">state</obj_property>
          <obj_property name="ObjectShortName">state</obj_property>
          <obj_property name="CustomSignalColor">#F0E68C</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/carryinsel" type="array">
+         <obj_property name="ElementShortName">carryinsel[2:0]</obj_property>
+         <obj_property name="ObjectShortName">carryinsel[2:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/opmode" type="array">
          <obj_property name="ElementShortName">opmode[6:0]</obj_property>
@@ -165,34 +169,19 @@
          <obj_property name="ElementShortName">ab[47:0]</obj_property>
          <obj_property name="ObjectShortName">ab[47:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/c" type="array">
-         <obj_property name="ElementShortName">c[47:0]</obj_property>
-         <obj_property name="ObjectShortName">c[47:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/carryin" type="logic">
-         <obj_property name="ElementShortName">carryin</obj_property>
-         <obj_property name="ObjectShortName">carryin</obj_property>
+      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/valid" type="other">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/p_out" type="array">
          <obj_property name="ElementShortName">p_out[47:0]</obj_property>
          <obj_property name="ObjectShortName">p_out[47:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_fractionWidth">4</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/round_shift" type="array">
-         <obj_property name="ElementShortName">round_shift[5:0]</obj_property>
-         <obj_property name="ObjectShortName">round_shift[5:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/divide_shift" type="array">
-         <obj_property name="ElementShortName">divide_shift[5:0]</obj_property>
-         <obj_property name="ObjectShortName">divide_shift[5:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/rounding_constant" type="array">
-         <obj_property name="ElementShortName">rounding_constant[47:0]</obj_property>
-         <obj_property name="ObjectShortName">rounding_constant[47:0]</obj_property>
-         <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/nextstate" type="other">
          <obj_property name="ElementShortName">nextstate</obj_property>
@@ -202,13 +191,14 @@
          <obj_property name="ElementShortName">WIDTH</obj_property>
          <obj_property name="ObjectShortName">WIDTH</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/DIVIDE_BITS" type="other">
-         <obj_property name="ElementShortName">DIVIDE_BITS</obj_property>
-         <obj_property name="ObjectShortName">DIVIDE_BITS</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/ONES" type="array">
          <obj_property name="ElementShortName">ONES[47:0]</obj_property>
          <obj_property name="ObjectShortName">ONES[47:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/average_2n_TB/UUT/ROUNDING_C" type="array">
+         <obj_property name="ElementShortName">ROUNDING_C[47:0]</obj_property>
+         <obj_property name="ObjectShortName">ROUNDING_C[47:0]</obj_property>
          <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
    </wvobject>

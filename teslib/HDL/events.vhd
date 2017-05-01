@@ -226,11 +226,11 @@ function to_streambus(p:pulse_peak2_t;last:boolean;endianness:string)
          return streambus_t;
 
 -- |  2  |  1  |    5   ||    2   |   2    |   4		 |
--- | res |multi| stride || trace0 | trace1 |max_peaks|
+-- | res |multi| stride ||  type  | signal |max_peaks|
 type trace_flags_t is
 record
-	trace0:trace_d;
-	trace1:trace_d;
+	trace_signal:trace_signal_d;
+	trace_type:trace_type_d;
 	offset:unsigned(PEAK_COUNT_BITS-1 downto 0);
 	multipulse:boolean;
 	stride:unsigned(TRACE_STRIDE_BITS-1 downto 0);
@@ -250,7 +250,7 @@ record
 	size:unsigned(SIZE_BITS-1 downto 0);
 	length:time_t; 
 	flags:detection_flags_t;
-	tflags:trace_flags_t;
+	trace_flags:trace_flags_t;
 	offset:time_t;  
 	area:area_t;
 end record;
@@ -584,15 +584,15 @@ begin
 end function;
   
 ------------------------ trace_flags_t 16 bits ---------------------------------
--- |  2  |  1  |    5   ||    2   |   2    |   4		 |
--- | res |multi| stride || trace1 | trace0 |max_peaks|
+-- |  2  |  1  |    5   ||    2   |   2    |    4   |
+-- | res |multi| stride ||  type  | signal | offset |
 function to_std_logic(f:trace_flags_t) return std_logic_vector is
 	variable slv:std_logic_vector(CHUNK_DATABITS-1 downto 0):=(others => '0');
 begin
 	slv(13):=to_std_logic(f.multipulse);
 	slv(12 downto 8):=to_std_logic(f.stride);
-	slv(7 downto 6):=to_std_logic(f.trace1,2);
-	slv(5 downto 4):=to_std_logic(f.trace0,2);
+	slv(7 downto 6):=to_std_logic(f.trace_type,2);
+	slv(5 downto 4):=to_std_logic(f.trace_signal,2);
 	slv(3 downto 0):=to_std_logic(f.offset);
 	return slv;
 end function;
@@ -606,7 +606,7 @@ begin
 	case w is
 	when 0 =>
   	sb.data(63 downto 48) := set_endianness(t.size,endianness);
-		sb.data(47 downto 32) := to_std_logic(t.tflags);
+		sb.data(47 downto 32) := to_std_logic(t.trace_flags);
 		sb.data(31 downto 16) := to_std_logic(t.flags); 
 		sb.data(15 downto 0) := (others => '-');
 	when 1 =>
@@ -614,7 +614,7 @@ begin
 		sb.data(31 downto 16) := set_endianness(t.length,endianness);
 		sb.data(15 downto 0) := set_endianness(t.offset,endianness);
 	when others =>
-		assert FALSE report "bad word number in pulse_detection_t to_streambus"	
+		assert FALSE report "bad word number in trace_detection_t to_streambus"	
 						 		 severity ERROR;
 	end case;
   sb.discard := (others => FALSE);
