@@ -699,7 +699,8 @@ begin
 --      end if;
       
 --      m.minima <= min_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
-      m.peak_stop <= max_pipe(DEPTH-1) and valid_peak_pipe(DEPTH-1);
+      m.pre_peak_stop <= max_pipe(DEPTH-2) and valid_peak_pipe(DEPTH-2);
+      m.peak_stop <= m.pre_peak_stop;
       filtered_zero_xing <= filtered_0_pos_pipe(DEPTH-1) or 
                             filtered_0_neg_pipe(DEPTH-1);
       slope_zero_xing <= min_pipe(DEPTH-1) or max_pipe(DEPTH-1);

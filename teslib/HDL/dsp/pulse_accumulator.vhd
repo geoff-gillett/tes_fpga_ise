@@ -122,7 +122,7 @@ begin
     mask <= shift_right(ONES,to_integer(mask_shift));
     
     if write_pipe(2) then
-      if accum_pipe(2) then
+      if accum_pipe(2) then --FIXME use opmode
         c <= resize(dout, 48);
       else
         c <= (others => '0');

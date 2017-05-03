@@ -17,15 +17,15 @@ use work.measurements.all;
 use work.types.all;
 
 --FIXME remove internal precision
-entity channel8 is
+entity channel9 is
 generic(
   CHANNEL:natural:=0;
   CF_WIDTH:natural:=18;
   CF_FRAC:natural:=17;
   BASELINE_N:natural:= 19;
-  WIDTH:natural:=16; 
-  FRAC:natural:=3; 
-  SLOPE_FRAC:natural:=8; 
+  WIDTH:natural:=16; --internal precision
+  FRAC:natural:=3; --internal precision
+  SLOPE_FRAC:natural:=8; --internal precision
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
@@ -59,9 +59,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity channel8;
+end entity channel9;
 
-architecture fixed_16_3 of channel8 is
+architecture fixed_16_3 of channel9 is
   
 constant RAW_DELAY:natural:=1026;
   
@@ -130,13 +130,13 @@ if rising_edge(clk) then
     else
       baseline_in <= resize(baseline_sample, WIDTH);
     end if;
---    baseline_threshold 
---      <= resize((signed('0' & registers.baseline.threshold)),WIDTH); 
+    baseline_threshold 
+      <= resize((signed('0' & registers.baseline.threshold)),WIDTH); 
   end if;
 end if;
 end process sampleoffset;
 
-baseline_threshold <= (WIDTH-1 => '0',others => '1');
+--baseline_threshold <= (WIDTH-1 => '0',others => '1');
 baselineAv:entity dsp.average_fixed_n
 generic map(
   WIDTH => WIDTH,

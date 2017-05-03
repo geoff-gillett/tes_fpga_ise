@@ -146,6 +146,7 @@ type measurements_t is record
   peak_start:boolean; --minima at start of pulse
   pre_peak_start:boolean; --minima at start of pulse
   peak_stop:boolean;
+  pre_peak_stop:boolean;
   offset:unsigned(PEAK_COUNT_BITS-1 downto 0);
   valid_peak:boolean;
   valid_peak0:boolean;

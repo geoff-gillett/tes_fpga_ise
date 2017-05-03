@@ -15,7 +15,7 @@ use work.events.all;
 use work.registers.all;
 use work.functions.all;
 
-entity measurement_framer8 is
+entity measurement_framer8a is
 generic(
   FRAMER_ADDRESS_BITS:integer:=11;
   ENDIAN:string:="LITTLE"
@@ -38,9 +38,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity measurement_framer8;
+end entity measurement_framer8a;
 
-architecture RTL of measurement_framer8 is
+architecture RTL of measurement_framer8a is
 
 --  
 constant CHUNKS:integer:=BUS_CHUNKS;
@@ -51,7 +51,7 @@ signal queue:write_buffer;
 --signal queue_full:boolean;
 
 signal stream_int:streambus_t;
-signal valid_int,ready_int:boolean;
+signal valid_int:boolean;
 
 signal m:measurements_t;
 signal peak:peak_detection_t;
@@ -158,8 +158,8 @@ begin
 m <= measurements;
 commit <= commit_pipe(MUX_DEPTH);
 flags <= stream_int.data(23 downto 16);
---stream <= stream_int;
---valid <= valid_int;
+stream <= stream_int;
+valid <= valid_int;
 start <= start_pipe(MUX_DEPTH);
 dump <= dump_pipe(MUX_DEPTH);
 overflow <= overflow_int;
@@ -281,6 +281,11 @@ begin
       commit_frame <= FALSE;
       frame_we <= (others => FALSE);
       
+      if DEBUG="TRUE" then
+        if ready and valid_int then
+          head <= stream_int.last(0);
+        end if;
+      end if;
       
       if not commiting then
         free <= framer_free;
@@ -641,19 +646,7 @@ port map(
   free => framer_free,
   stream => stream_int,
   valid => valid_int,
-  ready => ready_int
-);
-
-streamPipe:entity streamlib.streambus_register_slice
-port map(
-  clk => clk,
-  reset => reset,
-  stream_in => stream_int,
-  ready_out => ready_int,
-  valid_in => valid_int,
-  stream => stream,
-  ready => ready,
-  valid => valid
+  ready => ready
 );
 
 end architecture RTL;

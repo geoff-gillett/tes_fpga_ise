@@ -40,7 +40,7 @@ constant BASELINE_COUNTER_BITS:integer:=18;
 constant BASELINE_MAX_AV_ORDER:integer:=6;
 constant MEASUREMENT_FRAMER_ADDRESS_BITS:integer:=10;
 constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=10;
-constant DELAY_BITS:integer:=11;
+constant DELAY_BITS:integer:=10;
 constant PEAK_COUNT_BITS:integer:=4;
 constant TRACE_STRIDE_BITS:integer:=5;
 
