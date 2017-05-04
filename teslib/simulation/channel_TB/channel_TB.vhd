@@ -74,7 +74,7 @@ constant CF:integer:=2**17/20; --20%
 begin
 clk <= not clk after CLK_PERIOD/2;
   
-UUT:entity work.channel8
+UUT:entity work.channel9
 generic map(
   CHANNEL => CHANNEL,
   CF_WIDTH => CF_WIDTH,

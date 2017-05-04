@@ -331,7 +331,7 @@ m.valid_peak2 <= dsp_m.valid_peak2;
 m.timing_threshold <= dsp_m.timing_threshold;
 m.filtered_long <= dsp_m.filtered_long;
 
-framer:entity work.measurement_framer8
+framer:entity work.measurement_framer9
 generic map(
   FRAMER_ADDRESS_BITS => MEASUREMENT_FRAMER_ADDRESS_BITS,
   ENDIAN => ENDIAN

@@ -499,12 +499,12 @@ begin
 
           pre_flags.peak_number <= (others => '0');
           peak_number_n <= (0 => '1',others => '0');
-          last_peak <= registers.max_peaks=0;
+--          last_peak <= registers.max_peaks=0;
           
-          valid_peak0 <= valid_peak_pipe(DEPTH-1);
+--          valid_peak0 <= valid_peak_pipe(DEPTH-1);
           
-          peak_address <= (1 => '1', others => '0'); -- start at 2
-          peak_address_n <= (1 downto 0 => '1', others => '0');
+--          peak_address <= (1 => '1', others => '0'); -- start at 2
+--          peak_address_n <= (1 downto 0 => '1', others => '0');
         end if;  
       end if;  
       
