@@ -77,9 +77,9 @@ begin
       if saturate='1' then 
         output <= (WIDTH_OUT-1 => p_out(47), others => not p_out(47));
         if p_out(47)='1' then
-          above_threshold <= FALSE;
+          above_threshold <= FALSE; --FIXME wrong when threshold is min number
         else
-          above_threshold <= TRUE; -- this is wrong when threshold = MAX
+          above_threshold <= TRUE; 
         end if;
       else
         output <= signed(
@@ -87,7 +87,7 @@ begin
         );
         above_threshold <= signed(
           p_out(WIDTH_OUT+FRAC_IN-FRAC_OUT-1 downto FRAC_IN-FRAC_OUT)
-        ) > output_threshold;
+        ) >= output_threshold;
       end if;
     end if;
   end if;

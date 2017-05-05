@@ -74,7 +74,7 @@ constant CF:integer:=2**17/20; --20%
 begin
 clk <= not clk after CLK_PERIOD/2;
   
-UUT:entity work.channel9
+UUT:entity work.channel8
 generic map(
   CHANNEL => CHANNEL,
   CF_WIDTH => CF_WIDTH,
@@ -187,10 +187,10 @@ squaresig <= to_signed(-10,ADC_WIDTH)
                
 doublesig <= to_signed(-200,ADC_WIDTH)
              when sim_count < 10
-             else to_signed(500,ADC_WIDTH)
+             else to_signed(800,ADC_WIDTH)
              when sim_count < 40
              else to_signed(0,ADC_WIDTH)
-             when sim_count < 120
+             when sim_count < 110
              else to_signed(1000,ADC_WIDTH)
              when sim_count < 300
              else to_signed(-200,ADC_WIDTH);
@@ -222,12 +222,12 @@ registers.baseline.timeconstant <= to_unsigned(25000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 registers.capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
-registers.capture.pulse_threshold <= to_unsigned(63*8+1,DSP_BITS-1);
+registers.capture.pulse_threshold <= to_unsigned(318*8,DSP_BITS-1); --start peak stop
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 registers.capture.detection <= TRACE_DETECTION_D;
-registers.capture.timing <= CFD_LOW_TIMING_D;
-registers.capture.height <= CFD_HEIGHT_D;
+registers.capture.timing <= PULSE_THRESH_TIMING_D;
+registers.capture.height <= PEAK_HEIGHT_D;
 registers.capture.cfd_rel2min <= FALSE;
 event_enable <= TRUE;
 

@@ -55,7 +55,7 @@ signal pulse_time_n,pulse_length_n,rise_time_n:unsigned(16 downto 0);
 --------------------------------------------------------------------------------
 constant XLAT:natural:=2; -- crossing latency
 constant ALAT:natural:=5; --accumulator latency
-constant RLAT:natural:=3; --round latency
+--constant RLAT:natural:=3; --round latency
 constant ELAT:natural:=1; --extrema latency
 constant DEPTH:integer:=ALAT+XLAT;--5; --main pipeline depth
 
