@@ -22,7 +22,7 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="8300000001fs"></ZoomEndTime>
+      <ZoomEndTime time="14300000001fs"></ZoomEndTime>
       <Cursor1Time time="0fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="7" />
@@ -1736,6 +1736,10 @@
          <obj_property name="label">trace</obj_property>
          <obj_property name="DisplayName">label</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/framer/trace_done" type="other">
+         <obj_property name="ElementShortName">trace_done</obj_property>
+         <obj_property name="ObjectShortName">trace_done</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/framer/trace_start" type="other">
          <obj_property name="ElementShortName">trace_start</obj_property>
          <obj_property name="ObjectShortName">trace_start</obj_property>
@@ -1757,10 +1761,6 @@
       <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/framer/stride_count" type="array">
          <obj_property name="ElementShortName">stride_count[4:0]</obj_property>
          <obj_property name="ObjectShortName">stride_count[4:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/channel_TB/UUT/framer/trace_wr" type="other">
-         <obj_property name="ElementShortName">trace_wr</obj_property>
-         <obj_property name="ObjectShortName">trace_wr</obj_property>
       </wvobject>
       <wvobject type="divider" fp_name="divider682">
          <obj_property name="label">Queue</obj_property>
