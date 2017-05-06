@@ -70,7 +70,7 @@ attribute equivalent_register_removal of mux_full:signal is "no";
 signal free:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_length:unsigned(FRAMER_ADDRESS_BITS downto 0):=(others => '0');
 --
-signal pulse_valid,single_valid,pulse_peak_valid,pulse_commit:boolean;
+signal pulse_valid,pulse_peak_valid,pulse_commit:boolean;
 signal pulse_overflow:boolean;
 signal frame_word:streambus_t;
 signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
@@ -106,7 +106,6 @@ signal trace_start:boolean;
 signal wr_trace_valid,wr_trace,store_trace,trace_done:boolean;
 signal peak_start:boolean;
 signal commiting:boolean;
-signal q_empty:boolean;
 signal overflow_int,error_int:boolean;
 --signal stamp_error:boolean;
 --signal trace_overflow,single_overflow,trace_overflow_valid,trace_done:boolean;
@@ -233,7 +232,6 @@ peak_start <= pre_detection=PEAK_DETECTION_D and m.pre_peak_start and
 tracing <= (t_state=PULSE_S or t_state=TRACE_S);
 wr_trace <= stride_count=0 and trace_chunk_state=WRITE;
 wr_trace_valid <= tracing and wr_trace;
-q_empty <= q_state=IDLE_S or (q_state=PULSELAST_S and not single_valid);
 
 
 can_q_single <= q_state=IDLE_S;
@@ -259,7 +257,6 @@ begin
       error_int <= FALSE;
       pulse_valid <= FALSE;
       pulse_peak_valid <= FALSE;
-      single_valid <= FALSE; 
       frame_length <= (0 => '1', others => '0');
       pulse_overflow <= FALSE;
       trace_address <= (others => '0');
@@ -426,11 +423,13 @@ begin
       when IDLE_S =>
         tflags.multipulse <= FALSE;
         if pulse_start then 
-          if free > resize(m.pre_size,FRAMER_ADDRESS_BITS+1) then
+          if free >= resize(m.pre_size,FRAMER_ADDRESS_BITS+1) then
             p_state <= STARTED_S;
             if pre_detection=TRACE_DETECTION_D then
               t_state <= PULSE_S;
             end if;
+          else
+            overflow_int <= TRUE;
           end if;
         end if;
       when PULSE_S =>
@@ -511,24 +510,15 @@ begin
             if not pulse_start then
               p_state <= IDLE_S;
             end if;
-            if free=0 then
-              overflow_int <= TRUE;
-              single_valid <= FALSE;
-              dump_int <= TRUE;
-            else 
-              q_state <= SINGLE_S;
-              queue(0) <= to_streambus(area,ENDIAN);
-              commiting <= TRUE;
-              free <= framer_free - 1;
-            end if;
+            q_state <= SINGLE_S;
+            queue(0) <= to_streambus(area,ENDIAN);
+            commiting <= TRUE;
+            free <= framer_free - 1;
           else -- normal pulse
             if not pulse_start then
               p_state <= IDLE_S;
             end if;
-            if free <= m.size then  --FIXME check space at pulse start
-              overflow_int <= TRUE;
-              dump_int <= TRUE;
-            elsif not can_q_pulse then
+            if not can_q_pulse then
               error_int <= TRUE;
               dump_int <= TRUE;
               p_state <= IDLE_S;
@@ -569,8 +559,7 @@ begin
             q_state <= IDLE_S;
             t_state <= IDLE_S;
             p_state <= IDLE_S;
-            single_valid <= FALSE;
-            dump_int <= TRUE;
+            dump_int <= TRUE; --FIXME check that it is always stamped
           else
             queue(0) <= to_streambus(peak,ENDIAN);
             q_state <= SINGLE_S;
