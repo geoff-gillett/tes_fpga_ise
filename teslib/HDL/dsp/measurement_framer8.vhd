@@ -155,7 +155,6 @@ attribute keep of head:signal is DEBUG;
 begin
 m <= measurements;
 commit <= commit_pipe(MUX_DEPTH);
-flags <= stream_int.data(23 downto 16);
 --stream <= stream_int;
 --valid <= valid_int;
 start <= start_pipe(MUX_DEPTH);
@@ -618,21 +617,10 @@ port map(
   length => frame_length,
   commit => commit_frame,
   free => framer_free,
-  stream => stream_int,
-  valid => valid_int,
-  ready => ready_int
+  stream => stream,
+  valid => valid,
+  ready => ready
 );
 
-streamPipe:entity streamlib.streambus_register_slice
-port map(
-  clk => clk,
-  reset => reset,
-  stream_in => stream_int,
-  ready_out => ready_int,
-  valid_in => valid_int,
-  stream => stream,
-  ready => ready,
-  valid => valid
-);
 
 end architecture RTL;

@@ -785,8 +785,6 @@ port map(
   filter_events => filter_events,
   slope_config => slope_config,
   slope_events => slope_events,
-  baseline_config => baseline_config,
-  baseline_events => baseline_events,
   measurements => measurements,
   ethernetstream => ethernetstream,
   ethernetstream_valid => ethernetstream_valid,

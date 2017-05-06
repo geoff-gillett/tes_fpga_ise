@@ -69,8 +69,6 @@ port(
   filter_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
   slope_config:in fir_ctl_in_array(DSP_CHANNELS-1 downto 0);
   slope_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
-  baseline_config:in fir_ctl_in_array(DSP_CHANNELS-1 downto 0);
-  baseline_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
   
   measurements:out measurements_array(DSP_CHANNELS-1 downto 0);
   
@@ -129,9 +127,11 @@ signal mcastream:streambus_t;
 signal mcastream_valid:boolean;
 signal mcastream_ready:boolean;
 
-signal eventstreams:streambus_array(DSP_CHANNELS-1 downto 0);
+signal eventstreams,eventstreams_int:streambus_array(DSP_CHANNELS-1 downto 0);
 signal eventstream_valids:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal eventstream_valids_int:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal eventstream_readys:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal eventstream_readys_int:boolean_vector(DSP_CHANNELS-1 downto 0);
 
 signal muxstream,muxstream_int:streambus_t;
 signal muxstream_valid,muxstream_valid_int:boolean;
@@ -320,10 +320,23 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     framer_overflow => framer_overflows(c),
     framer_error => framer_errors(c),
     measurements => m(c),
-    stream => eventstreams(c),
-    valid => eventstream_valids(c),
-    ready => eventstream_readys(c)
+    stream => eventstreams_int(c),
+    valid => eventstream_valids_int(c),
+    ready => eventstream_readys_int(c)
   );
+  
+  eventstreamReg:entity streamlib.streambus_register_slice
+  port map(
+    clk => clk,
+    reset => reset1,
+    stream_in => eventstreams_int(c),
+    ready_out => eventstream_readys_int(c),
+    valid_in => eventstream_valids_int(c),
+    stream => eventstreams(c),
+    ready => eventstream_readys(c),
+    valid => eventstream_valids(c)
+  );
+  
   cfd_errors(c) <= m(c).cfd_error;
   
   valueMux:entity work.mca_value_selector3
