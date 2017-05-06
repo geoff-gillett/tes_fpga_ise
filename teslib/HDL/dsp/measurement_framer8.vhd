@@ -307,7 +307,7 @@ begin
 
      
       -- queue to framer 
-      if not (store_trace and trace_chunk_state=WRITE and can_write_trace) then -- FIXME register
+      if not (store_trace and trace_chunk_state=WRITE) then -- FIXME register
         if pulse_peak_valid then
           frame_word <= queue(3);
           frame_address <= peak_address;
