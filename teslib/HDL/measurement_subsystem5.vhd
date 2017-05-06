@@ -133,9 +133,9 @@ signal eventstreams:streambus_array(DSP_CHANNELS-1 downto 0);
 signal eventstream_valids:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal eventstream_readys:boolean_vector(DSP_CHANNELS-1 downto 0);
 
-signal muxstream:streambus_t;
-signal muxstream_valid:boolean;
-signal muxstream_ready:boolean;
+signal muxstream,muxstream_int:streambus_t;
+signal muxstream_valid,muxstream_valid_int:boolean;
+signal muxstream_ready,muxstream_ready_int:boolean;
 
 signal mux_full:boolean;
 
@@ -402,9 +402,21 @@ port map(
   cfd_errors => cfd_errors,
   framer_overflows => framer_overflows,
   framer_errors => framer_errors,
-  muxstream => muxstream,
-  valid => muxstream_valid,
-  ready => muxstream_ready
+  muxstream => muxstream_int,
+  valid => muxstream_valid_int,
+  ready => muxstream_ready_int
+);
+
+muxStreamReg:entity streamlib.streambus_register_slice
+port map(
+  clk => clk,
+  reset => reset1,
+  stream_in => muxstream_int,
+  ready_out => muxstream_ready_int,
+  valid_in => muxstream_valid_int,
+  stream => muxstream,
+  ready => muxstream_ready,
+  valid => muxstream_valid
 );
 
 mca:entity work.mca
