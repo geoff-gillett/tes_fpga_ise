@@ -43,7 +43,7 @@ entity measurement_subsystem5 is
 generic(
   DSP_CHANNELS:natural:=2;
   ADC_CHANNELS:natural:=2;
-  VALUE_PIPE_DEPTH:natural:=1;
+  VALUE_PIPE_DEPTH:natural:=2;
 	ENDIAN:string:="LITTLE";
 	PACKET_GEN:boolean:=FALSE;
 	ADC_WIDTH:integer:=14;
@@ -88,10 +88,18 @@ signal adc_delayed,adc_mux:adc_sample_array(DSP_CHANNELS-1 downto 0);
 --type value_sel_array is array (natural range <>) of 
 --  std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
   
-signal value_select:std_logic_vector(NUM_MCA_VALUE_D-2 downto 0);
-
-signal trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
-signal qualifier_select:std_logic_vector(NUM_MCA_QUAL_D-2 downto 0);
+subtype value_sel is std_logic_vector(NUM_MCA_VALUE_D-2 downto 0);
+subtype trigger_sel is std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
+subtype qualifier_sel is std_logic_vector(NUM_MCA_QUAL_D-2 downto 0);
+type value_sel_reg is array (natural range <>) of value_sel;
+type trigger_sel_reg is array (natural range <>) of trigger_sel;
+type qualifier_sel_reg is array (natural range <>) of qualifier_sel;
+signal value_select:value_sel;
+signal trigger_select:trigger_sel;
+signal qualifier_select:qualifier_sel;
+signal value_select_reg:value_sel_reg(DSP_CHANNELS-1 downto 0);
+signal trigger_select_reg:trigger_sel_reg(DSP_CHANNELS-1 downto 0);
+signal qualifier_select_reg:qualifier_sel_reg(DSP_CHANNELS-1 downto 0);
 signal mca_values,mca_values_int:mca_value_array(DSP_CHANNELS-1 downto 0);
 
 --constant VALUE_PIPE_DEPTH:natural:=MCA_VALUE_PIPE_DEPTH;
@@ -101,8 +109,9 @@ signal value_pipe:value_pipe_t;
 type value_valid_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
      boolean_vector(DSP_CHANNELS-1 downto 0);
 signal value_valid_pipe:value_valid_pipe_t;
-attribute equivalent_register_removal of value_pipe,value_valid_pipe:signal is
-          "FALSE";
+attribute equivalent_register_removal of value_pipe,value_valid_pipe,
+          value_select_reg,trigger_select_reg,qualifier_select_reg
+          :signal is "FALSE";
 
 --constant ADCPIPE_DEPTH:natural:=1; --TODO add DEPTH
 type adc_pipeline is array (DSP_CHANNELS-1 downto 0) 
@@ -339,14 +348,17 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   
   cfd_errors(c) <= m(c).cfd_error;
   
+  value_select_reg(c) <= value_select;
+  trigger_select_reg(c) <= trigger_select;
+  qualifier_select_reg(c) <= qualifier_select;
   valueMux:entity work.mca_value_selector3
   port map(
     clk => clk,
     reset => reset1,
     measurements => m(c),
-    value_select => value_select,
-    trigger_select => trigger_select,
-    qualifier_select => qualifier_select,
+    value_select => value_select_reg(c),
+    trigger_select => trigger_select_reg(c),
+    qualifier_select => qualifier_select_reg(c),
     value => mca_values(c),
     valid => mca_value_valids(c)
   );

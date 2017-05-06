@@ -222,10 +222,10 @@ registers.baseline.timeconstant <= to_unsigned(25000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 registers.capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
-registers.capture.pulse_threshold <= to_unsigned(318*8,DSP_BITS-1); --start peak stop
+registers.capture.pulse_threshold <= to_unsigned(127*8+6,DSP_BITS-1); --start peak stop
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
-registers.capture.detection <= TRACE_DETECTION_D;
+registers.capture.detection <= PULSE_DETECTION_D;
 registers.capture.timing <= PULSE_THRESH_TIMING_D;
 registers.capture.height <= PEAK_HEIGHT_D;
 registers.capture.cfd_rel2min <= FALSE;
