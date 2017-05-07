@@ -314,7 +314,6 @@ begin
             frame_word.last <= (0 => TRUE, others => FALSE);
             frame_we <= (0 => TRUE, others => FALSE);
             commit_frame <= TRUE;
-            pulse_stamped <= FALSE;
             frame_address <= resize(m.last_peak_address,FRAMER_ADDRESS_BITS);
             q_state <= IDLE_S;
           when TRACE0_S =>
@@ -453,7 +452,9 @@ begin
       when IDLE_S =>
       when STARTED_S =>
         if m.pulse_threshold_neg then
-          pulse_stamped <= FALSE;
+          if t_state=IDLE_S then
+            pulse_stamped <= FALSE;
+          end if;
           if not m.above_area_threshold then
             dump_int <= TRUE;
             if pulse_start then
@@ -479,7 +480,7 @@ begin
               end if;
             else
               error_int <= TRUE;
-              dump_int <= TRUE;
+              dump_int <= pulse_stamped;
               if pulse_start then
                 p_state <= STARTED_S;
                 if pre_detection=TRACE_DETECTION_D then
