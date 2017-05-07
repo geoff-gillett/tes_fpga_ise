@@ -79,6 +79,8 @@ signal commit_frame,start_int,dump_int:boolean;
 constant MUX_DEPTH:natural:=2;
 signal commit_pipe,start_pipe,dump_pipe:boolean_vector(1 to MUX_DEPTH)
        :=(others => FALSE);
+signal error_pipe,overflow_pipe:boolean_vector(1 to MUX_DEPTH)
+       :=(others => FALSE);
 
 
 signal peak_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
@@ -90,7 +92,7 @@ signal pre_detection,detection:detection_d;
 
 -- TRACE control registers implemented as constants
 constant trace_length:unsigned(FRAMER_ADDRESS_BITS downto 0)
-         :=to_unsigned(24,FRAMER_ADDRESS_BITS+1);
+         :=to_unsigned(512,FRAMER_ADDRESS_BITS+1);
 constant TRACE_STRIDE_BITS:integer:=5;
 constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0):=(others => '0');
 -- trace signals
@@ -104,7 +106,6 @@ signal trace_count:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal trace_size:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal trace_start:boolean;
 signal wr_trace_valid,wr_trace,store_trace,trace_done:boolean;
-signal peak_start:boolean;
 signal commiting:boolean;
 signal overflow_int,error_int:boolean;
 --signal stamp_error:boolean;
@@ -131,18 +132,18 @@ type queueFSMstate is (
 signal q_state:queueFSMstate;
 
 --debugging
-signal flags:std_logic_vector(7 downto 0);
-signal pending:signed(3 downto 0):=(others => '0');
-signal head:boolean;
-
-attribute keep:string;
---attribute MARK_DEBUG:string;
-
-constant DEBUG:string:="FALSE";
-
-attribute keep of pending:signal is DEBUG;
-attribute keep of flags:signal is DEBUG;
-attribute keep of head:signal is DEBUG;
+--signal flags:std_logic_vector(7 downto 0);
+--signal pending:signed(3 downto 0):=(others => '0');
+--signal head:boolean;
+--
+--attribute keep:string;
+----attribute MARK_DEBUG:string;
+--
+--constant DEBUG:string:="FALSE";
+--
+--attribute keep of pending:signal is DEBUG;
+--attribute keep of flags:signal is DEBUG;
+--attribute keep of head:signal is DEBUG;
 
 --attribute MARK_DEBUG of framer_full:signal is DEBUG;
 --attribute MARK_DEBUG of framer_free:signal is DEBUG;
@@ -153,24 +154,11 @@ attribute keep of head:signal is DEBUG;
 
 begin
 m <= measurements;
-commit <= commit_pipe(MUX_DEPTH);
---stream <= stream_int;
---valid <= valid_int;
-start <= start_pipe(MUX_DEPTH);
-dump <= dump_pipe(MUX_DEPTH);
+commit <= commit_frame;
+start <= start_int;
+dump <= dump_int;
 overflow <= overflow_int;
 error <= error_int;
-
--- pipeline control signals to mux (attempt to improve timing)
-muxpipe:process (clk) is
-begin
-  if rising_edge(clk) then
-    commit_pipe <= commit_frame & commit_pipe(1 to MUX_DEPTH-1);
-    dump_pipe <= dump_int & dump_pipe(1 to  MUX_DEPTH-1);
-    start_pipe <= start_int & start_pipe(1 to  MUX_DEPTH-1);
-  end if;
-end process muxpipe;
-
 
 -- timing threshold to the header in reserved spot
 -- reserved is traces flags or timing threshold
@@ -222,28 +210,17 @@ area.area <= m.pulse_area;
 pre_detection <= m.pre_eflags.event_type.detection;
 detection <= m.eflags.event_type.detection;
 
---FIXME register enable to change only at pulse_start?
-trace_start <= m.pre_pulse_start and pre_detection=TRACE_DETECTION_D and 
-               enable_reg;
-pulse_start <= m.pre_pulse_start and enable_reg;  
-peak_start <= pre_detection=PEAK_DETECTION_D and m.pre_peak_start and 
-              enable_reg;
+trace_start <= m.pre_pulse_start and pre_detection=TRACE_DETECTION_D and enable;
+pulse_start 
+  <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start and enable;  
 
 tracing <= (t_state=PULSE_S or t_state=TRACE_S);
 wr_trace <= stride_count=0 and trace_chunk_state=WRITE;
 wr_trace_valid <= tracing and wr_trace;
 
-
 can_q_single <= q_state=IDLE_S;
 can_q_trace <= q_state=IDLE_S;
 can_q_pulse <= q_state=IDLE_S;
-
--- FIXE do free checks
-captureStart:process (clk) is
-begin
-  if rising_edge(clk) then
-  end if;
-end process captureStart;
 
 trace_chunk <= m.filtered.sample;
 capture:process(clk)

@@ -20,7 +20,6 @@ generic(
   CF_FRAC:natural:=17;
   WIDTH:natural:=16;
   FRAC:natural:=3;
-  SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
   TIME_WIDTH:natural:=16;

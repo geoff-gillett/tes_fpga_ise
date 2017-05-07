@@ -100,8 +100,10 @@ signal qualifier_select:qualifier_sel;
 signal value_select_reg:value_sel_reg(DSP_CHANNELS-1 downto 0);
 signal trigger_select_reg:trigger_sel_reg(DSP_CHANNELS-1 downto 0);
 signal qualifier_select_reg:qualifier_sel_reg(DSP_CHANNELS-1 downto 0);
+--mux pipelining
+signal start_reg,commit_reg,dump_reg,error_reg,overflow_reg
+       :boolean_vector(DSP_CHANNELS-1 downto 0);
 signal mca_values,mca_values_int:mca_value_array(DSP_CHANNELS-1 downto 0);
-
 --constant VALUE_PIPE_DEPTH:natural:=MCA_VALUE_PIPE_DEPTH;
 type value_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
      mca_value_array(DSP_CHANNELS-1 downto 0);
@@ -110,7 +112,8 @@ type value_valid_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
      boolean_vector(DSP_CHANNELS-1 downto 0);
 signal value_valid_pipe:value_valid_pipe_t;
 attribute equivalent_register_removal of value_pipe,value_valid_pipe,
-          value_select_reg,trigger_select_reg,qualifier_select_reg
+          value_select_reg,trigger_select_reg,qualifier_select_reg,start_reg,
+          commit_reg,dump_reg,error_reg,overflow_reg
           :signal is "FALSE";
 
 --constant ADCPIPE_DEPTH:natural:=1; --TODO add DEPTH
@@ -322,7 +325,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     stage1_events => filter_events(c),
     stage2_config => slope_config(c),
     stage2_events => slope_events(c),
-    mux_full => mux_full,
+    mux_full => mux_full, -- would be nice to register but latency may break it
     start => starts(c),
     commit => commits(c),
     dump => dumps(c),
@@ -347,10 +350,20 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   );
   
   cfd_errors(c) <= m(c).cfd_error;
+  pipelines:process (clk) is
+  begin
+    if rising_edge(clk) then
+      value_select_reg(c) <= value_select;
+      trigger_select_reg(c) <= trigger_select;
+      qualifier_select_reg(c) <= qualifier_select;
+      start_reg(c) <= starts(c);
+      dump_reg(c) <= dumps(c);
+      commit_reg(c) <= commits(c);
+      error_reg(c) <= framer_errors(c);
+      overflow_reg(c) <= framer_overflows(c);
+    end if;
+  end process pipelines;
   
-  value_select_reg(c) <= value_select;
-  trigger_select_reg(c) <= trigger_select;
-  qualifier_select_reg(c) <= qualifier_select;
   valueMux:entity work.mca_value_selector3
   port map(
     clk => clk,
@@ -415,9 +428,9 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  start => starts,
-  commit => commits,
-  dump => dumps,
+  start => start_reg,
+  commit => commit_reg,
+  dump => dump_reg,
   instreams => eventstreams,
   instream_valids => eventstream_valids,
   instream_readys => eventstream_readys,
@@ -425,8 +438,8 @@ port map(
   tick_period => g_reg.tick_period,
   window => g_reg.window,
   cfd_errors => cfd_errors,
-  framer_overflows => framer_overflows,
-  framer_errors => framer_errors,
+  framer_overflows => overflow_reg,
+  framer_errors => error_reg,
   muxstream => muxstream_int,
   valid => muxstream_valid_int,
   ready => muxstream_ready_int

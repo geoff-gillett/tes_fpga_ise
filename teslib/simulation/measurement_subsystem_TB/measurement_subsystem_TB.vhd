@@ -38,10 +38,8 @@ generic(
 	ENDIAN:string:="LITTLE";
 	PACKET_GEN:boolean:=FALSE;
   ADC_WIDTH:natural:=14;
-  WIDTH:natural:=18;
+  WIDTH:natural:=16;
   FRAC:natural:=3;
-  WIDTH_OUT:natural:=16;
-  FRAC_OUT:natural:=3;
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1
@@ -126,7 +124,7 @@ reset1 <= '0' after 10*IO_CLK_PERIOD;
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
 bytestream_ready <= TRUE after 20*IO_CLK_PERIOD;
 
-UUT:entity work.measurement_subsystem4
+UUT:entity work.measurement_subsystem5
 generic map(
   DSP_CHANNELS => CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
@@ -135,8 +133,6 @@ generic map(
   ADC_WIDTH => ADC_WIDTH,
   WIDTH => WIDTH,
   FRAC => FRAC,
-  WIDTH_OUT => WIDTH_OUT,
-  FRAC_OUT => FRAC_OUT,
   SLOPE_FRAC => SLOPE_FRAC,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC
@@ -153,8 +149,6 @@ port map(
   filter_events => open,
   slope_config => slope_config,
   slope_events => open,
-  baseline_config => baseline_config,
-  baseline_events => open,
   measurements => m,
   ethernetstream => ethernetstream,
   ethernetstream_valid => ethernetstream_valid,
@@ -275,27 +269,31 @@ chan_reg(1).baseline.timeconstant <= to_unsigned(25000,32);
 
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
 chan_reg(0).capture.delay <= (others => '0');
-chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
+chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(0).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);
-chan_reg(0).capture.slope_threshold <= to_unsigned(2*256,DSP_BITS-1);
+--chan_reg(0).capture.slope_threshold <= to_unsigned(2*256,DSP_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
-chan_reg(0).capture.pulse_threshold <= to_unsigned(5*8,DSP_BITS-1);
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(5*8,DSP_BITS-1);
+chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
+chan_reg(0).capture.pulse_threshold <= to_unsigned(127*8+6,DSP_BITS-1); --start peak stop
 --chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
-chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
-chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+chan_reg(0).capture.area_threshold <= to_unsigned(10,AREA_WIDTH-1);
+chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
+chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
 
 chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
 chan_reg(1).capture.delay <= (others => '0');
-chan_reg(1).capture.constant_fraction  <= to_unsigned(CF, DSP_BITS-1);
-chan_reg(1).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);
-chan_reg(1).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
-chan_reg(1).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
-chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-chan_reg(1).capture.detection <= PULSE_DETECTION_D;
+chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
+--chan_reg(1).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);
+--chan_reg(1).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
+chan_reg(1).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
+chan_reg(1).capture.pulse_threshold <= to_unsigned(127*8+6,DSP_BITS-1); --start peak stop
+chan_reg(1).capture.area_threshold <= to_unsigned(10,AREA_WIDTH-1);
+chan_reg(1).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
+chan_reg(1).capture.detection <= TRACE_DETECTION_D;
 chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
 chan_reg(1).capture.cfd_rel2min <= FALSE;
@@ -450,15 +448,15 @@ begin
   end if;
 end process simcount;
 
-doublesig <= to_signed(-20,ADC_WIDTH)
+doublesig <= to_signed(-200,ADC_WIDTH)
              when sim_count < 10
-             else to_signed(30,ADC_WIDTH)
+             else to_signed(800,ADC_WIDTH)
              when sim_count < 40
-             else to_signed(10,ADC_WIDTH)
-             when sim_count < 100
-             else to_signed(100,ADC_WIDTH)
-             when sim_count < 200
-             else to_signed(-20,ADC_WIDTH);
+             else to_signed(0,ADC_WIDTH)
+             when sim_count < 110
+             else to_signed(1000,ADC_WIDTH)
+             when sim_count < 300
+             else to_signed(-200,ADC_WIDTH);
                
 adc_samples(0) <= std_logic_vector(signed(doublesig));
 --adc_samples(0) <= std_logic_vector(adc_count);
