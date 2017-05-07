@@ -86,6 +86,7 @@ signal error_pipe,overflow_pipe:boolean_vector(1 to MUX_DEPTH)
 signal peak_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
 signal pulse_start:boolean;
+signal peak_stamped,pulse_stamped:boolean:=FALSE;
 signal last_peak_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 
 signal pre_detection,detection:detection_d;
@@ -295,6 +296,7 @@ begin
             frame_address <= to_unsigned(0,FRAMER_ADDRESS_BITS);
             frame_we <= (others => TRUE);
             commit_frame <= TRUE;
+            pulse_stamped <= FALSE;
             q_state <= IDLE_S;
           when PULSE0_S =>
             frame_word <= queue(0);
@@ -312,6 +314,7 @@ begin
             frame_word.last <= (0 => TRUE, others => FALSE);
             frame_we <= (0 => TRUE, others => FALSE);
             commit_frame <= TRUE;
+            pulse_stamped <= FALSE;
             frame_address <= resize(m.last_peak_address,FRAMER_ADDRESS_BITS);
             q_state <= IDLE_S;
           when TRACE0_S =>
@@ -322,6 +325,7 @@ begin
             if commit_trace then 
               commit_trace <= FALSE;
               commit_frame <= TRUE;
+              pulse_stamped <= FALSE;
               q_state <= IDLE_S;
             end if;
           when TRACE1_S =>
@@ -376,6 +380,7 @@ begin
             frame_word.last <= (0 => trace_count=0, others => FALSE);
             if trace_count=0 and p_state=IDLE_S then
               commit_trace <= TRUE;
+              pulse_stamped <= FALSE;
               commiting <= TRUE;
               free <= framer_free - trace_size;
             end if;
@@ -387,7 +392,8 @@ begin
               trace_done <= trace_count=1;
             end if;
           else
-            dump_int <= m.pulse_stamped;
+            dump_int <= pulse_stamped;
+            pulse_stamped <= FALSE;
             p_state <= IDLE_S;
             t_state <= IDLE_S;
             q_state <= IDLE_S;
@@ -447,6 +453,7 @@ begin
       when IDLE_S =>
       when STARTED_S =>
         if m.pulse_threshold_neg then
+          pulse_stamped <= FALSE;
           if not m.above_area_threshold then
             dump_int <= TRUE;
             if pulse_start then
@@ -499,6 +506,7 @@ begin
               error_int <= TRUE;
               dump_int <= TRUE;
               p_state <= IDLE_S;
+              
             else
               queue(0) <= to_streambus(pulse,0,ENDIAN);
               queue(1) <= to_streambus(pulse,1,ENDIAN);
@@ -525,6 +533,7 @@ begin
             t_state <= IDLE_S;
             p_state <= IDLE_S;
             dump_int <= m.pulse_stamped;
+            pulse_stamped <= FALSE;
           else
             queue(3) <= to_streambus(pulse_peak,FALSE,ENDIAN);
             peak_address <= resize(m.peak_address,FRAMER_ADDRESS_BITS);
@@ -537,6 +546,7 @@ begin
             t_state <= IDLE_S;
             p_state <= IDLE_S;
             dump_int <= TRUE; --FIXME check that it is always stamped
+            peak_stamped <= FALSE;
           else
             queue(0) <= to_streambus(peak,ENDIAN);
             q_state <= SINGLE_S;
@@ -550,14 +560,18 @@ begin
          enable_reg then
         if mux_full then
           error_int <= TRUE;
+          peak_stamped <= FALSE;
         else
           start_int <= TRUE;  
+          peak_stamped <= TRUE;
         end if;
       elsif p_state=STARTED_S and m.stamp_pulse and enable_reg then
         if mux_full then
           error_int <= TRUE;
+          pulse_stamped <= FALSE;
         else
           start_int <= TRUE;  
+          pulse_stamped <= TRUE;
         end if;
       end if; 
         
