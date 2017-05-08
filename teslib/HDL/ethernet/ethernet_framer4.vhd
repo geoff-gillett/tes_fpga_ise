@@ -119,7 +119,7 @@ signal event_s_hs:boolean;
 signal mca_s_hs:boolean;
 signal last_frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal last_frame_word:streambus_t;
-signal mca_last:boolean;
+signal mca_last,trace_last:boolean;
 --signal trace_last:boolean;
 -- frame type switching
 signal lookahead_size,frame_size:unsigned(SIZE_BITS-1 downto 0);
@@ -144,7 +144,8 @@ type ethernet_header_t is record
 end record;
 
 signal header:ethernet_header_t;
-signal mca_sequence,event_sequence:unsigned(SEQUENCE_BITS-1 downto 0);
+signal mca_sequence,event_sequence,trace_sequence
+       :unsigned(SEQUENCE_BITS-1 downto 0);
 --signal trace_sequence:unsigned(SEQUENCE_BITS-1 downto 0);
 
 function to_std_logic(e:ethernet_header_t;
@@ -354,7 +355,7 @@ begin
     	event_head <= TRUE;
     else
     	
-    	if frame_state=HEADER0 then --HEADER3????
+    	if frame_state=HEADER0 then -- event_type and size are in header after 0
     		if arbiter_state=EVENT then
     		  header.event_type <= event_s_type;
     		  header.event_size <= event_s_size;
@@ -392,8 +393,8 @@ begin
               size := lookahead_size;
             	size_change <= frame_size/=lookahead_size;
             when TRACE_DETECTION_D =>
-              size := to_unsigned(1, SIZE_BITS); --3
-            	size_change <= TRUE;
+              size := to_unsigned(1, SIZE_BITS); 
+            	size_change <= TRUE; --??
             end case;
           end if;
           
@@ -446,14 +447,18 @@ begin
 			header.frame_sequence <= (others => '0');
 			header.length <= (others => '-');
 			event_sequence <= (others => '0');
+			trace_sequence <= (others => '0');
 			mca_sequence <= (others => '0');
---			trace_sequence <= (others => '0');
 			mca_last <= FALSE;
-			--trace_last <= FALSE;
 		else
 
 			if mca_s_hs and mca_s.last(0) then
 				mca_last <= TRUE;
+			end if;
+			
+			if event_s_hs and event_s.last(0) and 
+			  event_s_type.detection=TRACE_DETECTION_D then
+			  trace_last <= TRUE;
 			end if;
 			
 --			if event_s_ready and event_s_valid and event_s.last(0) 
@@ -471,7 +476,11 @@ begin
 				
 			elsif arbiter_state=EVENT then
   			header.ethernet_type <= x"88B5";
-				header.protocol_sequence <= event_sequence;
+  			if event_s_type.detection=TRACE_DETECTION_D then
+          header.protocol_sequence <= trace_sequence;
+				else
+				  header.protocol_sequence <= event_sequence;
+				end if;
 			end if;
 				
 			if commit_frame then
@@ -488,7 +497,16 @@ begin
 				end if;
 				
 				if arbiter_state=EVENT then
-					event_sequence <= event_sequence+1;
+				  if event_s_type.detection=TRACE_DETECTION_D then
+				    if trace_last then
+              trace_sequence <= (others => '0');
+              trace_last <= FALSE;
+				    else
+  					  trace_sequence <= trace_sequence+1;
+				    end if;
+				  else
+					  event_sequence <= event_sequence+1;
+					end if;
 				end if;
 				
 			end if;

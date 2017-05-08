@@ -264,7 +264,7 @@ chan_reg(1).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(1).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(1).baseline.threshold <= (others => '0'); --to_unsigned(700,BASELINE_BITS-1);--(others => '1');
 chan_reg(1).baseline.new_only <= TRUE;
-chan_reg(1).baseline.subtraction <= TRUE;
+chan_reg(1).baseline.subtraction <= FALSE;
 chan_reg(1).baseline.timeconstant <= to_unsigned(25000,32);
 
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
@@ -284,7 +284,7 @@ chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
 
-chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
+chan_reg(1).capture.adc_select <= (others => '0');
 chan_reg(1).capture.delay <= (others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(1).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);
