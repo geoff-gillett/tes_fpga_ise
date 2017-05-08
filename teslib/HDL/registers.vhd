@@ -213,7 +213,7 @@ type baseline_registers_t is record
 	offset:signed(DSP_BITS-1 downto 0);
 	subtraction:boolean;
 	timeconstant:unsigned(BASELINE_TIMECONSTANT_BITS-1 downto 0);
-	threshold:unsigned(BASELINE_BITS-2 downto 0);
+	threshold:signed(DSP_BITS-1 downto 0);
 	count_threshold:unsigned(BASELINE_COUNTER_BITS-1 downto 0);
 	new_only:boolean;
 end record;
@@ -327,8 +327,8 @@ constant DEFAULT_BL_OFFSET:signed(DSP_BITS-1 downto 0):=(others => '0');
 constant DEFAULT_BL_SUBTRACTION:boolean:=FALSE;
 constant DEFAULT_BL_TIMECONSTANT:unsigned(BASELINE_TIMECONSTANT_BITS-1 downto 0)
 				 :=to_unsigned(2**16,BASELINE_TIMECONSTANT_BITS);
-constant DEFAULT_BL_THRESHOLD:unsigned(BASELINE_BITS-2 downto 0)
-				 :=to_unsigned(2**(BASELINE_BITS-1)-1,BASELINE_BITS-1);
+constant DEFAULT_BL_THRESHOLD:signed(DSP_BITS-1 downto 0)
+				 :=(DSP_BITS-1  => '1',others => '0');
 constant DEFAULT_BL_COUNT_THRESHOLD:unsigned(BASELINE_COUNTER_BITS-1 downto 0)
 				 :=to_unsigned(40,BASELINE_COUNTER_BITS);
 constant DEFAULT_BL_AVERAGE_ORDER:integer:=4;

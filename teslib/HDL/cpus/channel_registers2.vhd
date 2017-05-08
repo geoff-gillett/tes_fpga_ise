@@ -168,7 +168,7 @@ if rising_edge(clk) then
       end if;
       if address(BL_THRESHOLD_ADDR_BIT)='1' then
         reg.baseline.threshold 
-        	<= unsigned(data(BASELINE_BITS-2 downto 0)); 
+        	<= signed(data(DSP_BITS-1 downto 0)); 
       end if;
       if address(BL_COUNT_THRESHOLD_ADDR_BIT)='1' then
         reg.baseline.count_threshold 

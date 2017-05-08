@@ -49,6 +49,9 @@ generic(
 	ADC_WIDTH:integer:=14;
 	WIDTH:integer:=16;
 	FRAC:integer:=3;
+	CF_WIDTH:natural:=18;
+	CF_FRAC:natural:=17;
+	BASELINE_N:natural:=11;
 	SLOPE_FRAC:natural:=8;
 	AREA_WIDTH:natural:=32;
 	AREA_FRAC:natural:=1
@@ -308,6 +311,9 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     ENDIAN => ENDIAN,
     WIDTH => WIDTH,
     FRAC => FRAC,
+    CF_WIDTH => CF_WIDTH,
+    CF_FRAC => CF_FRAC,
+    BASELINE_N => BASELINE_N,
     SLOPE_FRAC => SLOPE_FRAC,
     ADC_WIDTH => ADC_WIDTH,
     AREA_WIDTH => AREA_WIDTH,
