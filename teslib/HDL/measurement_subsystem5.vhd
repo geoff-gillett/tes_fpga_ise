@@ -493,7 +493,7 @@ port map(
   ready => mcastream_ready
 );
 
-enet:entity work.ethernet_framer3
+enet:entity work.ethernet_framer4
 generic map(
   MTU_BITS => MTU_BITS,
   FRAMER_ADDRESS_BITS => ETHERNET_FRAMER_ADDRESS_BITS,
