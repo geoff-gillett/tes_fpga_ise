@@ -404,9 +404,9 @@ begin
 --  end if;
 --end process test;
 
-spiReg:process(boot_clk)
+spiReg:process(io_clk)
 begin
-	if rising_edge(boot_clk) then
+	if rising_edge(io_clk) then
     ADC_spi_ce_n <= spi_ce_n(ADC_CHIPS-1 downto 0); 
     AD9510_spi_ce_n  <= spi_ce_n(ADC_CHIPS); 
     spi_miso(ADC_CHIPS-1 downto 0) <= ADC_spi_miso; 
@@ -842,7 +842,7 @@ emac:entity work.v6_emac_v2_3
 port map(
   global_reset_IO_clk => reset1_ioclk,
   IO_clk => io_clk,
-  s_axi_aclk => axi_clk,
+  s_axi_aclk => io_clk, --axi_clk,
   refclk_bufg => ref_clk,
   tx_axis_fifo_tdata => bytestream,
   tx_axis_fifo_tvalid => to_std_logic(bytestream_valid),
