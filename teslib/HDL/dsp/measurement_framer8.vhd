@@ -99,7 +99,7 @@ constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0):=(others => '0');
 -- trace signals
 signal trace_reg:std_logic_vector(BUS_DATABITS-1 downto 16);
 --signal trace_valid:boolean;
-signal trace_chunk:signed(CHUNK_DATABITS-1 downto 0);
+signal trace_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 --signal trace_started:boolean;
 signal trace_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
@@ -223,7 +223,7 @@ can_q_single <= q_state=IDLE_S;
 can_q_trace <= q_state=IDLE_S;
 can_q_pulse <= q_state=IDLE_S;
 
-trace_chunk <= m.filtered.sample;
+trace_chunk <= set_endianness(m.filtered.sample,ENDIAN);
 capture:process(clk)
 begin
   if rising_edge(clk) then
@@ -361,13 +361,13 @@ begin
       if store_trace then --FIXME register stride_count=0
         case trace_chunk_state is
         when STORE0 => 
-          trace_reg(63 downto 48) <= set_endianness(trace_chunk,ENDIAN);
+          trace_reg(63 downto 48) <= trace_chunk;
           trace_chunk_state <= STORE1;
         when STORE1 => 
-          trace_reg(47 downto 32) <= set_endianness(trace_chunk,ENDIAN);
+          trace_reg(47 downto 32) <= trace_chunk;
           trace_chunk_state <= STORE2;
         when STORE2 => 
-          trace_reg(31 downto 16) <= set_endianness(trace_chunk,ENDIAN);
+          trace_reg(31 downto 16) <= trace_chunk;
           trace_chunk_state <= WRITE;
           can_write_trace <= free > trace_address;
         when WRITE => 
@@ -375,7 +375,7 @@ begin
             trace_chunk_state <= STORE0;
             frame_we <= (others => TRUE);
             frame_word.data(63 downto 16) <= trace_reg(63 downto 16);
-            frame_word.data(15 downto 0) <= set_endianness(trace_chunk,ENDIAN);
+            frame_word.data(15 downto 0) <= trace_chunk;
             frame_word.last <= (0 => trace_count=0, others => FALSE);
             if trace_count=0 and p_state=IDLE_S then
               commit_trace <= TRUE;

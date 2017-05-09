@@ -327,20 +327,6 @@ begin
 			readys <= to_boolean(sel);
 		end if;
 		
---		if muxstream_int_ready then
---			readys <= to_boolean(sel);
---      if muxstream_int_valid and muxstream_int.last(0) then
---        if pulses_done then
---          if ticked then
---            arb_nextstate <= SEL_TICK;
---          else
---            arb_nextstate <= NEXT_TIME;
---          end if;
---        else
---          arb_nextstate <= ARBITRATE;
---        end if;
---      end if;
---    end if;
 	when SEL_TICK =>
 		sel <= (0 => '1', others => '0');
 		if muxstream_int_ready then
@@ -354,17 +340,20 @@ begin
 	end case;
 end process arbFSMtransition;
 
-outFSMtrasition:process(out_state,muxstream_handshake,muxstream_last_handshake,
-												muxstream_last)
+outFSMtrasition:process(
+  out_state,muxstream_reg.last(0),muxstream_reg_ready,muxstream_reg_valid
+)
 begin
 	out_nextstate <= out_state;
 	case out_state is 
 	when HEAD =>
-		if muxstream_handshake and not muxstream_last then
+		if muxstream_reg_ready and muxstream_reg_valid and 
+		   not muxstream_reg.last(0) then
 			out_nextstate <= TAIL;
 		end if;
 	when TAIL =>
-		if muxstream_last_handshake then -- might be at wrong latency
+		if muxstream_reg_ready and muxstream_reg_valid and 
+		   muxstream_reg.last(0) then
 			out_nextstate <= HEAD;
 		end if;
 	end case;
