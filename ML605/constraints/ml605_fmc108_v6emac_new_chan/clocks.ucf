@@ -48,6 +48,7 @@ INST "adcClkBufr[2].adcBufr" LOC = BUFR_X1Y2;
 INST "adcClkBufr[3].adcBufr" LOC = BUFR_X1Y3;
 
 NET "adc_clk_p[0]" TNM_NET = "adc_chip0_clk";
+NET "adc_clk_p[0]" TNM_NET = "adc_chip0_tig";
 TIMESPEC TS_adc_chip0_clk = PERIOD "adc_chip0_clk" 4 ns HIGH 50 %;
 NET "adc_clk_p[1]" TNM_NET = "adc_chip1_clk";
 TIMESPEC TS_adc_chip1_clk = PERIOD "adc_chip1_clk" 4 ns HIGH 50 %;
@@ -65,10 +66,21 @@ NET "io_clk" TNM_NET = "io_clk";
 
 # TIG To fix timing problems in the ADC CDC FIFOs TODO: figure out a more 
 # precise way
-#TIMESPEC TS_chip02signal = FROM "adc_chip0_clk" TO "signal_clk" TIG;
-#TIMESPEC TS_signal2chip0 = FROM "signal_clk" to "adc_chip0_clk" TIG;
-#TIMESPEC TS_CHIP1_TIG = FROM "adc_chip1_clk" TO "signal_clk" TIG;
-#TIMESPEC TS_CHIP2_TIG = FROM "adc_chip2_clk" TO "signal_clk" TIG;
-#TIMESPEC TS_CHIP3_TIG = FROM "adc_chip3_clk" TO "signal_clk" TIG;
+TIMESPEC TS_chip0_signal_tig = FROM "adc_chip0_tig" TO "signal_clk" TIG;
+TIMESPEC TS_signal_chip0_tig = FROM "signal_clk" to "adc_chip0_tig" TIG;
+TIMESPEC TS_chip1_signal_tig = FROM "adc_chip1_clk" TO "signal_clk" TIG;
+TIMESPEC TS_signal_chip1_tig = FROM "signal_clk" TO "adc_chip1_clk" TIG;
+TIMESPEC TS_chip2_signal_tig = FROM "adc_chip2_clk" TO "signal_clk" TIG;
+TIMESPEC TS_signal_chip2_tig = FROM "signal_clk" TO "adc_chip2_clk" TIG;
+TIMESPEC TS_chip3_signal_tig = FROM "adc_chip3_clk" TO "signal_clk" TIG;
+TIMESPEC TS_signal_chip3_tig = FROM "signal_clk" TO "adc_chip3_clk" TIG;
 
+TIMESPEC TS_chip0_io_tig = FROM "adc_chip0_tig" TO "io_clk" TIG;
+TIMESPEC TS_io_chip0_tig = FROM "io_clk" to "adc_chip0_tig" TIG;
+TIMESPEC TS_chip1_io_tig = FROM "adc_chip1_clk" TO "io_clk" TIG;
+TIMESPEC TS_io_chip1_tig = FROM "io_clk" TO "adc_chip1_clk" TIG;
+TIMESPEC TS_chip2_io_tig = FROM "adc_chip2_clk" TO "io_clk" TIG;
+TIMESPEC TS_io_chip2_tig = FROM "io_clk" TO "adc_chip2_clk" TIG;
+TIMESPEC TS_chip3_io_tig = FROM "adc_chip3_clk" TO "io_clk" TIG;
+TIMESPEC TS_io_chip3_tig = FROM "io_clk" TO "adc_chip3_clk" TIG;
 
