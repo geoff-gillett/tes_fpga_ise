@@ -284,7 +284,7 @@ chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
 
-chan_reg(1).capture.adc_select <= (others => '0');
+chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
 chan_reg(1).capture.delay <= (others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(1).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);

@@ -83,7 +83,7 @@ signal ticked,tick,time_valid,read_next:boolean;
 type arbFSMstate is (IDLE,ARBITRATE,SEL_STREAM,SEL_TICK,NEXT_TIME);
 signal arb_state,arb_nextstate:arbFSMstate;
 signal tickstream:streambus_t;
-signal muxstream_int_valid,muxstream_out_ready,muxstream_last:boolean;
+signal muxstream_int_valid,muxstream_last:boolean;
 signal tickstream_valid:boolean;
 signal tickstream_ready:boolean;
 
@@ -182,33 +182,39 @@ port map(
   full => time_full
 );
 
---FIXME are these register slices needed?	
 inputRegGen:for i in CHANNELS downto 1 generate
 begin
-	inputReg:entity streamlib.streambus_register_slice
-  port map(
-    clk => clk,
-    reset => reset,
-    stream_in => instreams(i-1),
-    ready_out => instream_readys(i-1),
-    valid_in => instream_valids(i-1),
-    stream => streams(i),
-    ready => readys(i),
-    valid => valids(i)
-  );
+--	inputReg:entity streamlib.streambus_register_slice
+--  port map(
+--    clk => clk,
+--    reset => reset,
+--    stream_in => instreams(i-1),
+--    ready_out => instream_readys(i-1),
+--    valid_in => instream_valids(i-1),
+--    stream => streams(i),
+--    ready => readys(i),
+--    valid => valids(i)
+--  );
+  streams(i) <= instreams(i-1);
+  instream_readys(i-1) <= readys(i);
+  valids(i) <= instream_valids(i-1);
 end generate;
 
-tickInputReg:entity streamlib.streambus_register_slice
-port map(
-  clk => clk,
-  reset => reset,
-  stream_in => tickstream,
-  ready_out => tickstream_ready,
-  valid_in => tickstream_valid,
-  stream => streams(0),
-  ready => readys(0),
-  valid => valids(0)
-);
+--tickInputReg:entity streamlib.streambus_register_slice
+--port map(
+--  clk => clk,
+--  reset => reset,
+--  stream_in => tickstream,
+--  ready_out => tickstream_ready,
+--  valid_in => tickstream_valid,
+--  stream => streams(0),
+--  ready => readys(0),
+--  valid => valids(0)
+--);
+streams(0) <= tickstream;
+tickstream_ready <= readys(0);
+valids(0) <= tickstream_valid;
+
 
 selector:entity work.eventstream_select
 generic map(
@@ -234,8 +240,6 @@ port map(
   ready => muxstream_reg_ready,
   valid => muxstream_reg_valid
 );
-
--- register slice here??
 
 
 muxstream_last <= muxstream_int.last(0);
