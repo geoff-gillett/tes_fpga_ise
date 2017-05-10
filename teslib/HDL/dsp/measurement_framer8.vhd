@@ -212,9 +212,10 @@ area.area <= m.pulse_area;
 pre_detection <= m.pre_eflags.event_type.detection;
 detection <= m.eflags.event_type.detection;
 
-trace_start <= m.pre_pulse_start and pre_detection=TRACE_DETECTION_D and enable;
+trace_start 
+  <= m.pre_pulse_start and pre_detection=TRACE_DETECTION_D and enable_reg;
 pulse_start 
-  <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start and enable;  
+  <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start and enable_reg;  
 
 tracing <= (t_state=PULSE_S or t_state=TRACE_S);
 wr_trace <= stride_count=0 and trace_chunk_state=WRITE;
@@ -404,6 +405,7 @@ begin
       
       case t_state is 
       when IDLE_S =>
+--        enable_reg <= enable;
         tflags.multipulse <= FALSE;
         if pulse_start then 
           if free >= resize(m.pre_size,FRAMER_ADDRESS_BITS+1) then
