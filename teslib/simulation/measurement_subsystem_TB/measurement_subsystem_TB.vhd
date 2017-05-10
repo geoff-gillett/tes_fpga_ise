@@ -453,7 +453,7 @@ doublesig <= to_signed(-200,ADC_WIDTH)
              else to_signed(800,ADC_WIDTH)
              when sim_count < 40
              else to_signed(0,ADC_WIDTH)
-             when sim_count < 110
+             when sim_count < 100
              else to_signed(1000,ADC_WIDTH)
              when sim_count < 300
              else to_signed(-200,ADC_WIDTH);

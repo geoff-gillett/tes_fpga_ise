@@ -184,36 +184,36 @@ port map(
 
 inputRegGen:for i in CHANNELS downto 1 generate
 begin
---	inputReg:entity streamlib.streambus_register_slice
---  port map(
---    clk => clk,
---    reset => reset,
---    stream_in => instreams(i-1),
---    ready_out => instream_readys(i-1),
---    valid_in => instream_valids(i-1),
---    stream => streams(i),
---    ready => readys(i),
---    valid => valids(i)
---  );
-  streams(i) <= instreams(i-1);
-  instream_readys(i-1) <= readys(i);
-  valids(i) <= instream_valids(i-1);
+	inputReg:entity streamlib.streambus_register_slice
+  port map(
+    clk => clk,
+    reset => reset,
+    stream_in => instreams(i-1),
+    ready_out => instream_readys(i-1),
+    valid_in => instream_valids(i-1),
+    stream => streams(i),
+    ready => readys(i),
+    valid => valids(i)
+  );
+--  streams(i) <= instreams(i-1);
+--  instream_readys(i-1) <= readys(i);
+--  valids(i) <= instream_valids(i-1);
 end generate;
 
---tickInputReg:entity streamlib.streambus_register_slice
---port map(
---  clk => clk,
---  reset => reset,
---  stream_in => tickstream,
---  ready_out => tickstream_ready,
---  valid_in => tickstream_valid,
---  stream => streams(0),
---  ready => readys(0),
---  valid => valids(0)
---);
-streams(0) <= tickstream;
-tickstream_ready <= readys(0);
-valids(0) <= tickstream_valid;
+tickInputReg:entity streamlib.streambus_register_slice
+port map(
+  clk => clk,
+  reset => reset,
+  stream_in => tickstream,
+  ready_out => tickstream_ready,
+  valid_in => tickstream_valid,
+  stream => streams(0),
+  ready => readys(0),
+  valid => valids(0)
+);
+--streams(0) <= tickstream;
+--tickstream_ready <= readys(0);
+--valids(0) <= tickstream_valid;
 
 
 selector:entity work.eventstream_select

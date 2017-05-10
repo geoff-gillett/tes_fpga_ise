@@ -189,6 +189,7 @@ tflags.trace_signal <= FILTERED_TRACE_D;
 tflags.trace_type <= SINGLE_TRACE_D;
 tflags.stride <= trace_stride;
 
+
 trace.size <= resize(trace_size,CHUNK_DATABITS);
 trace.flags <= m.eflags;
 trace.trace_flags <= tflags;
@@ -416,6 +417,7 @@ begin
         end if;
       when PULSE_S =>
         --FIXME what if both are true:
+        tflags.multipulse <= FALSE;
         if trace_done and trace_chunk_state=WRITE and store_trace then
           t_state <= WAITPULSE_S;
           commiting <= TRUE;
@@ -440,7 +442,6 @@ begin
       when WAITPULSE_S =>
         if m.pulse_threshold_neg then 
           if trace_start then
-            tflags.multipulse <= FALSE;
             t_state <= PULSE_S;
           else
             t_state <= IDLE_S;
