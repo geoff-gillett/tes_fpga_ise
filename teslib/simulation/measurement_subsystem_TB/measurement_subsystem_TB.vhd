@@ -217,8 +217,6 @@ global.mca.lowest_value <= to_signed(-2000,MCA_VALUE_BITS);
 --global.mca.value <= MCA_RAW_SIGNAL_D;
 global.window <= to_unsigned(40, TIME_BITS);
 
-global.channel_enable <= "00000011";
---global.channel_enable <= "00000011";
 
 filter_config(0).config_data <= (others => '0');
 filter_config(0).config_valid <= '0';
@@ -275,7 +273,7 @@ chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(5*8,DSP_BITS-1);
 chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
-chan_reg(0).capture.pulse_threshold <= to_unsigned(127*8+6,DSP_BITS-1); --start peak stop
+chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); --start peak stop
 --chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(10,AREA_WIDTH-1);
 chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
@@ -284,13 +282,13 @@ chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
 
-chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
+chan_reg(1).capture.adc_select <= (others => '0');
 chan_reg(1).capture.delay <= (others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(1).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);
 --chan_reg(1).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
 chan_reg(1).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
-chan_reg(1).capture.pulse_threshold <= to_unsigned(127*8+6,DSP_BITS-1); --start peak stop
+chan_reg(1).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); --start peak stop
 chan_reg(1).capture.area_threshold <= to_unsigned(10,AREA_WIDTH-1);
 chan_reg(1).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 chan_reg(1).capture.detection <= PEAK_DETECTION_D;
@@ -452,7 +450,7 @@ doublesig <= to_signed(-200,ADC_WIDTH)
              when sim_count < 10
              else to_signed(800,ADC_WIDTH)
              when sim_count < 40
-             else to_signed(0,ADC_WIDTH)
+             else to_signed(-100,ADC_WIDTH)
              when sim_count < 100
              else to_signed(1000,ADC_WIDTH)
              when sim_count < 300
@@ -464,74 +462,77 @@ adc_samples(0) <= std_logic_vector(signed(doublesig));
 
 mcaControlStimulus:process
 begin
---  chan_reg(0).baseline.offset <= to_signed(6,DSP_BITS);
-	wait for SAMPLE_CLK_PERIOD*22;
-  simenable <= TRUE;
   global.mca.update_asap <= FALSE;
   global.mca.update_on_completion <= FALSE;
-	wait for SAMPLE_CLK_PERIOD*20;
-	global.mca.value <= MCA_FILTERED_SIGNAL_D;
-	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
-	global.mca.qualifier <= VALID_PEAK_MCA_QUAL_D;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-  global.mca.update_asap <= FALSE;
-  wait until mca_interrupt;
-	global.mca.value <= MCA_FILTERED_SIGNAL_D;
-	global.mca.trigger <= MCA_DISABLED_D;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-  wait;
---  chan_reg(0).baseline.offset <= to_signed(5,DSP_BITS);
-  wait until mca_interrupt;
---  chan_reg(0).baseline.offset <= to_signed(4,DSP_BITS);
-  wait until mca_interrupt;
---  chan_reg(0).baseline.offset <= to_signed(3,DSP_BITS);
-  wait until mca_interrupt;
---  chan_reg(0).baseline.offset <= to_signed(2,DSP_BITS);
-  wait;
-  wait until mca_interrupt;
-	global.mca.value <= MCA_FILTERED_SIGNAL_D;
-	global.mca.trigger <= SLOPE_NEG_0XING_MCA_TRIGGER_D;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_FILTERED_EXTREMA_D;
-	global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_FILTERED_AREA_D;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_SLOPE_SIGNAL_D;
-	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_SLOPE_EXTREMA_D;
-	global.mca.trigger <= SLOPE_0XING_MCA_TRIGGER_D;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_SLOPE_AREA_D;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
-	wait for SAMPLE_CLK_PERIOD;
-	wait until mca_interrupt;
-	global.mca.value <= MCA_RAW_SIGNAL_D;
-	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
+  global.channel_enable <= "00000000";
+	wait for SAMPLE_CLK_PERIOD*22;
+  simenable <= TRUE;
+  wait for 7 us;
+  global.channel_enable <= "00000011";
+--	wait for SAMPLE_CLK_PERIOD*20;
+--	global.mca.value <= MCA_FILTERED_SIGNAL_D;
+--	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+--	global.mca.qualifier <= VALID_PEAK_MCA_QUAL_D;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--  global.mca.update_asap <= FALSE;
+--  wait until mca_interrupt;
+--	global.mca.value <= MCA_FILTERED_SIGNAL_D;
+--	global.mca.trigger <= MCA_DISABLED_D;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	global.mca.update_asap <= FALSE;
+--  wait;
+----  chan_reg(0).baseline.offset <= to_signed(5,DSP_BITS);
+--  wait until mca_interrupt;
+----  chan_reg(0).baseline.offset <= to_signed(4,DSP_BITS);
+--  wait until mca_interrupt;
+----  chan_reg(0).baseline.offset <= to_signed(3,DSP_BITS);
+--  wait until mca_interrupt;
+----  chan_reg(0).baseline.offset <= to_signed(2,DSP_BITS);
+--  wait;
+--  wait until mca_interrupt;
+--	global.mca.value <= MCA_FILTERED_SIGNAL_D;
+--	global.mca.trigger <= SLOPE_NEG_0XING_MCA_TRIGGER_D;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	global.mca.update_asap <= FALSE;
+--	wait until mca_interrupt;
+--	global.mca.value <= MCA_FILTERED_EXTREMA_D;
+--	global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	global.mca.update_asap <= FALSE;
+--	wait until mca_interrupt;
+--	global.mca.value <= MCA_FILTERED_AREA_D;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	global.mca.update_asap <= FALSE;
+--	wait until mca_interrupt;
+--	global.mca.value <= MCA_SLOPE_SIGNAL_D;
+--	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	global.mca.update_asap <= FALSE;
+--	wait until mca_interrupt;
+--	global.mca.value <= MCA_SLOPE_EXTREMA_D;
+--	global.mca.trigger <= SLOPE_0XING_MCA_TRIGGER_D;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	global.mca.update_asap <= FALSE;
+--	wait until mca_interrupt;
+--	global.mca.value <= MCA_SLOPE_AREA_D;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	global.mca.update_asap <= FALSE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	wait until mca_interrupt;
+--	global.mca.value <= MCA_RAW_SIGNAL_D;
+--	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	global.mca.update_asap <= FALSE;
+
 	wait;
 end process mcaControlStimulus;	
 
