@@ -85,7 +85,7 @@ signal full,pre_full:boolean;
 
 -- TRACE control registers implemented as constants
 constant trace_length:unsigned(FRAMER_ADDRESS_BITS downto 0)
-         :=to_unsigned(664/4/4,FRAMER_ADDRESS_BITS+1);
+         :=to_unsigned(512,FRAMER_ADDRESS_BITS+1);
 constant TRACE_STRIDE_BITS:integer:=5;
 constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0):=(others => '0');
 -- trace signals
@@ -176,7 +176,7 @@ pulse.threshold <= m.timing_threshold;
 --  | height | low1 |  low2  | time | -- use this for pulse2
 tflags.offset <= m.offset;
 tflags.trace_signal <= FILTERED_TRACE_D;
-tflags.trace_type <= AVERAGE_TRACE_D;
+tflags.trace_type <= SINGLE_TRACE_D;
 tflags.stride <= trace_stride;
 
 trace.size <= resize(frame_length,CHUNK_DATABITS);
