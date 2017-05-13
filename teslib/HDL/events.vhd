@@ -225,14 +225,15 @@ function to_std_logic(p:pulse_peak2_t;endianness:string)
 function to_streambus(p:pulse_peak2_t;last:boolean;endianness:string) 
          return streambus_t;
 
--- |  2  |  1  |    5   ||    2   |   2    |   4		 |
--- | res |multi| stride ||  type  | signal |max_peaks|
+-- |  1  |  1  |  1   |   5  ||    2   |   2    |   4		 |
+-- | res |mpeak|mpulse|stride||  type  | signal |max_peaks|
 type trace_flags_t is
 record
 	trace_signal:trace_signal_d;
 	trace_type:trace_type_d;
 	offset:unsigned(PEAK_COUNT_BITS-1 downto 0);
 	multipulse:boolean;
+	multipeak:boolean;
 	stride:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 end record;
 
@@ -589,6 +590,7 @@ end function;
 function to_std_logic(f:trace_flags_t) return std_logic_vector is
 	variable slv:std_logic_vector(CHUNK_DATABITS-1 downto 0):=(others => '0');
 begin
+	slv(14):=to_std_logic(f.multipeak);
 	slv(13):=to_std_logic(f.multipulse);
 	slv(12 downto 8):=to_std_logic(f.stride);
 	slv(7 downto 6):=to_std_logic(f.trace_type,2);
