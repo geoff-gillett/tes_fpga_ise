@@ -50,9 +50,6 @@ type write_buffer is array (DEPTH-1 downto 0) of streambus_t;
 signal queue:write_buffer;
 --signal queue_full:boolean;
 
-signal stream_int:streambus_t;
-signal valid_int,ready_int:boolean;
-
 signal m:measurements_t;
 signal peak:peak_detection_t;
 signal area:area_detection_t;
@@ -60,7 +57,7 @@ signal pulse,pulse_reg:pulse_detection_t;
 signal pulse_peak:pulse_peak_t;
 signal pulse_peak_word:streambus_t;
 signal trace,pulse_reg_trace:trace_detection_t;
-signal tflags,tflags_reg:trace_flags_t;
+signal tflags:trace_flags_t;
 
 signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
 --signal framer_full:boolean;
@@ -71,18 +68,12 @@ attribute equivalent_register_removal of mux_full:signal is "no";
 signal free:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal frame_length:unsigned(FRAMER_ADDRESS_BITS downto 0):=(others => '0');
 --
-signal pulse_valid,pulse_peak_valid,pulse_commit:boolean;
+signal pulse_valid,pulse_peak_valid:boolean;
 signal pulse_overflow:boolean;
 signal frame_word:streambus_t;
 signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal frame_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal commit_frame,start_int,dump_int,just_started:boolean;
-constant MUX_DEPTH:natural:=2;
-signal commit_pipe,start_pipe,dump_pipe:boolean_vector(1 to MUX_DEPTH)
-       :=(others => FALSE);
-signal error_pipe,overflow_pipe:boolean_vector(1 to MUX_DEPTH)
-       :=(others => FALSE);
-
 
 signal peak_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
@@ -90,10 +81,11 @@ signal pulse_start:boolean;
 signal peak_stamped,pulse_stamped:boolean:=FALSE;
 
 signal pre_detection,detection:detection_d;
+signal full,pre_full:boolean;
 
 -- TRACE control registers implemented as constants
 constant trace_length:unsigned(FRAMER_ADDRESS_BITS downto 0)
-         :=to_unsigned(10,FRAMER_ADDRESS_BITS+1);
+         :=to_unsigned(512,FRAMER_ADDRESS_BITS+1);
 constant TRACE_STRIDE_BITS:integer:=5;
 constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0):=(others => '0');
 -- trace signals
@@ -218,6 +210,7 @@ detection <= m.eflags.event_type.detection;
 
 trace_start 
   <= m.pre_pulse_start and pre_detection=TRACE_DETECTION_D and enable_reg;
+  
 pulse_start 
   <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start and enable_reg;  
 
@@ -230,6 +223,8 @@ can_q_single <= q_state=IDLE;
 can_q_trace <= q_state=IDLE;
 can_q_pulse <= q_state=IDLE;
 
+pre_full <= free < resize(m.pre_size,FRAMER_ADDRESS_BITS+1);
+full <= free < resize(m.size,FRAMER_ADDRESS_BITS+1);
 trace_chunk <= set_endianness(m.filtered.sample,ENDIAN);
 capture:process(clk)
 begin
@@ -321,19 +316,15 @@ begin
             frame_word <= queue(1);
             frame_we <= (others => TRUE);
             frame_address <= to_unsigned(1,FRAMER_ADDRESS_BITS);
-            if trace_chunk_state=DONE then
-              q_state <= WORD0;
-            else
-              q_state <= IDLE;
-            end if;
+            q_state <= WORD0;
           end case;
         end if;
       end if;
         
       --initialise new trace and count strides
       if pre_detection=TRACE_DETECTION_D or detection=TRACE_DETECTION_D then
-        -- 
-        if trace_start and t_state=IDLE then -- if commiting?
+        if trace_start and (t_state=IDLE or 
+           (t_state=WAITPULSEDONE and m.pre_pulse_threshold_neg)) then 
           stride_count <= (others => '0');
           trace_count <= trace_length-1;
           if tflags.trace_type=SINGLE_TRACE_D then
@@ -394,7 +385,6 @@ begin
             overflow_int <= TRUE;
           end if;
         when DONE =>
-          null;
         end case;
       end if;
       
@@ -437,30 +427,47 @@ begin
               t_state <= TRACING;
             
             elsif detection=AREA_DETECTION_D then
-                
               if m.pulse_start then
-                pulse_stamped <= m.stamp_pulse;
+                if full then
+                  pulse_stamped <= FALSE;
+                  tflags.multipulse <= FALSE;
+                  overflow_int <= TRUE;
+                  t_state <= IDLE;
+                else
+                  pulse_stamped <= m.stamp_pulse;
+                  just_started <= TRUE;
+                end if;
               else
                 t_state <= IDLE;
               end if;
+              
               q_state <= SINGLE;
               queue(0) <= to_streambus(area,ENDIAN);
               commiting <= TRUE;
               free <= framer_free - frame_length;
                 
             else -- must be normal pulse
+              
               if m.pulse_start and detection=PULSE_DETECTION_D then
-                pulse_stamped <= m.stamp_pulse;
-                just_started <= TRUE;
+                if full then
+                  pulse_stamped <= FALSE;
+                  tflags.multipulse <= FALSE;
+                  overflow_int <= TRUE;
+                  t_state <= IDLE;
+                else
+                  pulse_stamped <= m.stamp_pulse;
+                  just_started <= TRUE;
+                end if;
               else
                 t_state <= IDLE;
               end if;
+              
               if q_state=IDLE then 
                 queue(0) <= to_streambus(pulse,0,ENDIAN);
                 queue(1) <= to_streambus(pulse,1,ENDIAN);
                 pulse_peak_word <= to_streambus(pulse_peak,TRUE,ENDIAN);
-                peak_address <= resize(m.last_peak_address,FRAMER_ADDRESS_BITS);
                 pulse_peak_valid <= TRUE;
+                peak_address <= resize(m.last_peak_address,FRAMER_ADDRESS_BITS);
                 commiting <= TRUE;
                 free <= framer_free - frame_length;
                 q_state <= WORD1;
@@ -468,6 +475,7 @@ begin
                 error_int <= TRUE;
                 dump_int <= pulse_stamped;
               end if;
+              
             end if;
           end if;
         else
@@ -511,14 +519,29 @@ begin
               dump_int <= pulse_stamped;
             end if;
           end if;
-          t_state <= IDLE;
+          
+          if m.pulse_start and detection=TRACE_DETECTION_D then
+            if full then
+              pulse_stamped <= FALSE;
+              tflags.multipulse <= FALSE;
+              overflow_int <= TRUE;
+              t_state <= IDLE;
+            else
+              pulse_stamped <= m.stamp_pulse;
+              just_started <= TRUE;
+              tflags.multipulse <= FALSE;
+              t_state <= FIRSTPULSE;
+            end if;
+          else
+            t_state <= IDLE;
+          end if;
         end if;
         
       end case;
      
       -- peak recording 
       if m.peak_stop and enable_reg then 
-        if t_state=FIRSTPULSE then 
+        if t_state=FIRSTPULSE or t_state=WAITPULSEDONE then 
           if pulse_peak_valid and stride_wr then
             error_int <= TRUE;
             q_state <= IDLE;
