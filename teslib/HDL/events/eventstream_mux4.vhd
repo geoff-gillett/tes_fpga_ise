@@ -23,7 +23,7 @@ use work.events.all;
 
 --TODO optimise to remove wait states
 -- merges instreams keeping temporal order and incorporates tickstream
-entity eventstream_mux3 is
+entity eventstream_mux4 is
 generic(
   --CHANNEL_BITS:integer:=3;
   CHANNELS:integer:=8;
@@ -63,9 +63,9 @@ port(
   valid:out boolean;
   ready:in boolean
 );
-end entity eventstream_mux3;
+end entity eventstream_mux4;
 --
-architecture RTL of eventstream_mux3 is
+architecture RTL of eventstream_mux4 is
 	
 --constant CHANNELS:integer:=2**CHANNEL_BITS;
 
@@ -280,68 +280,87 @@ begin
 if rising_edge(clk) then
   if reset = '1' then
   	--state <= IDLE;
-  	arb_state <= IDLE;
+--  	arb_state <= IDLE;
   	out_state <= HEAD;
   else
-  	arb_state <= arb_nextstate;
+--  	arb_state <= arb_nextstate;
   	out_state <= out_nextstate; 
   end if;
 end if;
 end process fsmNextstate;
 
-arbFSMtransition:process(arb_state,time_valid,sel,pulses_done,ticked,gnt,
-  muxstream_int.last(0),muxstream_int_valid,muxstream_last_handshake,
-  muxstream_int_ready
-)
+readys <= (others => FALSE) when not muxstream_int_ready else
+          (0 => TRUE, others => FALSE) when arb_state=SEL_TICK else
+          to_boolean(sel);
+arbFSMtransition:process(clk)
+--  arb_state,time_valid,sel,pulses_done,ticked,gnt,
+--  muxstream_int.last(0),muxstream_int_valid,muxstream_last_handshake,
+--  muxstream_int_ready
+--)
 begin
-	arb_nextstate <= arb_state;
-	readys <= (others => FALSE);
-	sel <= (others => '0');
-	case arb_state is 
-	when IDLE =>
-		if time_valid then 
-			arb_nextstate <= ARBITRATE;
-		end if;
-	when ARBITRATE =>
-		if pulses_done then 
-			if ticked then
-				arb_nextstate <= SEL_TICK;
-			else
-				arb_nextstate <= NEXT_TIME;
-			end if;
-		elsif unaryOR(gnt) then
-			arb_nextstate <= SEL_STREAM;
-		end if;
-	when SEL_STREAM =>
-		sel <= gnt & '0'; -- register sel?
-		
-    if pulses_done then
-      if ticked then
-        arb_nextstate <= SEL_TICK;
-      else
-        arb_nextstate <= NEXT_TIME;
-      end if;
+  if rising_edge(clk) then
+    if reset='1' then
+      arb_state <= IDLE;
+      sel <= (others => '0');
     else
-      if muxstream_last_handshake then
-        arb_nextstate <= ARBITRATE;
-      end if;
+--	arb_nextstate <= arb_state;
+--      readys <= (others => FALSE);
+      case arb_state is 
+      when IDLE =>
+        if time_valid then 
+          arb_state <= ARBITRATE;
+          sel <= (others => '0');
+        end if;
+        
+      when ARBITRATE =>
+        if pulses_done then 
+          if ticked then
+            arb_state <= SEL_TICK;
+            sel <= (0 => '1', others => '0');
+          else
+            arb_state <= NEXT_TIME;
+            sel <= (others => '0');
+          end if;
+        elsif unaryOR(gnt) then
+          arb_state <= SEL_STREAM;
+          sel <= gnt & '0';
+        end if;
+        
+      when SEL_STREAM =>
+        if pulses_done then
+          if ticked then
+            arb_state <= SEL_TICK;
+            sel <= (0 => '1', others => '0');
+          else
+            arb_state <= NEXT_TIME;
+            sel <= (others => '0');
+          end if;
+        else
+          if muxstream_last_handshake then
+            arb_state <= ARBITRATE;
+            sel <= (others => '0');
+          end if;
+        end if;
+        
+--        if muxstream_int_ready then
+--          readys <= to_boolean(sel);
+--        end if;
+        
+      when SEL_TICK =>
+    --		sel <= (0 => '1', others => '0');
+        if muxstream_int_ready then
+--          readys <= (0 => TRUE, others => FALSE);
+          if muxstream_int_valid and muxstream_int.last(0) then
+            arb_state <= NEXT_TIME;
+            sel <= (others => '0');
+          end if;
+        end if;
+      when NEXT_TIME =>
+        arb_state <= IDLE;
+        sel <= (others => '0');
+      end case;
     end if;
-		
-		if muxstream_int_ready then
-			readys <= to_boolean(sel);
-		end if;
-		
-	when SEL_TICK =>
-		sel <= (0 => '1', others => '0');
-		if muxstream_int_ready then
-		  readys <= (0 => TRUE, others => FALSE);
-      if muxstream_int_valid and muxstream_int.last(0) then
-        arb_nextstate <= next_time;
-      end if;
-    end if;
-	when NEXT_TIME =>
-		arb_nextstate <= IDLE;
-	end case;
+  end if;
 end process arbFSMtransition;
 
 outFSMtrasition:process(

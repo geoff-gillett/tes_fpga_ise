@@ -230,7 +230,7 @@ if rising_edge(clk) then
       eventtime_reg(TIMESTAMP_BITS-1 downto TIMETAG_BITS+CHANNELS+1) 
         <= (others => '0');
     else
-      started_reg <= (others => '-');
+      started_reg <= (others => '0');
 	    ticked_reg <= FALSE;
       eventtime_reg <= (others => '-');
       all_dumped_reg <= FALSE;
@@ -291,13 +291,15 @@ valid_event <= (ticked_reg or unaryOr(started_reg and commited_reg))
 --							 
 commited_starts <= unsigned(started_reg and commited_reg) /= 0;
 
-bufferFsmTransition:process(buffer_state,reltime_state,all_dumped_reg,
-														time_empty,read_next,ticked_reg,commited_starts)
+bufferFsmTransition:process(
+  buffer_state,reltime_state,all_dumped_reg,time_empty,read_next,ticked_reg,
+  commited_starts,time_rd_en
+)
 begin
 buffer_nextstate <= buffer_state;
 case buffer_state is 
 when IDLE =>
-  if time_empty='0' and reltime_state=VALIDTIME then
+  if time_empty='0' and reltime_state=VALIDTIME and time_rd_en='0' then
     buffer_nextstate <= WAITEVENT;
   end if;
 when WAITEVENT =>

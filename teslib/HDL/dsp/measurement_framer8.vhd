@@ -105,7 +105,7 @@ signal overflow_int,error_int:boolean;
 --signal trace_overflow,single_overflow,trace_overflow_valid,trace_done:boolean;
 --signal tracing:boolean;
 signal trace_wr:boolean;
-signal enable_reg,just_enabled:boolean;
+signal enable_reg:boolean;
 --signal trace_done:boolean;
 signal can_q_trace,can_q_pulse,can_q_single:boolean;
 signal can_write_trace:boolean;
@@ -124,7 +124,7 @@ signal q_state:queueFSMstate;
 
 --debugging
 --signal flags:std_logic_vector(7 downto 0);
---signal pending:signed(3 downto 0):=(others => '0');
+signal pending:signed(3 downto 0):=(others => '0');
 --signal head:boolean;
 --
 --attribute keep:string;
@@ -226,6 +226,25 @@ can_q_pulse <= q_state=IDLE;
 pre_full <= free < resize(m.pre_size,FRAMER_ADDRESS_BITS+1);
 full <= free < resize(m.size,FRAMER_ADDRESS_BITS+1);
 trace_chunk <= set_endianness(m.filtered.sample,ENDIAN);
+
+
+debugPending:process (clk) is
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      pending <= (others => '0');
+    else
+      if start_int and not (commit_frame or dump_int) then
+        pending <= pending + 1;
+      end if;
+      if (commit_frame or dump_int) and not start_int then
+        pending <= pending - 1;
+      end if;
+    end if;
+  end if;
+end process debugPending;
+
+
 capture:process(clk)
 begin
   if rising_edge(clk) then
@@ -237,7 +256,6 @@ begin
       error_int <= FALSE;
       pulse_valid <= FALSE;
       pulse_peak_valid <= FALSE;
---      frame_length <= (0 => '1', others => '0');
       pulse_overflow <= FALSE;
       trace_address <= (others => '0');
       trace_count <= (others => '1');
@@ -245,7 +263,6 @@ begin
       area_overflow <= FALSE;
       
       q_state <= IDLE;
---      p_state <= IDLE_S;
       t_state <= IDLE;
       
       trace_chunk_state <= DONE;
@@ -263,7 +280,6 @@ begin
         if t_state=IDLE then
           enable_reg <= enable;
         end if;
-        just_enabled <= enable and not enable_reg;
       end if;
       
       
@@ -325,7 +341,7 @@ begin
         
       --initialise new trace and count strides
       if pre_detection=TRACE_DETECTION_D or detection=TRACE_DETECTION_D then
-        if trace_start and (t_state=IDLE or 
+        if trace_start and not pre_full and (t_state=IDLE or 
            (t_state=WAITPULSEDONE and m.pre_pulse_threshold_neg)) then 
           stride_count <= (others => '0');
           trace_count <= trace_length-1;
@@ -394,12 +410,10 @@ begin
       case t_state is 
       when IDLE =>
         just_started <= TRUE;
+        pulse_stamped <= FALSE;
         if pulse_start then 
           if free >= resize(m.pre_size,FRAMER_ADDRESS_BITS+1) then
             t_state <= FIRSTPULSE;
---            if pre_detection=TRACE_DETECTION_D then
---              trace
-            pulse_stamped <= FALSE;
             tflags.multipulse <= FALSE;
             tflags.multipeak <= FALSE;
           else
@@ -597,7 +611,7 @@ begin
             dump_int <= m.pulse_stamped;
             pulse_stamped <= FALSE;
           else
-            queue(3) <= to_streambus(pulse_peak,FALSE,ENDIAN);
+            pulse_peak_word <= to_streambus(pulse_peak,FALSE,ENDIAN);
             peak_address <= resize(m.peak_address,FRAMER_ADDRESS_BITS);
             pulse_peak_valid <= TRUE;
           end if;
@@ -609,7 +623,7 @@ begin
             dump_int <= TRUE; --FIXME check that it is always stamped
             peak_stamped <= FALSE;
           else
-            queue(3) <= to_streambus(peak,ENDIAN);
+            queue(0) <= to_streambus(peak,ENDIAN);
             q_state <= SINGLE;
             commiting <= TRUE;
             free <= framer_free-1;
