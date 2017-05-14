@@ -245,7 +245,7 @@ port map(
 muxstream_last <= muxstream_int.last(0);
 muxstream_handshake <= muxstream_int_valid and muxstream_int_ready;
 muxstream_last_handshake <= muxstream_handshake and muxstream_last;
-pulses_done <= (started = handled(CHANNELS downto 1)) and time_valid; 
+pulses_done <= (started = handled(CHANNELS downto 1)); -- and time_valid; 
 time_done <= pulses_done and to_std_logic(ticked) = handled(0);
 read_next <= arb_state=NEXT_TIME;
 

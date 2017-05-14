@@ -44,7 +44,7 @@ architecture RTL of measurement_framer8 is
 
 --  
 constant CHUNKS:integer:=BUS_CHUNKS;
-constant DEPTH:integer:=4;
+constant DEPTH:integer:=2;
 
 type write_buffer is array (DEPTH-1 downto 0) of streambus_t;
 signal queue:write_buffer;
@@ -261,6 +261,7 @@ begin
       trace_count <= (others => '1');
       stride_count <= (others => '0');
       area_overflow <= FALSE;
+      enable_reg <= FALSE;
       
       q_state <= IDLE;
       t_state <= IDLE;
@@ -276,7 +277,7 @@ begin
       commit_frame <= FALSE;
       frame_we <= (others => FALSE);
       
-      if m.pulse_start then
+      if m.pre_pulse_start then
         if t_state=IDLE then
           enable_reg <= enable;
         end if;
