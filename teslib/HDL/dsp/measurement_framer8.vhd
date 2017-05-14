@@ -276,7 +276,7 @@ begin
       commit_frame <= FALSE;
       frame_we <= (others => FALSE);
       
-      if m.pulse_start then
+      if m.pre_pulse_start then
         if t_state=IDLE then
           enable_reg <= enable;
         end if;
