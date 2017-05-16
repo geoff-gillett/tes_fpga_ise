@@ -424,7 +424,7 @@ port map(
 --------------------------------------------------------------------------------
 -- 
 --------------------------------------------------------------------------------
-mux:entity work.eventstream_mux4
+mux:entity work.eventstream_mux5
 generic map(
   --CHANNEL_BITS => CHANNEL_BITS,
   CHANNELS => DSP_CHANNELS,

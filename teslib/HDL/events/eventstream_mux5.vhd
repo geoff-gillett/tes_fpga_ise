@@ -23,7 +23,7 @@ use work.events.all;
 
 --TODO optimise to remove wait states
 -- merges instreams keeping temporal order and incorporates tickstream
-entity eventstream_mux4 is
+entity eventstream_mux5 is
 generic(
   --CHANNEL_BITS:integer:=3;
   CHANNELS:integer:=8;
@@ -58,9 +58,9 @@ port(
   valid:out boolean;
   ready:in boolean
 );
-end entity eventstream_mux4;
+end entity eventstream_mux5;
 --
-architecture RTL of eventstream_mux4 is
+architecture RTL of eventstream_mux5 is
 	
 --constant CHANNELS:integer:=2**CHANNEL_BITS;
 
@@ -68,7 +68,7 @@ signal timestamp,eventtime:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal reltime:unsigned(CHUNK_DATABITS-1 downto 0);
 signal reltime_stamp:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal started,commited,dumped:std_logic_vector(CHANNELS-1 downto 0);
-signal req,gnt:std_logic_vector(CHANNELS-1 downto 0);
+signal req:std_logic_vector(CHANNELS-1 downto 0);
 signal handled:std_logic_vector(CHANNELS downto 0);
 signal sel:std_logic_vector(CHANNELS downto 0);
 
@@ -76,7 +76,7 @@ signal ticked,tick,time_valid,read_next:boolean;
 --type FSMstate is (IDLE,HEAD,TAIL,NEXT_TIME);
 --signal state,nextstate:FSMstate;
 type arbFSMstate is (IDLE,ARBITRATE,SEL_STREAM,SEL_TICK,NEXT_TIME);
-signal arb_state,arb_nextstate:arbFSMstate;
+signal arb_state:arbFSMstate;
 signal tickstream:streambus_t;
 signal muxstream_int_valid,muxstream_last:boolean;
 signal tickstream_valid:boolean;
@@ -90,16 +90,17 @@ signal time_done:boolean;
 signal muxstream_handshake:boolean;
 signal pulses_done:boolean;
 signal muxstream_last_handshake:boolean;
-type outFSMstate is (HEAD,TAIL);
-signal out_state,out_nextstate:outFSMstate;
-signal first_event:boolean;
+signal first_word:boolean;
 signal new_window:boolean;
-signal window_start:boolean;
+signal window_start,header:std_logic;
 signal valid_out:boolean;
 signal muxstream_out:streambus_t;
 signal time_full:boolean;
-signal muxstream_int_ready : boolean;
+signal muxstream_int_ready:boolean;
 
+signal reltime_reg:std_logic_vector(CHUNK_DATABITS-1 downto 0);
+signal new_window_reg:boolean;
+signal aux_data,aux_data_in:std_logic_vector(CHUNK_DATABITS+1 downto 0);
 --------------------------------------------------------------------------------
 -- debug
 --------------------------------------------------------------------------------
@@ -206,10 +207,6 @@ port map(
   ready => readys(0),
   valid => valids(0)
 );
---streams(0) <= tickstream;
---tickstream_ready <= readys(0);
---valids(0) <= tickstream_valid;
-
 
 selector:entity work.eventstream_select
 generic map(
@@ -223,19 +220,23 @@ port map(
  	mux_valid => muxstream_int_valid
 );
 
+aux_data_in <= reltime_reg & to_std_logic(new_window_reg) & 
+               to_std_logic(first_word);
 
-muxStreamReg:entity streamlib.streambus_register_slice
+muxStreamReg:entity streamlib.streambus_register_slice_user
+generic map(USER_WIDTH => CHUNK_DATABITS+2)
 port map(
   clk => clk,
   reset => reset,
+  user_in => aux_data_in,
   stream_in => muxstream_int,
   ready_out => muxstream_int_ready,
   valid_in => muxstream_int_valid,
+  user => aux_data,
   stream => muxstream_reg,
   ready => muxstream_reg_ready,
   valid => muxstream_reg_valid
 );
-
 
 muxstream_last <= muxstream_int.last(0);
 muxstream_handshake <= muxstream_int_valid and muxstream_int_ready;
@@ -244,71 +245,57 @@ pulses_done <= (started = handled(CHANNELS downto 1)); -- and time_valid;
 time_done <= pulses_done and to_std_logic(ticked) = handled(0);
 read_next <= arb_state=NEXT_TIME;
 
-req <= started and commited and not handled(CHANNELS downto 1);
+--req <= started and commited and not handled(CHANNELS downto 1);
 
 arbiter:process(clk)
+variable handledv:std_logic_vector(CHANNELS downto 0);
 begin
 if rising_edge(clk) then
   if reset = '1' then 
   	handled <= (others => '0');
-  	gnt <= (others => '0');
+--  	gnt <= (others => '0');
   else
   	
     if arb_state=IDLE then
-    	handled <= (others => '0');		
+    	handledv:=(others => '0');		
     elsif muxstream_last_handshake then
-      handled(CHANNELS downto 1) <= handled(CHANNELS downto 1) or 
-                                    sel(CHANNELS downto 1) or 
-      															(dumped and started);
+      handledv(CHANNELS downto 1):=handled(CHANNELS downto 1) or 
+                                   sel(CHANNELS downto 1) or 
+      														 (dumped and started);
     else
-      handled(CHANNELS downto 1) <= handled(CHANNELS downto 1) or 
-      															(dumped and started);
+      handledv(CHANNELS downto 1):=handled(CHANNELS downto 1) or 
+      														 (dumped and started);
     end if;
-    													
-	  gnt <= req and std_logic_vector(unsigned(not req)+1);
+    handled <= handledv;			
+    --FIXME do started and commited in time_buffer										
+    req <= started and commited and not handledv(CHANNELS downto 1);
+--	  gnt <= req and std_logic_vector(unsigned(not req)+1);
     													  
   end if;
 end if;
 end process arbiter;
 
-fsmNextstate:process(clk)
-begin
-if rising_edge(clk) then
-  if reset = '1' then
-  	--state <= IDLE;
---  	arb_state <= IDLE;
-  	out_state <= HEAD;
-  else
---  	arb_state <= arb_nextstate;
-  	out_state <= out_nextstate; 
-  end if;
-end if;
-end process fsmNextstate;
 
 readys <= (others => FALSE) when not muxstream_int_ready else
           (0 => TRUE, others => FALSE) when arb_state=SEL_TICK else
           to_boolean(sel);
+          
 arbFSMtransition:process(clk)
---  arb_state,time_valid,sel,pulses_done,ticked,gnt,
---  muxstream_int.last(0),muxstream_int_valid,muxstream_last_handshake,
---  muxstream_int_ready
---)
---variable gnt:std_logic_vector(CHANNELS-1 downto 0);
 begin
   if rising_edge(clk) then
     if reset='1' then
       arb_state <= IDLE;
       sel <= (others => '0');
---      gnt:=(others => '0');
+      first_word <= TRUE;
     else
---	    gnt:=req and std_logic_vector(unsigned(not req)+1);
---	arb_nextstate <= arb_state;
---      readys <= (others => FALSE);
       case arb_state is 
       when IDLE =>
         if time_valid then 
           arb_state <= ARBITRATE;
           sel <= (others => '0');
+          first_word <= TRUE;
+          reltime_reg <= set_endianness(reltime,ENDIANNESS);
+          new_window_reg <= new_window;
         end if;
         
       when ARBITRATE =>
@@ -320,10 +307,10 @@ begin
             arb_state <= NEXT_TIME;
             sel <= (others => '0');
           end if;
-        elsif unaryOR(gnt) then
+        elsif unaryOR(req) then
           arb_state <= SEL_STREAM;
---          sel <= gnt & '0';
-      	  sel <= gnt & '0';
+          --sel <= gnt & '0';
+	        sel <= (req and std_logic_vector(unsigned(not req)+1)) & '0';
         end if;
         
       when SEL_STREAM =>
@@ -336,24 +323,21 @@ begin
             sel <= (others => '0');
           end if;
         else
+          if muxstream_handshake then
+            first_word <= FALSE;
+          end if;
           if muxstream_last_handshake then
+            reltime_reg <= (others => '0');
+            new_window_reg <= FALSE;
             arb_state <= ARBITRATE;
             sel <= (others => '0');
           end if;
         end if;
         
---        if muxstream_int_ready then
---          readys <= to_boolean(sel);
---        end if;
-        
       when SEL_TICK =>
-    --		sel <= (0 => '1', others => '0');
-        if muxstream_int_ready then
---          readys <= (0 => TRUE, others => FALSE);
-          if muxstream_int_valid and muxstream_int.last(0) then
-            arb_state <= NEXT_TIME;
-            sel <= (others => '0');
-          end if;
+        if muxstream_last_handshake then
+          arb_state <= NEXT_TIME;
+          sel <= (others => '0');
         end if;
         
       when NEXT_TIME =>
@@ -364,67 +348,67 @@ begin
   end if;
 end process arbFSMtransition;
 
-outFSMtrasition:process(
-  out_state,muxstream_reg.last(0),muxstream_reg_ready,muxstream_reg_valid
-)
-begin
-	out_nextstate <= out_state;
-	case out_state is 
-	when HEAD =>
-		if muxstream_reg_ready and muxstream_reg_valid and 
-		   not muxstream_reg.last(0) then
-			out_nextstate <= TAIL;
-		end if;
-	when TAIL =>
-		if muxstream_reg_ready and muxstream_reg_valid and 
-		   muxstream_reg.last(0) then
-			out_nextstate <= HEAD;
-		end if;
-	end case;
-end process outFSMtrasition;
+--outFSMtrasition:process(
+--  out_state,muxstream_reg.last(0),muxstream_reg_ready,muxstream_reg_valid
+--)
+--begin
+--	out_nextstate <= out_state;
+--	case out_state is 
+--	when HEAD =>
+--		if muxstream_reg_ready and muxstream_reg_valid and 
+--		   not muxstream_reg.last(0) then
+--			out_nextstate <= TAIL;
+--		end if;
+--	when TAIL =>
+--		if muxstream_reg_ready and muxstream_reg_valid and 
+--		   muxstream_reg.last(0) then
+--			out_nextstate <= HEAD;
+--		end if;
+--	end case;
+--end process outFSMtrasition;
 
 --FIXME reltime not working
-firstEvent:process(clk)
-begin
-	if rising_edge(clk) then
-		if reset='1' then
-			first_event <= TRUE;
-		else
-      if arb_state=NEXT_TIME then
-        first_event <= TRUE;
-      elsif muxstream_last_handshake then
-        first_event <= FALSE;
-      end if;
-    end if;
-	end if;
-end process firstEvent;
+--firstEvent:process(clk)
+--begin
+--	if rising_edge(clk) then
+--		if reset='1' then
+--			first_event <= TRUE;
+--		else
+--      if arb_state=NEXT_TIME then
+--        first_event <= TRUE;
+--      elsif muxstream_last_handshake then
+--        first_event <= FALSE;
+--      end if;
+--    end if;
+--	end if;
+--end process firstEvent;
 
-relativetimestamp:process (clk) is
-begin
-	if rising_edge(clk) then
-		if reset = '1' then
-			reltime_stamp <= (others => '1');
-		else
-			if first_event then
-				-- FIXME change TIME_BITS 
-				reltime_stamp <= set_endianness(reltime,ENDIANNESS);
-				window_start <= new_window;
-			else
-				window_start <= FALSE;
-				reltime_stamp <= (others => '0');
-			end if;
-		end if;
-	end if;
-end process relativetimestamp;
+--relativetimestamp:process (clk) is
+--begin
+--	if rising_edge(clk) then
+--		if reset = '1' then
+--			reltime_stamp <= (others => '1');
+--			
+--		else
+--			if muxstream_reg.discard(0) then
+--				reltime_stamp <= reltime_reg;
+--				window_start <= new_window_reg;
+--			else
+--				window_start <= FALSE;
+--				reltime_stamp <= (others => '0');
+--			end if;
+--		end if;
+--	end if;
+--end process relativetimestamp;
 
---insert the timestamp 
---FIXME register this?
+reltime_stamp <= aux_data(CHUNK_DATABITS+1 downto 2);
+window_start <= aux_data(1);
+header <= aux_data(0);
 
 --bigEndian:if endianness="BIG" generate
 stream_int.data <= muxstream_reg.data(63 downto 17) &
-                   to_std_logic(window_start) &
-                   reltime_stamp
-                when out_state=HEAD
+                   window_start & reltime_stamp
+                when header='1'
                 else muxstream_reg.data;
 --end generate;
 
