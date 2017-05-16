@@ -355,7 +355,7 @@ begin
     	event_head <= TRUE;
     else
     	
-    	if frame_state=HEADER0 then -- event_type and size are in header after 0
+    	if frame_state=HEADER0 then -- header0 is ethernet protocol
     		if arbiter_state=EVENT then
     		  header.event_type <= event_s_type;
     		  header.event_size <= event_s_size;
@@ -443,7 +443,6 @@ begin
 	
 	if rising_edge(clk) then
 		if reset = '1' then
-			
 			header.frame_sequence <= (others => '0');
 			header.length <= (others => '-');
 			event_sequence <= (others => '0');
@@ -456,8 +455,7 @@ begin
 				mca_last <= TRUE;
 			end if;
 			
-			if event_s_hs and event_s.last(0) and 
-			  event_s_type.detection=TRACE_DETECTION_D then
+			if event_s_last_hs and header.event_type.detection=TRACE_DETECTION_D then
 			  trace_last <= TRUE;
 			end if;
 			
@@ -476,7 +474,7 @@ begin
 				
 			elsif arbiter_state=EVENT then
   			header.ethernet_type <= x"88B5";
-  			if event_s_type.detection=TRACE_DETECTION_D then
+  			if header.event_type.detection=TRACE_DETECTION_D then
           header.protocol_sequence <= trace_sequence;
 				else
 				  header.protocol_sequence <= event_sequence;
@@ -497,7 +495,7 @@ begin
 				end if;
 				
 				if arbiter_state=EVENT then
-				  if event_s_type.detection=TRACE_DETECTION_D then
+				  if header.event_type.detection=TRACE_DETECTION_D then
 				    if trace_last then
               trace_sequence <= (others => '0');
               trace_last <= FALSE;
@@ -570,6 +568,7 @@ begin
 		if arbiter_nextstate /= IDLE then
 			frame_nextstate <= HEADER0;
 		end if;	
+		
 	when HEADER0 =>
 		framer_word <= to_streambus(header,0,ENDIANNESS);
 		framer_we <= (others => framer_ready);
@@ -577,6 +576,7 @@ begin
 		if framer_ready then
 			frame_nextstate <= HEADER1;
 		end if;
+		
 	when HEADER1 =>
 		framer_word <= to_streambus(header,1,ENDIANNESS);
 		framer_we <= (others => framer_ready);
@@ -584,6 +584,7 @@ begin
 		if framer_ready then
 			frame_nextstate <= HEADER2;
 		end if;
+		
 	when HEADER2 =>
 		framer_word <= to_streambus(header,2,ENDIANNESS);
 		framer_we <= (others => framer_ready);
@@ -591,6 +592,7 @@ begin
 		if framer_ready then
 			frame_nextstate <= PAYLOAD;
 		end if;
+		
 	when PAYLOAD =>
 		if arbiter_state=MCA then
 			
@@ -647,11 +649,13 @@ begin
 				end if;
       end if;
     end if;
+    
 	when TERMINATE =>  -- write last
 		framer_word <= last_frame_word;
 		framer_address <= last_frame_address;
 		framer_we <= (others => TRUE);
     frame_nextstate <= LENGTH;
+    
 	when LENGTH => -- commit frame
 		framer_address <= (0 => '1', others => '0');
 		framer_word.data(CHUNK_DATABITS-1 downto 0) 

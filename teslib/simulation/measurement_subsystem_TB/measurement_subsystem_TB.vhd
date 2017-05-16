@@ -202,7 +202,7 @@ bytestream <= bytestream_int(7 downto 0);
 bytestream_last <= bytestream_int(8)='1';
 
 --register settings
-global.mtu <= to_unsigned(1500,MTU_BITS);
+global.mtu <= to_unsigned(256,MTU_BITS);
 global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
 global.tick_period <= to_unsigned(2**14+500,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
