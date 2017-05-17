@@ -343,7 +343,8 @@ begin
       --TODO add generic to generate trace start at pulse_stamp
       --initialise new trace and count strides
       if not TRACE_FROM_STAMP then
-        if pre_detection=TRACE_DETECTION_D or detection=TRACE_DETECTION_D then
+        if (pre_detection=TRACE_DETECTION_D or detection=TRACE_DETECTION_D) and 
+           enable_reg then
           if trace_start and not pre_full and (t_state=IDLE or 
              (t_state=WAITPULSEDONE and m.pre_pulse_threshold_neg)) then 
             stride_count <= (others => '0');
@@ -370,7 +371,8 @@ begin
           stride_wr <= FALSE;
         end if;
       else
-        if pre_detection=TRACE_DETECTION_D then
+        if (pre_detection=TRACE_DETECTION_D or detection=TRACE_DETECTION_D) and 
+           enable_reg then
           if m.pre_stamp_pulse  and (
             t_state=IDLE or t_state=FIRSTPULSE or 
             (t_state=WAITPULSEDONE and m.pre_pulse_threshold_neg)
