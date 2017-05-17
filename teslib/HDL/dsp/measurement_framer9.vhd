@@ -110,14 +110,13 @@ signal enable_reg:boolean;
 --signal trace_done:boolean;
 signal can_q_trace,can_q_pulse,can_q_single:boolean;
 signal can_write_trace:boolean;
-signal multipeak,multipulse:boolean;
 
 --FSMs
 --type pulseFSMstate is (IDLE_S,STARTED_S); --,DUMP_S,ERROR_S,AREADUMP_S,END_S);
 --signal p_state:pulseFSMstate;
 type traceFSMstate is (IDLE,FIRSTPULSE,TRACING,WAITPULSEDONE);
 signal t_state:traceFSMstate;
-type traceChunkState is (STORE0,STORE1,STORE2,WRITE,DONE);
+type traceChunkState is (IDLE,STORE0,STORE1,STORE2,WRITE,DONE);
 signal trace_chunk_state:traceChunkState;
 
 type queueFSMstate is (IDLE,SINGLE,WORD0,WORD1);
@@ -267,7 +266,7 @@ begin
       q_state <= IDLE;
       t_state <= IDLE;
       
-      trace_chunk_state <= DONE;
+      trace_chunk_state <= IDLE;
       
     else
       
@@ -360,7 +359,7 @@ begin
             trace_wr <= FALSE;
           elsif stride_count=0 then
             stride_count <= trace_stride;
-            stride_wr <= trace_chunk_state/=DONE; 
+            stride_wr <= trace_chunk_state/=DONE and trace_chunk_state/=IDLE; 
             trace_wr <= trace_chunk_state=WRITE;
           else
             stride_wr <= FALSE;
@@ -389,7 +388,7 @@ begin
             trace_wr <= FALSE;
           elsif stride_count=0 then
             stride_count <= trace_stride;
-            stride_wr <= trace_chunk_state/=DONE; 
+            stride_wr <= trace_chunk_state/=DONE and trace_chunk_state/=IDLE; 
             trace_wr <= trace_chunk_state=WRITE;
           else
             stride_wr <= FALSE;
@@ -404,6 +403,8 @@ begin
       --gather trace words and write to framer
       if stride_wr then --FIXME register stride_count=0
         case trace_chunk_state is
+        when IDLE => 
+          null;
         when STORE0 => 
           trace_reg(63 downto 48) <= trace_chunk;
           trace_chunk_state <= STORE1;
@@ -475,13 +476,13 @@ begin
               
               pulse_reg <= pulse;
               t_state <= TRACING;
-              if m.pulse_start and not (trace_chunk_state=DONE) and 
+              if m.pulse_start and trace_chunk_state/=DONE and 
                  (m.peak_start and m.eflags.peak_number/=0) then
                 if tflags.trace_type=AVERAGE_TRACE_D then
                   dump_int <= pulse_stamped; 
                   pulse_stamped <= FALSE;
                   t_state <= IDLE;
-                  trace_chunk_state <= DONE;
+                  trace_chunk_state <= IDLE;
                 else
                   tflags.multipulse <= m.pulse_start;
                   tflags.multipeak <= m.peak_start;
@@ -541,13 +542,14 @@ begin
         else
           if detection=TRACE_DETECTION_D and trace_chunk_state=DONE then
             t_state <= WAITPULSEDONE;
+            trace_chunk_state <= IDLE;
           elsif (m.pulse_start and not just_started) or 
                 (m.peak_start and m.eflags.peak_number/=0) then
             if tflags.trace_type=AVERAGE_TRACE_D then
               dump_int <= pulse_stamped; 
               pulse_stamped <= FALSE;
               t_state <= IDLE;
-              trace_chunk_state <= DONE;
+              trace_chunk_state <= IDLE;
             else
               tflags.multipulse <= m.pulse_start;
               tflags.multipeak <= m.peak_start;
@@ -564,6 +566,7 @@ begin
             commiting <= TRUE;
             free <= framer_free - frame_length;
             q_state <= WORD1;
+            trace_chunk_state <= IDLE;
           else  
             error_int <= TRUE;
             dump_int <= pulse_stamped;
@@ -574,7 +577,7 @@ begin
               dump_int <= pulse_stamped; 
               pulse_stamped <= FALSE;
               t_state <= IDLE;
-              trace_chunk_state <= DONE;
+              trace_chunk_state <= IDLE;
             else
               tflags.multipulse <= m.pulse_start;
               tflags.multipeak <= m.peak_start;
@@ -620,7 +623,7 @@ begin
               dump_int <= pulse_stamped; 
               pulse_stamped <= FALSE;
               t_state <= IDLE;
-              trace_chunk_state <= DONE;
+              trace_chunk_state <= IDLE;
             else
               tflags.multipulse <= m.pulse_start;
               tflags.multipeak <= m.peak_start;
