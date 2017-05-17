@@ -355,6 +355,7 @@ begin
         end if;
         trace_reg(63 downto 48) <= trace_chunk;
         --trace_size <= resize(m.pre_size,FRAMER_ADDRESS_BITS)+trace_length;
+        trace_chunk_state <= STORE0;
         trace_wr_en <= FALSE;
         if (state=IDLE or state=FIRSTPULSE or state=WAITPULSEDONE) 
            and trace_go then
@@ -411,6 +412,7 @@ begin
             pulse_stamped <= FALSE;
             state <= IDLE;
             t_state <= IDLE;
+            trace_wr_en <= FALSE;
             overflow_int <= TRUE;
           end if;
         end case;
