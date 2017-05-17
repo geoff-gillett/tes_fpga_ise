@@ -113,7 +113,7 @@ port map(
 full <= free < to_unsigned(TICK_BUSWORDS,ADDRESS_BITS+1);
 
 events_lost  <= unaryOR(framer_overflows) or unaryOR(framer_errors) or 
-                unaryOR(cfd_errors) or mux_full;
+                unaryOR(cfd_errors);
 
 reg:process(clk)
 begin
@@ -128,7 +128,7 @@ begin
         events_lost_reg <= events_lost_reg+1;
       end if;
       framer_overflow_reg <= framer_overflow_reg or framer_overflows;
-      mux_overflow_reg <= mux_overflow_reg or full;
+      mux_overflow_reg <= mux_overflow_reg or mux_full;
       framer_error_reg <= framer_error_reg or framer_errors;
       cfd_error_reg <= cfd_error_reg or cfd_errors;
       

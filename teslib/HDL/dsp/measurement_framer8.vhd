@@ -340,6 +340,7 @@ begin
         end if;
       end if;
         
+      --TODO add generic to generate trace start at pulse_stamp
       --initialise new trace and count strides
       if pre_detection=TRACE_DETECTION_D or detection=TRACE_DETECTION_D then
         if trace_start and not pre_full and (t_state=IDLE or 

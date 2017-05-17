@@ -305,7 +305,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     delayed => adc_delayed(c)
   );
 
-  processingChannel:entity work.channel8
+  processingChannel:entity work.channel9
   generic map(
     CHANNEL => c,
     ENDIAN => ENDIAN,
