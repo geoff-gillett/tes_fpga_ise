@@ -217,11 +217,6 @@ trace_start
 pulse_start 
   <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start and enable_reg;  
 
---tracing <= (t_state=FIRSTPULSE or t_state=TRACING);
---wr_trace <= stride_count=0 and trace_chunk_state=WRITE;
---wr_trace_valid <= tracing and wr_trace;
---trace_last_wr <= stride_wr and trace_chunk_state=WRITE and trace_last_address;
-
 can_q_single <= q_state=IDLE;
 can_q_trace <= q_state=IDLE;
 can_q_pulse <= q_state=IDLE;
@@ -229,7 +224,6 @@ can_q_pulse <= q_state=IDLE;
 pre_full <= free < resize(m.pre_size,FRAMER_ADDRESS_BITS+1);
 full <= free < resize(m.size,FRAMER_ADDRESS_BITS+1);
 trace_chunk <= set_endianness(m.filtered.sample,ENDIAN);
-
 
 debugPending:process (clk) is
 begin
@@ -416,6 +410,7 @@ begin
             dump_int <= pulse_stamped;
             pulse_stamped <= FALSE;
             state <= IDLE;
+            t_state <= IDLE;
             overflow_int <= TRUE;
           end if;
         end case;
