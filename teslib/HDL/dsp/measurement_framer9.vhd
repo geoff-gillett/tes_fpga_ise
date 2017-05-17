@@ -87,6 +87,7 @@ signal full,pre_full:boolean;
 -- TRACE control registers implemented as constants
 constant trace_length:unsigned(FRAMER_ADDRESS_BITS downto 0)
          :=to_unsigned(512,FRAMER_ADDRESS_BITS+1);
+--         :=to_unsigned((268/4/4)+1,FRAMER_ADDRESS_BITS+1);
 constant TRACE_STRIDE_BITS:integer:=5;
 constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0):=(others => '0');
 -- trace signals
@@ -98,14 +99,14 @@ signal stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 signal trace_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal trace_count:unsigned(FRAMER_ADDRESS_BITS downto 0);
 --signal trace_size:unsigned(FRAMER_ADDRESS_BITS downto 0);
-signal trace_start:boolean;
-signal stride_wr:boolean;
+signal trace_start,trace_go:boolean;
+signal trace_wr_en:boolean;
 signal commiting:boolean;
 signal overflow_int,error_int:boolean;
 --signal stamp_error:boolean;
 --signal trace_overflow,single_overflow,trace_overflow_valid,trace_done:boolean;
 --signal tracing:boolean;
-signal trace_wr:boolean;
+signal trace_writing:boolean;
 signal enable_reg:boolean;
 --signal trace_done:boolean;
 signal can_q_trace,can_q_pulse,can_q_single:boolean;
@@ -114,10 +115,12 @@ signal can_write_trace:boolean;
 --FSMs
 --type pulseFSMstate is (IDLE_S,STARTED_S); --,DUMP_S,ERROR_S,AREADUMP_S,END_S);
 --signal p_state:pulseFSMstate;
-type traceFSMstate is (IDLE,FIRSTPULSE,TRACING,WAITPULSEDONE);
+type FSMstate is (IDLE,FIRSTPULSE,TRACING,WAITPULSEDONE);
+signal state:FSMstate;
+type traceChunkState is (STORE0,STORE1,STORE2,WRITE);
+signal trace_chunk_state:traceChunkState; 
+type traceFSMstate is (IDLE,CAPTURE,DONE);
 signal t_state:traceFSMstate;
-type traceChunkState is (IDLE,STORE0,STORE1,STORE2,WRITE,DONE);
-signal trace_chunk_state:traceChunkState;
 
 type queueFSMstate is (IDLE,SINGLE,WORD0,WORD1);
 signal q_state:queueFSMstate;
@@ -244,8 +247,8 @@ begin
   end if;
 end process debugPending;
 
-
-capture:process(clk)
+trace_writing <= trace_wr_en and trace_chunk_state=WRITE;
+main:process(clk)
 begin
   if rising_edge(clk) then
     if reset='1' then
@@ -264,9 +267,11 @@ begin
       enable_reg <= FALSE;
       
       q_state <= IDLE;
+      state <= IDLE;
       t_state <= IDLE;
       
-      trace_chunk_state <= IDLE;
+      trace_chunk_state <= STORE0;
+      trace_go <= FALSE;
       
     else
       
@@ -276,15 +281,16 @@ begin
       error_int <= FALSE;
       commit_frame <= FALSE;
       frame_we <= (others => FALSE);
+      trace_go <= FALSE;
       
       if m.pre_pulse_start then
-        if t_state=IDLE then
+        if state=IDLE then
           enable_reg <= enable;
         end if;
       end if;
       
       
-      if m.pre_pulse_start and t_state=IDLE then 
+      if m.pre_pulse_start and state=IDLE then 
         case m.pre_eflags.event_type.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
           frame_length <= resize(m.pre_size,FRAMER_ADDRESS_BITS+1);
@@ -308,7 +314,7 @@ begin
       end if; 
 
       -- queue to framer 
-      if not (trace_wr) then 
+      if not trace_writing then 
         if pulse_peak_valid then
           frame_word <= pulse_peak_word;
           frame_address <= peak_address;
@@ -340,73 +346,50 @@ begin
         end if;
       end if;
         
+      case t_state is 
+      when IDLE =>
+        if trace_stride=0 then
+          stride_count <= trace_stride;
+        else
+          stride_count <= trace_stride-1;
+        end if;
+        trace_count <= trace_length-1;
+        if tflags.trace_type=SINGLE_TRACE_D then
+          trace_address <= resize(m.pre_size,FRAMER_ADDRESS_BITS);
+        else
+          trace_address <= to_unsigned(0,FRAMER_ADDRESS_BITS);
+        end if;
+        trace_reg(63 downto 48) <= trace_chunk;
+        --trace_size <= resize(m.pre_size,FRAMER_ADDRESS_BITS)+trace_length;
+        trace_wr_en <= FALSE;
+        if (state=IDLE or state=FIRSTPULSE or state=WAITPULSEDONE) 
+           and trace_go then
+          trace_chunk_state <= STORE1;
+          t_state <= CAPTURE;
+          trace_wr_en <= stride_count=0;
+        end if; 
+      when CAPTURE =>
+        if stride_count=0 then
+          stride_count <= trace_stride;
+          trace_wr_en <= TRUE;
+          if trace_chunk_state=WRITE and trace_count=0 then
+            t_state <= DONE;
+            trace_wr_en <= FALSE;
+          end if;
+        else
+          trace_wr_en <= FALSE;
+          stride_count <= stride_count-1;
+        end if;
+      when DONE =>
+        trace_wr_en <= FALSE;
+      end case;
+        
       --TODO add generic to generate trace start at pulse_stamp
       --initialise new trace and count strides
-      if not TRACE_FROM_STAMP then
-        if (pre_detection=TRACE_DETECTION_D or detection=TRACE_DETECTION_D) and 
-           enable_reg then
-          if trace_start and not pre_full and (t_state=IDLE or 
-             (t_state=WAITPULSEDONE and m.pre_pulse_threshold_neg)) then 
-            stride_count <= (others => '0');
-            trace_count <= trace_length-1;
-            if tflags.trace_type=SINGLE_TRACE_D then
-              trace_address <= resize(m.pre_size,FRAMER_ADDRESS_BITS);
-            else
-              trace_address <= to_unsigned(0,FRAMER_ADDRESS_BITS);
-            end if;
-            trace_chunk_state <= STORE0;
-            --trace_size <= resize(m.pre_size,FRAMER_ADDRESS_BITS)+trace_length;
-            stride_wr <= TRUE; --FIXME assumes valid start
-            trace_wr <= FALSE;
-          elsif stride_count=0 then
-            stride_count <= trace_stride;
-            stride_wr <= trace_chunk_state/=DONE and trace_chunk_state/=IDLE; 
-            trace_wr <= trace_chunk_state=WRITE;
-          else
-            stride_wr <= FALSE;
-            trace_wr <= FALSE;
-            stride_count <= stride_count-1;
-          end if;
-        else
-          stride_wr <= FALSE;
-        end if;
-      else
-        if (pre_detection=TRACE_DETECTION_D or detection=TRACE_DETECTION_D) and 
-           enable_reg then
-          if m.pre_stamp_pulse  and (
-            t_state=IDLE or t_state=FIRSTPULSE or 
-            (t_state=WAITPULSEDONE and m.pre_pulse_threshold_neg)
-          ) then 
-            stride_count <= (others => '0');
-            trace_count <= trace_length-1;
-            if tflags.trace_type=SINGLE_TRACE_D then
-              trace_address <= resize(m.pre_size,FRAMER_ADDRESS_BITS);
-            else
-              trace_address <= to_unsigned(0,FRAMER_ADDRESS_BITS);
-            end if;
-            trace_chunk_state <= STORE0;
-            --trace_size <= resize(m.pre_size,FRAMER_ADDRESS_BITS)+trace_length;
-            stride_wr <= TRUE; --FIXME assumes valid start
-            trace_wr <= FALSE;
-          elsif stride_count=0 then
-            stride_count <= trace_stride;
-            stride_wr <= trace_chunk_state/=DONE and trace_chunk_state/=IDLE; 
-            trace_wr <= trace_chunk_state=WRITE;
-          else
-            stride_wr <= FALSE;
-            trace_wr <= FALSE;
-            stride_count <= stride_count-1;
-          end if;
-        else
-          stride_wr <= FALSE;
-        end if;
-      end if;
       
       --gather trace words and write to framer
-      if stride_wr then --FIXME register stride_count=0
+      if trace_wr_en then
         case trace_chunk_state is
-        when IDLE => 
-          null;
         when STORE0 => 
           trace_reg(63 downto 48) <= trace_chunk;
           trace_chunk_state <= STORE1;
@@ -424,9 +407,6 @@ begin
             frame_word.data(63 downto 16) <= trace_reg(63 downto 16);
             frame_word.data(15 downto 0) <= trace_chunk;
             frame_word.last <= (0 => trace_count=0, others => FALSE);
-            if trace_count=0 then --FIXME move
-              trace_chunk_state <= DONE;
-            end if;
             frame_address <= trace_address;
             if trace_count /= 0 then
               trace_address <= trace_address+1;
@@ -435,22 +415,24 @@ begin
           else
             dump_int <= pulse_stamped;
             pulse_stamped <= FALSE;
-            t_state <= IDLE;
---            q_state <= IDLE;
+            state <= IDLE;
             overflow_int <= TRUE;
-            trace_chunk_state <= DONE;
           end if;
-        when DONE =>
         end case;
       end if;
       
-      case t_state is 
+      case state is 
       when IDLE =>
         just_started <= TRUE;
         pulse_stamped <= FALSE;
         if pulse_start then 
           if free >= resize(m.pre_size,FRAMER_ADDRESS_BITS+1) then
-            t_state <= FIRSTPULSE;
+            if TRACE_FROM_STAMP then
+              trace_go <= m.pre_stamp_pulse and pre_detection=TRACE_DETECTION_D;
+            else 
+              trace_go <= pulse_start and pre_detection=TRACE_DETECTION_D;
+            end if;
+            state <= FIRSTPULSE;
             tflags.multipulse <= FALSE;
             tflags.multipeak <= FALSE;
           else
@@ -460,6 +442,11 @@ begin
         
       when FIRSTPULSE =>
         just_started <= FALSE; 
+        
+        if TRACE_FROM_STAMP then
+          trace_go <= m.pre_stamp_pulse and detection=TRACE_DETECTION_D;
+        end if; 
+        
         if m.pulse_threshold_neg and not just_started then
           
           if not m.above_area_threshold then
@@ -469,6 +456,7 @@ begin
               tflags.multipulse <= FALSE;
               tflags.multipeak <= FALSE;
             else
+              state <= IDLE;
               t_state <= IDLE;
             end if;
             
@@ -477,14 +465,14 @@ begin
             if detection=TRACE_DETECTION_D then
               
               pulse_reg <= pulse;
-              t_state <= TRACING;
-              if m.pulse_start and trace_chunk_state/=DONE and 
+              state <= TRACING;
+              if m.pulse_start and t_state/=DONE and 
                  (m.peak_start and m.eflags.peak_number/=0) then
                 if tflags.trace_type=AVERAGE_TRACE_D then
                   dump_int <= pulse_stamped; 
                   pulse_stamped <= FALSE;
+                  state <= IDLE;
                   t_state <= IDLE;
-                  trace_chunk_state <= IDLE;
                 else
                   tflags.multipulse <= m.pulse_start;
                   tflags.multipeak <= m.peak_start;
@@ -496,13 +484,13 @@ begin
                 if full then
                   pulse_stamped <= FALSE;
                   overflow_int <= TRUE;
-                  t_state <= IDLE;
+                  state <= IDLE;
                 else
                   pulse_stamped <= m.stamp_pulse;
                   just_started <= TRUE;
                 end if;
               else
-                t_state <= IDLE;
+                state <= IDLE;
               end if;
               
               q_state <= SINGLE;
@@ -516,13 +504,13 @@ begin
                 if full then
                   pulse_stamped <= FALSE;
                   overflow_int <= TRUE;
-                  t_state <= IDLE;
+                  state <= IDLE;
                 else
                   pulse_stamped <= m.stamp_pulse;
                   just_started <= TRUE;
                 end if;
               else
-                t_state <= IDLE;
+                state <= IDLE;
               end if;
               
               if q_state=IDLE then 
@@ -542,16 +530,16 @@ begin
             end if;
           end if;
         else
-          if detection=TRACE_DETECTION_D and trace_chunk_state=DONE then
-            t_state <= WAITPULSEDONE;
-            trace_chunk_state <= IDLE;
+          if detection=TRACE_DETECTION_D and t_state=DONE then
+            state <= WAITPULSEDONE;
+            t_state <= IDLE;
           elsif (m.pulse_start and not just_started) or 
                 (m.peak_start and m.eflags.peak_number/=0) then
             if tflags.trace_type=AVERAGE_TRACE_D then
               dump_int <= pulse_stamped; 
               pulse_stamped <= FALSE;
+              state <= IDLE;
               t_state <= IDLE;
-              trace_chunk_state <= IDLE;
             else
               tflags.multipulse <= m.pulse_start;
               tflags.multipeak <= m.peak_start;
@@ -559,16 +547,16 @@ begin
           end if; 
         end if;
         
-      when TRACING =>
-        if trace_chunk_state=DONE then
+      when TRACING =>  -- pulse has ended
+        if t_state=DONE then
           t_state <= IDLE;
+          state <= IDLE;
           if q_state=IDLE then
             queue(0) <= to_streambus(pulse_reg_trace,0,ENDIAN); 
             queue(1) <= to_streambus(pulse_reg_trace,1,ENDIAN);
             commiting <= TRUE;
             free <= framer_free - frame_length;
             q_state <= WORD1;
-            trace_chunk_state <= IDLE;
           else  
             error_int <= TRUE;
             dump_int <= pulse_stamped;
@@ -578,8 +566,8 @@ begin
             if tflags.trace_type=AVERAGE_TRACE_D then
               dump_int <= pulse_stamped; 
               pulse_stamped <= FALSE;
+              state <= IDLE;
               t_state <= IDLE;
-              trace_chunk_state <= IDLE;
             else
               tflags.multipulse <= m.pulse_start;
               tflags.multipeak <= m.peak_start;
@@ -588,6 +576,9 @@ begin
         end if;
         
       when WAITPULSEDONE =>
+        if TRACE_FROM_STAMP then
+          trace_go <= m.pre_stamp_pulse and detection=TRACE_DETECTION_D;
+        end if; 
         if m.pulse_threshold_neg then 
           if not m.above_area_threshold then
             dump_int <= pulse_stamped;
@@ -608,24 +599,25 @@ begin
             if full then
               pulse_stamped <= FALSE;
               overflow_int <= TRUE;
+              state <= IDLE;
               t_state <= IDLE;
             else
               pulse_stamped <= m.stamp_pulse;
               just_started <= TRUE;
               tflags.multipulse <= FALSE;
               tflags.multipeak <= FALSE;
-              t_state <= FIRSTPULSE;
+              state <= FIRSTPULSE;
             end if;
           else
-            t_state <= IDLE;
+            state <= IDLE;
           end if;
         else
           if m.pulse_start or (m.peak_start and m.eflags.peak_number/=0) then
             if tflags.trace_type=AVERAGE_TRACE_D then
               dump_int <= pulse_stamped; 
               pulse_stamped <= FALSE;
+              state <= IDLE;
               t_state <= IDLE;
-              trace_chunk_state <= IDLE;
             else
               tflags.multipulse <= m.pulse_start;
               tflags.multipeak <= m.peak_start;
@@ -637,16 +629,16 @@ begin
      
       -- peak recording 
       if m.peak_stop and enable_reg then 
-        if t_state=FIRSTPULSE or t_state=WAITPULSEDONE then 
+        if state=FIRSTPULSE or state=WAITPULSEDONE then 
           if m.eflags.peak_number/=0 and tflags.trace_type=AVERAGE_TRACE_D then
             dump_int <= m.pulse_stamped;
             q_state <= IDLE;
-            t_state <= IDLE;
+            state <= IDLE;
             pulse_stamped <= FALSE;
-          elsif pulse_peak_valid and stride_wr then
+          elsif pulse_peak_valid and trace_wr_en then
             error_int <= TRUE;
             q_state <= IDLE;
-            t_state <= IDLE;
+            state <= IDLE;
             dump_int <= m.pulse_stamped;
             pulse_stamped <= FALSE;
           else
@@ -658,7 +650,7 @@ begin
           if free=0 then
             overflow_int <= TRUE;
             q_state <= IDLE;
-            t_state <= IDLE;
+            state <= IDLE;
             dump_int <= TRUE; --FIXME check that it is always stamped
             peak_stamped <= FALSE;
           else
@@ -680,7 +672,7 @@ begin
           start_int <= TRUE;  
           peak_stamped <= TRUE;
         end if;
-      elsif (t_state=FIRSTPULSE or t_state=WAITPULSEDONE) and m.stamp_pulse and 
+      elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse and 
             enable_reg then
         if mux_full then
           error_int <= TRUE;
@@ -697,7 +689,7 @@ begin
         
     end if;
   end if;
-end process capture;
+end process main;
 
 framer:entity streamlib.framer
 generic map(
