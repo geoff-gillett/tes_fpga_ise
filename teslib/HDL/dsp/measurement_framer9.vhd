@@ -86,7 +86,7 @@ signal full,pre_full:boolean;
 
 -- TRACE control registers implemented as constants
 constant trace_length:unsigned(FRAMER_ADDRESS_BITS downto 0)
-         :=to_unsigned(512,FRAMER_ADDRESS_BITS+1);
+         :=to_unsigned(256,FRAMER_ADDRESS_BITS+1);
 --         :=to_unsigned((268/4/4)+1,FRAMER_ADDRESS_BITS+1);
 constant TRACE_STRIDE_BITS:integer:=5;
 constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0):=(others => '0');

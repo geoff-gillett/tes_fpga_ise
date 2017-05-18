@@ -104,7 +104,7 @@ file bytestream_file,trace_file,minmax_file,filteredxing_file,cfd_file:int_file;
 
 signal filter_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal slope_config:fir_ctl_in_array(CHANNELS-1 downto 0);
-signal baseline_config:fir_ctl_in_array(CHANNELS-1 downto 0);
+--signal baseline_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 
 signal m:measurements_array(CHANNELS-1 downto 0);
 signal adc_count:signed(ADC_BITS-1 downto 0);
@@ -204,7 +204,7 @@ bytestream_last <= bytestream_int(8)='1';
 --register settings
 global.mtu <= to_unsigned(256,MTU_BITS);
 global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(2048,TICK_PERIOD_BITS);
+global.tick_period <= to_unsigned(2049,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
@@ -215,7 +215,7 @@ global.mca.lowest_value <= to_signed(-2000,MCA_VALUE_BITS);
 --TODO normalise these type names
 --global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 --global.mca.value <= MCA_RAW_SIGNAL_D;
-global.window <= to_unsigned(40, TIME_BITS);
+global.window <= to_unsigned(2, TIME_BITS);
 
 
 filter_config(0).config_data <= (others => '0');
@@ -238,16 +238,16 @@ slope_config(1).config_valid <= '0';
 slope_config(1).reload_data <= (others => '0');
 slope_config(1).reload_last <= '0';
 slope_config(1).reload_valid <= '0';
-baseline_config(0).config_data <= (others => '0');
-baseline_config(0).config_valid <= '0';
-baseline_config(0).reload_data <= (others => '0');
-baseline_config(0).reload_last <= '0';
-baseline_config(0).reload_valid <= '0';
-baseline_config(1).config_data <= (others => '0');
-baseline_config(1).config_valid <= '0';
-baseline_config(1).reload_data <= (others => '0');
-baseline_config(1).reload_last <= '0';
-baseline_config(1).reload_valid <= '0';
+--baseline_config(0).config_data <= (others => '0');
+--baseline_config(0).config_valid <= '0';
+--baseline_config(0).reload_data <= (others => '0');
+--baseline_config(0).reload_last <= '0';
+--baseline_config(0).reload_valid <= '0';
+--baseline_config(1).config_data <= (others => '0');
+--baseline_config(1).config_valid <= '0';
+--baseline_config(1).reload_data <= (others => '0');
+--baseline_config(1).reload_last <= '0';
+--baseline_config(1).reload_valid <= '0';
 
 --chan_reg(0).baseline.offset <= to_signed(-1000*8,DSP_BITS);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
@@ -283,14 +283,14 @@ chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
 
 chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
-chan_reg(1).capture.delay <= (others => '0');
+chan_reg(1).capture.delay <= (0 => '1', others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(1).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);
 --chan_reg(1).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
 chan_reg(1).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 chan_reg(1).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); --start peak stop
 chan_reg(1).capture.area_threshold <= to_unsigned(10,AREA_WIDTH-1);
-chan_reg(1).capture.max_peaks <= to_unsigned(4,PEAK_COUNT_BITS);
+chan_reg(1).capture.max_peaks <= to_unsigned(6,PEAK_COUNT_BITS);
 chan_reg(1).capture.detection <= PULSE_DETECTION_D;
 chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
