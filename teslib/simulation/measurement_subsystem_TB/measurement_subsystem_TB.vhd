@@ -122,7 +122,7 @@ io_clk <= not IO_clk after IO_CLK_PERIOD/2;
 reset0 <= '0' after 2*IO_CLK_PERIOD; 
 reset1 <= '0' after 10*IO_CLK_PERIOD; 
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
-bytestream_ready <= TRUE after 20*IO_CLK_PERIOD;
+bytestream_ready <= sim_count(2 downto 0) /= "101";
 
 UUT:entity work.measurement_subsystem5
 generic map(
@@ -467,8 +467,18 @@ begin
   global.channel_enable <= "00000000";
 	wait for SAMPLE_CLK_PERIOD*22;
   simenable <= TRUE;
-  wait for 7 us;
-  global.channel_enable <= "00000011";
+  wait for 1000 ns;
+  global.channel_enable <= "00000001";
+  wait for 70511 ns;
+  global.channel_enable <= "00000000";
+  wait for 12011 ns;
+  global.channel_enable <= "00000001";
+  wait for 40511 ns;
+  global.channel_enable <= "00000000";
+  wait for 13003 ns;
+  global.channel_enable <= "00000001";
+  
+  
 --	wait for SAMPLE_CLK_PERIOD*20;
 --	global.mca.value <= MCA_FILTERED_SIGNAL_D;
 --	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;

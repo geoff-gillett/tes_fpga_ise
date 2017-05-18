@@ -99,7 +99,7 @@ signal stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 signal trace_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal trace_count:unsigned(FRAMER_ADDRESS_BITS downto 0);
 --signal trace_size:unsigned(FRAMER_ADDRESS_BITS downto 0);
-signal trace_start,trace_go:boolean;
+signal trace_go:boolean;
 signal trace_wr_en:boolean;
 signal commiting:boolean;
 signal overflow_int,error_int:boolean;
@@ -211,11 +211,10 @@ area.area <= m.pulse_area;
 pre_detection <= m.pre_eflags.event_type.detection;
 detection <= m.eflags.event_type.detection;
 
-trace_start 
-  <= m.pre_pulse_start and pre_detection=TRACE_DETECTION_D and enable_reg;
+--trace_start 
+--  <= m.pre_pulse_start and pre_detection=TRACE_DETECTION_D and enable_reg;
   
-pulse_start 
-  <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start and enable_reg;  
+pulse_start <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start;  
 
 can_q_single <= q_state=IDLE;
 can_q_trace <= q_state=IDLE;
@@ -422,7 +421,7 @@ begin
       when IDLE =>
         just_started <= TRUE;
         pulse_stamped <= FALSE;
-        if pulse_start then 
+        if pulse_start and enable then 
           if free >= resize(m.pre_size,FRAMER_ADDRESS_BITS+1) then
             if TRACE_FROM_STAMP then
               trace_go <= m.pre_stamp_pulse and pre_detection=TRACE_DETECTION_D;
