@@ -92,7 +92,8 @@ signal pulses_done:boolean;
 signal muxstream_last_handshake:boolean;
 signal first_word:boolean;
 signal new_window:boolean;
-signal window_start,header:std_logic;
+signal window_start:std_logic;
+signal header:boolean;
 signal valid_out:boolean;
 signal muxstream_out:streambus_t;
 signal time_full:boolean;
@@ -220,6 +221,23 @@ port map(
  	mux_valid => muxstream_int_valid
 );
 
+muxstream_last <= muxstream_int.last(0);
+muxstream_handshake <= muxstream_int_valid and muxstream_int_ready;
+muxstream_last_handshake <= muxstream_handshake and muxstream_last;
+
+firstWord:process(clk)
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      first_word <= TRUE;
+    else
+      if muxstream_handshake then
+        first_word <= muxstream_last;
+      end if;
+    end if;
+  end if;
+end process firstWord;
+
 aux_data_in <= reltime_reg & to_std_logic(new_window_reg) & 
                to_std_logic(first_word);
 
@@ -238,9 +256,6 @@ port map(
   valid => muxstream_reg_valid
 );
 
-muxstream_last <= muxstream_int.last(0);
-muxstream_handshake <= muxstream_int_valid and muxstream_int_ready;
-muxstream_last_handshake <= muxstream_handshake and muxstream_last;
 pulses_done <= (started = handled(CHANNELS downto 1)); -- and time_valid; 
 time_done <= pulses_done and to_std_logic(ticked) = handled(0);
 read_next <= arb_state=NEXT_TIME;
@@ -286,14 +301,12 @@ begin
     if reset='1' then
       arb_state <= IDLE;
       sel <= (others => '0');
-      first_word <= TRUE;
     else
       case arb_state is 
       when IDLE =>
         if time_valid then 
           arb_state <= ARBITRATE;
           sel <= (others => '0');
-          first_word <= TRUE;
           reltime_reg <= set_endianness(reltime,ENDIANNESS);
           new_window_reg <= new_window;
         end if;
@@ -323,9 +336,6 @@ begin
             sel <= (others => '0');
           end if;
         else
-          if muxstream_handshake then
-            first_word <= FALSE;
-          end if;
           if muxstream_last_handshake then
             reltime_reg <= (others => '0');
             new_window_reg <= FALSE;
@@ -403,13 +413,13 @@ end process arbFSMtransition;
 
 reltime_stamp <= aux_data(CHUNK_DATABITS+1 downto 2);
 window_start <= aux_data(1);
-header <= aux_data(0);
+header <= aux_data(0)='1';
 
 --bigEndian:if endianness="BIG" generate
-stream_int.data <= muxstream_reg.data(63 downto 17) &
-                   window_start & reltime_stamp
-                when header='1'
-                else muxstream_reg.data;
+stream_int.data <= muxstream_reg.data(63 downto 17) & window_start & 
+                   reltime_stamp
+                   when header
+                   else muxstream_reg.data;
 --end generate;
 
 --littleEndian:if endianness="LITTLE" generate

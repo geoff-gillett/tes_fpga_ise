@@ -70,6 +70,7 @@ begin
       else
         if output_handshake then
           stream <= stream_reg(WIDTH+USER_WIDTH-1 downto USER_WIDTH);
+          user <= stream_reg(USER_WIDTH-1 downto 0);
           valid_int <= store_valid;
           store_valid <= FALSE;
           ready_int <= TRUE;

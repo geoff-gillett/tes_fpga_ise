@@ -122,7 +122,8 @@ io_clk <= not IO_clk after IO_CLK_PERIOD/2;
 reset0 <= '0' after 2*IO_CLK_PERIOD; 
 reset1 <= '0' after 10*IO_CLK_PERIOD; 
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
-bytestream_ready <= sim_count(2 downto 0) /= "101";
+--bytestream_ready <= sim_count(2 downto 0) /= "101";
+bytestream_ready <= TRUE after 20 us;
 
 UUT:entity work.measurement_subsystem5
 generic map(

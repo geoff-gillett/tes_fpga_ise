@@ -21,8 +21,8 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="387750000000fs"></ZoomStartTime>
-      <ZoomEndTime time="523650000001fs"></ZoomEndTime>
+      <ZoomStartTime time="476866666666fs"></ZoomStartTime>
+      <ZoomEndTime time="505826666667fs"></ZoomEndTime>
       <Cursor1Time time="501000000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="11" />
@@ -2234,10 +2234,14 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/enable" type="other">
          <obj_property name="ElementShortName">enable</obj_property>
          <obj_property name="ObjectShortName">enable</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/enable_reg" type="other">
          <obj_property name="ElementShortName">enable_reg</obj_property>
          <obj_property name="ObjectShortName">enable_reg</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_reg" type="array">
          <obj_property name="ElementShortName">trace_reg[63:16]</obj_property>
@@ -2260,10 +2264,6 @@
          <obj_property name="ObjectShortName">tflags.multipulse</obj_property>
          <obj_property name="CustomSignalColor">#FF0000</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_start" type="other">
-         <obj_property name="ElementShortName">trace_start</obj_property>
-         <obj_property name="ObjectShortName">trace_start</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse_start" type="other">
          <obj_property name="ElementShortName">pulse_start</obj_property>
