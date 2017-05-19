@@ -276,7 +276,7 @@ chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); --start peak stop
 --chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
-chan_reg(0).capture.area_threshold <= to_unsigned(10,AREA_WIDTH-1);
+chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
 chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
@@ -470,14 +470,14 @@ begin
   simenable <= TRUE;
   wait for 1000 ns;
   global.channel_enable <= "00000011";
-  wait for 70511 ns;
-  global.channel_enable <= "00000000";
-  wait for 12011 ns;
-  global.channel_enable <= "00000011";
-  wait for 40511 ns;
-  global.channel_enable <= "00000000";
-  wait for 13003 ns;
-  global.channel_enable <= "00000011";
+--  wait for 70511 ns;
+--  global.channel_enable <= "00000000";
+--  wait for 12011 ns;
+--  global.channel_enable <= "00000011";
+--  wait for 40511 ns;
+--  global.channel_enable <= "00000000";
+--  wait for 13003 ns;
+--  global.channel_enable <= "00000011";
   
   
 --	wait for SAMPLE_CLK_PERIOD*20;

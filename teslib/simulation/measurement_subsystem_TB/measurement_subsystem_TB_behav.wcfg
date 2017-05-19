@@ -21,13 +21,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="35092000000fs"></ZoomStartTime>
-      <ZoomEndTime time="35221600001fs"></ZoomEndTime>
-      <Cursor1Time time="35200900000fs"></Cursor1Time>
+      <ZoomStartTime time="6653666666fs"></ZoomStartTime>
+      <ZoomEndTime time="9339666667fs"></ZoomEndTime>
+      <Cursor1Time time="8612000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="11" />
    <wave_markers>
       <marker time="196770000000" label="" />
+      <marker time="70052000000" label="" />
+      <marker time="6564000000" label="" />
    </wave_markers>
    <wvobject fp_name="group49" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -2095,7 +2097,6 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/measurements.eflags" type="array">
             <obj_property name="ElementShortName">.eflags</obj_property>
             <obj_property name="ObjectShortName">measurements.eflags</obj_property>
-            <obj_property name="isExpanded"></obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/measurements.pre_eflags" type="array">
             <obj_property name="ElementShortName">.pre_eflags</obj_property>
@@ -2432,6 +2433,8 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_go" type="other">
          <obj_property name="ElementShortName">trace_go</obj_property>
          <obj_property name="ObjectShortName">trace_go</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_wr_en" type="other">
          <obj_property name="ElementShortName">trace_wr_en</obj_property>
@@ -2440,6 +2443,22 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_writing" type="other">
          <obj_property name="ElementShortName">trace_writing</obj_property>
          <obj_property name="ObjectShortName">trace_writing</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_last" type="other">
+         <obj_property name="ElementShortName">trace_last</obj_property>
+         <obj_property name="ObjectShortName">trace_last</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_count" type="array">
+         <obj_property name="ElementShortName">trace_count[10:0]</obj_property>
+         <obj_property name="ObjectShortName">trace_count[10:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/t_state" type="other">
          <obj_property name="ElementShortName">t_state</obj_property>
@@ -2482,6 +2501,7 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word" type="array">
          <obj_property name="ElementShortName">frame_word</obj_property>
          <obj_property name="ObjectShortName">frame_word</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word.discard" type="array">
             <obj_property name="ElementShortName">.discard[3:0]</obj_property>
             <obj_property name="ObjectShortName">frame_word.discard[3:0]</obj_property>
