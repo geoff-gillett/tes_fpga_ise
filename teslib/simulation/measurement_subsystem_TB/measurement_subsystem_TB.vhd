@@ -284,7 +284,7 @@ chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
 
 chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
-chan_reg(1).capture.delay <= (0 => '1', others => '0');
+chan_reg(1).capture.delay <= (0 => '0', others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(1).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);
 --chan_reg(1).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
@@ -292,7 +292,7 @@ chan_reg(1).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 chan_reg(1).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); --start peak stop
 chan_reg(1).capture.area_threshold <= to_unsigned(10,AREA_WIDTH-1);
 chan_reg(1).capture.max_peaks <= to_unsigned(6,PEAK_COUNT_BITS);
-chan_reg(1).capture.detection <= PULSE_DETECTION_D;
+chan_reg(1).capture.detection <= PEAK_DETECTION_D;
 chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
 chan_reg(1).capture.cfd_rel2min <= FALSE;
@@ -469,15 +469,15 @@ begin
 	wait for SAMPLE_CLK_PERIOD*22;
   simenable <= TRUE;
   wait for 1000 ns;
-  global.channel_enable <= "00000001";
+  global.channel_enable <= "00000011";
   wait for 70511 ns;
   global.channel_enable <= "00000000";
   wait for 12011 ns;
-  global.channel_enable <= "00000001";
+  global.channel_enable <= "00000011";
   wait for 40511 ns;
   global.channel_enable <= "00000000";
   wait for 13003 ns;
-  global.channel_enable <= "00000001";
+  global.channel_enable <= "00000011";
   
   
 --	wait for SAMPLE_CLK_PERIOD*20;

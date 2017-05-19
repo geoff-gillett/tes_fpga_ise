@@ -21,9 +21,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="476866666666fs"></ZoomStartTime>
-      <ZoomEndTime time="505826666667fs"></ZoomEndTime>
-      <Cursor1Time time="501000000000fs"></Cursor1Time>
+      <ZoomStartTime time="35092000000fs"></ZoomStartTime>
+      <ZoomEndTime time="35221600001fs"></ZoomEndTime>
+      <Cursor1Time time="35200900000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="11" />
    <wave_markers>
@@ -2924,6 +2924,24 @@
          <obj_property name="CustomSignalColor">#F0E68C</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/muxstream_last_handshake" type="other">
+         <obj_property name="ElementShortName">muxstream_last_handshake</obj_property>
+         <obj_property name="ObjectShortName">muxstream_last_handshake</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/muxstream_handshake" type="other">
+         <obj_property name="ElementShortName">muxstream_handshake</obj_property>
+         <obj_property name="ObjectShortName">muxstream_handshake</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/first_word" type="other">
+         <obj_property name="ElementShortName">first_word</obj_property>
+         <obj_property name="ObjectShortName">first_word</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/readys" type="array">
          <obj_property name="ElementShortName">readys[2:0]</obj_property>
          <obj_property name="ObjectShortName">readys[2:0]</obj_property>
@@ -2963,6 +2981,7 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/muxstream_reg" type="array">
          <obj_property name="ElementShortName">muxstream_reg</obj_property>
          <obj_property name="ObjectShortName">muxstream_reg</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/muxstream_reg.discard" type="array">
             <obj_property name="ElementShortName">.discard[3:0]</obj_property>
             <obj_property name="ObjectShortName">muxstream_reg.discard[3:0]</obj_property>
@@ -3034,9 +3053,11 @@
          <obj_property name="ElementShortName">muxstream_reg_valid</obj_property>
          <obj_property name="ObjectShortName">muxstream_reg_valid</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/header" type="logic">
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/header" type="other">
          <obj_property name="ElementShortName">header</obj_property>
          <obj_property name="ObjectShortName">header</obj_property>
+         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/reltime_stamp" type="array">
          <obj_property name="ElementShortName">reltime_stamp[15:0]</obj_property>
@@ -3666,7 +3687,6 @@
    <wvobject fp_name="group496" type="group">
       <obj_property name="label">ethernet framer</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>

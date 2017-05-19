@@ -282,7 +282,6 @@ begin
         end if;
       end if;
       
-      
       if m.pre_pulse_start and state=IDLE then 
         case m.pre_eflags.event_type.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>

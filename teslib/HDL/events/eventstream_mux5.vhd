@@ -358,59 +358,6 @@ begin
   end if;
 end process arbFSMtransition;
 
---outFSMtrasition:process(
---  out_state,muxstream_reg.last(0),muxstream_reg_ready,muxstream_reg_valid
---)
---begin
---	out_nextstate <= out_state;
---	case out_state is 
---	when HEAD =>
---		if muxstream_reg_ready and muxstream_reg_valid and 
---		   not muxstream_reg.last(0) then
---			out_nextstate <= TAIL;
---		end if;
---	when TAIL =>
---		if muxstream_reg_ready and muxstream_reg_valid and 
---		   muxstream_reg.last(0) then
---			out_nextstate <= HEAD;
---		end if;
---	end case;
---end process outFSMtrasition;
-
---FIXME reltime not working
---firstEvent:process(clk)
---begin
---	if rising_edge(clk) then
---		if reset='1' then
---			first_event <= TRUE;
---		else
---      if arb_state=NEXT_TIME then
---        first_event <= TRUE;
---      elsif muxstream_last_handshake then
---        first_event <= FALSE;
---      end if;
---    end if;
---	end if;
---end process firstEvent;
-
---relativetimestamp:process (clk) is
---begin
---	if rising_edge(clk) then
---		if reset = '1' then
---			reltime_stamp <= (others => '1');
---			
---		else
---			if muxstream_reg.discard(0) then
---				reltime_stamp <= reltime_reg;
---				window_start <= new_window_reg;
---			else
---				window_start <= FALSE;
---				reltime_stamp <= (others => '0');
---			end if;
---		end if;
---	end if;
---end process relativetimestamp;
-
 reltime_stamp <= aux_data(CHUNK_DATABITS+1 downto 2);
 window_start <= aux_data(1);
 header <= aux_data(0)='1';
