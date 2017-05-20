@@ -17,7 +17,7 @@ use work.measurements.all;
 use work.types.all;
 
 --FIXME remove internal precision
-entity channel9 is
+entity channel10 is
 generic(
   CHANNEL:natural:=0;
   CF_WIDTH:natural:=18;
@@ -59,9 +59,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity channel9;
+end entity channel10;
 
-architecture fixed_16_3 of channel9 is
+architecture fixed_16_3 of channel10 is
   
 constant RAW_DELAY:natural:=1026;
   
@@ -276,7 +276,8 @@ m.raw.sample <= raw_pipe(DEPTH);
 m.raw.pos_0xing <= raw_0_pos_pipe(DEPTH);
 m.raw.neg_0xing <= raw_0_neg_pipe(DEPTH);
 
-
+m.trace_signal <= dsp_m.trace_signal;
+m.trace_type <= dsp_m.trace_type;
 --TODO cleanup this ugly patch
 m.min_value <= dsp_m.min_value;
 m.filtered <= dsp_m.filtered;
@@ -332,7 +333,7 @@ m.valid_peak2 <= dsp_m.valid_peak2;
 m.timing_threshold <= dsp_m.timing_threshold;
 m.filtered_long <= dsp_m.filtered_long;
 
-framer:entity work.measurement_framer9
+framer:entity work.measurement_framer10
 generic map(
   FRAMER_ADDRESS_BITS => MEASUREMENT_FRAMER_ADDRESS_BITS,
   TRACE_FROM_STAMP => TRUE,

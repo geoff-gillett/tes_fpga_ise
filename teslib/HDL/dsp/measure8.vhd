@@ -430,6 +430,7 @@ begin
       if (min_pipe(DEPTH-2)) then 
         if first_peak_pipe(DEPTH-2) then 
           
+          
           case registers.detection is
           when PEAK_DETECTION_D | AREA_DETECTION_D => 
             pre_size <= (0 => '1', others => '0');
@@ -667,6 +668,8 @@ end process pulseMeas;
 --FIXME it would be useful in the framer to expose the pipes for some more 
 --signals already done for starts
 --a valid max an pre would help in the framer
+m.trace_signal <= registers.trace_signal;
+m.trace_type <= registers.trace_type;
 
 m.valid_peak <= valid_peak_pipe(DEPTH);
 m.valid_peak0 <= valid_peak0;

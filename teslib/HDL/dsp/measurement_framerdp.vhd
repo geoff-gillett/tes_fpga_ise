@@ -256,11 +256,14 @@ can_q_pulse <= q_state=IDLE_S and not (single_valid and wr_trace_valid);
 trace_chunk <= m.filtered.sample;
 
 pulse_start <= m.pre_pulse_start and enable;  
+
+
 captureStart:process (clk) is
 begin
   if rising_edge(clk) then
     if m.pre_pulse_start and t_state=IDLE_S then 
-      enable_reg <= enable;
+      enable_reg <= enable; --FIXME this is an issue when the thresholds change 
+                            --downstream
       case m.pre_eflags.event_type.detection is
       when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
         frame_length <= resize(m.pre_size,FRAMER_ADDRESS_BITS+1);
@@ -270,7 +273,7 @@ begin
           frame_length <= resize(m.pre_size,FRAMER_ADDRESS_BITS+1)+trace_length;
         when AVERAGE_TRACE_D =>
           frame_length <= trace_length;
-        when DOT_PRODUCT_D =>
+        when DOT_PRODUCT_D =>  -- this should send the normal pulse + extra word
           frame_length <= resize(m.pre_size,FRAMER_ADDRESS_BITS+1);
         end case;
       end case;

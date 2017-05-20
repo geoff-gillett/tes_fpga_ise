@@ -179,6 +179,9 @@ type measurements_t is record
 	cfd_error:boolean;
 	cfd_valid:boolean;
 	
+	trace_signal:trace_signal_d;
+	trace_type:trace_type_d;
+	
 end record;
 
 type measurements_array is array (natural range <>)

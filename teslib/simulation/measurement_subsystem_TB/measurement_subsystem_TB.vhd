@@ -283,7 +283,7 @@ chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
 
-chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
+chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
 chan_reg(1).capture.delay <= (0 => '0', others => '0');
 chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(1).capture.slope_threshold <= to_unsigned(10*256,DSP_BITS-1);
@@ -466,10 +466,17 @@ begin
   global.mca.update_asap <= FALSE;
   global.mca.update_on_completion <= FALSE;
   global.channel_enable <= "00000000";
+  chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
+  chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
 	wait for SAMPLE_CLK_PERIOD*22;
   simenable <= TRUE;
   wait for 1000 ns;
-  global.channel_enable <= "00000011";
+  global.channel_enable <= "00000001";
+  wait for 10000 ns;
+  global.channel_enable <= "00000000";
+  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
+  wait for SAMPLE_CLK_PERIOD;
+  global.channel_enable <= "00000001";
 --  wait for 70511 ns;
 --  global.channel_enable <= "00000000";
 --  wait for 12011 ns;
