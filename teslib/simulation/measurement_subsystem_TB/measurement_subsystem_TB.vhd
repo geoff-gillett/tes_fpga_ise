@@ -137,7 +137,7 @@ generic map(
   SLOPE_FRAC => SLOPE_FRAC,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  ACCUMULATE_N => 0,
+  ACCUMULATE_N => 2,
   TRACE_CHUNKS => 64
 )
 port map(

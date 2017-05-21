@@ -127,7 +127,7 @@ signal trace_last:boolean;
 --FSMs
 --type pulseFSMstate is (IDLE_S,STARTED_S); --,DUMP_S,ERROR_S,AREADUMP_S,END_S);
 --signal p_state:pulseFSMstate;
-type FSMstate is (IDLE,FIRSTPULSE,TRACING,WAITPULSEDONE);
+type FSMstate is (IDLE,FIRSTPULSE,TRACING,WAITPULSEDONE,AVERAGE);
 signal state:FSMstate;
 type wrChunkState is (STORE0,STORE1,STORE2,WRITE);
 signal wr_chunk_state:wrChunkState; 
@@ -402,7 +402,7 @@ begin
         end if; 
         
       when CAPTURE =>
-        if tflags.trace_type=DOT_PRODUCT_D then
+        if a_state=SEND then
           -- or sending
           -- do address and trace count
           null;
@@ -504,7 +504,10 @@ begin
         just_started <= TRUE;
         pulse_stamped <= FALSE;
         if pulse_start and enable then 
-          if free >= resize(m.pre_size,ADDRESS_BITS+1) then
+          if a_state=SEND then
+--            start_trace <= TRUE;
+            state <= AVERAGE;
+          elsif free >= resize(m.pre_size,ADDRESS_BITS+1) then
             if TRACE_FROM_STAMP then
               start_trace 
                 <= m.pre_stamp_pulse and pre_detection=TRACE_DETECTION_D;
@@ -716,6 +719,8 @@ begin
               tflags.multipeak <= TRUE;
           end if;
         end if;
+      when AVERAGE =>
+        
         
       end case;
      
@@ -804,16 +809,20 @@ port map(
 );
 
 streamMux:process(
-  a_state,acc_ready,reg_ready,stream_int,valid_int,wait_ready,wait_valid
+  a_state,acc_ready,reg_ready,stream_int,valid_int,wait_ready,wait_valid,
+  acc_first_trace
 )
 begin
   if a_state=WAITING then
     ready_int <= wait_ready;
     reg_valid <= wait_valid;
+    accum <= FALSE;
   elsif a_state=ACCUMULATE then
+    accum <= not acc_first_trace;
     ready_int <= acc_ready;
     reg_valid <= FALSE;
   else
+    accum <= FALSE;
     ready_int <= reg_ready;
     reg_valid <= valid_int;
     reg_stream <= stream_int;
@@ -855,9 +864,15 @@ begin
       when ACCUMULATE =>
         if acc_count=0 and rd_chunk_state=WAIT_TRACE then
           a_state <= SEND;
+          acc_wr <= FALSE;
+          acc_address <= (others => '0');
         end if;
       when SEND =>
-        null;
+        acc_address <= acc_address + 1;
+        if acc_address=TRACE_CHUNKS*4-1 then
+          a_state <= IDLE;
+        end if;
+        
       when DOT =>
         null;
       end case;
@@ -876,7 +891,6 @@ begin
         if acc_count=0 then
           rd_chunk_state <= IDLE;
           acc_wr <= FALSE;
-          acc_first_trace <= FALSE;
         elsif valid_int then
           rd_chunk_state <= READ3;
         end if;
@@ -908,6 +922,7 @@ begin
 --          else
             acc_count <= acc_count-1;
             rd_chunk_state <= WAIT_TRACE;
+            acc_first_trace <= FALSE;
 --          end if;
         else
           rd_chunk_state <= READ3; 
@@ -917,7 +932,6 @@ begin
   end if;
 end process accumFSM;
 
-accum <= not acc_first_trace;
 dotproduct:entity work.pulse_accumulator
 generic map(
   ADDRESS_BITS => TRACE_CHUNK_LENGTH_BITS+2,

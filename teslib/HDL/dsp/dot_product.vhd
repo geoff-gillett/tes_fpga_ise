@@ -26,7 +26,7 @@ use extensions.boolean_vector.all;
 -- accumulates pulse waveforms
 -- reads out the average;
 -- latency 5
-entity pulse_accumulator is
+entity dot_product is
 generic(
   ADDRESS_BITS:natural:=11;
   WIDTH:natural:=16;
@@ -37,18 +37,25 @@ port(
   clk:in std_logic;
   reset:in std_logic;
   
-  address:in unsigned(ADDRESS_BITS-1 downto 0);
   sample:in signed(WIDTH-1 downto 0);
+  sample_valid:in boolean;
   
-  accumulate:in boolean;
-  write:in boolean;
+  --FSM controls
+  accumulate:in boolean; --FLAG starts 
+  read:in boolean;
+  dp:in boolean;
   
-  data:out signed(WIDTH-1 downto 0)
+  average:out signed(WIDTH-1 downto 0);
+  average_valid:out boolean;
+  average_last:out boolean;
+  
+  dot_product:out signed(47 downto 0);
+  dot_product_valid:out boolean
   
 );
-end entity pulse_accumulator;
+end entity dot_product;
 
-architecture SDP of pulse_accumulator is
+architecture SDP of dot_product is
 subtype word is signed(ACCUMULATOR_WIDTH-1 downto 0);
 type pulse_vector is array (0 to 2**ADDRESS_BITS-1) of word;
 
@@ -66,10 +73,8 @@ constant RD_LAT:natural:=2;
 constant DSP_LAT:natural:=2;
 constant DEPTH:integer:=RD_LAT+DSP_LAT;
 
-constant ONES:unsigned(47 downto 0):=(others => '1');
-constant MASK_SHIFT:integer:=48 - ACCUMULATE_N + 1;
-constant ROUND:std_logic_vector(47 downto 0)
-         :=std_logic_vector(shift_right(ONES,MASK_SHIFT));
+signal mask:std_logic_vector(47 downto 0);
+signal mask_shift:integer;
 
 signal addr_pipe:address_pipe(1 to DEPTH);
 signal sample_pipe:signal_pipe(1 to DEPTH);
@@ -82,6 +87,7 @@ signal c,p_out:std_logic_vector(47 downto 0);
 signal opmode:std_logic_vector(6 downto 0):="0000011";
 signal carryin:std_ulogic;
 
+constant ONES:unsigned(47 downto 0):=(others => '1');
 --if dot then accumulate p=sample*RAM (a*b+p)
 --if dot and start then p=sample*RAM (p=a*b)
 --need to round at end
@@ -91,7 +97,10 @@ signal carryin:std_ulogic;
 --else round using divide_n
 
 begin
+--data <= signed(dout);
 
+--max ACCUMULATE_N?
+mask_shift <= 48 - ACCUMULATE_N + 1;
 writePort:process(clk)
 begin
 if rising_edge(clk) then
@@ -110,11 +119,18 @@ if rising_edge(clk) then
 end if;
 end process readPort;
 
+
 c <= resize(dout, 48);
 inputMux:process(
-  accum_pipe(RD_LAT),dout,write_pipe(RD_LAT),sample_pipe(RD_LAT)
+  accum_pipe(RD_LAT),dout,mask,write_pipe(RD_LAT),mask_shift,sample_pipe(RD_LAT)
 )
 begin
+  
+  if ACCUMULATE_N=0 then
+    mask <= (others => '0');
+  else
+    mask <= std_logic_vector(shift_right(ONES,mask_shift));
+  end if;
   
   if write_pipe(RD_LAT) then
     b <= resize(sample_pipe(RD_LAT),18);
@@ -125,7 +141,7 @@ begin
     end if;
     carryin <= '0';
   else
-    b <= resize(ROUND,18);
+    b <= resize(mask,18);
     opmode <= "0001111"; --A:B + C (sample + rounding mask)
     if ACCUMULATE_N=0 then
       carryin <= '0';
@@ -146,6 +162,7 @@ begin
 end process pipeline;
 
 data <= signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N));
+
 
 addRound:DSP48E1
 generic map (
