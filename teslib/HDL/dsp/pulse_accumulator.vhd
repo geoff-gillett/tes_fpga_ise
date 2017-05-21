@@ -28,19 +28,20 @@ use extensions.boolean_vector.all;
 -- latency 5
 entity pulse_accumulator is
 generic(
-  ADDRESS_BITS:integer:=11;
-  WIDTH:integer:=16;
-  ACCUMULATOR_WIDTH:integer:=36
+  ADDRESS_BITS:natural:=11;
+  WIDTH:natural:=16;
+  ACCUMULATOR_WIDTH:natural:=36;
+  ACCUMULATE_N:natural:=2
 );
 port(
   clk:in std_logic;
   reset:in std_logic;
   
-  divide_n:in unsigned(ceillog2(ACCUMULATOR_WIDTH-WIDTH)-1 downto 0);
+  address:in unsigned(ADDRESS_BITS-1 downto 0);
   sample:in signed(WIDTH-1 downto 0);
+  
   accumulate:in boolean;
   write:in boolean;
-  address:in unsigned(ADDRESS_BITS-1 downto 0);
   
   data:out signed(WIDTH-1 downto 0)
   
@@ -51,25 +52,24 @@ architecture SDP of pulse_accumulator is
 subtype word is signed(ACCUMULATOR_WIDTH-1 downto 0);
 type pulse_vector is array (0 to 2**ADDRESS_BITS-1) of word;
 
-shared variable vector:pulse_vector;
+signal vector:pulse_vector:=(others => (others => '0'));
 attribute ram_style:string;
-attribute ram_style of vector:variable is "BLOCK";
-
-constant DIVIDE_BITS:integer:=ceillog2(ACCUMULATOR_WIDTH-WIDTH);
+attribute ram_style of vector:signal is "BLOCK";
 
 signal dout,dout_reg:word;
-signal we:boolean;
 
 subtype vector_address is unsigned(ADDRESS_BITS-1 downto 0);
-signal wr_addr:vector_address;
 type address_pipe is array (natural range <>) of vector_address;
-type divide_pipe is array (natural range <>) 
-                    of unsigned(DIVIDE_BITS-1 downto 0);
 type signal_pipe is array (natural range <>) of signed(WIDTH-1 downto 0);
 
-constant DEPTH:integer:=6;
-signal rd_addr_pipe:address_pipe(1 to DEPTH);
-signal div_pipe:divide_pipe(1 to DEPTH);
+constant RD_LAT:natural:=2;
+constant DSP_LAT:natural:=2;
+constant DEPTH:integer:=RD_LAT+DSP_LAT;
+
+signal mask:std_logic_vector(47 downto 0);
+signal mask_shift:integer;
+
+signal addr_pipe:address_pipe(1 to DEPTH);
 signal sample_pipe:signal_pipe(1 to DEPTH);
 signal write_pipe,accum_pipe:boolean_vector(1 to DEPTH);
 
@@ -77,21 +77,29 @@ signal write_pipe,accum_pipe:boolean_vector(1 to DEPTH);
 signal a:std_logic_vector(29 downto 0):=(others => '0');
 signal b:std_logic_vector(17 downto 0);
 signal c,p_out:std_logic_vector(47 downto 0);
-signal mask_shift:unsigned(4 downto 0);
-signal mask:unsigned(47 downto 0);
+signal opmode:std_logic_vector(6 downto 0):="0000011";
 signal carryin:std_ulogic;
 
 constant ONES:unsigned(47 downto 0):=(others => '1');
---if accumulate and write  then  write dout+sample (c+b) back to ram
+--if dot then accumulate p=sample*RAM (a*b+p)
+--if dot and start then p=sample*RAM (p=a*b)
+--need to round at end
+
+--if write and not accumulate write sample (b) to RAM
+--elsif accumulate and write then write RAM+sample (c+b) to RAM 
 --else round using divide_n
--- latency 5?
+
+
+
 begin
-  
+--data <= signed(dout);
+mask_shift <= 48 - ACCUMULATE_N + 1;
 writePort:process(clk)
 begin
 if rising_edge(clk) then
-  if we then
-    vector(to_integer(wr_addr)):=signed(p_out(ACCUMULATOR_WIDTH-1 downto 0));
+  if write_pipe(DEPTH) then
+    vector(to_integer(addr_pipe(DEPTH)))
+     <= signed(p_out(ACCUMULATOR_WIDTH-1 downto 0));
   end if;
 end if;
 end process writePort;
@@ -99,49 +107,55 @@ end process writePort;
 readPort:process(clk)
 begin
 if rising_edge(clk) then
-	dout_reg <= vector(to_integer(address(ADDRESS_BITS-1 downto 0)));
+	dout_reg <= vector(to_integer(address));
   dout <= dout_reg; -- register output
 end if;
 end process readPort;
 
-b <= resize(sample_pipe(3),18);
-control:process(clk)
+b <= resize(sample_pipe(RD_LAT),18);
+
+inputMux:process(accum_pipe(RD_LAT),dout,mask,write_pipe(RD_LAT),mask_shift)
+begin
+  
+  if ACCUMULATE_N=0 then
+    mask <= (others => '0');
+  else
+    mask <= std_logic_vector(shift_right(ONES,mask_shift));
+  end if;
+  
+  if write_pipe(RD_LAT) then
+--    c <= resize(dout, 48);
+    if accum_pipe(RD_LAT) then
+      c <= resize(dout, 48);
+      opmode <= "0001111"; --A:B + C (sample + dout)
+    else
+      c <= (others => '-');
+      opmode <= "0000011"; -- A:B + 0 (sample)
+    end if;
+    carryin <= '0';
+  else
+    c <= mask;
+    opmode <= "0001111"; --A:B + C (sample + rounding mask)
+    if ACCUMULATE_N=0 then
+      carryin <= '0';
+    else
+      carryin <= dout(ACCUMULATOR_WIDTH-1);
+    end if;
+  end if;
+end process inputMux;
+
+pipeline:process(clk)
 begin
   if rising_edge(clk) then
-    rd_addr_pipe <= address & rd_addr_pipe(1 to DEPTH-1);
+    addr_pipe <= address & addr_pipe(1 to DEPTH-1);
     write_pipe <= write & write_pipe(1 to DEPTH-1);
     accum_pipe <= accumulate & accum_pipe(1 to DEPTH-1);
-    div_pipe <= divide_n & div_pipe(1 to DEPTH-1);
     sample_pipe <= sample & sample_pipe(1 to DEPTH-1);
-    
-    if divide_n = 0 then
-      mask_shift <= to_unsigned(48,DIVIDE_BITS);
-    else
-      mask_shift <= 48 - divide_n-1;
-    end if;
-    mask <= shift_right(ONES,to_integer(mask_shift));
-    
-    if write_pipe(2) then
-      if accum_pipe(2) then --FIXME use opmode
-        c <= resize(dout, 48);
-      else
-        c <= (others => '0');
-      end if;
-      carryin <= '0'; 
-    else
-      c <= to_std_logic(mask);
-      if divide_n=0 then
-        carryin <= '0';
-      else
-        carryin <= dout(WIDTH-1);
-      end if;
-    end if;
-    
-    data <= resize(
-      shift_right(signed(p_out),to_integer(div_pipe(DEPTH))),WIDTH
-    );
   end if;
-end process control;
+end process pipeline;
+
+data <= signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N));
+
 
 addRound:DSP48E1
 generic map (
@@ -155,17 +169,17 @@ generic map (
   MASK => X"000000000000",           -- 48-bit mask value for pattern detect (1=ignore)
   PATTERN => X"000000000000",        -- 48-bit pattern match for pattern detect
   SEL_MASK => "MASK",                -- "C", "MASK", "ROUNDING_MODE1", "ROUNDING_MODE2" 
-  SEL_PATTERN => "C",          -- Select pattern value ("PATTERN" or "C")
+  SEL_PATTERN => "PATTERN",          -- Select pattern value ("PATTERN" or "C")
   USE_PATTERN_DETECT => "PATDET", -- Enable pattern detect ("PATDET" or "NO_PATDET")
   -- Register Control Attributes: Pipeline Register Configuration
   ACASCREG => 1,                     -- Number of pipeline stages between A/ACIN and ACOUT (0, 1 or 2)
   ADREG => 0,                        -- Number of pipeline stages for pre-adder (0 or 1)
-  ALUMODEREG => 1,                   -- Number of pipeline stages for ALUMODE (0 or 1)
+  ALUMODEREG => 0,                   -- Number of pipeline stages for ALUMODE (0 or 1)
   AREG => 1,                         -- Number of pipeline stages for A (0, 1 or 2)
   BCASCREG => 1,                     -- Number of pipeline stages between B/BCIN and BCOUT (0, 1 or 2)
   BREG => 1,                         -- Number of pipeline stages for B (0, 1 or 2)
   CARRYINREG => 1,                   -- Number of pipeline stages for CARRYIN (0 or 1)
-  CARRYINSELREG => 0,                -- Number of pipeline stages for CARRYINSEL (0 or 1)
+  CARRYINSELREG => 1,                -- Number of pipeline stages for CARRYINSEL (0 or 1)
   CREG => 1,                         -- Number of pipeline stages for C (0 or 1)
   DREG => 0,                         -- Number of pipeline stages for D (0 or 1)
   INMODEREG => 0,                    -- Number of pipeline stages for INMODE (0 or 1)
@@ -200,9 +214,9 @@ port map (
   CARRYINSEL => "000",         -- 3-bit input: Carry select input
   CEINMODE => '0',             -- 1-bit input: Clock enable input for INMODEREG
   CLK => clk,                       -- 1-bit input: Clock input
-  INMODE => "00000",                 -- 5-bit input: INMODE control input
-  OPMODE => "0001111",                 -- 7-bit input: Operation mode input
-  RSTINMODE => reset,           -- 1-bit input: Reset input for INMODEREG
+  INMODE => "00001",                 -- 5-bit input: INMODE control input
+  OPMODE => opmode,                 -- 7-bit input: Operation mode input
+  RSTINMODE => '0',           -- 1-bit input: Reset input for INMODEREG
   -- Data: 30-bit (each) input: Data Ports
   A => a,                           -- 30-bit input: A data input
   B => b,                           -- 18-bit input: B data input
@@ -213,23 +227,23 @@ port map (
   CEA1 => '1',                     -- 1-bit input: Clock enable input for 1st stage AREG
   CEA2 => '1',                     -- 1-bit input: Clock enable input for 2nd stage AREG
   CEAD => '0',                     -- 1-bit input: Clock enable input for ADREG
-  CEALUMODE => '1',           -- 1-bit input: Clock enable input for ALUMODERE
+  CEALUMODE => '0',           -- 1-bit input: Clock enable input for ALUMODERE
   CEB1 => '1',                     -- 1-bit input: Clock enable input for 1st stage BREG
   CEB2 => '1',                     -- 1-bit input: Clock enable input for 2nd stage BREG
   CEC => '1',                       -- 1-bit input: Clock enable input for CREG
   CECARRYIN => '1',           -- 1-bit input: Clock enable input for CARRYINREG
   CECTRL => '1',                 -- 1-bit input: Clock enable input for OPMODEREG and CARRYINSELREG
   CED => '0',                       -- 1-bit input: Clock enable input for DREG
-  CEM => '0',                       -- 1-bit input: Clock enable input for MREG
+  CEM => '1',                       -- 1-bit input: Clock enable input for MREG
   CEP => '1',                       -- 1-bit input: Clock enable input for PREG
   RSTA => reset,                     -- 1-bit input: Reset input for AREG
-  RSTALLCARRYIN => '0',   -- 1-bit input: Reset input for CARRYINREG
+  RSTALLCARRYIN => reset,   -- 1-bit input: Reset input for CARRYINREG
   RSTALUMODE => '0',         -- 1-bit input: Reset input for ALUMODEREG
   RSTB => reset,                     -- 1-bit input: Reset input for BREG
   RSTC => reset,                     -- 1-bit input: Reset input for CREG
   RSTCTRL => reset,               -- 1-bit input: Reset input for OPMODEREG and CARRYINSELREG
   RSTD => '0',                     -- 1-bit input: Reset input for DREG and ADREG
-  RSTM => '0',                     -- 1-bit input: Reset input for MREG
+  RSTM => reset,                     -- 1-bit input: Reset input for MREG
   RSTP => reset                      -- 1-bit input: Reset input for PREG
 );
 

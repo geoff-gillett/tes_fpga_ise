@@ -743,7 +743,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  divide_n => accumulate_n,
+  accumulate_n => accumulate_n,
   sample => acc_sample,
   accumulate => accumulate,
   write => write_acc,

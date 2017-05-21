@@ -18,8 +18,10 @@ use work.functions.all;
 entity measurement_framer10 is
 generic(
   WIDTH:natural:=16;
+  ADDRESS_BITS:integer:=11;
   ACCUMULATOR_WIDTH:natural:=36;
-  FRAMER_ADDRESS_BITS:integer:=11;
+  ACCUMULATE_N:natural:=18;
+  TRACE_CHUNKS:natural:=512;
   TRACE_FROM_STAMP:boolean:=TRUE;
   ENDIAN:string:="LITTLE"
 );
@@ -68,18 +70,18 @@ signal tflags:trace_flags_t;
 attribute equivalent_register_removal:string;
 attribute equivalent_register_removal of mux_full:signal is "no";
 
-signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);
-signal free:unsigned(FRAMER_ADDRESS_BITS downto 0);
-signal frame_length,length:unsigned(FRAMER_ADDRESS_BITS downto 0):=(others => '0');
+signal framer_free:unsigned(ADDRESS_BITS downto 0);
+signal free:unsigned(ADDRESS_BITS downto 0);
+signal frame_length,length:unsigned(ADDRESS_BITS downto 0):=(others => '0');
 --
 signal pulse_valid,pulse_peak_valid:boolean;
 signal pulse_overflow:boolean;
 signal frame_word:streambus_t;
-signal frame_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal frame_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal frame_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal commit_frame,commit_int,start_int,dump_int,just_started:boolean;
 
-signal peak_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
+signal peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
 signal pulse_start:boolean;
 signal peak_stamped,pulse_stamped:boolean:=FALSE;
@@ -88,16 +90,14 @@ signal pre_detection,detection:detection_d;
 signal full,pre_full:boolean;
 
 -- TRACE control registers implemented as constants
-constant accumulate_n:unsigned(ceillog2(ACC_COUNT_BITS)-1 downto 0)
-         :=(2 => '1',others => '0');
 
 constant acc_count_init:unsigned(ACC_COUNT_BITS-1 downto 0)
-         :=to_unsigned(2**to_integer(accumulate_n)-1, ACC_COUNT_BITS);        
+         :=to_unsigned(2**ACCUMULATE_N, ACC_COUNT_BITS);        
          
-constant TRACE_LENGTH_BITS:natural:=10;
-constant trace_length:unsigned(TRACE_LENGTH_BITS-1 downto 0)
+constant TRACE_CHUNK_LENGTH_BITS:natural:=ceilLog2(TRACE_CHUNKS+1);
+constant trace_chunk_len:unsigned(TRACE_CHUNK_LENGTH_BITS-1 downto 0)
 --         :=to_unsigned((268/16)+1,FRAMER_ADDRESS_BITS+1);
-         :=to_unsigned(90,TRACE_LENGTH_BITS);
+         :=to_unsigned(TRACE_CHUNKS,TRACE_CHUNK_LENGTH_BITS);
 constant TRACE_STRIDE_BITS:integer:=5;
 constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0):=(others => '0');
 -- trace signals
@@ -107,8 +107,8 @@ signal trace_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal acc_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 --signal trace_started:boolean;
-signal trace_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
-signal trace_count:unsigned(TRACE_LENGTH_BITS-1 downto 0);
+signal trace_address:unsigned(ADDRESS_BITS-1 downto 0);
+signal trace_count:unsigned(TRACE_CHUNK_LENGTH_BITS-1 downto 0);
 --signal trace_size:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal start_trace:boolean;
 --signal trace_wr_en:boolean;
@@ -153,7 +153,7 @@ signal reg_ready:boolean;
 signal reg_valid:boolean;
 signal accum,acc_wr:boolean;
 signal acc_data:signed(WIDTH-1 downto 0);
-signal acc_address:unsigned(TRACE_LENGTH_BITS-1 downto 0);
+signal acc_address:unsigned(TRACE_CHUNK_LENGTH_BITS+1 downto 0);
 signal mux_trace:boolean;
 
 --debugging
@@ -263,23 +263,27 @@ can_q_single <= q_state=IDLE;
 can_q_trace <= q_state=IDLE;
 can_q_pulse <= q_state=IDLE;
 
-pre_full <= free < resize(m.pre_size,FRAMER_ADDRESS_BITS+1);
-full <= free < resize(m.size,FRAMER_ADDRESS_BITS+1);
+pre_full <= free < resize(m.pre_size,ADDRESS_BITS+1);
+full <= free < resize(m.size,ADDRESS_BITS+1);
 
 traceSignalMux:process(clk)
 begin
   if rising_edge(clk) then
     --TODO add average send
-    case tflags.trace_signal is
-    when NO_TRACE_D =>
-      trace_chunk <= set_endianness(m.filtered.sample,ENDIAN);
-    when RAW_TRACE_D =>
-      trace_chunk <= set_endianness(m.raw.sample,ENDIAN);
-    when FILTERED_TRACE_D =>
-      trace_chunk <= set_endianness(m.filtered.sample,ENDIAN);
-    when SLOPE_TRACE_D =>
-      trace_chunk <= set_endianness(m.slope.sample,ENDIAN);
-    end case;
+    if a_state=SEND then
+      trace_chunk <= set_endianness(acc_data,ENDIAN);
+    else
+      case tflags.trace_signal is
+      when NO_TRACE_D =>
+        trace_chunk <= set_endianness(m.filtered.sample,ENDIAN);
+      when RAW_TRACE_D =>
+        trace_chunk <= set_endianness(m.raw.sample,ENDIAN);
+      when FILTERED_TRACE_D =>
+        trace_chunk <= set_endianness(m.filtered.sample,ENDIAN);
+      when SLOPE_TRACE_D =>
+        trace_chunk <= set_endianness(m.slope.sample,ENDIAN);
+      end case;
+    end if;
   end if;
 end process traceSignalMux;
 
@@ -338,7 +342,7 @@ begin
             frame_we <= (others => FALSE);
           when SINGLE => 
             frame_word <= queue(0);
-            frame_address <= to_unsigned(0,FRAMER_ADDRESS_BITS);
+            frame_address <= to_unsigned(0,ADDRESS_BITS);
             frame_we <= (others => TRUE);
             commit_frame <= TRUE;
             commit_int <= mux_trace;
@@ -346,14 +350,14 @@ begin
           when WORD0 =>
             frame_word <= queue(0);
             frame_we <= (others => TRUE);
-            frame_address <= to_unsigned(0,FRAMER_ADDRESS_BITS);
+            frame_address <= to_unsigned(0,ADDRESS_BITS);
             commit_frame <= TRUE;
             commit_int <= mux_trace;
             q_state <= IDLE;
           when WORD1 =>
             frame_word <= queue(1);
             frame_we <= (others => TRUE);
-            frame_address <= to_unsigned(1,FRAMER_ADDRESS_BITS);
+            frame_address <= to_unsigned(1,ADDRESS_BITS);
             q_state <= WORD0;
           end case;
         end if;
@@ -384,11 +388,11 @@ begin
       case t_state is
       when IDLE =>
         
-        trace_count <= trace_length-1;
+        trace_count <= trace_chunk_len-1;
         if tflags.trace_type=SINGLE_TRACE_D then
-          trace_address <= resize(m.pre_size,FRAMER_ADDRESS_BITS);
+          trace_address <= resize(m.pre_size,ADDRESS_BITS);
         else
-          trace_address <= to_unsigned(0,FRAMER_ADDRESS_BITS);
+          trace_address <= to_unsigned(0,ADDRESS_BITS);
         end if;
         
         wr_chunk_state <= STORE0;
@@ -438,6 +442,7 @@ begin
               frame_address <= trace_address;
               if trace_count=0 then
                 commit_frame <= not mux_trace;
+                frame_length <= length;
               else
                 trace_address <= trace_address+1;
                 trace_count <= trace_count-1;
@@ -466,20 +471,20 @@ begin
         
         case m.pre_eflags.event_type.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
-          length <= resize(m.pre_size,FRAMER_ADDRESS_BITS+1);
+          length <= resize(m.pre_size,ADDRESS_BITS+1);
           
         when TRACE_DETECTION_D => 
           case m.trace_type is
             
           when SINGLE_TRACE_D =>
             length 
-              <= resize(m.pre_size,FRAMER_ADDRESS_BITS+1)+trace_length;
+              <= resize(m.pre_size,ADDRESS_BITS+1)+trace_chunk_len;
               
           when AVERAGE_TRACE_D => --FIXME accum state must be factor here
-            length <= resize(trace_length,FRAMER_ADDRESS_BITS+1);
+            length <= resize(trace_chunk_len,ADDRESS_BITS+1);
             
           when DOT_PRODUCT_D => --FIXME
-            length <= resize(m.pre_size,FRAMER_ADDRESS_BITS+1)+1;
+            length <= resize(m.pre_size,ADDRESS_BITS+1)+1;
           end case;
         end case;
       end if;
@@ -499,7 +504,7 @@ begin
         just_started <= TRUE;
         pulse_stamped <= FALSE;
         if pulse_start and enable then 
-          if free >= resize(m.pre_size,FRAMER_ADDRESS_BITS+1) then
+          if free >= resize(m.pre_size,ADDRESS_BITS+1) then
             if TRACE_FROM_STAMP then
               start_trace 
                 <= m.pre_stamp_pulse and pre_detection=TRACE_DETECTION_D;
@@ -597,7 +602,7 @@ begin
                 frame_length <= length;
                 pulse_peak_word <= to_streambus(pulse_peak,TRUE,ENDIAN);
                 pulse_peak_valid <= TRUE;
-                peak_address <= resize(m.last_peak_address,FRAMER_ADDRESS_BITS);
+                peak_address <= resize(m.last_peak_address,ADDRESS_BITS);
                 commiting <= TRUE;
                 free <= framer_free - frame_length;
                 q_state <= WORD1;
@@ -730,7 +735,7 @@ begin
             pulse_stamped <= FALSE;
           else
             pulse_peak_word <= to_streambus(pulse_peak,FALSE,ENDIAN);
-            peak_address <= resize(m.peak_address,FRAMER_ADDRESS_BITS);
+            peak_address <= resize(m.peak_address,ADDRESS_BITS);
             pulse_peak_valid <= mux_trace;
           end if;
         elsif m.eflags.event_type.detection=PEAK_DETECTION_D then
@@ -782,7 +787,7 @@ end process main;
 framer:entity streamlib.framer
 generic map(
   BUS_CHUNKS => CHUNKS,
-  ADDRESS_BITS => FRAMER_ADDRESS_BITS
+  ADDRESS_BITS => ADDRESS_BITS
 )
 port map(
   clk => clk,
@@ -822,7 +827,8 @@ begin
       a_state <= IDLE;
       rd_chunk_state <= IDLE;
       acc_ready <= FALSE;
-      acc_wr <= TRUE;
+      acc_wr <= FALSE;
+      acc_first_trace <= FALSE;
     else
       
       case a_state is 
@@ -836,11 +842,10 @@ begin
       when WAITING => 
         wait_ready <= FALSE;
         wait_valid <= FALSE;
+        acc_count <= acc_count_init;
         if valid_int and not wait_ready then
           if stream_int.discard(0) then
             a_state <= ACCUMULATE;
-            acc_count <= acc_count_init;
-            acc_address <= (others => '0');
             acc_first_trace <= TRUE;
           else
             wait_ready <= TRUE;
@@ -848,7 +853,7 @@ begin
           end if;
         end if;
       when ACCUMULATE =>
-        if acc_count=0 and rd_chunk_state=READ0 then
+        if acc_count=0 and rd_chunk_state=WAIT_TRACE then
           a_state <= SEND;
         end if;
       when SEND =>
@@ -860,21 +865,28 @@ begin
       case rd_chunk_state is 
       when IDLE =>
         acc_ready <= FALSE;
+        acc_wr <= FALSE;
         if a_state=ACCUMULATE then
-          rd_chunk_state <= READ3;
+          rd_chunk_state <= WAIT_TRACE;
         end if;
       when WAIT_TRACE =>
         acc_ready <= FALSE;
-        if valid_int then
+        acc_wr <= FALSE;
+        acc_address <= (others => '1');
+        if acc_count=0 then
+          rd_chunk_state <= IDLE;
+          acc_wr <= FALSE;
+          acc_first_trace <= FALSE;
+        elsif valid_int then
           rd_chunk_state <= READ3;
         end if;
       when READ3 =>
         acc_chunk <= set_endianness(stream_int.data(63 downto 48),ENDIAN);
-        acc_address <= acc_address+1;
         acc_ready <= FALSE;
+        acc_wr <= valid_int;
         if valid_int then
+          acc_address <= acc_address+1;
           rd_chunk_state <= READ2;
-          acc_wr <= TRUE;
         end if;
       when READ2 =>
         acc_chunk <= set_endianness(stream_int.data(47 downto 32),ENDIAN);
@@ -888,37 +900,34 @@ begin
         acc_ready <= TRUE;
       when READ0 =>
         acc_chunk <= set_endianness(stream_int.data(15 downto 0),ENDIAN);
-        if valid_int then
-          acc_wr <= FALSE;
-          acc_ready <= FALSE;
-          acc_address <= acc_address+1;
-          if stream_int.last(0) then
-            if acc_count=0 then
-              rd_chunk_state <= IDLE;
-            else
-              acc_count <= acc_count-1;
-              rd_chunk_state <= WAIT_TRACE;
-              acc_first_trace <= FALSE;
-            end if;
-          else
-            rd_chunk_state <= READ3; 
-          end if;
+        acc_ready <= FALSE;
+        acc_address <= acc_address+1;
+        if stream_int.last(0) then
+--          if acc_count=0 then
+--            rd_chunk_state <= IDLE;
+--          else
+            acc_count <= acc_count-1;
+            rd_chunk_state <= WAIT_TRACE;
+--          end if;
+        else
+          rd_chunk_state <= READ3; 
         end if;
       end case;
     end if;
   end if;
 end process accumFSM;
 
+accum <= not acc_first_trace;
 dotproduct:entity work.pulse_accumulator
 generic map(
-  ADDRESS_BITS => TRACE_LENGTH_BITS,
+  ADDRESS_BITS => TRACE_CHUNK_LENGTH_BITS+2,
   WIDTH => WIDTH,
-  ACCUMULATOR_WIDTH => ACCUMULATOR_WIDTH
+  ACCUMULATOR_WIDTH => ACCUMULATOR_WIDTH,
+  ACCUMULATE_N => ACCUMULATE_N
 )
 port map(
   clk => clk,
   reset => reset,
-  divide_n => accumulate_n,
   sample => signed(acc_chunk),
   accumulate => accum,
   write => acc_wr,

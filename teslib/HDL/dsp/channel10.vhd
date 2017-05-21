@@ -29,6 +29,11 @@ generic(
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
+  FRAMER_ADDRESS_BITS:natural:=10;
+  ACCUMULATOR_WIDTH:natural:=36;
+  ACCUMULATE_N:natural:=18;
+  TRACE_CHUNKS:natural:=512;
+  TRACE_FROM_STAMP:boolean:=TRUE;
   ENDIAN:string:="LITTLE";
   STRICT_CROSSING:boolean:=TRUE
 );
@@ -335,8 +340,12 @@ m.filtered_long <= dsp_m.filtered_long;
 
 framer:entity work.measurement_framer10
 generic map(
-  FRAMER_ADDRESS_BITS => MEASUREMENT_FRAMER_ADDRESS_BITS,
-  TRACE_FROM_STAMP => TRUE,
+  WIDTH => WIDTH,
+  ACCUMULATOR_WIDTH => ACCUMULATOR_WIDTH,
+  ACCUMULATE_N => ACCUMULATE_N,
+  ADDRESS_BITS => FRAMER_ADDRESS_BITS,
+  TRACE_CHUNKS => TRACE_CHUNKS,
+  TRACE_FROM_STAMP => TRACE_FROM_STAMP,
   ENDIAN => ENDIAN
 )
 port map(

@@ -50,7 +50,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  divide_n => divide_n,
+  accumulate_n => divide_n,
   sample => sample,
   accumulate => accumulate,
   write => write,
