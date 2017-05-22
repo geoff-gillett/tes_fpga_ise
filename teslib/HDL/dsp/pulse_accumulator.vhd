@@ -62,14 +62,15 @@ subtype vector_address is unsigned(ADDRESS_BITS-1 downto 0);
 type address_pipe is array (natural range <>) of vector_address;
 type signal_pipe is array (natural range <>) of signed(WIDTH-1 downto 0);
 
-constant RD_LAT:natural:=2;
-constant DSP_LAT:natural:=2;
-constant DEPTH:integer:=RD_LAT+DSP_LAT;
-
 constant ONES:unsigned(47 downto 0):=(others => '1');
 constant MASK_SHIFT:integer:=48 - ACCUMULATE_N + 1;
 constant ROUND:std_logic_vector(47 downto 0)
          :=std_logic_vector(shift_right(ONES,MASK_SHIFT));
+         
+constant RD_LAT:natural:=2;
+constant DSP_LAT:natural:=2;
+constant DEPTH:integer:=RD_LAT+DSP_LAT;
+
 
 signal addr_pipe:address_pipe(1 to DEPTH);
 signal sample_pipe:signal_pipe(1 to DEPTH);
