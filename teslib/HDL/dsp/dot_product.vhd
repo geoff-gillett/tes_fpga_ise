@@ -41,15 +41,16 @@ port(
   stop:in boolean;
   
   sample:in signed(WIDTH-1 downto 0);
-  trace_go:in boolean;
+  trace_start:in boolean;
   trace_last:in boolean;
   
   --FSM controls
   accumulate:in boolean; --FLAG starts 
+  accumulate_done:out boolean;
   dp:in boolean;
   
   average:out signed(WIDTH-1 downto 0);
-  average_valid:out boolean;
+  average_start:out boolean;
   average_last:out boolean;
   
   dot_product:out signed(47 downto 0);
@@ -110,7 +111,6 @@ signal ram_in:std_logic_vector(ACCUMULATOR_WIDTH-1 downto 0);
 --else round using divide_n
 
 begin
-average_valid <= send_pipe(DEPTH);
 average_last <= last_pipe(DEPTH);
 
 --max ACCUMULATE_N?
@@ -128,6 +128,8 @@ writeMux:process(clk)
 begin
   if rising_edge(clk) then
     average <= signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N));
+    average_start <= send_pipe(DEPTH-2) and not send_pipe(DEPTH-1);
+    accumulate_done <= send_pipe(1) and not send_pipe(2);
     if send_pipe(DEPTH-1) then
       ram_in <= resize(
         signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N)),ACCUMULATOR_WIDTH
@@ -170,7 +172,7 @@ begin
         elsif acc_count=0 then
           state <= SENDAVERAGE;
           address <= (others => '0');
-        elsif trace_go then
+        elsif trace_start then
           acc_count <= acc_count-1;
           address <= (others => '0');
 --          write <= TRUE;
