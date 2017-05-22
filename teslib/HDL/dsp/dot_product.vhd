@@ -74,12 +74,12 @@ type signal_pipe is array (natural range <>) of signed(WIDTH-1 downto 0);
 
 constant RD_LAT:natural:=2;
 constant DSP_LAT:natural:=2;
-constant DEPTH:integer:=RD_LAT+DSP_LAT;
+constant DEPTH:integer:=RD_LAT+DSP_LAT+1;
 
 signal address:vector_address;
 signal addr_pipe:address_pipe(1 to DEPTH);
 signal sample_pipe:signal_pipe(1 to DEPTH);
-signal accum_pipe,valid_pipe,last_pipe:boolean_vector(1 to DEPTH);
+signal accum_pipe,last_pipe:boolean_vector(1 to DEPTH);
 signal send_pipe,first_pipe:boolean_vector(1 to DEPTH);
 
 -- DSP48E input signals
@@ -94,12 +94,12 @@ constant MASK_SHIFT:integer:=48 - ACCUMULATE_N + 1;
 constant ROUND:std_logic_vector(47 downto 0)
          :=std_logic_vector(shift_right(ONES,MASK_SHIFT));
 
-type FSMstate is (IDLE,ACCUM,WAITSAMPLE,SENDAVERAGE,DOTPRODUCT,WAITSEND,HOLD);
+type FSMstate is (IDLE,ACCUM,WAITSAMPLE,SENDAVERAGE,DOTPRODUCT,HOLD);
 signal state:FSMstate;
-signal send_valid,send_last:boolean;
+signal send_last:boolean;
 signal acc_count:unsigned(ACCUMULATE_N downto 0);
 signal first_trace,write:boolean;
-signal accumulator_in:std_logic_vector(ACCUMULATOR_WIDTH-1 downto 0);
+signal ram_in:std_logic_vector(ACCUMULATOR_WIDTH-1 downto 0);
 
 --if dot then accumulate p=sample*RAM (a*b+p)
 --if dot and start then p=sample*RAM (p=a*b)
@@ -110,10 +110,8 @@ signal accumulator_in:std_logic_vector(ACCUMULATOR_WIDTH-1 downto 0);
 --else round using divide_n
 
 begin
-average <= signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N));
-average_valid <= valid_pipe(DEPTH);
+average_valid <= send_pipe(DEPTH);
 average_last <= last_pipe(DEPTH);
---data <= signed(dout);
 
 --max ACCUMULATE_N?
 writePort:process(clk)
@@ -121,19 +119,22 @@ begin
 if rising_edge(clk) then
   write <= accum_pipe(DEPTH-1) or send_pipe(DEPTH-1);
   if write then
-    vector(to_integer(addr_pipe(DEPTH))) <= signed(accumulator_in);
+    vector(to_integer(addr_pipe(DEPTH))) <= signed(ram_in);
   end if;
 end if;
 end process writePort;
 
-writeMux:process(state,p_out)
+writeMux:process(clk)
 begin
-  if state=SENDAVERAGE or state=HOLD then
-    accumulator_in <= resize(
-      signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N)),ACCUMULATOR_WIDTH
-    );
-  else
-    accumulator_in <= p_out(ACCUMULATOR_WIDTH-1 downto 0);
+  if rising_edge(clk) then
+    average <= signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N));
+    if send_pipe(DEPTH-1) then
+      ram_in <= resize(
+        signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N)),ACCUMULATOR_WIDTH
+      );
+    else
+      ram_in <= p_out(ACCUMULATOR_WIDTH-1 downto 0);
+    end if;
   end if;
 end process writeMux;
 
@@ -152,6 +153,8 @@ begin
       state <= IDLE;
     else
       
+      send_last <= FALSE;
+      
       case state is 
       when IDLE =>
         acc_count <= (ACCUMULATE_N => '1',others => '0');
@@ -161,15 +164,12 @@ begin
         end if;
         
       when WAITSAMPLE => --WAITING for framer
-        send_valid <= FALSE;
-        send_last <= FALSE;
 --        write <= FALSE;
         if stop then
           state <= IDLE;
         elsif acc_count=0 then
           state <= SENDAVERAGE;
           address <= (others => '0');
-          send_valid <= TRUE;
         elsif trace_go then
           acc_count <= acc_count-1;
           address <= (others => '0');
@@ -192,19 +192,11 @@ begin
         end if;
         
       when SENDAVERAGE =>
+        address <= address+1;
+        send_last <= address=(TRACE_CHUNKS*4)-2;
         if stop then
           state <= IDLE;
-        elsif address=TRACE_CHUNKS*4-2 then
-          address <= address+1;
-          send_last <= TRUE;
-          state <= WAITSEND;
-        else
-          address <= address+1;
-        end if;
-        
-      when WAITSEND => 
-        send_valid <= FALSE;
-        if last_pipe(DEPTH) then
+        elsif send_last then
           state <= HOLD;
         end if;
         
@@ -226,8 +218,7 @@ pipeline:process(clk)
 begin
   if rising_edge(clk) then
     addr_pipe <= address & addr_pipe(1 to DEPTH-1);
---    write_pipe <= (write or send_valid) & write_pipe(1 to DEPTH-1);
-    valid_pipe <= send_valid & valid_pipe(1 to DEPTH-1);
+--    valid_pipe <= send_valid & valid_pipe(1 to DEPTH-1);
     last_pipe <= send_last & last_pipe(1 to DEPTH-1);
     accum_pipe <= (state=ACCUM) & accum_pipe(1 to DEPTH-1);
     first_pipe <= first_trace & first_pipe(1 to DEPTH-1);

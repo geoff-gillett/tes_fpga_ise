@@ -21,9 +21,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="27760000001fs"></ZoomEndTime>
-      <Cursor1Time time="13784000000fs"></Cursor1Time>
+      <ZoomStartTime time="884333332fs"></ZoomStartTime>
+      <ZoomEndTime time="1175352066fs"></ZoomEndTime>
+      <Cursor1Time time="1000000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="12" />
    <wave_markers>
@@ -32,6 +32,7 @@
       <marker time="6564000000" label="" />
       <marker time="13720000000" label="" />
       <marker time="12176000000" label="" />
+      <marker time="20948000000" label="" />
    </wave_markers>
    <wvobject fp_name="group49" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -1579,7 +1580,6 @@
    <wvobject fp_name="group189" type="group">
       <obj_property name="label">measurement_framer</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -2325,14 +2325,6 @@
          <obj_property name="ElementShortName">reg_ready</obj_property>
          <obj_property name="ObjectShortName">reg_ready</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/acc_count" type="array">
-         <obj_property name="ElementShortName">acc_count[19:0]</obj_property>
-         <obj_property name="ObjectShortName">acc_count[19:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/acc_count" type="array">
-         <obj_property name="ElementShortName">acc_count[19:0]</obj_property>
-         <obj_property name="ObjectShortName">acc_count[19:0]</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/acc_chunk" type="array">
          <obj_property name="ElementShortName">acc_chunk[15:0]</obj_property>
          <obj_property name="ObjectShortName">acc_chunk[15:0]</obj_property>
@@ -2635,10 +2627,6 @@
          <obj_property name="ElementShortName">average_last</obj_property>
          <obj_property name="ObjectShortName">average_last</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/ready_for_average" type="other">
-         <obj_property name="ElementShortName">ready_for_average</obj_property>
-         <obj_property name="ObjectShortName">ready_for_average</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/dot_product" type="array">
          <obj_property name="ElementShortName">dot_product[47:0]</obj_property>
          <obj_property name="ObjectShortName">dot_product[47:0]</obj_property>
@@ -2650,10 +2638,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/vector" type="array">
          <obj_property name="ElementShortName">vector[0:1023][35:0]</obj_property>
          <obj_property name="ObjectShortName">vector[0:1023][35:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/dout" type="array">
-         <obj_property name="ElementShortName">dout[35:0]</obj_property>
-         <obj_property name="ObjectShortName">dout[35:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/state" type="other">
          <obj_property name="ElementShortName">state</obj_property>
@@ -2680,6 +2664,10 @@
          <obj_property name="label">DSP input</obj_property>
          <obj_property name="DisplayName">label</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/dout" type="array">
+         <obj_property name="ElementShortName">dout[35:0]</obj_property>
+         <obj_property name="ObjectShortName">dout[35:0]</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/addr_pipe[2]" type="array">
          <obj_property name="ElementShortName">[2][9:0]</obj_property>
          <obj_property name="ObjectShortName">addr_pipe[2][9:0]</obj_property>
@@ -2693,10 +2681,14 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/first_pipe[2]" type="other">
          <obj_property name="ElementShortName">[2]</obj_property>
          <obj_property name="ObjectShortName">first_pipe[2]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/send_pipe[2]" type="other">
          <obj_property name="ElementShortName">[2]</obj_property>
          <obj_property name="ObjectShortName">send_pipe[2]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/opmode" type="array">
          <obj_property name="ElementShortName">opmode[6:0]</obj_property>
@@ -2726,7 +2718,7 @@
          <obj_property name="ObjectShortName">c[47:0]</obj_property>
          <obj_property name="CustomSignalColor">#FF00FF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
@@ -2745,13 +2737,23 @@
          <obj_property name="ElementShortName">p_out[47:0]</obj_property>
          <obj_property name="ObjectShortName">p_out[47:0]</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/write" type="other">
+         <obj_property name="ElementShortName">write</obj_property>
+         <obj_property name="ObjectShortName">write</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/addr_pipe[4]" type="array">
          <obj_property name="ElementShortName">[4][9:0]</obj_property>
          <obj_property name="ObjectShortName">addr_pipe[4][9:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/accumulator_in" type="array">
-         <obj_property name="ElementShortName">accumulator_in[35:0]</obj_property>
-         <obj_property name="ObjectShortName">accumulator_in[35:0]</obj_property>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/ram_in" type="array">
+         <obj_property name="ElementShortName">ram_in[35:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_in[35:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproduct/accum_pipe" type="array">
          <obj_property name="ElementShortName">accum_pipe[1:4]</obj_property>
