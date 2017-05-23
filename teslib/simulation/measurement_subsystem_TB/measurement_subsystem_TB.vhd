@@ -479,6 +479,9 @@ begin
   chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
   wait for SAMPLE_CLK_PERIOD;
   global.channel_enable <= "00000001";
+  wait for 12 us;
+  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
+  
 --  wait for 70511 ns;
 --  global.channel_enable <= "00000000";
 --  wait for 12011 ns;
