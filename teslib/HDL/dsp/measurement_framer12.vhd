@@ -105,6 +105,8 @@ signal stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 --signal trace_started:boolean;
 signal trace_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal trace_count:unsigned(TRACE_CHUNK_LENGTH_BITS-1 downto 0);
+signal next_trace_count:unsigned(TRACE_CHUNK_LENGTH_BITS-1 downto 0);
+signal last_trace_count:boolean;
 --signal trace_size:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal start_trace:boolean;
 --signal trace_wr_en:boolean;
@@ -152,7 +154,8 @@ signal start_average,average_last:boolean;
 
 --debugging
 --signal flags:std_logic_vector(7 downto 0);
-signal accum_count:unsigned(ACCUMULATE_N downto 0);
+signal accum_count,next_accum_count:unsigned(ACCUMULATE_N downto 0);
+signal last_accum_count:boolean;
 signal pending:signed(3 downto 0):=(others => '0');
 signal stop:boolean;
 signal dp_sample:signed(WIDTH-1 downto 0);
@@ -305,7 +308,7 @@ begin
 end process traceSignalMux;
 
 trace_writing <= s_state=CAPTURE and wr_chunk_state=WRITE;
-trace_last <= trace_writing and trace_count=0 and can_write_trace;
+trace_last <= trace_writing and last_trace_count and can_write_trace;
 main:process(clk)
 begin
   if rising_edge(clk) then
@@ -321,7 +324,6 @@ begin
       pulse_peak_valid <= FALSE;
       pulse_overflow <= FALSE;
       trace_address <= (others => '0');
-      trace_count <= (others => '1');
       stride_count <= (others => '0');
       area_overflow <= FALSE;
       enable_reg <= FALSE;
@@ -336,6 +338,8 @@ begin
       frame_word.discard <= (others => FALSE);
       multipulse <= FALSE;
       multipeak <= FALSE;
+      
+      last_trace_count <= FALSE;
       
     else
       
@@ -410,6 +414,7 @@ begin
       when IDLE =>
         
         trace_count <= trace_chunk_len-1;
+        next_trace_count <= trace_chunk_len-2;
         if tflags.trace_type=SINGLE_TRACE_D then
           trace_address <= resize(m.size,ADDRESS_BITS);
         elsif state=AVERAGE then
@@ -455,15 +460,17 @@ begin
             frame_we <= (others => TRUE);
             frame_word.data(63 downto 16) <= trace_reg(63 downto 16);
             frame_word.data(15 downto 0) <= trace_chunk;
-            frame_word.last <= (0 => trace_count=0, others => FALSE);
+            frame_word.last <= (0 => last_trace_count, others => FALSE);
             frame_word.discard(0) <= not mux_trace;
             frame_address <= trace_address;
-            if trace_count=0 then
+            if last_trace_count then
               commit_frame <= not mux_trace;
               frame_length <= length;
             else
               trace_address <= trace_address+1;
-              trace_count <= trace_count-1;
+              trace_count <= next_trace_count;
+              next_trace_count <= next_trace_count;
+              last_trace_count <= next_trace_count=0;
             end if;
           end if;
         
@@ -643,7 +650,7 @@ begin
             t_state <= IDLE;
             if mux_trace then
               state <= WAITPULSEDONE;
-            elsif a_state=ACCUM and accum_count=0 then
+            elsif a_state=ACCUM and last_accum_count then
               state <= AVERAGE;
             end if;
           elsif (m.pulse_start and not just_started) then
@@ -663,7 +670,7 @@ begin
       when TRACING =>  -- pulse has ended
         if trace_last then
           t_state <= IDLE;
-          if a_state=ACCUM and accum_count=0 then
+          if a_state=ACCUM and last_accum_count then
             state <= AVERAGE;
           else
             state <= IDLE;
@@ -889,6 +896,8 @@ begin
       case a_state is 
       when IDLE =>
         accum_count <= (ACCUMULATE_N => '0', others => '1');
+        next_accum_count <= to_unsigned(2**ACCUMULATE_N-2,ACCUMULATE_N+1);
+        last_accum_count <= ACCUMULATE_N=0;
         wait_ready <= FALSE;
         wait_valid <= FALSE;
         if not mux_trace and tflags.trace_type=AVERAGE_TRACE_D and 
@@ -902,7 +911,9 @@ begin
           if stream_int.discard(0) then
             a_state <= ACCUM;
             accumulate <= TRUE;
-            accum_count <= accum_count-1;
+            accum_count <= next_accum_count;
+            next_accum_count <= next_accum_count-1;
+            last_accum_count <= next_accum_count=0;
           else
             wait_ready <= TRUE;
             wait_valid <= TRUE;
@@ -910,10 +921,12 @@ begin
         end if;
       when ACCUM =>
         --FIXME what if trace last and dumped, is that possible?
-        if trace_last and accum_count/=0 then
-          accum_count <= accum_count-1;
+        if trace_last and not last_accum_count then
+          accum_count <= next_accum_count;
+          next_accum_count <= next_accum_count-1;
+          last_accum_count <= next_accum_count=0;
         end if;
-        if accumulate_done then
+        if average_last then
           a_state <= STOPED;
           rd_chunk_state <= IDLE;
         end if;

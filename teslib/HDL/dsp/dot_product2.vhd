@@ -41,7 +41,7 @@ port(
   stop:in boolean;
   
   sample:in signed(WIDTH-1 downto 0);
-  sample_valid:in boolean;
+  sample_valid:in boolean; --used for dot product with stride
   trace_start:in boolean;
   trace_last:in boolean;
   
