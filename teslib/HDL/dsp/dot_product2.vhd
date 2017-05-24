@@ -116,7 +116,7 @@ signal ram_in:std_logic_vector(ACCUMULATOR_WIDTH-1 downto 0);
 begin
 average_last <= last_pipe(DEPTH);
 dot_product <= signed(p_out);
-dot_product_valid <= last_pipe(DEPTH);
+dot_product_valid <= dp_valid_pipe(DEPTH);
 
 --max ACCUMULATE_N?
 writePort:process(clk)
@@ -246,7 +246,7 @@ begin
   end if;
 end process pipeline;
 
-c <= resize(dout, 48);
+c <= resize(dout,48);
 a <= resize(dout,30);
 inputMux:process(
   accum_pipe,dout,first_pipe,sample_pipe,send_pipe,state,start_pipe
@@ -302,7 +302,7 @@ generic map (
   CREG => 1,                         -- Number of pipeline stages for C (0 or 1)
   DREG => 0,                         -- Number of pipeline stages for D (0 or 1)
   INMODEREG => 0,                    -- Number of pipeline stages for INMODE (0 or 1)
-  MREG => 0,                         -- Number of multiplier pipeline stages (0 or 1)
+  MREG => 1,                         -- Number of multiplier pipeline stages (0 or 1)
   OPMODEREG => 1,                    -- Number of pipeline stages for OPMODE (0 or 1)
   PREG => 1,                         -- Number of pipeline stages for P (0 or 1)
   USE_SIMD => "ONE48"                -- SIMD selection ("ONE48", "TWO24", "FOUR12")
