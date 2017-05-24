@@ -49,7 +49,7 @@ architecture RTL of measurement_framer12 is
 
 --  
 constant CHUNKS:integer:=BUS_CHUNKS;
-constant DEPTH:integer:=2;
+constant DEPTH:integer:=3;
 
 type write_buffer is array (DEPTH-1 downto 0) of streambus_t;
 signal queue:write_buffer;
@@ -95,7 +95,8 @@ constant trace_chunk_len:unsigned(TRACE_CHUNK_LENGTH_BITS-1 downto 0)
 --         :=to_unsigned((268/16)+1,FRAMER_ADDRESS_BITS+1);
          :=to_unsigned(TRACE_CHUNKS,TRACE_CHUNK_LENGTH_BITS);
 constant TRACE_STRIDE_BITS:integer:=5;
-constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0):=(others => '0');
+constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0)
+         :=(others => '0');
 -- trace signals
 signal trace_reg:std_logic_vector(BUS_DATABITS-1 downto 16);
 --signal trace_valid:boolean;
@@ -115,7 +116,7 @@ signal overflow_int,error_int:boolean;
 --signal stamp_error:boolean;
 --signal trace_overflow,single_overflow,trace_overflow_valid,trace_done:boolean;
 --signal tracing:boolean;
-signal trace_writing:boolean;
+--signal trace_writing:boolean;
 signal enable_reg:boolean;
 --signal trace_done:boolean;
 signal can_q_trace,can_q_pulse,can_q_single:boolean;
@@ -137,7 +138,7 @@ type queueFSMstate is (IDLE,SINGLE,WORD0,WORD1);
 signal q_state:queueFSMstate;
 type strideFSMstate is (INIT,IDLE,CAPTURE);
 signal s_state:strideFSMstate;
-type accumFSMstate is (IDLE,WAITING,ACCUM,SEND,DOT,STOPED);
+type accumFSMstate is (IDLE,WAITING,ACCUM,SEND,STOPED);
 signal a_state:accumFSMstate;
 
 signal acc_ready:boolean;
@@ -160,7 +161,7 @@ signal pending:signed(3 downto 0):=(others => '0');
 signal stop:boolean;
 signal dp_sample:signed(WIDTH-1 downto 0);
 signal dp_trace_start:boolean;
-signal dp_trace_last:boolean;
+signal dp_trace_last,accum_trace_last:boolean;
 signal accumulate:boolean;
 signal dot_product_go:boolean;
 signal dot_product:signed(47 downto 0);
@@ -168,6 +169,7 @@ signal dot_product_valid:boolean;
 signal accumulate_done:boolean;
 signal multipeak,multipulse:boolean;
 signal dp_sample_valid : boolean;
+signal dp_trace_go:boolean;
 --signal head:boolean;
 --
 --attribute keep:string;
@@ -307,8 +309,10 @@ begin
   end if;
 end process traceSignalMux;
 
-trace_writing <= s_state=CAPTURE and wr_chunk_state=WRITE;
-trace_last <= trace_writing and last_trace_count and can_write_trace;
+trace_last <= s_state=CAPTURE and last_trace_count and 
+              ((wr_chunk_state=WRITE and can_write_trace) or
+              wr_chunk_state=DOTPRODUCT);
+              
 main:process(clk)
 begin
   if rising_edge(clk) then
@@ -323,7 +327,6 @@ begin
       pulse_valid <= FALSE;
       pulse_peak_valid <= FALSE;
       pulse_overflow <= FALSE;
-      trace_address <= (others => '0');
       stride_count <= (others => '0');
       area_overflow <= FALSE;
       enable_reg <= FALSE;
@@ -340,6 +343,7 @@ begin
       multipeak <= FALSE;
       
       last_trace_count <= FALSE;
+      dot_product_go <= FALSE;
       
     else
       
@@ -351,6 +355,7 @@ begin
       commit_int <= FALSE;
       frame_we <= (others => FALSE);
       start_trace <= FALSE;
+      dot_product_go <= FALSE;
       
       -- event writing
       if not (s_state=CAPTURE and wr_chunk_state=WRITE) then 
@@ -375,7 +380,7 @@ begin
             frame_we <= (others => TRUE);
             frame_address <= to_unsigned(0,ADDRESS_BITS);
             commit_frame <= TRUE;
-            commit_int <= mux_trace;
+            commit_int <= mux_trace or a_state=STOPED;
             q_state <= IDLE;
           when WORD1 =>
             frame_word <= queue(1);
@@ -415,6 +420,7 @@ begin
         
         trace_count <= trace_chunk_len-1;
         next_trace_count <= trace_chunk_len-2;
+        last_trace_count <= FALSE;
         if tflags.trace_type=SINGLE_TRACE_D then
           trace_address <= resize(m.size,ADDRESS_BITS);
         elsif state=AVERAGE then
@@ -423,11 +429,15 @@ begin
           trace_address <= to_unsigned(0,ADDRESS_BITS);
         end if;
         
-        wr_chunk_state <= STORE0;
-        if (state=IDLE or state=FIRSTPULSE or state=WAITPULSEDONE or 
-           state=AVERAGE) and start_trace then
-          t_state <= CAPTURE;
-        end if; 
+        if start_trace then
+          if tflags.trace_type=DOT_PRODUCT_D then
+            t_state <= CAPTURE; 
+            wr_chunk_state <= DOTPRODUCT; 
+          elsif state/=HOLD then 
+            t_state <= CAPTURE; 
+            wr_chunk_state <= STORE0; 
+          end if; 
+        end if;
         
       when CAPTURE =>
           
@@ -464,19 +474,26 @@ begin
             frame_word.discard(0) <= not mux_trace;
             frame_address <= trace_address;
             if last_trace_count then
-              commit_frame <= not mux_trace;
+              -- FIXME needs to be state based
+              commit_frame <= a_state=ACCUM or a_state=WAITING;
               frame_length <= length;
             else
               trace_address <= trace_address+1;
               trace_count <= next_trace_count;
-              next_trace_count <= next_trace_count;
+              next_trace_count <= next_trace_count-1;
               last_trace_count <= next_trace_count=0;
             end if;
           end if;
         
         when DOTPRODUCT => 
-          if dot_product_valid and not start_trace then 
-            t_state <= IDLE;
+          if s_state=CAPTURE then
+            if not last_trace_count then
+              trace_count <= next_trace_count;
+              next_trace_count <= next_trace_count-1;
+              last_trace_count <= next_trace_count=0;
+            else
+              t_state <= IDLE;
+            end if;
           end if;
         end case;
         
@@ -496,8 +513,8 @@ begin
                               
         tflags.trace_signal <= m.trace_signal;
         tflags.trace_type <= m.trace_type;
-        mux_trace <= pre_detection=TRACE_DETECTION_D and 
-                     m.trace_type=SINGLE_TRACE_D;
+        mux_trace <= (pre_detection=TRACE_DETECTION_D and 
+                     m.trace_type=SINGLE_TRACE_D);
         
         case m.pre_eflags.event_type.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
@@ -515,6 +532,7 @@ begin
             
           when DOT_PRODUCT_D => 
             length <= resize(m.pre_size,ADDRESS_BITS+1)+1;
+            dot_product_go <= TRUE;
           end case;
         end case;
       end if;
@@ -648,7 +666,7 @@ begin
             --FIXME
             -- trace is complete before pulse end
             t_state <= IDLE;
-            if mux_trace then
+            if mux_trace or wr_chunk_state=DOTPRODUCT then
               state <= WAITPULSEDONE;
             elsif a_state=ACCUM and last_accum_count then
               state <= AVERAGE;
@@ -760,7 +778,6 @@ begin
       when AVERAGE =>
         start_trace <= start_average;
         if trace_last then
-            --FIXME
             queue(0) <= to_streambus(average_trace,0,ENDIAN); 
             frame_length <= length+1;
             commiting <= TRUE;
@@ -770,6 +787,8 @@ begin
             state <= HOLD;
             multipeak <= FALSE;
             multipulse <= FALSE;
+            mux_trace <= FALSE;
+            t_state <= IDLE;
         end if;
         
       when HOLD =>
@@ -834,7 +853,7 @@ begin
           error_int <= TRUE;
           pulse_stamped <= FALSE;
         else
-          start_int <= mux_trace;  
+          start_int <= mux_trace or wr_chunk_state=DOTPRODUCT;  
           pulse_stamped <= TRUE;
         end if;
       end if; 
@@ -867,16 +886,23 @@ port map(
 );
 
 streamMux:process(
-  a_state,acc_ready,reg_ready,stream_int,valid_int,wait_ready,wait_valid 
+  a_state,acc_ready,reg_ready,stream_int,valid_int,wait_ready,wait_valid, 
+  dp_trace_start,start_trace,accum_trace_last,trace_last, acc_chunk, trace_chunk 
 )
 begin
+  dp_sample <= signed(acc_chunk);
+  dp_trace_go <= dp_trace_start;
+  dp_trace_last <= trace_last;
   if a_state=WAITING then
     ready_int <= wait_ready;
     reg_valid <= wait_valid;
   elsif a_state=ACCUM then
+    dp_trace_last <= accum_trace_last;
     ready_int <= acc_ready;
     reg_valid <= FALSE;
   else
+    dp_sample <= signed(set_endianness(trace_chunk,ENDIAN));
+    dp_trace_go <= start_trace;
     ready_int <= reg_ready;
     reg_valid <= valid_int;
     reg_stream <= stream_int;
@@ -900,8 +926,7 @@ begin
         last_accum_count <= ACCUMULATE_N=0;
         wait_ready <= FALSE;
         wait_valid <= FALSE;
-        if not mux_trace and tflags.trace_type=AVERAGE_TRACE_D and 
-           enable_reg then
+        if tflags.trace_type=AVERAGE_TRACE_D and enable_reg then
           a_state <= WAITING;
         end if;
       when WAITING => 
@@ -926,21 +951,22 @@ begin
           next_accum_count <= next_accum_count-1;
           last_accum_count <= next_accum_count=0;
         end if;
-        if average_last then
-          a_state <= STOPED;
+        if accumulate_done then
+          a_state <= SEND;
           rd_chunk_state <= IDLE;
         end if;
       when SEND =>
         if average_last then
           a_state <= STOPED;
         end if;
-      when DOT =>
-        null;
       when STOPED =>
-        null;
+        if tflags.trace_type/=AVERAGE_TRACE_D and enable_reg then
+          a_state <= IDLE;
+        end if;
       end case;
       
-      dp_trace_last <= FALSE;
+      accum_trace_last <= FALSE;
+      dp_trace_start <= FALSE;
       case rd_chunk_state is 
       when IDLE =>
         acc_ready <= FALSE;
@@ -970,9 +996,8 @@ begin
         acc_chunk <= set_endianness(stream_int.data(15 downto 0),ENDIAN);
         acc_ready <= FALSE;
         if stream_int.last(0) then
-          dp_trace_last <= TRUE;
+          accum_trace_last <= TRUE;
           rd_chunk_state <= WAIT_TRACE;
-          dp_trace_start <= FALSE;
         else
           rd_chunk_state <= READ3; 
         end if;
@@ -981,7 +1006,6 @@ begin
   end if;
 end process accumFSM;
 
-dp_sample <= signed(acc_chunk);
 dotproductDSP:entity work.dot_product2
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
@@ -996,7 +1020,7 @@ port map(
   stop => stop,
   sample => dp_sample,
   sample_valid => dp_sample_valid,
-  trace_start => dp_trace_start,
+  trace_start => dp_trace_go,
   trace_last => dp_trace_last,
   accumulate => accumulate,
   accumulate_done => accumulate_done,

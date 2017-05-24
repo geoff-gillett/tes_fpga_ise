@@ -81,9 +81,10 @@ constant DEPTH:integer:=RD_LAT+DSP_LAT+1;
 signal address:vector_address;
 signal addr_pipe:address_pipe(1 to DEPTH);
 signal sample_pipe:signal_pipe(1 to DEPTH);
-signal accum_pipe,last_pipe:boolean_vector(1 to DEPTH);
-signal send_pipe,first_pipe:boolean_vector(1 to DEPTH);
-signal start_pipe:boolean_vector(0 to DEPTH);
+signal accum_pipe,last_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
+signal send_pipe,first_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
+signal start_pipe:boolean_vector(0 to DEPTH):=(others => FALSE);
+signal dp_valid_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 
 -- DSP48E input signals
 signal a:std_logic_vector(29 downto 0):=(others => '0');
@@ -114,6 +115,8 @@ signal ram_in:std_logic_vector(ACCUMULATOR_WIDTH-1 downto 0);
 
 begin
 average_last <= last_pipe(DEPTH);
+dot_product <= signed(p_out);
+dot_product_valid <= last_pipe(DEPTH);
 
 --max ACCUMULATE_N?
 writePort:process(clk)
@@ -239,6 +242,7 @@ begin
     send_pipe <= (state=SENDAVERAGE) & send_pipe(1 to DEPTH-1);
     sample_pipe <= sample & sample_pipe(1 to DEPTH-1);
     start_pipe <= trace_start & start_pipe(0 to DEPTH-1);
+    dp_valid_pipe <= trace_last & dp_valid_pipe(1 to DEPTH-1);
   end if;
 end process pipeline;
 
@@ -249,6 +253,7 @@ inputMux:process(
 )
 begin
   b <= resize(sample_pipe(RD_LAT),18);
+  carryin <= '0';
   if state=DOTPRODUCT then
     if start_pipe(RD_LAT) then
       opmode <= "0000101";
@@ -258,9 +263,7 @@ begin
   elsif send_pipe(RD_LAT) then --read average
     b <= resize(ROUND,18);
     opmode <= "0001111"; --A:B + C (sample + rounding mask)
-    if ACCUMULATE_N=0 then
-      carryin <= '0';
-    else
+    if ACCUMULATE_N/=0 then
       carryin <= dout(ACCUMULATOR_WIDTH-1);
     end if;
   elsif accum_pipe(RD_LAT) then --write average
@@ -269,7 +272,6 @@ begin
     else
       opmode <= "0001111"; --A:B + C (sample + dout)
     end if;
-    carryin <= '0';
   end if;
   --need dot product mux muxstate pipe?
 end process inputMux;
