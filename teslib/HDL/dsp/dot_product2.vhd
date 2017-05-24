@@ -282,7 +282,7 @@ generic map (
   A_INPUT => "DIRECT",               -- Selects A input source, "DIRECT" (A port) or "CASCADE" (ACIN port)
   B_INPUT => "DIRECT",               -- Selects B input source, "DIRECT" (B port) or "CASCADE" (BCIN port)
   USE_DPORT => FALSE,                 -- Select D port usage (TRUE or FALSE)
-  USE_MULT => "NONE",            -- Select multiplier usage ("MULTIPLY", "DYNAMIC", or "NONE")
+  USE_MULT => "DYNAMIC",            -- Select multiplier usage ("MULTIPLY", "DYNAMIC", or "NONE")
   -- Pattern Detector Attributes: Pattern Detection Configuration
   AUTORESET_PATDET => "NO_RESET",    -- "NO_RESET", "RESET_MATCH", "RESET_NOT_MATCH" 
   MASK => X"000000000000",           -- 48-bit mask value for pattern detect (1=ignore)
@@ -302,7 +302,7 @@ generic map (
   CREG => 1,                         -- Number of pipeline stages for C (0 or 1)
   DREG => 0,                         -- Number of pipeline stages for D (0 or 1)
   INMODEREG => 0,                    -- Number of pipeline stages for INMODE (0 or 1)
-  MREG => 1,                         -- Number of multiplier pipeline stages (0 or 1)
+  MREG => 0,                         -- Number of multiplier pipeline stages (0 or 1)
   OPMODEREG => 1,                    -- Number of pipeline stages for OPMODE (0 or 1)
   PREG => 1,                         -- Number of pipeline stages for P (0 or 1)
   USE_SIMD => "ONE48"                -- SIMD selection ("ONE48", "TWO24", "FOUR12")
@@ -363,7 +363,7 @@ port map (
   RSTCTRL => reset,               -- 1-bit input: Reset input for OPMODEREG and CARRYINSELREG
   RSTD => '0',                     -- 1-bit input: Reset input for DREG and ADREG
   RSTM => reset,                     -- 1-bit input: Reset input for MREG
-  RSTP => reset                      -- 1-bit input: Reset input for PREG
+  RSTP => '0' --to_std_logic(start_pipe(RD_LAT))  -- 1-bit input: Reset input for PREG
 );
 
 end architecture SDP;
