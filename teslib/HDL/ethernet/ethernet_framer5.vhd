@@ -141,6 +141,7 @@ type ethernet_header_t is record
 	length:unsigned(15 downto 0);
 	protocol_sequence:unsigned(SEQUENCE_BITS-1 downto 0);
 	event_type:event_type_t;
+	trace_type:trace_type_d;
 	event_size:unsigned(15 downto 0);
 end record;
 
@@ -167,9 +168,10 @@ begin
     slv := set_endianness(e.frame_sequence,endianness) &
            set_endianness(e.protocol_sequence,endianness) &
            set_endianness(e.event_size,endianness) &
-           to_std_logic(0,8) &
-           "0000" 
-           & to_std_logic(e.event_type) & '0';
+--           to_std_logic(0,8) &
+           to_std_logic(e.trace_type,8) &
+           "0000" &
+           to_std_logic(e.event_type) & '0';
 	when others => 
 		assert FALSE report "bad word number in ethernet_header to_streambus()"	
 						 severity ERROR;
@@ -338,7 +340,7 @@ buffer_full <= not eventstream_ready_int;
 buffer_empty <= not event_s_valid; -- questionable
 
 lookahead_type <= to_event_type_t(lookahead);
-lookahead_trace_type <= to_trace_type_d(lookahead.data(47 downto 46));
+lookahead_trace_type <= to_trace_type_d(lookahead.data(39 downto 38));
 
 -- swap back to big endian if needed
 lookahead_size 
@@ -471,16 +473,12 @@ begin
 --			end if;
 			
 			if arbiter_state=MCA then
-				
-				--if frame_state=HEADER0 then
-					header.ethernet_type <= x"88B6";
-				--elsif frame_state=HEADER1 then
-					header.protocol_sequence <= mca_sequence;
-				--end if;
-				
+        header.ethernet_type <= x"88B6";
+        header.protocol_sequence <= mca_sequence;
 			elsif arbiter_state=EVENT then
   			header.ethernet_type <= x"88B5";
-  			if header.event_type.detection=TRACE_DETECTION_D then
+  			if header.event_type.detection=TRACE_DETECTION_D and 
+  			   header.trace_type/=DOT_PRODUCT_D then
           header.protocol_sequence <= trace_sequence;
 				else
 				  header.protocol_sequence <= event_sequence;
@@ -501,7 +499,8 @@ begin
 				end if;
 				
 				if arbiter_state=EVENT then
-				  if header.event_type.detection=TRACE_DETECTION_D then
+				  if header.event_type.detection=TRACE_DETECTION_D and 
+				     header.trace_type/=DOT_PRODUCT_D then
 				    if trace_last then
               trace_sequence <= (others => '0');
               trace_last <= FALSE;

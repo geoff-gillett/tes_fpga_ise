@@ -21,19 +21,19 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="134798000000fs"></ZoomStartTime>
-      <ZoomEndTime time="141173000001fs"></ZoomEndTime>
-      <Cursor1Time time="137648000000fs"></Cursor1Time>
+      <ZoomStartTime time="4988333000fs"></ZoomStartTime>
+      <ZoomEndTime time="18398333001fs"></ZoomEndTime>
+      <Cursor1Time time="7223333000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="12" />
    <wave_markers>
       <marker time="22988000000" label="" />
-      <marker time="21984000000" label="" />
       <marker time="24992000000" label="" />
       <marker time="26032000000" label="" />
       <marker time="26044000000" label="" />
       <marker time="9137758000" label="" />
       <marker time="20960000000" label="" />
+      <marker time="21984000000" label="" />
    </wave_markers>
    <wvobject fp_name="group49" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -2195,6 +2195,7 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace" type="array">
          <obj_property name="ElementShortName">trace</obj_property>
          <obj_property name="ObjectShortName">trace</obj_property>
+         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_chunk_debug" type="array">
          <obj_property name="ElementShortName">trace_chunk_debug[15:0]</obj_property>
@@ -2219,6 +2220,10 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_last" type="other">
          <obj_property name="ElementShortName">trace_last</obj_property>
          <obj_property name="ObjectShortName">trace_last</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_done" type="other">
+         <obj_property name="ElementShortName">trace_done</obj_property>
+         <obj_property name="ObjectShortName">trace_done</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_address" type="array">
          <obj_property name="ElementShortName">trace_address[9:0]</obj_property>
@@ -2641,7 +2646,6 @@
    <wvobject fp_name="group845" type="group">
       <obj_property name="label">dot product</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproductDSP/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -3952,6 +3956,7 @@
    <wvobject fp_name="group496" type="group">
       <obj_property name="label">ethernet framer</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -4138,6 +4143,12 @@
          <obj_property name="ElementShortName">lookahead_type</obj_property>
          <obj_property name="ObjectShortName">lookahead_type</obj_property>
          <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_trace_type" type="other">
+         <obj_property name="ElementShortName">lookahead_trace_type</obj_property>
+         <obj_property name="ObjectShortName">lookahead_trace_type</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_head" type="other">

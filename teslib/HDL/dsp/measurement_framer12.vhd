@@ -99,33 +99,22 @@ constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0)
          :=(others => '0');
 -- trace signals
 signal trace_reg:std_logic_vector(BUS_DATABITS-1 downto 16);
---signal trace_valid:boolean;
 signal trace_chunk,trace_chunk_debug:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal acc_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
---signal trace_started:boolean;
 signal trace_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal trace_count:unsigned(TRACE_CHUNK_LENGTH_BITS-1 downto 0);
 signal next_trace_count:unsigned(TRACE_CHUNK_LENGTH_BITS-1 downto 0);
 signal last_trace_count:boolean;
---signal trace_size:unsigned(FRAMER_ADDRESS_BITS downto 0);
 signal start_trace:boolean;
---signal trace_wr_en:boolean;
 signal commiting:boolean;
 signal overflow_int,error_int:boolean;
---signal stamp_error:boolean;
---signal trace_overflow,single_overflow,trace_overflow_valid,trace_done:boolean;
---signal tracing:boolean;
---signal trace_writing:boolean;
 signal enable_reg:boolean;
---signal trace_done:boolean;
 signal can_q_trace,can_q_pulse,can_q_single:boolean;
 signal can_write_trace:boolean;
 signal trace_last:boolean;
 
 --FSMs
---type pulseFSMstate is (IDLE_S,STARTED_S); --,DUMP_S,ERROR_S,AREADUMP_S,END_S);
---signal p_state:pulseFSMstate;
 type FSMstate is (IDLE,FIRSTPULSE,TRACING,WAITPULSEDONE,AVERAGE,HOLD);
 signal state:FSMstate;
 type wrChunkState is (STORE0,STORE1,STORE2,WRITE);
@@ -154,7 +143,6 @@ signal mux_trace:boolean;
 signal start_average,average_last:boolean;
 
 --debugging
---signal flags:std_logic_vector(7 downto 0);
 signal accum_count,next_accum_count:unsigned(ACCUMULATE_N downto 0);
 signal last_accum_count:boolean;
 signal pending:signed(3 downto 0):=(others => '0');
@@ -162,7 +150,6 @@ signal stop:boolean;
 signal dp_sample:signed(WIDTH-1 downto 0);
 signal dp_trace_start:boolean;
 signal dp_trace_last,accum_trace_last:boolean;
---signal accumulate:boolean;
 signal dot_product_go:boolean;
 signal dot_product:signed(47 downto 0);
 signal dot_product_valid:boolean;
@@ -500,7 +487,7 @@ begin
             if last_trace_count and (a_state=ACCUM or a_state=WAITING) then
 --              commit_frame <= a_state=ACCUM or a_state=WAITING;
               commit_frame <= TRUE;
-              frame_length <= trace_chunk_len;
+              frame_length <= resize(trace_chunk_len,ADDRESS_BITS+1);
             else
               trace_address <= trace_address+1;
               trace_count <= next_trace_count;
@@ -688,7 +675,7 @@ begin
             end if;
           end if;
         else
-          if detection=TRACE_DETECTION_D and (trace_done or trace_last) then
+          if detection=TRACE_DETECTION_D and trace_last then
             --FIXME
             -- trace is complete before pulse end
             t_state <= IDLE;
@@ -710,7 +697,8 @@ begin
         end if;
         
       when TRACING =>  -- pulse has ended
-        if trace_last then
+        if trace_last or trace_done then
+          trace_done <= FALSE;
           t_state <= IDLE;
           if a_state=ACCUM and last_accum_count then
             state <= AVERAGE;
@@ -733,7 +721,6 @@ begin
         else
           if m.pulse_start then
             if tflags.trace_type=AVERAGE_TRACE_D then
---              dump_int <= pulse_stamped and mux_trace; 
               multipulse <= TRUE;
               pulse_stamped <= FALSE;
               state <= IDLE;
