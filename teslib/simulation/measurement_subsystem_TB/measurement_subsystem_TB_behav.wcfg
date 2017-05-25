@@ -21,9 +21,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="25921000000fs"></ZoomStartTime>
-      <ZoomEndTime time="26091600001fs"></ZoomEndTime>
-      <Cursor1Time time="26044000000fs"></Cursor1Time>
+      <ZoomStartTime time="1645333334fs"></ZoomStartTime>
+      <ZoomEndTime time="18305333335fs"></ZoomEndTime>
+      <Cursor1Time time="7576000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="12" />
    <wave_markers>
@@ -2266,6 +2266,26 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_last" type="other">
          <obj_property name="ElementShortName">trace_last</obj_property>
          <obj_property name="ObjectShortName">trace_last</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/can_write_trace" type="other">
+         <obj_property name="ElementShortName">can_write_trace</obj_property>
+         <obj_property name="ObjectShortName">can_write_trace</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dot_product_active" type="other">
+         <obj_property name="ElementShortName">dot_product_active</obj_property>
+         <obj_property name="ObjectShortName">dot_product_active</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/last_stride" type="other">
+         <obj_property name="ElementShortName">last_stride</obj_property>
+         <obj_property name="ObjectShortName">last_stride</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_count" type="array">
+         <obj_property name="ElementShortName">trace_count[6:0]</obj_property>
+         <obj_property name="ObjectShortName">trace_count[6:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/last_trace_count" type="other">
+         <obj_property name="ElementShortName">last_trace_count</obj_property>
+         <obj_property name="ObjectShortName">last_trace_count</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/t_state" type="other">
          <obj_property name="ElementShortName">t_state</obj_property>

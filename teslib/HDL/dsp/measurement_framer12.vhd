@@ -393,6 +393,7 @@ begin
       --trace stride FSM
       case s_state is 
       when INIT =>
+        last_stride <= trace_stride=0;
         if start_trace then
           s_state <= CAPTURE;
         end if;
@@ -476,8 +477,10 @@ begin
           trace_last <= can_write_trace and last_trace_count and last_stride;
           if not can_write_trace then
             t_state <= IDLE;
+            trace_last <= FALSE;
           elsif s_state=CAPTURE then
             wr_chunk_state <= STORE0;
+            trace_last <= FALSE;
             if not dot_product_active then --don't write trace to framer
               frame_we <= (others => TRUE);
               frame_word.data(63 downto 16) <= trace_reg(63 downto 16);
@@ -615,10 +618,8 @@ begin
               pulse_reg <= pulse;
               state <= TRACING;
               if (m.pulse_start and t_state=CAPTURE) then
---                 (m.peak_start and m.eflags.peak_number/=0) then
                 if tflags.trace_type=AVERAGE_TRACE_D and not trace_last then
                   --valid multi-pulse trace -- dump
---                  dump_int <= pulse_stamped and mux_trace; 
                   pulse_stamped <= FALSE;
                   state <= IDLE;
                   t_state <= IDLE;
