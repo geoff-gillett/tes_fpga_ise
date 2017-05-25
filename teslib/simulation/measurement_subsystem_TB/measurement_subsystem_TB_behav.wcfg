@@ -21,9 +21,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="7249999999fs"></ZoomStartTime>
-      <ZoomEndTime time="33750000000fs"></ZoomEndTime>
-      <Cursor1Time time="15230000000fs"></Cursor1Time>
+      <ZoomStartTime time="25921000000fs"></ZoomStartTime>
+      <ZoomEndTime time="26091600001fs"></ZoomEndTime>
+      <Cursor1Time time="26044000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="12" />
    <wave_markers>
@@ -32,6 +32,8 @@
       <marker time="20960000000" label="" />
       <marker time="21984000000" label="" />
       <marker time="24992000000" label="" />
+      <marker time="26032000000" label="" />
+      <marker time="26044000000" label="" />
    </wave_markers>
    <wvobject fp_name="group49" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -2126,6 +2128,16 @@
          <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dot_product_valid" type="other">
+         <obj_property name="ElementShortName">dot_product_valid</obj_property>
+         <obj_property name="ObjectShortName">dot_product_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pending" type="array">
+         <obj_property name="ElementShortName">pending[3:0]</obj_property>
+         <obj_property name="ObjectShortName">pending[3:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/measurements.trace_signal" type="other">
          <obj_property name="ElementShortName">.trace_signal</obj_property>
          <obj_property name="ObjectShortName">measurements.trace_signal</obj_property>
@@ -2166,24 +2178,6 @@
          <obj_property name="ElementShortName">commit_frame</obj_property>
          <obj_property name="ObjectShortName">commit_frame</obj_property>
          <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/start" type="other">
-         <obj_property name="ElementShortName">start</obj_property>
-         <obj_property name="ObjectShortName">start</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/commit" type="other">
-         <obj_property name="ElementShortName">commit</obj_property>
-         <obj_property name="ObjectShortName">commit</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dump" type="other">
-         <obj_property name="ElementShortName">dump</obj_property>
-         <obj_property name="ObjectShortName">dump</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_chunk" type="array">
@@ -2619,10 +2613,6 @@
          <obj_property name="ElementShortName">trace_last</obj_property>
          <obj_property name="ObjectShortName">trace_last</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproductDSP/accumulate" type="other">
-         <obj_property name="ElementShortName">accumulate</obj_property>
-         <obj_property name="ObjectShortName">accumulate</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproductDSP/accumulate_done" type="other">
          <obj_property name="ElementShortName">accumulate_done</obj_property>
          <obj_property name="ObjectShortName">accumulate_done</obj_property>
@@ -2721,8 +2711,15 @@
          <obj_property name="ObjectShortName">dot_product[47:0]</obj_property>
          <obj_property name="Radix">REALRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_fractionWidth">6</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
+         <obj_property name="AnalogYRangeMin">-1000000000.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">1000000000.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproductDSP/p_out" type="array">
          <obj_property name="ElementShortName">p_out[47:0]</obj_property>

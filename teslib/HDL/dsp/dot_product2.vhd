@@ -46,7 +46,7 @@ port(
   trace_last:in boolean;
   
   --FSM controls
-  accumulate:in boolean; --FLAG starts 
+  accumulate_start:in boolean; --FLAG starts 
   accumulate_done:out boolean;
   dp_start:in boolean;
   
@@ -98,7 +98,7 @@ constant MASK_SHIFT:integer:=48 - ACCUMULATE_N + 1;
 constant ROUND:std_logic_vector(47 downto 0)
          :=std_logic_vector(shift_right(ONES,MASK_SHIFT));
 
-type FSMstate is (IDLE,ACCUM,WAITSAMPLE,SENDAVERAGE,DOTPRODUCT,HOLD);
+type FSMstate is (IDLE,ACCUM,WAITSAMPLE,SENDAVERAGE,DOTPRODUCT);
 signal state:FSMstate;
 signal send_last:boolean;
 signal acc_count:unsigned(ACCUMULATE_N downto 0);
@@ -166,7 +166,7 @@ begin
       when IDLE =>
         acc_count <= (ACCUMULATE_N => '1',others => '0');
         if not stop then
-          if accumulate then
+          if accumulate_start then
             state <= WAITSAMPLE;
             first_trace <= TRUE;
           elsif dp_start then
@@ -175,7 +175,6 @@ begin
         end if;
         
       when WAITSAMPLE => --WAITING for framer
---        write <= FALSE;
         if stop then
           state <= IDLE;
         elsif acc_count=0 then
@@ -184,7 +183,6 @@ begin
         elsif trace_start then
           acc_count <= acc_count-1;
           address <= (others => '0');
---          write <= TRUE;
           state <= ACCUM;
         end if;
         
@@ -196,7 +194,6 @@ begin
             state <= WAITSAMPLE;
             first_trace <= FALSE;
             address <= (others => '0');
---            write <= FALSE;
           else
             address <= address+1;
           end if;
@@ -205,10 +202,8 @@ begin
       when SENDAVERAGE =>
         address <= address+1;
         send_last <= address=(TRACE_CHUNKS*4)-2;
-        if stop then
+        if send_last then
           state <= IDLE;
-        elsif send_last then
-          state <= HOLD;
         end if;
         
       when DOTPRODUCT =>
@@ -220,12 +215,6 @@ begin
           address <= address+1;
         end if;
         
-      when HOLD =>
-        if stop then
-          state <= IDLE;
-        elsif dp_start then
-          state <= DOTPRODUCT;
-        end if;
       end case;
     end if;
   end if;
