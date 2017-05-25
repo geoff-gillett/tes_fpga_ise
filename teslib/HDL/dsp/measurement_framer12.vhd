@@ -62,7 +62,7 @@ signal pulse,pulse_reg:pulse_detection_t;
 signal pulse_peak:pulse_peak_t;
 signal pulse_peak_word,dot_product_word:streambus_t;
 signal trace,pulse_reg_trace,average_trace:trace_detection_t;
-signal tflags,atflags:trace_flags_t;
+signal tflags,atflags,dpflags:trace_flags_t;
 
 --signal framer_full:boolean;
 
@@ -103,6 +103,7 @@ signal trace_reg:std_logic_vector(BUS_DATABITS-1 downto 16);
 signal trace_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal acc_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
+signal next_stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 --signal trace_started:boolean;
 signal trace_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal trace_count:unsigned(TRACE_CHUNK_LENGTH_BITS-1 downto 0);
@@ -134,7 +135,7 @@ type rdChunkState is (IDLE,WAIT_TRACE,READ3,READ2,READ1,READ0);
 signal rd_chunk_state:rdChunkState;
 type traceFSMstate is (IDLE,CAPTURE,DONE);
 signal t_state:traceFSMstate;
-type queueFSMstate is (IDLE,SINGLE,WORD0,WORD1,WORD2);
+type queueFSMstate is (IDLE,SINGLE,WORD0,WORD1);
 signal q_state:queueFSMstate;
 type strideFSMstate is (INIT,IDLE,CAPTURE);
 signal s_state:strideFSMstate;
@@ -175,6 +176,9 @@ signal accumulate_go:boolean;
 signal trace_signal:trace_signal_d;
 signal trace_type:trace_type_d;
 signal dot_product_active:boolean;
+signal offset:unsigned(PEAK_COUNT_BITS-1 downto 0);
+signal trace_active:boolean;
+signal last_stride:boolean;
 
 begin
   
@@ -224,30 +228,31 @@ pulse.threshold <= m.timing_threshold;
 --  repeating 8 byte peak records (up to 16) for extra peaks.
 --  | height | rise | minima | time |
 --  | height | low1 |  low2  | time | -- use this for pulse2
-tflags.offset <= m.offset;
+tflags.offset <= offset;
 tflags.stride <= trace_stride;
 tflags.trace_signal <= trace_signal;
 tflags.trace_type <= trace_type;
 
-atflags.offset <= (0 => '1', others => '0');
+--flags for the average trace
+atflags.offset <= offset;
 atflags.stride <= trace_stride;
 atflags.multipeak <= multipeak;
-atflags.multipulse <= multipeak;
+atflags.multipulse <= multipulse;
 atflags.trace_signal <= trace_signal;
 atflags.trace_type <= AVERAGE_TRACE_D;
 
-trace.size <= resize(frame_length,CHUNK_DATABITS);
+trace.size <= resize(length,CHUNK_DATABITS);
 trace.flags <= m.eflags;
 trace.trace_flags <= tflags;
 trace.length <= m.pulse_length;
 trace.offset <= m.time_offset;
 trace.area <= m.pulse_area;
 
-average_trace.size <= resize(frame_length,CHUNK_DATABITS);
+average_trace.size <= resize(length,CHUNK_DATABITS);
 average_trace.flags <= m.eflags;
 average_trace.trace_flags <= atflags;
 
-pulse_reg_trace.size <= resize(frame_length,CHUNK_DATABITS);
+pulse_reg_trace.size <= resize(length,CHUNK_DATABITS);
 pulse_reg_trace.flags <= pulse_reg.flags;
 pulse_reg_trace.trace_flags <= tflags;
 pulse_reg_trace.length <= pulse_reg.length;
@@ -278,7 +283,6 @@ can_q_pulse <= q_state=IDLE;
 pre_full <= free < resize(m.pre_size,ADDRESS_BITS+1);
 full <= free < resize(m.size,ADDRESS_BITS+1);
 
-
 traceSignalMux:process(clk)
 begin
   if rising_edge(clk) then
@@ -302,10 +306,11 @@ end process traceSignalMux;
 
 dot_product_word.last <= (0 => TRUE, others => FALSE);
 
-trace_last <= s_state=CAPTURE and last_trace_count and 
-              (wr_chunk_state=WRITE and can_write_trace); 
+--trace_last <= s_state=CAPTURE and last_trace_count and 
+--              (wr_chunk_state=WRITE and can_write_trace); 
               
 main:process(clk)
+variable space_for_trace:boolean;
 begin
   if rising_edge(clk) then
     if reset='1' then
@@ -319,7 +324,7 @@ begin
       pulse_valid <= FALSE;
       pulse_peak_valid <= FALSE;
       pulse_overflow <= FALSE;
-      stride_count <= (others => '0');
+--      stride_count <= (others => '0');
       area_overflow <= FALSE;
       enable_reg <= FALSE;
       
@@ -349,6 +354,7 @@ begin
       start_trace <= FALSE;
       dot_product_go <= FALSE;
       accumulate_go <= FALSE;
+      space_for_trace:=free > trace_address;
       
       -- event writing
       if not (s_state=CAPTURE and wr_chunk_state=WRITE) then 
@@ -366,7 +372,7 @@ begin
             frame_address <= to_unsigned(0,ADDRESS_BITS);
             frame_we <= (others => TRUE);
             commit_frame <= TRUE;
-            commit_int <= mux_trace;
+            commit_int <= TRUE;
             q_state <= IDLE;
           when WORD0 =>
             frame_word <= queue(0);
@@ -380,11 +386,6 @@ begin
             frame_we <= (others => TRUE);
             frame_address <= to_unsigned(1,ADDRESS_BITS);
             q_state <= WORD0;
-          when WORD2 => --FIXME not used
-            frame_word <= dot_product_word;
-            frame_we <= (others => TRUE);
-            frame_address <= dot_product_address;
-            q_state <= WORD1;
           end case;
         end if;
       end if;
@@ -395,12 +396,19 @@ begin
         if start_trace then
           s_state <= CAPTURE;
         end if;
+        
       when IDLE =>
-        if stride_count=0 or start_trace then
+        if last_stride or start_trace then
           s_state <= CAPTURE;
         else 
           stride_count <= stride_count-1;
+          if trace_stride=0 then
+            last_stride <= TRUE;
+          else
+            last_stride <= stride_count=1;
+          end if;
         end if;
+        
       when CAPTURE =>
         stride_count <= trace_stride;
         if not start_trace then
@@ -413,6 +421,7 @@ begin
       end case;
       
       --trace control FSM
+      trace_last <= FALSE;
       case t_state is
       when IDLE =>
         
@@ -458,16 +467,18 @@ begin
           trace_reg(31 downto 16) <= trace_chunk;
           if s_state=CAPTURE then
             wr_chunk_state <= WRITE;
-            can_write_trace 
-              <= free > trace_address or dot_product_active;
+            trace_last <= (space_for_trace or dot_product_active) and 
+                          last_trace_count and last_stride;
+            can_write_trace <= space_for_trace or dot_product_active;
           end if;
           
         when WRITE => 
+          trace_last <= can_write_trace and last_trace_count and last_stride;
           if not can_write_trace then
             t_state <= IDLE;
           elsif s_state=CAPTURE then
             wr_chunk_state <= STORE0;
-            if not dot_product_active then
+            if not dot_product_active then --don't write trace to framer
               frame_we <= (others => TRUE);
               frame_word.data(63 downto 16) <= trace_reg(63 downto 16);
               frame_word.data(15 downto 0) <= trace_chunk;
@@ -508,6 +519,8 @@ begin
         dot_product_active <= m.trace_type=DOT_PRODUCT_D;
         pulse_peak_last <= m.trace_type/=DOT_PRODUCT_D;
         
+        trace_active <= pre_detection=TRACE_DETECTION_D;
+        
         mux_trace 
           <= pre_detection=TRACE_DETECTION_D and m.trace_type=SINGLE_TRACE_D;
         
@@ -520,15 +533,18 @@ begin
           when SINGLE_TRACE_D =>
             length 
               <= resize(m.pre_size,ADDRESS_BITS+1)+trace_chunk_len;
+            offset <= resize(m.pre_size,PEAK_COUNT_BITS);
               
           when AVERAGE_TRACE_D =>
-            length <= resize(trace_chunk_len,ADDRESS_BITS+1);
+            length <= resize(trace_chunk_len+1,ADDRESS_BITS+1);
             accumulate_go <= TRUE;
+            offset <= to_unsigned(1,PEAK_COUNT_BITS);
             
           when DOT_PRODUCT_D => 
             length <= resize(m.pre_size+1,ADDRESS_BITS+1);
             dot_product_address <= resize(m.pre_size,ADDRESS_BITS);
             dot_product_go <= TRUE;
+            offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             
           end case;
         end case;
@@ -544,16 +560,11 @@ begin
                to_std_logic(resize(dot_product,BUS_DATABITS)),ENDIAN
              ); 
         frame_we <= (others => TRUE);
+        frame_address <= resize(offset,ADDRESS_BITS);
         frame_length <= length;
         commit_frame <= TRUE;
         commit_int <= TRUE;
       end if;
-      
-      -- queue to framer 
-        
-      --initialise new trace and count strides
-      --gather trace words and write to framer
-      --FIXME combine into 0ne FSM
       
       case state is 
       when IDLE =>
