@@ -241,6 +241,7 @@ atflags.multipulse <= multipulse;
 atflags.trace_signal <= trace_signal;
 atflags.trace_type <= AVERAGE_TRACE_D;
 
+--FIXME this will be wrong for the average
 trace.size <= resize(length,CHUNK_DATABITS);
 trace.flags <= m.eflags;
 trace.trace_flags <= tflags;
