@@ -124,7 +124,7 @@ signal mca_last,trace_last:boolean;
 -- frame type switching
 signal lookahead_size,frame_size:unsigned(SIZE_BITS-1 downto 0);
 signal lookahead_type,event_s_type:event_type_t;
-signal lookahead_trace_type:trace_type_d;
+signal lookahead_trace_type,event_s_trace_type:trace_type_d;
 signal event_head:boolean;
 
 --------------------------------------------------------------------------------
@@ -361,6 +361,7 @@ begin
     	if frame_state=HEADER0 then -- header0 is ethernet protocol
     		if arbiter_state=EVENT then
     		  header.event_type <= event_s_type;
+    		  header.trace_type <= event_s_trace_type;
     		  header.event_size <= event_s_size;
         	frame_size <= event_s_size; --FIXME replace with header.size
         	type_change <= FALSE;
@@ -377,6 +378,7 @@ begin
     	
     		if lookahead_head then	
     			event_s_type <= lookahead_type;
+    			event_s_trace_type <= lookahead_trace_type;
     			if frame_state=PAYLOAD then
     				type_change <= header.event_type/=lookahead_type;
     			end if;
