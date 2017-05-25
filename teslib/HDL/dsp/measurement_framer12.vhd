@@ -947,6 +947,7 @@ begin
         if tflags.trace_type=AVERAGE_TRACE_D and enable_reg then
           a_state <= WAITING;
         end if;
+        
       when WAITING => 
         wait_ready <= FALSE;
         wait_valid <= FALSE;
@@ -962,6 +963,7 @@ begin
             wait_valid <= TRUE;
           end if;
         end if;
+        
       when ACCUM =>
         --FIXME what if trace last and dumped, is that possible?
         if trace_last and not last_accum_count then
@@ -973,10 +975,12 @@ begin
           a_state <= SEND;
           rd_chunk_state <= IDLE;
         end if;
+        
       when SEND =>
         if average_last then
           a_state <= STOPED;
         end if;
+        
       when STOPED =>
         if tflags.trace_type/=AVERAGE_TRACE_D and enable_reg then
           a_state <= IDLE;
@@ -996,7 +1000,7 @@ begin
         acc_ready <= FALSE;
         if valid_int then
           rd_chunk_state <= READ3;
---          dp_trace_start <= TRUE;
+          dp_trace_start <= TRUE;
         end if;
       when READ3 =>
         acc_chunk <= set_endianness(stream_int.data(63 downto 48),ENDIAN);
