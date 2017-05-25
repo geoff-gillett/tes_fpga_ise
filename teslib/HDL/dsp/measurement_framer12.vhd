@@ -558,6 +558,8 @@ begin
         frame_we <= (others => TRUE);
         frame_address <= resize(offset,ADDRESS_BITS);
         frame_length <= length;
+        free <= framer_free - length;
+        commiting <= TRUE;
         commit_frame <= TRUE;
         commit_int <= TRUE;
       end if;
@@ -640,7 +642,7 @@ begin
               queue(0) <= to_streambus(area,ENDIAN);
               frame_length <= length;
               commiting <= TRUE;
-              free <= framer_free - frame_length;
+              free <= framer_free - length;
                 
             else -- must be normal pulse
               
@@ -789,10 +791,10 @@ begin
         start_trace <= start_average;
         if trace_last then
             queue(0) <= to_streambus(average_trace,0,ENDIAN); 
-            frame_length <= length+1;
+            frame_length <= length;
             commiting <= TRUE;
             start_int <= TRUE;
-            free <= framer_free - frame_length - 1;
+            free <= framer_free - length;
             q_state <= WORD0;
             state <= HOLD;
             multipeak <= FALSE;

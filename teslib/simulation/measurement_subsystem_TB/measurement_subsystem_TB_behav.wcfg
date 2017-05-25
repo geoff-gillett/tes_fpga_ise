@@ -21,19 +21,14 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="4988333000fs"></ZoomStartTime>
-      <ZoomEndTime time="18398333001fs"></ZoomEndTime>
-      <Cursor1Time time="7223333000fs"></Cursor1Time>
+      <ZoomStartTime time="20958283334fs"></ZoomStartTime>
+      <ZoomEndTime time="21088583335fs"></ZoomEndTime>
+      <Cursor1Time time="20980000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="12" />
    <wave_markers>
-      <marker time="22988000000" label="" />
-      <marker time="24992000000" label="" />
-      <marker time="26032000000" label="" />
-      <marker time="26044000000" label="" />
-      <marker time="9137758000" label="" />
-      <marker time="20960000000" label="" />
-      <marker time="21984000000" label="" />
+      <marker time="22288000000" label="" />
+      <marker time="21992000000" label="" />
    </wave_markers>
    <wvobject fp_name="group49" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -1581,6 +1576,7 @@
    <wvobject fp_name="group189" type="group">
       <obj_property name="label">measurement_framer</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -1899,6 +1895,7 @@
          <obj_property name="ObjectShortName">stream</obj_property>
          <obj_property name="CustomSignalColor">#00FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/stream.discard" type="array">
             <obj_property name="ElementShortName">.discard[3:0]</obj_property>
             <obj_property name="ObjectShortName">stream.discard[3:0]</obj_property>
@@ -2195,7 +2192,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace" type="array">
          <obj_property name="ElementShortName">trace</obj_property>
          <obj_property name="ObjectShortName">trace</obj_property>
-         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_chunk_debug" type="array">
          <obj_property name="ElementShortName">trace_chunk_debug[15:0]</obj_property>
@@ -2212,6 +2208,8 @@
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/start_trace" type="other">
          <obj_property name="ElementShortName">start_trace</obj_property>
@@ -4132,17 +4130,12 @@
          <obj_property name="ObjectShortName">lookahead</obj_property>
          <obj_property name="CustomSignalColor">#F0E68C</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_valid" type="other">
-         <obj_property name="ElementShortName">lookahead_valid</obj_property>
-         <obj_property name="ObjectShortName">lookahead_valid</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_type" type="array">
          <obj_property name="ElementShortName">lookahead_type</obj_property>
          <obj_property name="ObjectShortName">lookahead_type</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_trace_type" type="other">
@@ -4151,15 +4144,35 @@
          <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_valid" type="other">
+         <obj_property name="ElementShortName">lookahead_valid</obj_property>
+         <obj_property name="ObjectShortName">lookahead_valid</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_head" type="other">
          <obj_property name="ElementShortName">lookahead_head</obj_property>
          <obj_property name="ObjectShortName">lookahead_head</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_hs" type="other">
+         <obj_property name="ElementShortName">event_s_hs</obj_property>
+         <obj_property name="ObjectShortName">event_s_hs</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_valid" type="other">
+         <obj_property name="ElementShortName">event_s_valid</obj_property>
+         <obj_property name="ObjectShortName">event_s_valid</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_type" type="array">
          <obj_property name="ElementShortName">event_s_type</obj_property>
          <obj_property name="ObjectShortName">event_s_type</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_trace_type" type="other">
+         <obj_property name="ElementShortName">event_s_trace_type</obj_property>
+         <obj_property name="ObjectShortName">event_s_trace_type</obj_property>
          <obj_property name="CustomSignalColor">#FF00FF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
@@ -4174,42 +4187,6 @@
          <obj_property name="ObjectShortName">header</obj_property>
          <obj_property name="CustomSignalColor">#F0E68C</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/header.destination_address" type="array">
-            <obj_property name="ElementShortName">.destination_address[47:0]</obj_property>
-            <obj_property name="ObjectShortName">header.destination_address[47:0]</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/header.source_address" type="array">
-            <obj_property name="ElementShortName">.source_address[47:0]</obj_property>
-            <obj_property name="ObjectShortName">header.source_address[47:0]</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/header.ethernet_type" type="array">
-            <obj_property name="ElementShortName">.ethernet_type[15:0]</obj_property>
-            <obj_property name="ObjectShortName">header.ethernet_type[15:0]</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/header.frame_sequence" type="array">
-            <obj_property name="ElementShortName">.frame_sequence[15:0]</obj_property>
-            <obj_property name="ObjectShortName">header.frame_sequence[15:0]</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/header.length" type="array">
-            <obj_property name="ElementShortName">.length[15:0]</obj_property>
-            <obj_property name="ObjectShortName">header.length[15:0]</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/header.protocol_sequence" type="array">
-            <obj_property name="ElementShortName">.protocol_sequence[15:0]</obj_property>
-            <obj_property name="ObjectShortName">header.protocol_sequence[15:0]</obj_property>
-            <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/header.event_type" type="array">
-            <obj_property name="ElementShortName">.event_type</obj_property>
-            <obj_property name="ObjectShortName">header.event_type</obj_property>
-            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/header.event_size" type="array">
-            <obj_property name="ElementShortName">.event_size[15:0]</obj_property>
-            <obj_property name="ObjectShortName">header.event_size[15:0]</obj_property>
-         </wvobject>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_size" type="array">
          <obj_property name="ElementShortName">lookahead_size[15:0]</obj_property>
