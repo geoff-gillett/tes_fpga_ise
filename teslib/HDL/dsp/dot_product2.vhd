@@ -236,7 +236,6 @@ begin
 end process pipeline;
 
 c <= resize(dout,48);
-a <= resize(dout,30);
 inputMux:process(
   accum_pipe,dout,first_pipe,sample_pipe,send_pipe,state,start_pipe
 )
@@ -244,18 +243,21 @@ begin
   b <= resize(sample_pipe(RD_LAT),18);
   carryin <= '0';
   if state=DOTPRODUCT then
+    a <= resize(dout,30);
     if start_pipe(RD_LAT) then
-      opmode <= "0000101";
+      opmode <= "0000101"; --axb
     else
-      opmode <= "0100101";
+      opmode <= "0100101"; --accumulate axb
     end if;
   elsif send_pipe(RD_LAT) then --read average
+    a <= (others => '0');
     b <= resize(ROUND,18);
     opmode <= "0001111"; --A:B + C (sample + rounding mask)
     if ACCUMULATE_N/=0 then
       carryin <= dout(ACCUMULATOR_WIDTH-1);
     end if;
   elsif accum_pipe(RD_LAT) then --write average
+    a <= (others => '0');
     if first_pipe(RD_LAT) then
       opmode <= "0000011"; -- A:B + 0 (sample)
     else

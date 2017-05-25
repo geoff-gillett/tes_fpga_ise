@@ -910,6 +910,7 @@ begin
   dp_sample <= signed(acc_chunk);
   dp_trace_go <= dp_trace_start;
   dp_trace_last <= trace_last;
+  reg_stream <= stream_int;
   if a_state=WAITING then
     ready_int <= wait_ready;
     reg_valid <= wait_valid;
@@ -922,7 +923,6 @@ begin
     dp_trace_go <= start_trace;
     ready_int <= reg_ready;
     reg_valid <= valid_int;
-    reg_stream <= stream_int;
   end if;
 end process streamMux;
 
