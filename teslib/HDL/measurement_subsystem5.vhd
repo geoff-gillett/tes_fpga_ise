@@ -398,7 +398,6 @@ valuePipeGen:if VALUE_PIPE_DEPTH/=0 generate
   mcaPipe:process(clk)
   begin
     if rising_edge(clk) then
-      --m_reg <= m;
       value_pipe <= mca_values & value_pipe(1 to VALUE_PIPE_DEPTH-1);
       value_valid_pipe 
         <= mca_value_valids & value_valid_pipe(1 to VALUE_PIPE_DEPTH-1);
@@ -504,7 +503,7 @@ port map(
   ready => mcastream_ready
 );
 
-enet:entity work.ethernet_framer4
+enet:entity work.ethernet_framer5
 generic map(
   MTU_BITS => MTU_BITS,
   FRAMER_ADDRESS_BITS => ETHERNET_FRAMER_ADDRESS_BITS,

@@ -76,7 +76,7 @@ signal frame_length,length:unsigned(ADDRESS_BITS downto 0):=(others => '0');
 signal pulse_valid,pulse_peak_valid:boolean;
 signal pulse_overflow:boolean;
 signal frame_word:streambus_t;
-signal frame_address,dot_product_address:unsigned(ADDRESS_BITS-1 downto 0);
+signal frame_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal frame_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal commit_frame,commit_int,start_int,dump_int,just_started:boolean;
 
@@ -103,7 +103,6 @@ signal trace_reg:std_logic_vector(BUS_DATABITS-1 downto 16);
 signal trace_chunk,trace_chunk_debug:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal acc_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
-signal next_stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 --signal trace_started:boolean;
 signal trace_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal trace_count:unsigned(TRACE_CHUNK_LENGTH_BITS-1 downto 0);
@@ -133,7 +132,7 @@ type wrChunkState is (STORE0,STORE1,STORE2,WRITE);
 signal wr_chunk_state:wrChunkState; 
 type rdChunkState is (IDLE,WAIT_TRACE,READ3,READ2,READ1,READ0);
 signal rd_chunk_state:rdChunkState;
-type traceFSMstate is (IDLE,CAPTURE,DONE);
+type traceFSMstate is (IDLE,CAPTURE);
 signal t_state:traceFSMstate;
 type queueFSMstate is (IDLE,SINGLE,WORD0,WORD1);
 signal q_state:queueFSMstate;
@@ -179,6 +178,7 @@ signal dot_product_active:boolean;
 signal offset:unsigned(PEAK_COUNT_BITS-1 downto 0);
 signal trace_active:boolean;
 signal last_stride:boolean;
+signal trace_done:boolean;
 
 begin
   
@@ -344,6 +344,7 @@ begin
       last_trace_count <= FALSE;
       dot_product_go <= FALSE;
       
+      trace_done <= FALSE;
     else
       
       start_int <= FALSE;
@@ -423,6 +424,10 @@ begin
         end if;
       end case;
       
+      if trace_last then
+        trace_done <= TRUE;
+      end if;
+      
       --trace control FSM
       trace_last <= FALSE;
       case t_state is
@@ -447,6 +452,7 @@ begin
         
         if start_trace and state/=HOLD then
           t_state <= CAPTURE; 
+          trace_done <= FALSE;
           wr_chunk_state <= STORE0; 
         end if;
         
@@ -491,9 +497,10 @@ begin
               frame_word.discard(0) <= not mux_trace;
               frame_address <= trace_address;
             end if;
-            if last_trace_count then
-              commit_frame <= a_state=ACCUM or a_state=WAITING;
-              frame_length <= length;
+            if last_trace_count and (a_state=ACCUM or a_state=WAITING) then
+--              commit_frame <= a_state=ACCUM or a_state=WAITING;
+              commit_frame <= TRUE;
+              frame_length <= trace_chunk_len;
             else
               trace_address <= trace_address+1;
               trace_count <= next_trace_count;
@@ -504,8 +511,6 @@ begin
         
         end case;
         
-      when DONE =>
-        null;
       end case;
       
       -- SINGLE_TRACE_D and DOT_PRODUCT_D move through same FSM states
@@ -541,13 +546,12 @@ begin
             offset <= resize(m.pre_size,PEAK_COUNT_BITS);
               
           when AVERAGE_TRACE_D =>
-            length <= resize(trace_chunk_len,ADDRESS_BITS+1);
+            length <= resize(trace_chunk_len+1,ADDRESS_BITS+1);
             accumulate_go <= TRUE;
             offset <= to_unsigned(1,PEAK_COUNT_BITS);
             
           when DOT_PRODUCT_D => 
             length <= resize(m.pre_size+1,ADDRESS_BITS+1);
-            dot_product_address <= resize(m.pre_size,ADDRESS_BITS);
             dot_product_go <= TRUE;
             offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             
@@ -684,7 +688,7 @@ begin
             end if;
           end if;
         else
-          if detection=TRACE_DETECTION_D and (t_state=DONE or trace_last) then
+          if detection=TRACE_DETECTION_D and (trace_done or trace_last) then
             --FIXME
             -- trace is complete before pulse end
             t_state <= IDLE;
