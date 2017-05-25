@@ -62,7 +62,7 @@ signal pulse,pulse_reg:pulse_detection_t;
 signal pulse_peak:pulse_peak_t;
 signal pulse_peak_word,dot_product_word:streambus_t;
 signal trace,pulse_reg_trace,average_trace:trace_detection_t;
-signal tflags,atflags,dpflags:trace_flags_t;
+signal tflags,atflags:trace_flags_t;
 
 --signal framer_full:boolean;
 
@@ -100,7 +100,7 @@ constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0)
 -- trace signals
 signal trace_reg:std_logic_vector(BUS_DATABITS-1 downto 16);
 --signal trace_valid:boolean;
-signal trace_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
+signal trace_chunk,trace_chunk_debug:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal acc_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 signal next_stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
@@ -283,6 +283,7 @@ can_q_pulse <= q_state=IDLE;
 pre_full <= free < resize(m.pre_size,ADDRESS_BITS+1);
 full <= free < resize(m.size,ADDRESS_BITS+1);
 
+trace_chunk_debug <= set_endianness(trace_chunk,ENDIAN);
 traceSignalMux:process(clk)
 begin
   if rising_edge(clk) then
@@ -539,7 +540,7 @@ begin
             offset <= resize(m.pre_size,PEAK_COUNT_BITS);
               
           when AVERAGE_TRACE_D =>
-            length <= resize(trace_chunk_len+1,ADDRESS_BITS+1);
+            length <= resize(trace_chunk_len,ADDRESS_BITS+1);
             accumulate_go <= TRUE;
             offset <= to_unsigned(1,PEAK_COUNT_BITS);
             
@@ -995,7 +996,7 @@ begin
         acc_ready <= FALSE;
         if valid_int then
           rd_chunk_state <= READ3;
-          dp_trace_start <= TRUE;
+--          dp_trace_start <= TRUE;
         end if;
       when READ3 =>
         acc_chunk <= set_endianness(stream_int.data(63 downto 48),ENDIAN);

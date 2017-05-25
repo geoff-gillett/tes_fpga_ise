@@ -23,17 +23,17 @@
    <zoom_setting>
       <ZoomStartTime time="0fs"></ZoomStartTime>
       <ZoomEndTime time="32184090912fs"></ZoomEndTime>
-      <Cursor1Time time="0fs"></Cursor1Time>
+      <Cursor1Time time="14796000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="12" />
    <wave_markers>
-      <marker time="8360000000" label="" />
       <marker time="22988000000" label="" />
       <marker time="20960000000" label="" />
       <marker time="21984000000" label="" />
       <marker time="24992000000" label="" />
       <marker time="26032000000" label="" />
       <marker time="26044000000" label="" />
+      <marker time="9137758000" label="" />
    </wave_markers>
    <wvobject fp_name="group49" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -2407,17 +2407,29 @@
          <obj_property name="CustomSignalColor">#FF00FF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dp_trace_go" type="other">
-         <obj_property name="ElementShortName">dp_trace_go</obj_property>
-         <obj_property name="ObjectShortName">dp_trace_go</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dp_trace_last" type="other">
-         <obj_property name="ElementShortName">dp_trace_last</obj_property>
-         <obj_property name="ObjectShortName">dp_trace_last</obj_property>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/start_trace" type="other">
+         <obj_property name="ElementShortName">start_trace</obj_property>
+         <obj_property name="ObjectShortName">start_trace</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dp_trace_start" type="other">
          <obj_property name="ElementShortName">dp_trace_start</obj_property>
          <obj_property name="ObjectShortName">dp_trace_start</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dp_trace_go" type="other">
+         <obj_property name="ElementShortName">dp_trace_go</obj_property>
+         <obj_property name="ObjectShortName">dp_trace_go</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dp_trace_last" type="other">
+         <obj_property name="ElementShortName">dp_trace_last</obj_property>
+         <obj_property name="ObjectShortName">dp_trace_last</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject type="divider" fp_name="divider1101">
          <obj_property name="label">internal stream</obj_property>
