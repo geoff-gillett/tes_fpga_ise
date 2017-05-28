@@ -97,7 +97,7 @@ signal cdc_full:std_logic;
 signal cdc_empty:std_logic;
 signal bytestream_int:std_logic_vector(8 downto 0);
 signal global:global_registers_t;
-signal clk_count:integer:=0;
+signal clk_count,io_clk_count:integer:=0;
 
 type int_file is file of integer;
 file bytestream_file,trace_file,minmax_file,filteredxing_file,cfd_file:int_file;
@@ -300,89 +300,110 @@ chan_reg(1).capture.height <= CFD_HEIGHT_D;
 chan_reg(1).capture.cfd_rel2min <= FALSE;
 
 file_open(bytestream_file,"../bytestream",WRITE_MODE);
-byteStreamWriter:process
+byteStreamWriter:process(io_clk)
 begin
-	while TRUE loop
-    wait until rising_edge(io_clk);
+  if rising_edge(io_clk) then
     if bytestream_valid and bytestream_ready then
-    	write(bytestream_file, to_integer(unsigned(bytestream)));
+      write(bytestream_file, to_integer(unsigned(bytestream)));
       if bytestream_last then
-    		write(bytestream_file, -clk_count); --identify last by -ve value
-    	else
-    		write(bytestream_file, clk_count);
-    	end if;
+        write(bytestream_file, -io_clk_count); --identify last by -ve value
+      else
+        write(bytestream_file, io_clk_count);
+      end if;
     end if;
-	end loop;
+  end if;
 end process byteStreamWriter;
 
+--byteStreamWriter:process
+--begin
+--	while TRUE loop
+--    wait until rising_edge(io_clk);
+--    if bytestream_valid and bytestream_ready then
+--    	write(bytestream_file, to_integer(unsigned(bytestream)));
+--      if bytestream_last then
+--    		write(bytestream_file, -clk_count); --identify last by -ve value
+--    	else
+--    		write(bytestream_file, clk_count);
+--    	end if;
+--    end if;
+--	end loop;
+--end process byteStreamWriter;
+
 file_open(trace_file, "../traces",WRITE_MODE);
-traceWriter:process
+traceWriter:process(sample_clk)
 begin
-	while TRUE loop
-    wait until rising_edge(sample_clk);
-	  write(trace_file, to_integer(to_0(m(0).raw.sample)));
-	  write(trace_file, to_integer(to_0(m(0).filtered.sample)));
-	  write(trace_file, to_integer(to_0(m(0).slope.sample)));
-	  write(trace_file, to_integer(to_0(m(0).filtered_long)));
-	end loop;
+  if rising_edge(sample_clk) then
+    write(trace_file, to_integer(to_0(m(0).raw.sample)));
+    write(trace_file, to_integer(to_0(m(0).filtered.sample)));
+    write(trace_file, to_integer(to_0(m(0).slope.sample)));
+    write(trace_file, to_integer(to_0(m(0).filtered_long)));
+  end if;
 end process traceWriter; 
 
-file_open(minmax_file, "../minmax",WRITE_MODE);
-minmaxWriter:process
-begin
-	while TRUE loop
-    wait until rising_edge(sample_clk);
-    if m(0).slope.pos_0xing or m(0).slope.neg_0xing then
-	    write(minmax_file, to_integer(m(0).filtered.sample));
-	    write(minmax_file, to_integer(m(0).timing_threshold));
---	    write(minmax_file, to_integer(m(0).height_threshold));
-	    write(minmax_file, to_integer(m(0).slope.extrema));
-	    write(minmax_file, to_integer(m(0).slope.area));
-	    if m(0).slope.pos_0xing then
-	      write(minmax_file, -clk_count);
-	    else
-	      write(minmax_file, clk_count);
-	    end if;
-	  end if;
-	end loop;
-end process minmaxWriter; 
+--file_open(minmax_file, "../minmax",WRITE_MODE);
+--minmaxWriter:process
+--begin
+--	while TRUE loop
+--    wait until rising_edge(sample_clk);
+--    if m(0).slope.pos_0xing or m(0).slope.neg_0xing then
+--	    write(minmax_file, to_integer(m(0).filtered.sample));
+--	    write(minmax_file, to_integer(m(0).timing_threshold));
+----	    write(minmax_file, to_integer(m(0).height_threshold));
+--	    write(minmax_file, to_integer(m(0).slope.extrema));
+--	    write(minmax_file, to_integer(m(0).slope.area));
+--	    if m(0).slope.pos_0xing then
+--	      write(minmax_file, -clk_count);
+--	    else
+--	      write(minmax_file, clk_count);
+--	    end if;
+--	  end if;
+--	end loop;
+--end process minmaxWriter; 
 
-file_open(cfd_file, "../cfd",WRITE_MODE);
-cfdlowWriter:process
-begin
-	while TRUE loop
-    wait until rising_edge(sample_clk);
-	    if m(0).cfd_low then
-	      write(cfd_file, -clk_count);
-	    end if;
-	    if m(0).cfd_high then
-	      write(cfd_file, clk_count);
-	    end if;
-	end loop;
-end process cfdlowWriter; 
+--file_open(cfd_file, "../cfd",WRITE_MODE);
+--cfdlowWriter:process
+--begin
+--	while TRUE loop
+--    wait until rising_edge(sample_clk);
+--	    if m(0).cfd_low then
+--	      write(cfd_file, -clk_count);
+--	    end if;
+--	    if m(0).cfd_high then
+--	      write(cfd_file, clk_count);
+--	    end if;
+--	end loop;
+--end process cfdlowWriter; 
 
-file_open(filteredxing_file, "../filteredxing",WRITE_MODE);
-filteredXingWriter:process
-begin
-	while TRUE loop
-    wait until rising_edge(sample_clk);
-    if m(0).filtered.pos_0xing or m(0).filtered.neg_0xing then
-	    write(filteredxing_file, to_integer(m(0).filtered.extrema));
-	    write(filteredxing_file, to_integer(m(0).filtered.area));
-	    if m(0).filtered.pos_0xing then
-	      write(filteredxing_file, clk_count);
-	    else
-	      write(filteredxing_file, -clk_count);
-	    end if;
-	  end if;
-	end loop;
-end process filteredXingWriter; 
+--file_open(filteredxing_file, "../filteredxing",WRITE_MODE);
+--filteredXingWriter:process
+--begin
+--	while TRUE loop
+--    wait until rising_edge(sample_clk);
+--    if m(0).filtered.pos_0xing or m(0).filtered.neg_0xing then
+--	    write(filteredxing_file, to_integer(m(0).filtered.extrema));
+--	    write(filteredxing_file, to_integer(m(0).filtered.area));
+--	    if m(0).filtered.pos_0xing then
+--	      write(filteredxing_file, clk_count);
+--	    else
+--	      write(filteredxing_file, -clk_count);
+--	    end if;
+--	  end if;
+--	end loop;
+--end process filteredXingWriter; 
 
-clkCount:process is
+clkCount:process(sample_clk)
 begin
-		wait until rising_edge(sample_clk);
-		clk_count <= clk_count+1;
+  if rising_edge(sample_clk) then
+    clk_count <= clk_count+1;
+  end if;
 end process clkCount;
+
+ioClkCount:process(io_clk)
+begin
+  if rising_edge(io_clk) then
+    io_clk_count <= io_clk_count+1;
+  end if;
+end process ioClkCount;
 
 --stimulusFile:process
 --	file sample_file:text is in "../input_signals/long";
