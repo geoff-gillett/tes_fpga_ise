@@ -293,7 +293,7 @@ generic map (
   CREG => 1,                         -- Number of pipeline stages for C (0 or 1)
   DREG => 0,                         -- Number of pipeline stages for D (0 or 1)
   INMODEREG => 0,                    -- Number of pipeline stages for INMODE (0 or 1)
-  MREG => 0,                         -- Number of multiplier pipeline stages (0 or 1)
+  MREG => 1,                         -- Number of multiplier pipeline stages (0 or 1)
   OPMODEREG => 1,                    -- Number of pipeline stages for OPMODE (0 or 1)
   PREG => 1,                         -- Number of pipeline stages for P (0 or 1)
   USE_SIMD => "ONE48"                -- SIMD selection ("ONE48", "TWO24", "FOUR12")
