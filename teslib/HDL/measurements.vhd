@@ -178,9 +178,10 @@ type measurements_t is record
   timing_threshold:signed(15 downto 0);
 	cfd_error:boolean;
 	cfd_valid:boolean;
-	
-	trace_signal:trace_signal_d;
-	trace_type:trace_type_d;
+  
+  pre_tflags,tflags:trace_flags_t;	
+--	trace_signal:trace_signal_d;
+--	trace_type:trace_type_d;
 	
 end record;
 

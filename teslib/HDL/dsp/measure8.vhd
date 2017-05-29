@@ -125,6 +125,7 @@ signal pulse_length:unsigned(TIME_WIDTH-1 downto 0);
 signal height_valid:boolean;
 signal height:signed(WIDTH-1 downto 0);
 signal flags,pre_flags:detection_flags_t;
+signal pre_tflags,tflags:trace_flags_t;
 signal rise_time,pulse_time:unsigned(TIME_WIDTH-1 downto 0);
 signal stamp_peak,stamp_pulse:boolean;
 signal peak_address:unsigned(PEAK_COUNT_BITS downto 0);
@@ -435,7 +436,7 @@ begin
           when PEAK_DETECTION_D | AREA_DETECTION_D => 
             pre_size <= (0 => '1', others => '0');
           when PULSE_DETECTION_D | TRACE_DETECTION_D => 
-            pre_size <= resize(registers.max_peaks + 3, 16); --max_peaks 0 -> 1 peak
+            pre_size <= resize(registers.max_peaks + 3, SIZE_WIDTH); --max_peaks 0 -> 1 peak
           end case;
           
           --area_threshold <= signed('0' & registers.area_threshold);
@@ -451,6 +452,15 @@ begin
 
           pre_flags.peak_number <= (others => '0');
           peak_number_n <= (0 => '1',others => '0');
+          
+          pre_tflags.trace_signal <= registers.trace_signal;
+          pre_tflags.trace_type <= registers.trace_type;
+          pre_tflags.stride <= registers.trace_stride;
+          pre_tflags.trace_length <= registers.trace_length;
+
+          --pre_tflags.offset <= registers.max_peaks + 3;
+          
+          
 --          last_peak <= registers.max_peaks=0;
           
 --          valid_peak0 <= valid_peak_pipe(DEPTH-1);
@@ -467,6 +477,7 @@ begin
           
           area_threshold <= signed('0' & registers.area_threshold);
           flags <= pre_flags;
+          tflags <= pre_tflags;
           max_peaks <= pre_max_peaks;
           last_peak_address <= pre_max_peaks+2;
           m.offset <= resize(pre_max_peaks+3,PEAK_COUNT_BITS);
@@ -668,8 +679,10 @@ end process pulseMeas;
 --FIXME it would be useful in the framer to expose the pipes for some more 
 --signals already done for starts
 --a valid max an pre would help in the framer
-m.trace_signal <= registers.trace_signal;
-m.trace_type <= registers.trace_type;
+m.pre_tflags <= pre_tflags;
+m.tflags <= tflags;
+--m.trace_signal <= registers.trace_signal;
+--m.trace_type <= registers.trace_type;
 
 m.valid_peak <= valid_peak_pipe(DEPTH);
 m.valid_peak0 <= valid_peak0;

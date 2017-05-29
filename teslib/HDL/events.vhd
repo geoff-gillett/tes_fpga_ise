@@ -225,16 +225,17 @@ function to_std_logic(p:pulse_peak2_t;endianness:string)
 function to_streambus(p:pulse_peak2_t;last:boolean;endianness:string) 
          return streambus_t;
 
--- |  1  |  1  |  1   |   5  ||    2   |   2    |   4		 |
--- | res |mpeak|mpulse|stride||  type  | signal |max_peaks|
+-- |  1  |  1  |  1   |   5  ||    2   |   2    |   4	   |
+-- | res |mpeak|mpulse|stride||  type  | signal | offset |
 type trace_flags_t is
 record
 	trace_signal:trace_signal_d;
 	trace_type:trace_type_d;
-	offset:unsigned(PEAK_COUNT_BITS-1 downto 0);
+	offset:unsigned(3 downto 0);
 	multipulse:boolean;
 	multipeak:boolean;
 	stride:unsigned(TRACE_STRIDE_BITS-1 downto 0);
+	trace_length:unsigned(TRACE_LENGTH_BITS-1 downto 0);
 end record;
 
 function to_std_logic(f:trace_flags_t) return std_logic_vector;

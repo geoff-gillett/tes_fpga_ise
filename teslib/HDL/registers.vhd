@@ -43,6 +43,7 @@ constant ETHERNET_FRAMER_ADDRESS_BITS:integer:=10;
 constant DELAY_BITS:integer:=10;
 constant PEAK_COUNT_BITS:integer:=4;
 constant TRACE_STRIDE_BITS:integer:=5;
+constant TRACE_LENGTH_BITS:integer:=10;
 
 constant MCA_BIN_N_BITS:integer:=5;
 constant MCA_CHANNEL_WIDTH:integer:=3;
@@ -222,7 +223,7 @@ type capture_registers_t is record
 	-- sets length of pulse event
 	max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
 	constant_fraction:unsigned(CFD_BITS-2 downto 0);
-	cfd_rel2min:boolean;
+	cfd_rel2min:boolean; -- make generic
 	pulse_threshold:unsigned(DSP_BITS-2 downto 0);
 	slope_threshold:unsigned(DSP_BITS-2 downto 0);
 	area_threshold:unsigned(AREA_WIDTH-2 downto 0);
@@ -234,6 +235,8 @@ type capture_registers_t is record
 	invert:boolean;
 	trace_signal:trace_signal_d;
 	trace_type:trace_type_d;
+	trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0);
+	trace_length:unsigned(TRACE_LENGTH_BITS-1 downto 0);
 	--stream_enable:boolean;
 end record;
 
@@ -268,9 +271,7 @@ type channel_register_array is array (natural range <>)
 -- 9  downto 8  height
 -- 11 downto 10 trace signal
 -- 13 downto 12 trace type
--- 14           cfd_rel2min
--- 15           height_rel2min
--- 16           threshold_rel2min
+-- 18 downto 14 trace stride
 --
 -- pulse_threshold 						address bit 1
 -- slope_threshold 						address bit 2
@@ -670,6 +671,8 @@ begin
 	s(9 downto 8):=to_std_logic(r.height,2);
 	s(11 downto 10):=to_std_logic(r.trace_signal,2);
 	s(13 downto 12):=to_std_logic(r.trace_type,2);
+	s(18 downto 14):=to_std_logic(r.trace_stride);
+	s(18+TRACE_LENGTH_BITS-1 downto 18):=to_std_logic(r.trace_length);
 	return s;
 end function; 
 

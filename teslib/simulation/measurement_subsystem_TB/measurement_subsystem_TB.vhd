@@ -138,7 +138,9 @@ generic map(
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
   ACCUMULATE_N => 2,
-  TRACE_CHUNKS => 64
+  TRACE_CHUNKS => 8,
+  TRACE_FROM_STAMP => TRUE,
+  MIN_TICK_PERIOD => 2000
 )
 port map(
   clk => sample_clk,
@@ -284,6 +286,8 @@ chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
+chan_reg(0).capture.trace_stride <= (others => '0');
+chan_reg(0).capture.trace_length <= to_unsigned(4,TRACE_LENGTH_BITS);
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
 chan_reg(1).capture.delay <= (0 => '0', others => '0');
@@ -298,6 +302,8 @@ chan_reg(1).capture.detection <= PEAK_DETECTION_D;
 chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(1).capture.height <= CFD_HEIGHT_D;
 chan_reg(1).capture.cfd_rel2min <= FALSE;
+chan_reg(1).capture.trace_stride <= (others => '0');
+chan_reg(1).capture.trace_length <= to_unsigned(4,TRACE_LENGTH_BITS);
 
 file_open(bytestream_file,"../bytestream",WRITE_MODE);
 byteStreamWriter:process(io_clk)
@@ -491,17 +497,24 @@ begin
   global.channel_enable <= "00000000";
   chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
   chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
-	wait for SAMPLE_CLK_PERIOD*22;
+	wait for SAMPLE_CLK_PERIOD*64;
   simenable <= TRUE;
+	global.mca.value <= MCA_FILTERED_SIGNAL_D;
+	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+	global.mca.qualifier <= ALL_MCA_QUAL_D;
+	global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
+	
   wait for 1000 ns;
   global.channel_enable <= "00000001";
-  wait for 10000 ns;
-  global.channel_enable <= "00000000";
-  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
-  wait for SAMPLE_CLK_PERIOD;
-  global.channel_enable <= "00000001";
-  wait for 12 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
+--  wait for 10000 ns;
+--  global.channel_enable <= "00000000";
+--  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
+--  wait for SAMPLE_CLK_PERIOD;
+--  global.channel_enable <= "00000001";
+--  wait for 12 us;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
   
 --  wait for 70511 ns;
 --  global.channel_enable <= "00000000";

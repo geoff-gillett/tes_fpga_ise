@@ -17,14 +17,15 @@
 -- 9  downto 8  height
 -- 11 downto 10 trace signal
 -- 13 downto 12 trace type
--- 18 downto 14 trace stride --TODO implement
--- 31 downto 18 length -- 14 bits only need 11 --TODO implement
+-- 18 downto 14 trace stride 
+-- 31 downto 19 length -- 13 bits only need 11 --TODO implement
 
 -- need to find space for average_n for traces 20 bit
 --
 -- pulse_threshold 						address bit 1
 -- slope_threshold 						address bit 2
 -- constant_fraction 					address bit 3
+--    bit 31 cfd_rel2min
 -- pulse_area_threshold				address bit 4
 -- delay											address bit 5
 -- baseline.offset   					address bit 6	--remove baseline keep offset only
@@ -129,6 +130,8 @@ if rising_edge(clk) then
 		reg.capture.adc_select <= (CHANNEL => '1',others => '0');
 		reg.capture.trace_signal <= FILTERED_TRACE_D;
 		reg.capture.trace_type <= SINGLE_TRACE_D;
+		reg.capture.trace_stride <= (others => '0');
+		reg.capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
   else
     if write='1' then
       if address(DELAY_ADDR_BIT)='1' then
@@ -142,6 +145,9 @@ if rising_edge(clk) then
       	reg.capture.height <= to_height_d(data(9 downto 8));
       	reg.capture.trace_signal <= to_trace_signal_d(data(11 downto 10));
       	reg.capture.trace_type <= to_trace_type_d(data(13 downto 12));
+      	reg.capture.trace_stride <= unsigned(data(18 downto 14));
+      	reg.capture.trace_length 
+      	 <= unsigned(data(18+TRACE_LENGTH_BITS-1 downto 18));
       end if;
       if address(PULSE_THRESHOLD_ADDR_BIT)='1' then
         reg.capture.pulse_threshold 

@@ -281,8 +281,11 @@ m.raw.sample <= raw_pipe(DEPTH);
 m.raw.pos_0xing <= raw_0_pos_pipe(DEPTH);
 m.raw.neg_0xing <= raw_0_neg_pipe(DEPTH);
 
-m.trace_signal <= dsp_m.trace_signal;
-m.trace_type <= dsp_m.trace_type;
+--m.trace_signal <= dsp_m.trace_signal;
+--m.trace_type <= dsp_m.trace_type;
+m.pre_tflags <= dsp_m.pre_tflags;
+m.tflags <= dsp_m.tflags;
+
 --TODO cleanup this ugly patch
 m.min_value <= dsp_m.min_value;
 m.filtered <= dsp_m.filtered;
