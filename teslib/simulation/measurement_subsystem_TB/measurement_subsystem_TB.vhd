@@ -100,11 +100,10 @@ signal global:global_registers_t;
 signal clk_count,io_clk_count:integer:=0;
 
 type int_file is file of integer;
-file bytestream_file,trace_file,minmax_file,filteredxing_file,cfd_file:int_file;
+file bytestream_file,trace_file:int_file;
 
 signal filter_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal slope_config:fir_ctl_in_array(CHANNELS-1 downto 0);
---signal baseline_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 
 signal m:measurements_array(CHANNELS-1 downto 0);
 signal adc_count:signed(ADC_BITS-1 downto 0);
@@ -222,7 +221,6 @@ global.mca.lowest_value <= to_signed(-2000,MCA_VALUE_BITS);
 --global.mca.value <= MCA_RAW_SIGNAL_D;
 global.window <= to_unsigned(2, TIME_BITS);
 
-
 filter_config(0).config_data <= (others => '0');
 filter_config(0).config_valid <= '0';
 filter_config(0).reload_data <= (others => '0');
@@ -243,18 +241,7 @@ slope_config(1).config_valid <= '0';
 slope_config(1).reload_data <= (others => '0');
 slope_config(1).reload_last <= '0';
 slope_config(1).reload_valid <= '0';
---baseline_config(0).config_data <= (others => '0');
---baseline_config(0).config_valid <= '0';
---baseline_config(0).reload_data <= (others => '0');
---baseline_config(0).reload_last <= '0';
---baseline_config(0).reload_valid <= '0';
---baseline_config(1).config_data <= (others => '0');
---baseline_config(1).config_valid <= '0';
---baseline_config(1).reload_data <= (others => '0');
---baseline_config(1).reload_last <= '0';
---baseline_config(1).reload_valid <= '0';
 
---chan_reg(0).baseline.offset <= to_signed(-1000*8,DSP_BITS);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(0).baseline.threshold <= (others => '1'); --to_unsigned(700,BASELINE_BITS-1);--(others => '1');
@@ -320,21 +307,6 @@ begin
   end if;
 end process byteStreamWriter;
 
---byteStreamWriter:process
---begin
---	while TRUE loop
---    wait until rising_edge(io_clk);
---    if bytestream_valid and bytestream_ready then
---    	write(bytestream_file, to_integer(unsigned(bytestream)));
---      if bytestream_last then
---    		write(bytestream_file, -clk_count); --identify last by -ve value
---    	else
---    		write(bytestream_file, clk_count);
---    	end if;
---    end if;
---	end loop;
---end process byteStreamWriter;
-
 file_open(trace_file, "../traces",WRITE_MODE);
 traceWriter:process(sample_clk)
 begin
@@ -345,57 +317,6 @@ begin
     write(trace_file, to_integer(to_0(m(0).filtered_long)));
   end if;
 end process traceWriter; 
-
---file_open(minmax_file, "../minmax",WRITE_MODE);
---minmaxWriter:process
---begin
---	while TRUE loop
---    wait until rising_edge(sample_clk);
---    if m(0).slope.pos_0xing or m(0).slope.neg_0xing then
---	    write(minmax_file, to_integer(m(0).filtered.sample));
---	    write(minmax_file, to_integer(m(0).timing_threshold));
-----	    write(minmax_file, to_integer(m(0).height_threshold));
---	    write(minmax_file, to_integer(m(0).slope.extrema));
---	    write(minmax_file, to_integer(m(0).slope.area));
---	    if m(0).slope.pos_0xing then
---	      write(minmax_file, -clk_count);
---	    else
---	      write(minmax_file, clk_count);
---	    end if;
---	  end if;
---	end loop;
---end process minmaxWriter; 
-
---file_open(cfd_file, "../cfd",WRITE_MODE);
---cfdlowWriter:process
---begin
---	while TRUE loop
---    wait until rising_edge(sample_clk);
---	    if m(0).cfd_low then
---	      write(cfd_file, -clk_count);
---	    end if;
---	    if m(0).cfd_high then
---	      write(cfd_file, clk_count);
---	    end if;
---	end loop;
---end process cfdlowWriter; 
-
---file_open(filteredxing_file, "../filteredxing",WRITE_MODE);
---filteredXingWriter:process
---begin
---	while TRUE loop
---    wait until rising_edge(sample_clk);
---    if m(0).filtered.pos_0xing or m(0).filtered.neg_0xing then
---	    write(filteredxing_file, to_integer(m(0).filtered.extrema));
---	    write(filteredxing_file, to_integer(m(0).filtered.area));
---	    if m(0).filtered.pos_0xing then
---	      write(filteredxing_file, clk_count);
---	    else
---	      write(filteredxing_file, -clk_count);
---	    end if;
---	  end if;
---	end loop;
---end process filteredXingWriter; 
 
 clkCount:process(sample_clk)
 begin
@@ -410,28 +331,6 @@ begin
     io_clk_count <= io_clk_count+1;
   end if;
 end process ioClkCount;
-
---stimulusFile:process
---	file sample_file:text is in "../input_signals/long";
---	variable file_line:line; -- text line buffer 
---	variable str_sample:string(4 downto 1);
---	variable sample_in:std_logic_vector(15 downto 0);
---begin
---	while not endfile(sample_file) loop
---		readline(sample_file, file_line);
---		read(file_line, str_sample);
---		sample_in:=hexstr2vec(str_sample);
---		wait until rising_edge(sample_clk);
---		adc_samples(0) <= resize(sample_in, 14);
---		sample_reg <= resize(sample_in, 14);
---		adc_samples(1) <= (others => '0'); -- sample_reg;
---		if clk_count mod 10000 = 0 then
---			report "clk " & integer'image(clk_count);
---		end if;
---		--assert false report str_sample severity note;
---	end loop;
---	wait;
---end process stimulusFile;
 
 stimulusFile:process
 	file sample_file:int_file is in 
@@ -508,14 +407,14 @@ begin
 	
   wait for 1000 ns;
   global.channel_enable <= "00000001";
---  wait for 10000 ns;
---  global.channel_enable <= "00000000";
---  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
---  wait for SAMPLE_CLK_PERIOD;
---  global.channel_enable <= "00000001";
+  wait for 12 us;
+  global.channel_enable <= "00000000";
+  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
+  wait for 4 us;
+  global.channel_enable <= "00000001";
 --  wait for 12 us;
 --  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
-  
+
 --  wait for 70511 ns;
 --  global.channel_enable <= "00000000";
 --  wait for 12011 ns;
@@ -589,7 +488,6 @@ begin
 --	global.mca.update_asap <= TRUE;
 --	wait for SAMPLE_CLK_PERIOD;
 --	global.mca.update_asap <= FALSE;
-
 	wait;
 end process mcaControlStimulus;	
 
