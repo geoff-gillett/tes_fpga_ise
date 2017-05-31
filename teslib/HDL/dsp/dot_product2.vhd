@@ -29,7 +29,7 @@ use extensions.boolean_vector.all;
 entity dot_product2 is
 generic(
   ADDRESS_BITS:natural:=11;
-  TRACE_CHUNKS:natural:=512;
+--  TRACE_CHUNKS:natural:=512;
   WIDTH:natural:=16;
   ACCUMULATOR_WIDTH:natural:=36;
   ACCUMULATE_N:natural:=2
@@ -39,6 +39,7 @@ port(
   reset:in std_logic;
   
   stop:in boolean;
+  trace_chunks:in unsigned(ADDRESS_BITS downto 0);
   
   sample:in signed(WIDTH-1 downto 0);
   sample_valid:in boolean; --used for dot product with stride
@@ -83,6 +84,7 @@ signal addr_pipe:address_pipe(1 to DEPTH);
 signal sample_pipe:signal_pipe(1 to DEPTH);
 signal accum_pipe,last_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 signal send_pipe,first_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
+signal valid_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 signal start_pipe:boolean_vector(0 to DEPTH):=(others => FALSE);
 signal dp_valid_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 
@@ -201,7 +203,7 @@ begin
         
       when SENDAVERAGE =>
         address <= address+1;
-        send_last <= address=(TRACE_CHUNKS*4)-2;
+        send_last <= address=(trace_chunks*4)-2;
         if send_last then
           state <= IDLE;
         end if;
@@ -224,7 +226,7 @@ pipeline:process(clk)
 begin
   if rising_edge(clk) then
     addr_pipe <= address & addr_pipe(1 to DEPTH-1);
---    valid_pipe <= send_valid & valid_pipe(1 to DEPTH-1);
+    valid_pipe <= sample_valid & valid_pipe(1 to DEPTH-1);
     last_pipe <= send_last & last_pipe(1 to DEPTH-1);
     accum_pipe <= (state=ACCUM) & accum_pipe(1 to DEPTH-1);
     first_pipe <= first_trace & first_pipe(1 to DEPTH-1);
