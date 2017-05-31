@@ -60,8 +60,8 @@ signal peak:peak_detection_t;
 signal area:area_detection_t;
 signal pulse,pulse_reg:pulse_detection_t;
 signal pulse_peak:pulse_peak_t;
-signal pulse_peak_word,dot_product_word:streambus_t;
-signal dot_product_word_valid:boolean;
+signal pulse_peak_word,dp_word,dp_word_reg:streambus_t;
+--signal dot_product_word_valid:boolean;
 signal trace,pulse_reg_trace,average_trace:trace_detection_t;
 signal tflags,atflags:trace_flags_t;
 
@@ -130,7 +130,7 @@ type strideFSMstate is (INIT,IDLE,CAPTURE);
 signal s_state:strideFSMstate;
 type accumFSMstate is (IDLE,WAITING,ACCUM,SEND,STOPED);
 signal a_state:accumFSMstate;
-type DPstate is (IDLE,DPWAIT,WRITE,DONE);
+type DPstate is (IDLE,DPWAIT,WRITE,WAITPULSEDONE);
 signal dp_state:DPstate;
 attribute fsm_encoding of s_state:signal is "one-hot";
 attribute fsm_encoding of t_state:signal is "one-hot";
@@ -158,20 +158,19 @@ signal rd_trace_start:boolean;
 signal dp_trace_last,rd_trace_last:boolean;
 signal dot_product_go:boolean;
 signal dot_product:signed(47 downto 0);
-signal dot_product_valid:boolean;
+signal dp_valid:boolean;
 signal accumulate_done:boolean;
 signal multipeak,multipulse:boolean;
 signal dp_sample_valid : boolean;
 signal dp_trace_start:boolean;
 signal start_accumulating:boolean;
-signal dot_product_wr_en:boolean;
+signal dp_wr_en:boolean;
 signal trace_done:boolean;
 
-signal dot_product_address:unsigned(ADDRESS_BITS-1 downto 0);
+signal dp_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal commit_pulse:boolean;
 signal trace_wr_en:boolean;
 signal inc_accum:boolean;
-signal dot_product_pending:boolean;
 signal pulse_wr_en:boolean;
 signal averaging:boolean;
 signal zero_stride:boolean;
@@ -180,7 +179,7 @@ signal trace_overflow:boolean;
 signal trace_active:boolean;
 signal eflags:detection_flags_t;
 signal dp_length:unsigned(ADDRESS_BITS downto 0);
-signal dp_commit:boolean;
+signal dp_before_pulse:boolean;
 
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
@@ -284,7 +283,7 @@ peak.flags <= eflags;
 area.flags <= eflags;
 area.area <= m.pulse_area;
 
-dot_product_word <= to_streambus(resize(dot_product,BUS_DATABITS),TRUE,ENDIAN);
+dp_word <= to_streambus(resize(dot_product,BUS_DATABITS),TRUE,ENDIAN);
 
 pre_detection <= m.pre_eflags.event_type.detection;
 detection <= m.eflags.event_type.detection;
@@ -385,7 +384,7 @@ begin
         
         eflags <= m.pre_eflags;
          
-        dot_product_wr_en <= m.pre_tflags.trace_type=DOT_PRODUCT_D;
+        dp_wr_en <= m.pre_tflags.trace_type=DOT_PRODUCT_D;
         
         trace_wr_en <= pre_detection=TRACE_DETECTION_D and
                        m.pre_tflags.trace_type/=DOT_PRODUCT_D;
@@ -407,7 +406,7 @@ begin
         trace_active <= pre_detection=TRACE_DETECTION_D;
         trace_count_init <= m.pre_tflags.trace_length-1;
         
-        dot_product_address <= resize(m.pre_size, ADDRESS_BITS);
+        dp_address <= resize(m.pre_size, ADDRESS_BITS);
         
         case m.pre_eflags.event_type.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
@@ -440,7 +439,7 @@ begin
       end if;
       
       -- event writing queue
-      if not ((s_state=CAPTURE and wr_chunk_state=WRITE) or dp_state=WRITE) then 
+      if not (s_state=CAPTURE and wr_chunk_state=WRITE) then 
         if pulse_peak_valid then
           frame_word <= pulse_peak_word;
           frame_address <= peak_address;
@@ -508,8 +507,8 @@ begin
       end case;
      
      --wr_chunk FSM gathers samples into a bus word
-      trace_overflow <= wr_chunk_state=WRITE and s_state=CAPTURE and 
-                        trace_wr_en and trace_full;
+--      trace_overflow <= wr_chunk_state=WRITE and s_state=CAPTURE and 
+--                        trace_wr_en and trace_full;
 
       --wr_trace_last <= FALSE;
       case wr_chunk_state is
@@ -538,6 +537,7 @@ begin
           wr_trace_last <= FALSE;
           if trace_full and trace_wr_en then 
             wr_chunk_state <= STORE0;
+            trace_overflow <= TRUE;
           else --if trace_wr_en then --4th chunk captured
             wr_chunk_state <= STORE0;
             frame_we <= (others => trace_wr_en);
@@ -578,7 +578,6 @@ begin
         
       when CAPTURE =>
         if trace_start then 
---          trace_done <= FALSE;
           wr_chunk_state <= STORE0; 
           trace_address <= trace_start_address;
           trace_count <= trace_count_init;
@@ -586,7 +585,6 @@ begin
           last_trace_count <= FALSE;
         elsif wr_trace_last or trace_overflow then
           t_state <= IDLE;
---          trace_done <= FALSE;
           wr_chunk_state <= STORE0; 
         end if;
          
@@ -625,38 +623,43 @@ begin
       -- dot product FSM dp is not valid till 5 clocks after trace_last
       case dp_state is 
       when IDLE =>
-        if dot_product_wr_en and wr_trace_last then
+        dp_length <= length;
+        if dp_wr_en and wr_trace_last then
+          dp_before_pulse <= (state=FIRSTPULSE or state=WAITPULSEDONE) and 
+                              not m.pulse_threshold_neg;
           dp_state <= DPWAIT;
-          dp_length <= length;
-          dp_commit <= state=TRACING; --FIXME handle coincident trace & pulse end
         end if;
       when DPWAIT =>
-        if dot_product_valid then
-          frame_word <= dot_product_word;
-          frame_address <= dot_product_address;
-          frame_length <= dp_length;
-          dp_state <= WRITE;
-          frame_we <= (others => TRUE);
-          commit_frame <= dp_commit;
-          commit_int <= dp_commit;
-          dot_product_pending <= FALSE;
+        if dp_valid  then -- can happen before end of pulse need to store
+          if dp_before_pulse then
+            dp_state <= WAITPULSEDONE;
+            dp_word_reg <= dp_word;
+          else
+            dp_state <= IDLE;
+            frame_word <= dp_word;
+            frame_address <= dp_address;
+            frame_length <= dp_length;
+            frame_we <= (others => TRUE); 
+            commit_frame <= TRUE;
+            commit_int <= TRUE;
+          end if;
         end if;
+      when WAITPULSEDONE =>
+        if m.pulse_threshold_neg then
+          dp_state <= WRITE; 
+        end if;  
       when WRITE =>
-        dp_state <= DONE;
-      when DONE =>
-        if trace_start then
-          dp_state <= IDLE; 
-        end if;
+        dp_state <= IDLE;
+        if q_state=IDLE then
+          frame_word <= dp_word_reg;
+          frame_address <= dp_address;
+          frame_length <= dp_length;
+          frame_we <= (others => TRUE); 
+          commit_frame <= TRUE;
+          commit_int <= TRUE;
+         end if;
       end case;
       
-      if dot_product_wr_en and dot_product_valid then
-        dot_product_word_valid <= TRUE;
-      end if;
-      
-      if wr_trace_last then
-        --commit_dot_product <= state=TRACING; --FIXME
-      end if;
-
       --trace start
       if state=AVERAGE then
         trace_start <= start_average;
@@ -856,7 +859,7 @@ begin
               queue(0) <= to_streambus(pulse_reg_trace,0,ENDIAN); 
               queue(1) <= to_streambus(pulse_reg_trace,1,ENDIAN);
               frame_length <= length;
-              commit_pulse <= not dot_product_wr_en;
+              commit_pulse <= not dp_wr_en;
               commiting <= TRUE;
               free <= framer_free - length;
               q_state <= WORD1;
@@ -1214,7 +1217,7 @@ port map(
   average_start => start_average,
   average_last => average_last,
   dot_product => dot_product,
-  dot_product_valid => dot_product_valid
+  dot_product_valid => dp_valid
 );
 
 outputReg:entity streamlib.streambus_register_slice

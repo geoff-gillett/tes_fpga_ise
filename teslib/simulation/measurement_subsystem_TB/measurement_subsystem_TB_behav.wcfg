@@ -21,13 +21,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="26440000001fs"></ZoomEndTime>
-      <Cursor1Time time="0fs"></Cursor1Time>
+      <ZoomStartTime time="31554283334fs"></ZoomStartTime>
+      <ZoomEndTime time="31684583335fs"></ZoomEndTime>
+      <Cursor1Time time="31584000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
-      <marker time="24896000000" label="" />
+      <marker time="31576000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -955,9 +955,11 @@
       <wvobject fp_name="group623" type="group">
          <obj_property name="label">Framer</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word" type="array">
             <obj_property name="ElementShortName">frame_word</obj_property>
             <obj_property name="ObjectShortName">frame_word</obj_property>
+            <obj_property name="isExpanded"></obj_property>
             <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word.discard" type="array">
                <obj_property name="ElementShortName">.discard[3:0]</obj_property>
                <obj_property name="ObjectShortName">frame_word.discard[3:0]</obj_property>
@@ -1152,6 +1154,16 @@
             <obj_property name="AnalogHorizLine">0.000000</obj_property>
             <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
             <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/sample_clk" type="logic">
+            <obj_property name="ElementShortName">sample_clk</obj_property>
+            <obj_property name="ObjectShortName">sample_clk</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/state" type="other">
+            <obj_property name="ElementShortName">state</obj_property>
+            <obj_property name="ObjectShortName">state</obj_property>
+            <obj_property name="CustomSignalColor">#F0E68C</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/a_state" type="other">
