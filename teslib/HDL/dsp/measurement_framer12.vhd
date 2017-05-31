@@ -140,7 +140,7 @@ signal reg_stream:streambus_t;
 signal reg_ready:boolean;
 signal reg_valid:boolean;
 signal average_sample:signed(WIDTH-1 downto 0);
-signal mux_enable:boolean;
+signal mux_wr_en:boolean;
 signal start_average,average_last:boolean;
 
 signal accum_count,next_accum_count:unsigned(ACCUMULATE_N downto 0);
@@ -161,7 +161,7 @@ signal dp_trace_start:boolean;
 signal start_accumulating:boolean;
 --signal trace_signal:trace_signal_d;
 --signal trace_type:trace_type_d;
-signal dot_product_active:boolean;
+signal dot_product_wr_en:boolean;
 --signal offset:unsigned(PEAK_COUNT_BITS-1 downto 0);
 --signal trace_active:boolean;
 signal last_stride:boolean;
@@ -341,7 +341,7 @@ begin
       t_state <= IDLE;
       wr_chunk_state <= STORE0;
       
-      mux_enable <= FALSE;
+      mux_wr_en <= FALSE;
       frame_word.discard <= (others => FALSE);
       multipulse <= FALSE;
       multipeak <= FALSE;
@@ -378,12 +378,12 @@ begin
         tflags.trace_signal <= m.pre_tflags.trace_signal;
         tflags.trace_type <= m.pre_tflags.trace_type;
          
-        dot_product_active <= m.pre_tflags.trace_type=DOT_PRODUCT_D;
+        dot_product_wr_en <= m.pre_tflags.trace_type=DOT_PRODUCT_D;
         
         trace_wr_en <= pre_detection=TRACE_DETECTION_D and
                        m.pre_tflags.trace_type/=DOT_PRODUCT_D;
         
-        mux_enable <= pre_detection=TRACE_DETECTION_D and 
+        mux_wr_en <= pre_detection=TRACE_DETECTION_D and 
                       m.pre_tflags.trace_type=SINGLE_TRACE_D;
         
         pulse_wr_en 
@@ -436,8 +436,8 @@ begin
           frame_word <= dot_product_word;
           frame_address <= dot_product_address;
           frame_we <= (others => TRUE);
-          commit_frame <= commit_dot_product;
-          commit_int <= commit_dot_product;
+          commit_frame <= TRUE;
+          commit_int <= TRUE;
           dot_product_word_valid <= FALSE; 
           dot_product_pending <= FALSE;
         else
@@ -455,11 +455,8 @@ begin
             frame_word <= queue(0);
             frame_we <= (others => TRUE);
             frame_address <= to_unsigned(0,ADDRESS_BITS);
---            commit_frame <= not dot_product_active or 
---                            (dot_product_active and state=WAITPULSEDONE);
---            commit_int <= mux_trace and not dot_product_active;
             commit_frame <= commit_pulse;
-            commit_int <= mux_enable and commit_pulse;
+            commit_int <= mux_wr_en and commit_pulse;
             q_state <= IDLE;
           when WORD1 =>
             frame_word <= queue(1);
@@ -507,13 +504,16 @@ begin
       case t_state is
       when IDLE =>
         
+        if a_state=SEND then
+          trace_address <= trace_start_address+1;
+        else
+          trace_address <= trace_start_address;
+        end if;
         trace_count <= trace_count_init;
-        next_trace_count <= tflags.trace_length-2;
+        next_trace_count <= trace_count_init-1;
         last_trace_count <= FALSE;
         
-        
         if trace_start and state/=HOLD and enable_reg then
-          trace_address <= trace_start_address;
           t_state <= CAPTURE; 
           trace_done <= FALSE;
           wr_chunk_state <= STORE0; 
@@ -573,7 +573,7 @@ begin
             frame_word.data(63 downto 16) <= trace_reg(63 downto 16);
             frame_word.data(15 downto 0) <= trace_chunk;
             frame_word.last <= (0 => last_trace_count, others => FALSE);
-            frame_word.discard(0) <= not mux_enable;
+            frame_word.discard(0) <= averaging;
             frame_address <= trace_address;
             
             trace_address <= trace_address+1;
@@ -616,7 +616,7 @@ begin
       -- if dp valid before end of pulse
       --    write it without committing
       
-      if dot_product_active and dot_product_valid then
+      if dot_product_wr_en and dot_product_valid then
         dot_product_word 
           <= to_streambus(resize(dot_product,BUS_DATABITS),TRUE,ENDIAN);
         dot_product_word_valid <= TRUE;
@@ -760,6 +760,7 @@ begin
                   queue(0) <= to_streambus(pulse,0,ENDIAN);
                   queue(1) <= to_streambus(pulse,1,ENDIAN);
                   frame_length <= length;
+                  -- write last 
                   pulse_peak_word <= to_streambus(pulse_peak,TRUE,ENDIAN);
                   pulse_peak_valid <= TRUE;
                   peak_address <= resize(m.last_peak_address,ADDRESS_BITS);
@@ -815,7 +816,7 @@ begin
               queue(0) <= to_streambus(pulse_reg_trace,0,ENDIAN); 
               queue(1) <= to_streambus(pulse_reg_trace,1,ENDIAN);
               frame_length <= length;
-              commit_pulse <= not dot_product_active;
+              commit_pulse <= not dot_product_wr_en;
               commiting <= TRUE;
               free <= framer_free - length;
               q_state <= WORD1;
@@ -933,19 +934,17 @@ begin
         end if;
         
       when AVERAGE =>
---        start_trace <= start_average;
         if wr_trace_last then
           queue(0) <= to_streambus(average_trace,0,ENDIAN); 
-          frame_length <= length;
+          frame_length <= length+1;
           commiting <= TRUE;
           start_int <= TRUE;
-          free <= framer_free - length;
+          free <= framer_free - length - 1;
           q_state <= WORD0;
           state <= HOLD;
           multipeak <= FALSE;
           multipulse <= FALSE;
-          mux_enable <= TRUE;
-          t_state <= IDLE;
+          mux_wr_en <= TRUE;
         end if;
         
       when HOLD =>
@@ -958,24 +957,22 @@ begin
       -- peak recording 
       if m.peak_stop and enable_reg then 
         if state=FIRSTPULSE or state=WAITPULSEDONE then 
-          if m.eflags.peak_number/=0 and not mux_enable then --FIXME check
---            dump_int <= m.pulse_stamped and mux_trace;
+          if m.eflags.peak_number/=0 and averaging then --FIXME check
             multipeak <= TRUE;
-            if tflags.trace_type=AVERAGE_TRACE_D then
-              q_state <= IDLE;
-              state <= IDLE;
-              pulse_stamped <= FALSE;
-            end if;
-          elsif pulse_peak_valid and wr_chunk_state=WRITE then
+            q_state <= IDLE;
+            state <= IDLE;
+            pulse_stamped <= FALSE;
+          elsif pulse_peak_valid and wr_chunk_state=WRITE and 
+                s_state=CAPTURE then
             error_int <= TRUE;
             q_state <= IDLE;
             state <= IDLE;
-            dump_int <= m.pulse_stamped and mux_enable;
+            dump_int <= m.pulse_stamped and mux_wr_en;
             pulse_stamped <= FALSE;
           else
             pulse_peak_word <= to_streambus(pulse_peak,FALSE,ENDIAN);--?? last?
             peak_address <= resize(m.peak_address,ADDRESS_BITS);
-            pulse_peak_valid <= mux_enable;
+            pulse_peak_valid <= mux_wr_en;
           end if;
         elsif m.eflags.event_type.detection=PEAK_DETECTION_D then
           if free=0 then
@@ -1010,8 +1007,8 @@ begin
           error_int <= TRUE;
           pulse_stamped <= FALSE;
         else
-          start_int <= mux_enable or dot_product_active;  
-          pulse_stamped <= mux_enable or dot_product_active;
+          start_int <= mux_wr_en or dot_product_wr_en;  
+          pulse_stamped <= mux_wr_en or dot_product_wr_en;
         end if;
       end if; 
         

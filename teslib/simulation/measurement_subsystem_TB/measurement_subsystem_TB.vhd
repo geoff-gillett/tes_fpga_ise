@@ -398,12 +398,12 @@ begin
   chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
 	wait for SAMPLE_CLK_PERIOD*64;
   simenable <= TRUE;
-	global.mca.value <= MCA_FILTERED_SIGNAL_D;
-	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
-	global.mca.qualifier <= ALL_MCA_QUAL_D;
-	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
+--	global.mca.value <= MCA_FILTERED_SIGNAL_D;
+--	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+--	global.mca.qualifier <= ALL_MCA_QUAL_D;
+--	global.mca.update_asap <= TRUE;
+--	wait for SAMPLE_CLK_PERIOD;
+--	global.mca.update_asap <= FALSE;
 	
   wait for 1000 ns;
   global.channel_enable <= "00000001";
@@ -412,8 +412,8 @@ begin
   chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
   wait for 4 us;
   global.channel_enable <= "00000001";
---  wait for 12 us;
---  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
+  wait for 12 us;
+  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
 
 --  wait for 70511 ns;
 --  global.channel_enable <= "00000000";

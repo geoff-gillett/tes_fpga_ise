@@ -21,15 +21,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="3681166667fs"></ZoomStartTime>
-      <ZoomEndTime time="10106166668fs"></ZoomEndTime>
-      <Cursor1Time time="6516000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="16984013947fs"></ZoomEndTime>
+      <Cursor1Time time="1000000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
-      <marker time="20016000000" label="" />
-      <marker time="26164000000" label="" />
-      <marker time="31308000000" label="" />
+      <marker time="24896000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -1108,10 +1106,6 @@
             <obj_property name="CustomSignalColor">#F0E68C</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dot_product_active" type="other">
-            <obj_property name="ElementShortName">dot_product_active</obj_property>
-            <obj_property name="ObjectShortName">dot_product_active</obj_property>
-         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_stamp_pulse" type="other">
             <obj_property name="ElementShortName">.pre_stamp_pulse</obj_property>
             <obj_property name="ObjectShortName">m.pre_stamp_pulse</obj_property>
@@ -1495,10 +1489,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dp_sample_valid" type="other">
          <obj_property name="ElementShortName">dp_sample_valid</obj_property>
          <obj_property name="ObjectShortName">dp_sample_valid</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dot_product_active" type="other">
-         <obj_property name="ElementShortName">dot_product_active</obj_property>
-         <obj_property name="ObjectShortName">dot_product_active</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/last_stride" type="other">
          <obj_property name="ElementShortName">last_stride</obj_property>
