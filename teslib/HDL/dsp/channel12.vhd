@@ -32,7 +32,6 @@ generic(
   FRAMER_ADDRESS_BITS:natural:=10;
   ACCUMULATOR_WIDTH:natural:=36;
   ACCUMULATE_N:natural:=18;
-  TRACE_CHUNKS:natural:=512;
   TRACE_FROM_STAMP:boolean:=TRUE;
   ENDIAN:string:="LITTLE";
   STRICT_CROSSING:boolean:=TRUE

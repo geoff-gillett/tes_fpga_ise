@@ -45,6 +45,7 @@ generic(
   DEFAULT_IODELAY_VALUE:integer:=24;
   DEFAULT_CLK_IODELAY_VALUE:integer:=0;
   DSP_CHANNELS:integer:=2;
+  ACCUMULATE_N:natural:=14;
   ENDIAN:string:="LITTLE";
   PACKET_GEN:boolean:=FALSE
 );
@@ -772,6 +773,7 @@ generic map(
   DSP_CHANNELS => DSP_CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
   ENDIAN => ENDIAN,
+  ACCUMULATE_N => ACCUMULATE_N,
   PACKET_GEN => PACKET_GEN
 )
 port map(

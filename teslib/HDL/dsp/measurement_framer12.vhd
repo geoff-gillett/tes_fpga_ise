@@ -180,6 +180,7 @@ signal trace_active:boolean;
 signal eflags:detection_flags_t;
 signal dp_length:unsigned(ADDRESS_BITS downto 0);
 signal dp_before_pulse:boolean;
+signal dp_dump,dp_write:boolean;
 
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
@@ -368,6 +369,8 @@ begin
       space_for_trace:=free > trace_address;
       inc_accum <= FALSE;
       dot_product_go <= FALSE;
+      dp_dump <= FALSE;
+      dp_write <= FALSE;
       
       -- capture register settings when pulse FSM is idle and new pulse
       if m.pre_pulse_start and state=IDLE then 
@@ -395,10 +398,9 @@ begin
                        m.pre_tflags.trace_type=DOT_PRODUCT_D
                      );
         
-        pulse_wr_en 
-          <= (pre_detection=TRACE_DETECTION_D and 
-              m.pre_tflags.trace_type=SINGLE_TRACE_D) or 
-              m.pre_tflags.trace_type=DOT_PRODUCT_D;
+        pulse_wr_en <= pre_detection=TRACE_DETECTION_D and 
+                       (m.pre_tflags.trace_type=SINGLE_TRACE_D or 
+                        m.pre_tflags.trace_type=DOT_PRODUCT_D);
               
         averaging <= m.pre_tflags.trace_type=AVERAGE_TRACE_D and 
                      pre_detection=TRACE_DETECTION_D;
@@ -621,6 +623,7 @@ begin
       --    write it without committing
       
       -- dot product FSM dp is not valid till 5 clocks after trace_last
+      --FIXME handle dumps
       case dp_state is 
       when IDLE =>
         dp_length <= length;
@@ -630,7 +633,9 @@ begin
           dp_state <= DPWAIT;
         end if;
       when DPWAIT =>
-        if dp_valid  then -- can happen before end of pulse need to store
+        if dp_dump then
+          dp_state <= IDLE;
+        elsif dp_valid  then -- can happen before end of pulse need to store
           if dp_before_pulse then
             dp_state <= WAITPULSEDONE;
             dp_word_reg <= dp_word;
@@ -645,12 +650,14 @@ begin
           end if;
         end if;
       when WAITPULSEDONE =>
-        if m.pulse_threshold_neg then
+        if dp_dump then
+          dp_state <= IDLE;
+        elsif dp_write then --FIXME needs to be a clk later
           dp_state <= WRITE; 
         end if;  
       when WRITE =>
-        dp_state <= IDLE;
-        if q_state=IDLE then
+        if q_state=IDLE then --FIXME can this be earlier
+          dp_state <= IDLE;
           frame_word <= dp_word_reg;
           frame_address <= dp_address;
           frame_length <= dp_length;
@@ -751,11 +758,13 @@ begin
         if trace_overflow then
           overflow_int <= TRUE;
           dump_int <= pulse_stamped or m.stamp_pulse;
+          dp_dump <= TRUE;
         elsif m.pulse_threshold_neg and not just_started then
           
           if not m.above_area_threshold then
             -- under area threshold -- dump 
             dump_int <= pulse_stamped; --FIXME assumes cant stamp here
+            dp_dump <= TRUE;
             if m.pulse_start then 
               tflags.multipulse <= FALSE;
               tflags.multipeak <= FALSE;
@@ -776,6 +785,7 @@ begin
                 if full then
                   pulse_stamped <= FALSE;
                   overflow_int <= TRUE;
+                  dp_dump <= TRUE;
                 else
                   just_started <= TRUE;
                 end if;
@@ -852,10 +862,12 @@ begin
         if trace_overflow then
           overflow_int <= TRUE;
           dump_int <= pulse_stamped;
+          dp_dump <= TRUE;
         elsif wr_trace_last or trace_done then
 --          trace_done <= FALSE;
           if pulse_wr_en then 
             if q_state=IDLE then
+              dp_write <= TRUE;
               queue(0) <= to_streambus(pulse_reg_trace,0,ENDIAN); 
               queue(1) <= to_streambus(pulse_reg_trace,1,ENDIAN);
               frame_length <= length;
@@ -866,9 +878,10 @@ begin
             else  
               error_int <= TRUE;
               dump_int <= pulse_stamped;
+              dp_dump <= TRUE;
             end if;
-          else
-            commit_frame <= TRUE;
+          else --averaging
+            commit_frame <= TRUE; --FIXME
             inc_accum <= TRUE;
             -- FIXME 
             frame_length <= resize(tflags.trace_length,ADDRESS_BITS+1);
@@ -880,6 +893,7 @@ begin
                    trace_wr_en then 
                   pulse_stamped <= FALSE;
                   overflow_int <= TRUE;
+                  dp_dump <= TRUE;
                 else
 --                  pulse_stamped <= m.stamp_pulse;
                   just_started <= TRUE;
@@ -934,6 +948,7 @@ begin
         if m.pulse_threshold_neg then 
           if not m.above_area_threshold then
             dump_int <= pulse_stamped or m.stamp_pulse;
+            dp_dump <= TRUE;
           else
             --this will use the old register settings so enable_reg must be true.
             if m.pulse_start then --and detection=TRACE_DETECTION_D then
@@ -942,6 +957,7 @@ begin
               if free <= resize(m.size & '0',ADDRESS_BITS+1) then 
                 pulse_stamped <= FALSE;
                 overflow_int <= TRUE;
+                dp_dump <= TRUE;
               else
                 pulse_stamped <= m.stamp_pulse;
                 just_started <= TRUE;
@@ -951,16 +967,18 @@ begin
             end if;
             if pulse_wr_en then
               if q_state=IDLE then
+                dp_write <= TRUE;
                 queue(0) <= to_streambus(trace,0,ENDIAN); 
                 queue(1) <= to_streambus(trace,1,ENDIAN);
                 frame_length <= length;
-                commit_pulse <= TRUE; --FIXME will break when trace_done but dp not yet valid
+                commit_pulse <= not dp_wr_en;  --FIXME commit_int?
                 commiting <= TRUE;
                 free <= framer_free - length;
                 q_state <= WORD1;
               else  
                 error_int <= TRUE;
                 dump_int <= pulse_stamped;
+                dp_dump <= TRUE;
               end if;
             else
               commit_frame <= TRUE;
