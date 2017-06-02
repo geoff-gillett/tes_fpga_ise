@@ -442,13 +442,13 @@ begin
             trace_start_address <= resize(m.pre_size,ADDRESS_BITS);
               
           when AVERAGE_TRACE_D =>
-            length <= resize(m.pre_tflags.trace_length,ADDRESS_BITS)+1;
+            length <= resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
             size <= resize(m.pre_size,SIZE_BITS)+1;
             tflags.offset <= to_unsigned(1,PEAK_COUNT_BITS);
             trace_start_address <= to_unsigned(0,ADDRESS_BITS);
             
           when DOT_PRODUCT_D => 
-            length <= resize(m.pre_size,ADDRESS_BITS)+1;
+            length <= resize(m.pre_size,ADDRESS_BITS+1)+1;
             size <= resize(m.pre_size,SIZE_BITS)+1;
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= (others => '-'); 
