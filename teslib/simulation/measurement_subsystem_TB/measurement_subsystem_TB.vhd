@@ -136,7 +136,7 @@ generic map(
   SLOPE_FRAC => SLOPE_FRAC,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  ACCUMULATE_N => 2,
+  ACCUMULATE_N => 3,
   TRACE_FROM_STAMP => TRUE,
   MIN_TICK_PERIOD => 2000
 )
@@ -264,17 +264,25 @@ chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(5*8,DSP_BITS-1);
 chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
---chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); --pulse start & stop
-chan_reg(0).capture.pulse_threshold <= to_unsigned(114*8,DSP_BITS-1); 
 --chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
-chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
+--chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
+chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
 chan_reg(0).capture.trace_stride <= (others => '0');
-chan_reg(0).capture.trace_length <= to_unsigned(16,TRACE_LENGTH_BITS);
+
+
+chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); --pulse start & stop
+chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
+
+--with length 15 trace_last=pulse_start on the first pulse
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(116*8,DSP_BITS-1); 
+--chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
+
+--chan_reg(0).capture.trace_length <= to_unsigned(16,TRACE_LENGTH_BITS);
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
 chan_reg(1).capture.delay <= (0 => '0', others => '0');

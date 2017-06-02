@@ -58,11 +58,11 @@ signal queue:write_buffer;
 signal m:measurements_t;
 signal peak:peak_detection_t;
 signal area:area_detection_t;
-signal pulse,pulse_reg:pulse_detection_t;
+signal pulse,first_pulse:pulse_detection_t;
 signal pulse_peak:pulse_peak_t;
 signal pulse_peak_word,dp_word,dp_word_reg:streambus_t;
 --signal dot_product_word_valid:boolean;
-signal trace,pulse_reg_trace,average_trace:trace_detection_t;
+signal trace_ends_first,trace_ends_last,average_trace:trace_detection_t;
 signal tflags,atflags:trace_flags_t;
 
 --signal framer_full:boolean;
@@ -83,7 +83,7 @@ signal commit_frame,commit_int,start_int,dump_int,just_started:boolean;
 
 signal peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
-signal pulse_start:boolean;
+signal pre_pulse_start:boolean;
 signal peak_stamped,pulse_stamped:boolean:=FALSE;
 
 signal pre_detection,detection:detection_d;
@@ -164,23 +164,27 @@ signal multipeak,multipulse:boolean;
 signal dp_sample_valid : boolean;
 signal dp_trace_start:boolean;
 signal start_accumulating:boolean;
-signal dp_wr_en:boolean;
+signal dp_detection:boolean;
 signal trace_done:boolean;
 
 signal dp_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal commit_pulse:boolean;
 signal trace_wr_en:boolean;
 signal inc_accum:boolean;
-signal pulse_wr_en:boolean;
+--signal pulse_wr_en:boolean;
 signal averaging:boolean;
 signal zero_stride:boolean;
 signal trace_full:boolean;
 signal trace_overflow:boolean;
-signal trace_active:boolean;
 signal eflags:detection_flags_t;
 signal dp_length:unsigned(ADDRESS_BITS downto 0);
 signal dp_before_pulse:boolean;
 signal dp_dump,dp_write:boolean;
+-- size of the event part (not including any trace)
+-- DEPENDS on PEAK_COUNT_BITS FIXME change to 3 bits to minimise comparator.
+constant SIZE_BITS:natural:=5; 
+signal size:unsigned(SIZE_BITS-1 downto 0);
+signal trace_detection,area_detection,pulse_detection:boolean;
 
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
@@ -227,8 +231,8 @@ error <= error_int;
 --
 --  | height | low1 |  low2  | time | -- use this for pulse2
                                       -- low2 is @ time
-pulse.size <= resize(frame_length,CHUNK_DATABITS);
-pulse.flags <= m.eflags;
+pulse.size <= resize(length,CHUNK_DATABITS);
+pulse.flags <= eflags;
 pulse.length <= m.pulse_length;
 pulse.offset <= m.time_offset;
 pulse.area <= m.pulse_area;
@@ -253,24 +257,26 @@ atflags.multipulse <= multipulse;
 atflags.trace_signal <= tflags.trace_signal;
 atflags.trace_type <= AVERAGE_TRACE_D;
 
---FIXME this will be wrong for the average
-trace.size <= resize(length,CHUNK_DATABITS);
-trace.flags <= eflags; --FIXME register the flags??
-trace.trace_flags <= tflags;
-trace.length <= m.pulse_length;
-trace.offset <= m.time_offset;
-trace.area <= m.pulse_area;
+--when trace shorter than pulse need to use current pulse data
+trace_ends_first.size <= resize(length,CHUNK_DATABITS);
+trace_ends_first.flags <= eflags; 
+trace_ends_first.trace_flags <= tflags;
+trace_ends_first.length <= m.pulse_length;
+trace_ends_first.offset <= m.time_offset;
+trace_ends_first.area <= m.pulse_area;
 
+--used for AVERAGE_TRACE_D
 average_trace.size <= resize(length+1,CHUNK_DATABITS);
 average_trace.flags <= eflags;
 average_trace.trace_flags <= atflags;
 
-pulse_reg_trace.size <= resize(length,CHUNK_DATABITS);
-pulse_reg_trace.flags <= pulse_reg.flags;
-pulse_reg_trace.trace_flags <= tflags;
-pulse_reg_trace.length <= pulse_reg.length;
-pulse_reg_trace.offset <= pulse_reg.offset;
-pulse_reg_trace.area <= pulse_reg.area;
+--used when trace longer than pulse use stored pulse data
+trace_ends_last.size <= resize(length,CHUNK_DATABITS);
+trace_ends_last.flags <= first_pulse.flags;
+trace_ends_last.trace_flags <= tflags;
+trace_ends_last.length <= first_pulse.length;
+trace_ends_last.offset <= first_pulse.offset;
+trace_ends_last.area <= first_pulse.area;
 
 pulse_peak.minima <= m.min_value;
 pulse_peak.timestamp <= m.peak_time;
@@ -289,7 +295,7 @@ dp_word <= to_streambus(resize(dot_product,BUS_DATABITS),TRUE,ENDIAN);
 pre_detection <= m.pre_eflags.event_type.detection;
 detection <= m.eflags.event_type.detection;
   
-pulse_start <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start;  
+pre_pulse_start <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start;  
 
 can_q_single <= q_state=IDLE;
 can_q_trace <= q_state=IDLE;
@@ -372,11 +378,10 @@ begin
       dp_dump <= FALSE;
       dp_write <= FALSE;
       
-      -- capture register settings when pulse FSM is idle and new pulse
+      -- capture register settings when pulse FSM is idle and a new pulse starts
+      -- TODO consider if there is an issue when registers change upstream
+      -- on a new pulse even when this FSM is not idle
       if m.pre_pulse_start and state=IDLE then 
-        --FIXME this is an issue when the thresholds change downstream while 
-        --capturing a trace, as they can span multiple pulse_starts.
-        --A work-around is to disable before register changes then re-enable.
         enable_reg <= enable; 
                               
         tflags.trace_length <= m.pre_tflags.trace_length;
@@ -387,7 +392,11 @@ begin
         
         eflags <= m.pre_eflags;
          
-        dp_wr_en <= m.pre_tflags.trace_type=DOT_PRODUCT_D;
+        dp_detection <= m.pre_tflags.trace_type=DOT_PRODUCT_D;
+        
+        trace_detection <= pre_detection=TRACE_DETECTION_D;
+        area_detection <= pre_detection=AREA_DETECTION_D;
+        pulse_detection <= pre_detection=PULSE_DETECTION_D;
         
         trace_wr_en <= pre_detection=TRACE_DETECTION_D and
                        m.pre_tflags.trace_type/=DOT_PRODUCT_D;
@@ -397,38 +406,37 @@ begin
                        m.pre_tflags.trace_type=SINGLE_TRACE_D or 
                        m.pre_tflags.trace_type=DOT_PRODUCT_D
                      );
-        
-        pulse_wr_en <= pre_detection=TRACE_DETECTION_D and 
-                       (m.pre_tflags.trace_type=SINGLE_TRACE_D or 
-                        m.pre_tflags.trace_type=DOT_PRODUCT_D);
               
         averaging <= m.pre_tflags.trace_type=AVERAGE_TRACE_D and 
                      pre_detection=TRACE_DETECTION_D;
                      
-        trace_active <= pre_detection=TRACE_DETECTION_D;
         trace_count_init <= m.pre_tflags.trace_length-1;
         
         dp_address <= resize(m.pre_size, ADDRESS_BITS);
         
+        
         case m.pre_eflags.event_type.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
           length <= resize(m.pre_size,ADDRESS_BITS+1);
-          
+           
         when TRACE_DETECTION_D => 
           case m.pre_tflags.trace_type is
           when SINGLE_TRACE_D =>
             length 
               <= resize(m.pre_size,ADDRESS_BITS+1) + m.pre_tflags.trace_length;
+            size <= resize(m.pre_size,SIZE_BITS);
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= resize(m.pre_size,ADDRESS_BITS);
               
           when AVERAGE_TRACE_D =>
             length <= resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
+            size <= resize(m.pre_size+1,SIZE_BITS);
             tflags.offset <= to_unsigned(1,PEAK_COUNT_BITS);
             trace_start_address <= to_unsigned(0,ADDRESS_BITS);
             
           when DOT_PRODUCT_D => 
             length <= resize(m.pre_size+1,ADDRESS_BITS+1);
+            size <= resize(m.pre_size+1,SIZE_BITS);
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= (others => '-'); 
             dot_product_go <= TRUE;
@@ -627,7 +635,7 @@ begin
       case dp_state is 
       when IDLE =>
         dp_length <= length;
-        if dp_wr_en and wr_trace_last then
+        if dp_detection and wr_trace_last then
           dp_before_pulse <= (state=FIRSTPULSE or state=WAITPULSEDONE) and 
                               not m.pulse_threshold_neg;
           dp_state <= DPWAIT;
@@ -686,7 +694,8 @@ begin
         accum_count <= (ACCUMULATE_N => '0', others => '1');
         next_accum_count <= to_unsigned(2**ACCUMULATE_N-2,ACCUMULATE_N+1);
         last_accum_count <= ACCUMULATE_N=0;
-      elsif inc_accum and not last_accum_count then
+--      elsif inc_accum and not last_accum_count then
+      elsif wr_trace_last and averaging and not last_accum_count then
         accum_count <= next_accum_count;
         next_accum_count <= next_accum_count-1;
         last_accum_count <= next_accum_count=0;
@@ -697,8 +706,8 @@ begin
       when IDLE =>
         just_started <= TRUE;
         pulse_stamped <= FALSE;
-        if pulse_start and pre_detection/=PEAK_DETECTION_D and enable then 
-          if free >= resize(m.pre_size,ADDRESS_BITS+1) then
+        if pre_pulse_start and enable then 
+          if size < free then
             state <= FIRSTPULSE;
             tflags.multipulse <= FALSE;
             tflags.multipeak <= FALSE;
@@ -708,170 +717,224 @@ begin
         end if;
         
       when FIRSTPULSE =>
-        just_started <= FALSE; 
+        just_started <= FALSE; --FIXME is this still needed? 
         
-        -- next state logic
-        if trace_overflow then
+        if trace_overflow and trace_detection then
           t_state <= IDLE;
-        elsif m.pulse_threshold_neg and not just_started then
-          if not m.above_area_threshold then
-            t_state <= IDLE;
-            wr_chunk_state <= STORE0;
-            if not m.pulse_start then 
-              state <= IDLE; 
-            end if;
-          else
-            -- valid end of pulse 
-            if detection=TRACE_DETECTION_D then
-              if m.pulse_start then
-                if averaging and not wr_trace_last then
-                  state <= IDLE; -- double pulse dump. 
-                  t_state <= IDLE;
-                else
-                  if wr_trace_last then
-                    state <= IDLE;
-                  else
-                    state <= TRACING;
-                  end if;
-                end if;
-              else
-                state <= TRACING;
-              end if;
-            else 
-              if m.pulse_start then
-                if full then
-                  state <= IDLE;
-                  t_state <= IDLE;
-                end if;
-              else
-                state <= IDLE;
-                t_state <= IDLE;
-              end if;
-            end if;
-          end if;
-        elsif detection=TRACE_DETECTION_D and wr_trace_last then
-          t_state <= IDLE;
-          state <= WAITPULSEDONE;
-        end if;
-        
-        -- output  
-        if trace_overflow then
           overflow_int <= TRUE;
           dump_int <= pulse_stamped or m.stamp_pulse;
           dp_dump <= TRUE;
-        elsif m.pulse_threshold_neg and not just_started then
           
+        elsif m.pulse_threshold_neg and not just_started then
+
           if not m.above_area_threshold then
-            -- under area threshold -- dump 
-            dump_int <= pulse_stamped; --FIXME assumes cant stamp here
+            --dump the pulse that is ending
+            t_state <= IDLE;
+            dump_int <= pulse_stamped or m.stamp_pulse; 
             dp_dump <= TRUE;
-            if m.pulse_start then 
-              tflags.multipulse <= FALSE;
-              tflags.multipeak <= FALSE;
+            -- if pre_pulse_start space will be free as previous pulse was 
+            -- dumped.
+            if not pre_pulse_start then 
+              state <= IDLE; 
             end if;
-            
           else
-            -- valid end of pulse 
-            if detection=TRACE_DETECTION_D then
-              pulse_reg <= pulse;
-              if m.pulse_start then
-                multipulse <= TRUE;
-                tflags.multipulse <= TRUE;
-              end if;
+            -- valid pulse_threshold_neg 
+            -- could also be pre_pulse_start and/or trace_last 
+            -- can't be pulse_start as pre_pulse_start should have been handled 
+            -- last clock.
             
-            else 
-              
-              if m.pulse_start then
-                if full then
-                  pulse_stamped <= FALSE;
-                  overflow_int <= TRUE;
-                  dp_dump <= TRUE;
+            --store the first_pulse for use in trace_detections
+            first_pulse <= pulse; 
+            
+            --------------------------------------------------------------------
+            -- next state logic for valid pulse_threshold_neg (FIRSTPULSE)
+            --------------------------------------------------------------------
+            if pre_pulse_start then -- new pulse will start next clock
+              if trace_detection then
+                if averaging then
+                  -- multiple pulses in trace, dump and don't include in average.
+                  multipulse <= TRUE;
+                  state <= IDLE; 
+                  t_state <= IDLE;
                 else
-                  just_started <= TRUE;
+                  if wr_trace_last then
+                    -- may have queue error
+                    state <= IDLE; -- new pulse and trace
+                  else
+                    -- no queueing
+                    state <= TRACING; -- end of first pulse, continue tracing.
+                  end if;
+                end if;
+              else -- not tracing
+                -- a queue error will dump ending pulse
+--                if q_state/=IDLE then 
+--                  if free < size then --must be space as previous pulse dumped
+--                    state <= IDLE;  --overflow for NEW pulse 
+--                  end if;
+--                else
+                if q_state=IDLE then
+                  -- ending pulse not dumped but not yet commited, 
+                  -- check space for two events
+                  if free < size & '0' then
+                    state <= IDLE;  --overflow for NEW pulse
+                  end if;
                 end if;
               end if;
+            else -- not pre_pulse start
+              if trace_detection then
+                if wr_trace_last then
+                  state <= IDLE; 
+                else
+                  state <= TRACING; -- end of first pulse, continue tracing.
+                end if;
+              else -- not tracing
+                if q_state/=IDLE then 
+                  state <= IDLE;  --queue error dump ending pulse 
+                end if;
+              end if;       
+            end if;
               
-              if detection=AREA_DETECTION_D then
-                
-                q_state <= SINGLE; -- assumption here that q is idle
-                queue(0) <= to_streambus(area,ENDIAN);
-                frame_length <= length;
-                commiting <= TRUE;
-                free <= framer_free - length;
-                
-              else -- must be normal pulse
               
-                if q_state=IDLE then 
+            --------------------------------------------------------------------
+            -- output logic for valid pulse_threshold_neg (FIRSTPULSE)
+            --------------------------------------------------------------------
+
+            if trace_detection then
+              if wr_trace_last then
+                -- TODO test pre_pulse_start here
+                -- dump if SINGLE_TRACE_D
+                if averaging then
+                  commit_frame <= TRUE;
+                  frame_length <= length;
+                elsif q_state=IDLE then 
+                  dp_write <= TRUE;
+                  queue(0) <= to_streambus(trace_ends_first,0,ENDIAN); 
+                  queue(1) <= to_streambus(trace_ends_first,1,ENDIAN);
+                  frame_length <= length;
+                  -- will commit when dp_valid
+                  commit_pulse <= not dp_detection; 
+                  commiting <= TRUE;
+                  free <= framer_free - length;
+                  q_state <= WORD1;
+                  -- can skip space check if pre_pulse_start, handled by 
+                  -- trace_overflow, pulse_peak cannot occur before tracing?
+                  -- FIXME can happen before first trace word is written, 
+                  -- which takes 6 clocks. Add check at pulse peak write?
+                else  
+                  error_int <= TRUE;
+                  --FIXME consider effect of m.stamp_pulse
+                  dump_int <= pulse_stamped; 
+                  dp_dump <= TRUE;
+                end if;
+              elsif pre_pulse_start and averaging then 
+                multipulse <= TRUE; --dump due to multiple pulses
+              end if;
+              
+            else 
+              -- not trace_detection 
+              if q_state=IDLE then 
+                
+                if area_detection then
+                  q_state <= SINGLE; -- assumption here that q is idle
+                  queue(0) <= to_streambus(area,ENDIAN);
+                end if;
+                
+                if pulse_detection then
                   queue(0) <= to_streambus(pulse,0,ENDIAN);
                   queue(1) <= to_streambus(pulse,1,ENDIAN);
-                  frame_length <= length;
                   -- write last 
                   pulse_peak_word <= to_streambus(pulse_peak,TRUE,ENDIAN);
                   pulse_peak_valid <= TRUE;
                   peak_address <= resize(m.last_peak_address,ADDRESS_BITS);
                   commit_pulse <= TRUE;
-                  commiting <= TRUE;
-                  free <= framer_free - frame_length;
                   q_state <= WORD1;
-                else
-                  error_int <= TRUE;
-                  dump_int <= pulse_stamped or m.stamp_pulse;
                 end if;
+                
+                frame_length <= length;
+                free <= framer_free - length;
+                commiting <= TRUE;
+                
+                -- if a new pulse is starting, check for space for two events 
+                -- as previous pulse not committed yet.
+                if pre_pulse_start and free < size & '0' then
+                  -- new pulse wont start no need for dump 
+                  overflow_int <= TRUE; 
+                  dp_dump <= TRUE;
+                end if;
+                
+              else -- queue error
+                error_int <= TRUE;
+                dump_int <= pulse_stamped;
+                dp_dump <= TRUE;
               end if;
-              
             end if;
           end if;
+        else -- not end of pulse
+          if wr_trace_last then
+            state <= WAITPULSEDONE;
+          end if;
         end if;
+        -- output valid pulse_threshold_neg
         
       when TRACING =>  -- pulse has ended
-        -- next state logic
+        
+        ------------------------------------------------------------------------
+        -- next state logic (TRACING)
+        ------------------------------------------------------------------------
         if trace_overflow then
           state <= IDLE;
         elsif wr_trace_last or trace_done then
-          if last_accum_count and not pulse_wr_en then
+          if last_accum_count and averaging then
             state <= AVERAGE;
           else
-            if m.pulse_start then --end of trace coincident with new pulse
-              -- make sure twice the space is free in case the block above 
-              -- committed.
-              --FIXME not making sense
-              --need to dump if trace_wr_en otherwise does not matter
-              -- this could be a timing issue
-              if free < resize(m.size & '0',ADDRESS_BITS+1) and trace_wr_en then 
+            if pre_pulse_start then 
+              -- trace_last 1 clk before new pulse
+              -- make sure twice the space is free for new pulse
+              if (free < size & '0') and not averaging then 
+                --second pulse overflows
                 state <= IDLE;
-                t_state <= IDLE;
+--                t_state <= IDLE;
               else
                 state <= FIRSTPULSE;
-                t_state <= IDLE;
+--                t_state <= IDLE;
               end if;
             else
-              t_state <= IDLE;
+--              t_state <= IDLE;
               state <= IDLE;
             end if;
           end if;
         else
+          --still tracing
           if m.pulse_start then
-            if tflags.trace_type=AVERAGE_TRACE_D then
+            if averaging then
+              -- multipulse dump
               state <= IDLE;
               t_state <= IDLE;
             end if;
           end if;
         end if;
         
-        -- output
+        ------------------------------------------------------------------------
+        -- output logic (TRACING)
+        ------------------------------------------------------------------------
         if trace_overflow then
           overflow_int <= TRUE;
           dump_int <= pulse_stamped;
           dp_dump <= TRUE;
         elsif wr_trace_last or trace_done then
---          trace_done <= FALSE;
-          if pulse_wr_en then 
+          if averaging then 
+            commit_frame <= TRUE; 
+--            inc_accum <= TRUE; --FIXME can 
+            frame_length <= length;
+          else 
             if q_state=IDLE then
               dp_write <= TRUE;
-              queue(0) <= to_streambus(pulse_reg_trace,0,ENDIAN); 
-              queue(1) <= to_streambus(pulse_reg_trace,1,ENDIAN);
+--              queue(0) <= to_streambus(trace_pulse,0,ENDIAN); 
+--              queue(1) <= to_streambus(trace_pulse,1,ENDIAN);
+              queue(0) <= to_streambus(trace_ends_last,0,ENDIAN); 
+              queue(1) <= to_streambus(trace_ends_last,1,ENDIAN);
               frame_length <= length;
-              commit_pulse <= not dp_wr_en;
+              commit_pulse <= not dp_detection;
               commiting <= TRUE;
               free <= framer_free - length;
               q_state <= WORD1;
@@ -880,30 +943,23 @@ begin
               dump_int <= pulse_stamped;
               dp_dump <= TRUE;
             end if;
-          else --averaging
-            commit_frame <= TRUE; --FIXME
-            inc_accum <= TRUE;
-            -- FIXME 
-            frame_length <= resize(tflags.trace_length,ADDRESS_BITS+1);
-            if not last_accum_count then
-              if m.pulse_start then --and detection=TRACE_DETECTION_D then
-                -- make sure twice the space is free in case the block above 
-                -- committed.
-                if free < resize(m.size & '0',ADDRESS_BITS+1) and 
-                   trace_wr_en then 
-                  pulse_stamped <= FALSE;
-                  overflow_int <= TRUE;
-                  dp_dump <= TRUE;
-                else
---                  pulse_stamped <= m.stamp_pulse;
-                  just_started <= TRUE;
-                  tflags.multipulse <= FALSE;
-                end if;
-              end if;
+          end if;
+          if pre_pulse_start then
+            --check space for 2 events
+            if (free < length(ADDRESS_BITS-1 downto 0) & '0') and 
+                trace_wr_en and not averaging then 
+              state <= IDLE;
+              overflow_int <= TRUE;
+            else
+              state <= FIRSTPULSE;
+              just_started <= TRUE;
+              tflags.multipulse <= FALSE;
+              tflags.multipeak <= FALSE;
             end if;
           end if;
         else
           if m.pulse_start then
+            --multipulse dump
             if averaging then
               multipulse <= TRUE;
               pulse_stamped <= FALSE;
@@ -915,18 +971,20 @@ begin
       when WAITPULSEDONE =>
         --FIXME assure this state can only be reached when TRACE_DETECTION_D 
        
-        --next state
+        ------------------------------------------------------------------------
+        --next state logic (WAITPULSEDONE)
+        ------------------------------------------------------------------------
         if m.pulse_threshold_neg then 
           --this will use the old register settings so enable_reg must be true.
-          if m.pulse_start then 
+          if pre_pulse_start then 
             -- make sure twice the space is free in case the last pulse  
             -- committed.
-            if free <= resize(m.size & '0',ADDRESS_BITS+1) then 
+            if (free <= size & '0') and not averaging then 
               state <= IDLE; -- dump this new pulse
               t_state <= IDLE;
             else
               t_state <= IDLE;
-              if (not pulse_wr_en) and last_accum_count and 
+              if averaging and last_accum_count and 
                  m.above_area_threshold then
                 state <= AVERAGE;
               else
@@ -935,7 +993,7 @@ begin
             end if;
           else
             t_state <= IDLE;
-            if (not pulse_wr_en) and last_accum_count and 
+            if averaging and last_accum_count and 
                m.above_area_threshold then
               state <= AVERAGE;
             else
@@ -944,14 +1002,16 @@ begin
           end if;
         end if;
         
-        --output 
+        ------------------------------------------------------------------------
+        --output logic
+        ------------------------------------------------------------------------
         if m.pulse_threshold_neg then 
           if not m.above_area_threshold then
             dump_int <= pulse_stamped or m.stamp_pulse;
             dp_dump <= TRUE;
           else
             --this will use the old register settings so enable_reg must be true.
-            if m.pulse_start then --and detection=TRACE_DETECTION_D then
+            if pre_pulse_start then --and detection=TRACE_DETECTION_D then
               -- make sure twice the space is free in case the block above 
               -- committed.
               if free <= resize(m.size & '0',ADDRESS_BITS+1) then 
@@ -965,13 +1025,13 @@ begin
                 tflags.multipeak <= FALSE;
               end if;
             end if;
-            if pulse_wr_en then
+            if not averaging then
               if q_state=IDLE then
                 dp_write <= TRUE;
-                queue(0) <= to_streambus(trace,0,ENDIAN); 
-                queue(1) <= to_streambus(trace,1,ENDIAN);
+                queue(0) <= to_streambus(trace_ends_first,0,ENDIAN); 
+                queue(1) <= to_streambus(trace_ends_first,1,ENDIAN);
                 frame_length <= length;
-                commit_pulse <= not dp_wr_en;  --FIXME commit_int?
+                commit_pulse <= not dp_detection;  --FIXME commit_int?
                 commiting <= TRUE;
                 free <= framer_free - length;
                 q_state <= WORD1;
@@ -982,8 +1042,8 @@ begin
               end if;
             else
               commit_frame <= TRUE;
-              frame_length <= resize(tflags.trace_length,ADDRESS_BITS+1);
-              inc_accum <= TRUE;
+              frame_length <= length;
+--              inc_accum <= TRUE;
             end if;
           end if;
         else
@@ -1010,7 +1070,7 @@ begin
         end if;
         
       when HOLD =>
-        if pulse_start and m.pre_tflags.trace_type/=AVERAGE_TRACE_D then
+        if pre_pulse_start and m.pre_tflags.trace_type/=AVERAGE_TRACE_D then
           state <= IDLE;
         end if;
         
