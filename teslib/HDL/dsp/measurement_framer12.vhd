@@ -436,7 +436,7 @@ begin
           case m.pre_tflags.trace_type is
           when SINGLE_TRACE_D =>
             length 
-              <= resize(m.pre_size,ADDRESS_BITS)+m.pre_tflags.trace_length+1;
+              <= resize(m.pre_size,ADDRESS_BITS+1)+m.pre_tflags.trace_length;
             size <= resize(m.pre_size,SIZE_BITS);
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= resize(m.pre_size,ADDRESS_BITS);
