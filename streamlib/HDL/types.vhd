@@ -58,7 +58,6 @@ function SwapEndianness(data:std_logic_vector) return std_logic_vector;
 function SwapEndianness(data:unsigned) return std_logic_vector;
 function SwapEndianness(data:signed) return std_logic_vector;
 function set_endianness(d:std_logic_vector;e:string) return std_logic_vector;
---function set_endianness(d:std_logic_vector;e:string) return signed;
 function set_endianness(u:unsigned;e:string) return std_logic_vector;
 function set_endianness(s:signed;e:string) return std_logic_vector;
 function SetEndianness(sb:streambus_t;e:string) return streambus_t;

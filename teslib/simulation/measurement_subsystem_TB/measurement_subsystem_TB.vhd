@@ -42,7 +42,8 @@ generic(
   FRAC:natural:=3;
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
-  AREA_FRAC:natural:=1
+  AREA_FRAC:natural:=1;
+  FRAMER_ADDRESS_BITS:natural:=7
 );
 end entity measurement_subsystem_TB;
 
@@ -138,7 +139,8 @@ generic map(
   AREA_FRAC => AREA_FRAC,
   ACCUMULATE_N => 3,
   TRACE_FROM_STAMP => TRUE,
-  MIN_TICK_PERIOD => 2000
+  MIN_TICK_PERIOD => 2000,
+  MEASUREMENT_FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS
 )
 port map(
   clk => sample_clk,
