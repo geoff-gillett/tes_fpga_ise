@@ -191,6 +191,7 @@ signal size:unsigned(SIZE_BITS-1 downto 0);
 signal trace_detection,area_detection,pulse_detection,peak_detection:boolean;
 -- TRACE_DETECTION_D and SINGLE_TRACE_D
 signal single_trace_detection:boolean;
+signal trace_chunks:unsigned(DP_ADDRESS_BITS downto 0);
 
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
@@ -272,7 +273,7 @@ trace_ends_first.offset <= m.time_offset;
 trace_ends_first.area <= m.pulse_area;
 
 --used for AVERAGE_TRACE_D
-average_trace.size <= resize(length+1,CHUNK_DATABITS);
+average_trace.size <= resize(length,CHUNK_DATABITS)+1;
 average_trace.flags <= eflags;
 average_trace.trace_flags <= atflags;
 
@@ -429,25 +430,26 @@ begin
         case m.pre_eflags.event_type.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
           length <= resize(m.pre_size,ADDRESS_BITS+1);
+          size <= resize(m.pre_size,SIZE_BITS);
            
         when TRACE_DETECTION_D => 
           case m.pre_tflags.trace_type is
           when SINGLE_TRACE_D =>
             length 
-              <= resize(m.pre_size,ADDRESS_BITS+1) + m.pre_tflags.trace_length;
+              <= resize(m.pre_size,ADDRESS_BITS)+m.pre_tflags.trace_length+1;
             size <= resize(m.pre_size,SIZE_BITS);
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= resize(m.pre_size,ADDRESS_BITS);
               
           when AVERAGE_TRACE_D =>
-            length <= resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
-            size <= resize(m.pre_size+1,SIZE_BITS);
+            length <= resize(m.pre_tflags.trace_length,ADDRESS_BITS)+1;
+            size <= resize(m.pre_size,SIZE_BITS)+1;
             tflags.offset <= to_unsigned(1,PEAK_COUNT_BITS);
             trace_start_address <= to_unsigned(0,ADDRESS_BITS);
             
           when DOT_PRODUCT_D => 
-            length <= resize(m.pre_size+1,ADDRESS_BITS+1);
-            size <= resize(m.pre_size+1,SIZE_BITS);
+            length <= resize(m.pre_size,ADDRESS_BITS)+1;
+            size <= resize(m.pre_size,SIZE_BITS)+1;
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= (others => '-'); 
             dot_product_go <= TRUE;
@@ -748,10 +750,9 @@ begin
               state <= IDLE; 
             end if;
           else
-            -- valid pulse_threshold_neg 
-            -- could also be pre_pulse_start and/or trace_last 
-            -- can't be pulse_start as pre_pulse_start should have been handled 
-            -- last clock.
+            -- valid pulse_threshold_neg could also have pre_pulse_start and/or 
+            -- trace_last. Can't have pulse_start as pre_pulse_start should 
+            -- have been handled in the previous clock cycle.
             
             --store the first_pulse for use in trace_detections
             first_pulse <= pulse; 
@@ -879,9 +880,9 @@ begin
               end if;
             end if;
           end if;
-        else -- not end of pulse
+        else -- not pulse_threshold_neg (FIRSTPULSE).
           if wr_trace_last then
-            state <= WAITPULSEDONE;
+            state <= TRACING;
           end if;
         end if;
         -- output valid pulse_threshold_neg
@@ -1057,7 +1058,9 @@ begin
             end if;
             
             -- END of valid pulse_threshold_neg (WAITPULSEDONE) block
+          
           end if;
+        else -- not pulse_threshold_neg (WAITPULSE)
         end if;
         
       when AVERAGE =>
@@ -1277,6 +1280,7 @@ begin
   end if;
 end process accumFSM;
 
+trace_chunks <= resize(length,DP_ADDRESS_BITS+1);
 dotproductDSP:entity work.dot_product2
 generic map(
   ADDRESS_BITS => DP_ADDRESS_BITS,
@@ -1288,7 +1292,7 @@ port map(
   clk => clk,
   reset => reset,
   stop => stop,
-  trace_chunks => resize(length,DP_ADDRESS_BITS+1),
+  trace_chunks => trace_chunks,
   sample => dp_sample,
   sample_valid => dp_sample_valid,
   trace_start => dp_trace_start,
