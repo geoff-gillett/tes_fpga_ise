@@ -43,7 +43,7 @@ generic(
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  FRAMER_ADDRESS_BITS:natural:=7
+  FRAMER_ADDRESS_BITS:natural:=5
 );
 end entity measurement_subsystem_TB;
 

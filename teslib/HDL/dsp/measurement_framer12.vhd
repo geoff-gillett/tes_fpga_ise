@@ -68,7 +68,8 @@ attribute equivalent_register_removal of mux_full:signal is "no";
 
 signal framer_free:unsigned(ADDRESS_BITS downto 0);
 signal free:unsigned(ADDRESS_BITS downto 0);
-signal frame_length,length:unsigned(ADDRESS_BITS downto 0):=(others => '0');
+signal frame_length,length,size2:unsigned(ADDRESS_BITS downto 0)
+       :=(others => '0');
 --
 signal pulse_valid,pulse_peak_valid:boolean;
 signal pulse_overflow:boolean;
@@ -427,12 +428,16 @@ begin
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
           length <= resize(m.pre_size,ADDRESS_BITS+1);
           size <= resize(m.pre_size,SIZE_BITS);
-           
+          size2 <= resize(m.pre_size,ADDRESS_BITS) & '0';
+
         when TRACE_DETECTION_D => 
           case m.pre_tflags.trace_type is
           when SINGLE_TRACE_D =>
             length 
               <= resize(m.pre_size,ADDRESS_BITS+1)+
+                 resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
+            size2 
+              <= resize(m.pre_size ,ADDRESS_BITS) & '0' +
                  resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
             size <= resize(m.pre_size,SIZE_BITS);
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
@@ -440,19 +445,21 @@ begin
               
           when AVERAGE_TRACE_D =>
             length <= resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
+            size2 <= (others => '-');
             size <= resize(m.pre_size,SIZE_BITS)+1;
             tflags.offset <= to_unsigned(1,PEAK_COUNT_BITS);
             trace_start_address <= to_unsigned(0,ADDRESS_BITS);
             
           when DOT_PRODUCT_D => 
-            length <= resize(m.pre_size,ADDRESS_BITS+1)+1;
+            length <= resize(m.pre_size,ADDRESS_BITS+1) + 1;
+            size2 <= resize(m.pre_size,ADDRESS_BITS) & '0' + 1;
             size <= resize(m.pre_size,SIZE_BITS)+1;
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= (others => '-'); 
             dot_product_go <= TRUE;
             
-          when DOT_PRODUCT_TRACE_D =>
-            trace_start_address <= (others => '-'); --resize(m.size+1,ADDRESS_BITS); --FIXME ??
+--          when DOT_PRODUCT_TRACE_D =>
+--            trace_start_address <= (others => '-'); --resize(m.size+1,ADDRESS_BITS); --FIXME ??
             
           end case;
         end case;
@@ -702,7 +709,7 @@ begin
         accum_count <= (ACCUMULATE_N => '0', others => '1');
         next_accum_count <= to_unsigned(2**ACCUMULATE_N-2,ACCUMULATE_N+1);
         last_accum_count <= ACCUMULATE_N=0;
-      elsif wr_trace_last and averaging and not last_accum_count then
+      elsif wr_trace_last and a_state=ACCUM and not last_accum_count then
         accum_count <= next_accum_count;
         next_accum_count <= next_accum_count-1;
         last_accum_count <= next_accum_count=0;
@@ -780,7 +787,7 @@ begin
                 if q_state=IDLE then
                   -- ending pulse not dumped but not yet committed, 
                   -- check space for two events
-                  if free < size & '0' then
+                  if free < size2 then
                     state <= IDLE;  
                     overflow_int <= TRUE; --overflow for NEW pulse
                   end if;
@@ -800,7 +807,7 @@ begin
               else -- not tracing
                 if q_state=IDLE then 
                   --if there is a new pulse check for space
-                  if m.pulse_start and free < size & '0' then
+                  if m.pulse_start and free < size2 then
                     -- new pulse wont start no need for dump 
                     overflow_int <= TRUE; 
                   end if;
@@ -946,8 +953,7 @@ begin
           end if;
           if pre_pulse_start then
             --check space for 2 events
-            if (free < length(ADDRESS_BITS-1 downto 0) & '0') and 
-                trace_wr_en and not averaging then 
+            if free < size2 and trace_wr_en and not averaging then 
               state <= IDLE;
               overflow_int <= TRUE;
             else
@@ -998,13 +1004,17 @@ begin
                   -- for the new pulse is difficult when a trace is included 
                   -- also, the loss of single traces is not an issue as they are 
                   -- purely diagnostic.
-                  state <= IDLE;
-                  error_int <= TRUE;
+                  if free < size2 then
+                    state <= IDLE;
+                    overflow_int <= TRUE; -- overflow the new pulse;
+                  else
+                    state <= FIRSTPULSE;
+                  end if;
                 elsif averaging and last_accum_count then
                   -- ending pulse will be committed, and was the last required 
                   -- for the average.
                   state <= AVERAGE;
-                elsif free < size & '0' then
+                elsif free < size2 then
                   -- ending pulse will be committed, check space for two events.
                   state <= IDLE;  
                   overflow_int <= TRUE; --overflow the NEW pulse.
