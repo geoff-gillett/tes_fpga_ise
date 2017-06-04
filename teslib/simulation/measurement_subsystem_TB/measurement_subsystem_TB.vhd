@@ -276,15 +276,18 @@ chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
 chan_reg(0).capture.trace_stride <= (others => '0');
 
+--------------------------------------------------------------------------------
+-- pulse_threshold_neg & pulse_start simultaneous.
+chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
+--chan_reg(0).capture.trace_length <= to_unsigned(16,TRACE_LENGTH_BITS);
 
-chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); --pulse start & stop
-chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
-
---with length 15 trace_last=pulse_start on the first pulse
+-- trace_last & pulse_start simultaneous.
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(116*8,DSP_BITS-1); 
 --chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
 
---chan_reg(0).capture.trace_length <= to_unsigned(16,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(32,TRACE_LENGTH_BITS);
+--------------------------------------------------------------------------------
+
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
 chan_reg(1).capture.delay <= (0 => '0', others => '0');

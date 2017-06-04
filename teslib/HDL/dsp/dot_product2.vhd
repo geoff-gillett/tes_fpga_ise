@@ -209,9 +209,9 @@ begin
         end if;
         
       when DOTPRODUCT =>
-        if stop then
-          state <= IDLE;
-        elsif trace_start then
+--        if stop then
+--          state <= IDLE;
+        if trace_start then
           address <= (others => '0');
         else
           address <= address+1;

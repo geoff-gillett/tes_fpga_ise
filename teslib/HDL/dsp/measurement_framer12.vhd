@@ -76,7 +76,7 @@ signal pulse_overflow:boolean;
 signal frame_word:streambus_t;
 signal frame_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal frame_we:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal commit_frame,commit_int,start_int,dump_int,just_started:boolean;
+signal commit_frame,commit_int,start_int,dump_int:boolean; --,just_started:boolean;
 
 signal peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
@@ -121,13 +121,13 @@ type rdChunkState is (IDLE,WAIT_TRACE,READ3,READ2,READ1,READ0);
 signal rd_chunk_state:rdChunkState;
 type traceFSMstate is (IDLE,CAPTURE);
 signal t_state:traceFSMstate;
-type queueFSMstate is (IDLE,SINGLE,WORD0,WORD1);
+type queueFSMstate is (IDLE,SINGLE,WORD0,WORD1,DONE);
 signal q_state:queueFSMstate;
 type strideFSMstate is (INIT,IDLE,CAPTURE);
 signal s_state:strideFSMstate;
 type accumFSMstate is (IDLE,WAITING,ACCUM,SEND,STOPED);
 signal a_state:accumFSMstate;
-type DPstate is (IDLE,DPWAIT,WRITE,WAITPULSEDONE);
+type DPstate is (IDLE,DPWAIT,DONE);
 signal dp_state:DPstate;
 attribute fsm_encoding of s_state:signal is "one-hot";
 attribute fsm_encoding of t_state:signal is "one-hot";
@@ -143,6 +143,7 @@ signal reg_stream:streambus_t;
 signal reg_ready:boolean;
 signal reg_valid:boolean;
 signal average_sample:signed(WIDTH-1 downto 0);
+-- TRACE_DETECTION and (SINGLE_TRACE or DOT_PRODUCT)
 signal mux_wr_en:boolean;
 signal start_average,average_last:boolean;
 
@@ -153,7 +154,7 @@ signal stop:boolean;
 signal dp_sample:signed(WIDTH-1 downto 0);
 signal rd_trace_start:boolean;
 signal dp_trace_last,rd_trace_last:boolean;
-signal dot_product_go:boolean;
+signal dp_start:boolean;
 signal dot_product:signed(47 downto 0);
 signal dp_valid:boolean;
 signal accumulate_done:boolean;
@@ -163,6 +164,10 @@ signal dp_trace_start:boolean;
 signal start_accumulating:boolean;
 signal dp_trace_detection:boolean;
 signal trace_done:boolean;
+--signal pre_trace_start:boolean;
+signal trace_started:boolean;
+signal trace_start_reg:boolean;
+signal trace_started_reg:boolean;
 
 signal dp_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal commit_pulse:boolean;
@@ -310,6 +315,8 @@ pre_full <= free < resize(m.pre_size,ADDRESS_BITS+1);
 
 full <= free <= length;
 
+trace_start <= trace_start_reg and enable_reg;
+
 trace_chunk_debug <= set_endianness(trace_chunk,ENDIAN);
 traceSignalMux:process(clk)
 begin
@@ -331,11 +338,6 @@ begin
   end if;
 end process traceSignalMux;
 
---dot_product_word.last <= (0 => TRUE, others => FALSE);
-
---trace_last <= s_state=CAPTURE and last_trace_count and 
---              (wr_chunk_state=WRITE and can_write_trace); 
-              
 main:process(clk)
 variable space_for_trace:boolean;
 begin
@@ -365,7 +367,7 @@ begin
       multipeak <= FALSE;
       
       last_trace_count <= FALSE;
-      
+      trace_started <= FALSE;
       trace_start_address <= (others => '-');
     else
       
@@ -376,10 +378,10 @@ begin
       commit_frame <= FALSE;
       commit_int <= FALSE;
       frame_we <= (others => FALSE);
-      trace_start <= FALSE;
+      trace_start_reg <= FALSE;
       space_for_trace:=free > trace_address;
       inc_accum <= FALSE;
-      dot_product_go <= FALSE;
+      dp_start <= FALSE;
       dp_dump <= FALSE;
       dp_write <= FALSE;
       
@@ -397,7 +399,6 @@ begin
         
         eflags <= m.pre_eflags;
          
-        
         trace_detection <= pre_detection=TRACE_DETECTION_D;
         area_detection <= pre_detection=AREA_DETECTION_D;
         pulse_detection <= pre_detection=PULSE_DETECTION_D;
@@ -408,16 +409,14 @@ begin
                                    pre_detection=TRACE_DETECTION_D;
         dp_trace_detection <= m.pre_tflags.trace_type=DOT_PRODUCT_D and
                               pre_detection=TRACE_DETECTION_D;
-                              
+                                                         
         trace_wr_en <= pre_detection=TRACE_DETECTION_D and
                        m.pre_tflags.trace_type/=DOT_PRODUCT_D;
-        
         mux_wr_en <= pre_detection=TRACE_DETECTION_D and 
                      (
                        m.pre_tflags.trace_type=SINGLE_TRACE_D or 
                        m.pre_tflags.trace_type=DOT_PRODUCT_D
                      );
-              
                      
         trace_count_init <= m.pre_tflags.trace_length-1;
         
@@ -456,7 +455,7 @@ begin
             size <= resize(m.pre_size,SIZE_BITS)+1;
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= (others => '-'); 
-            dot_product_go <= TRUE;
+            dp_start <= TRUE;
             
 --          when DOT_PRODUCT_TRACE_D =>
 --            trace_start_address <= (others => '-'); --resize(m.size+1,ADDRESS_BITS); --FIXME ??
@@ -467,37 +466,65 @@ begin
       
       -- event writing queue
       if not (s_state=CAPTURE and wr_chunk_state=WRITE) then 
-          case q_state is 
+        case q_state is 
         when IDLE =>
-          if pulse_peak_valid then
-            frame_word <= pulse_peak_word;
-            frame_address <= peak_address;
-            frame_we <= (others => TRUE);
-            pulse_peak_valid <= FALSE; 
+          if not (dp_trace_detection and dp_valid) then 
+            if pulse_peak_valid  then
+              frame_word <= pulse_peak_word;
+              frame_address <= peak_address;
+              frame_we <= (others => TRUE);
+              pulse_peak_valid <= FALSE; 
+            end if;
           end if;
         when SINGLE => 
-          frame_word <= queue(0);
-          frame_address <= to_unsigned(0,ADDRESS_BITS);
-          frame_we <= (others => TRUE);
-          commit_frame <= TRUE;
-          commit_int <= TRUE;
-          q_state <= IDLE;
+          if not (dp_trace_detection and dp_valid) then 
+            frame_word <= queue(0);
+            frame_address <= to_unsigned(0,ADDRESS_BITS);
+            frame_we <= (others => TRUE);
+            commit_frame <= TRUE;
+            commit_int <= TRUE;
+            q_state <= IDLE;
+          end if;
         when WORD0 =>
-          frame_word <= queue(0);
-          frame_we <= (others => TRUE);
-          frame_address <= to_unsigned(0,ADDRESS_BITS);
-          commit_frame <= commit_pulse;
-          commit_int <= mux_wr_en and commit_pulse;
-          q_state <= IDLE;
+          if not (dp_trace_detection and dp_valid) then 
+            frame_word <= queue(0);
+            frame_we <= (others => TRUE);
+            frame_address <= to_unsigned(0,ADDRESS_BITS);
+            if dp_trace_detection then
+              commit_frame <= dp_state=DONE;
+              commit_int <= dp_state=DONE;
+            else
+              --FIXME these can probably set to TRUE -- check
+              commit_frame <= commit_pulse;
+              commit_int <= mux_wr_en and commit_pulse;
+            end if;
+            
+            if dp_trace_detection then
+              if dp_state=DONE then
+                q_state <= IDLE;
+              else
+                q_state <= DONE;
+              end if;
+            else
+              q_state <= IDLE;
+            end if;
+          end if;
         when WORD1 =>
-          frame_word <= queue(1);
-          frame_we <= (others => TRUE);
-          frame_address <= to_unsigned(1,ADDRESS_BITS);
-          q_state <= WORD0;
+          if not (dp_trace_detection and dp_valid) then 
+            frame_word <= queue(1);
+            frame_we <= (others => TRUE);
+            frame_address <= to_unsigned(1,ADDRESS_BITS);
+            q_state <= WORD0;
+          end if;
+        when DONE =>
+          if dp_state=DONE or dp_valid then
+            q_state <= IDLE;
+          end if;
         end case;
       end if;
       
       --trace stride FSM --FIXME need to check this actually works
+      wr_trace_last <= FALSE;
       case s_state is 
       when INIT => 
         if trace_start then
@@ -535,7 +562,6 @@ begin
 --      trace_overflow <= wr_chunk_state=WRITE and s_state=CAPTURE and 
 --                        trace_wr_en and trace_full;
 
-      --wr_trace_last <= FALSE;
       case wr_chunk_state is
       when STORE0 => 
         trace_reg(63 downto 48) <= trace_chunk;
@@ -555,7 +581,10 @@ begin
           wr_chunk_state <= WRITE;
           trace_full <= free <= trace_address;
         end if;
-        
+      
+      -- TODO check that dp_valid cannot clash with this trace write.
+      -- dp_valid is 5 clks after wr_trace_last, and the next possible
+      -- trace write should be 1 clk after that.  
       when WRITE => 
         trace_full <= framer_free <= trace_address;
         if s_state=CAPTURE then 
@@ -595,7 +624,6 @@ begin
         next_trace_count <= trace_count_init-1;
         last_trace_count <= FALSE;
         wr_chunk_state <= STORE0; 
---        s_state <= INIT;
         
         if trace_start and state/=HOLD and enable_reg then
           t_state <= CAPTURE; 
@@ -646,61 +674,59 @@ begin
       --    write it without committing
       
       -- dot product FSM dp is not valid till 5 clocks after trace_last
-      --FIXME handle dumps
+      
       case dp_state is 
       when IDLE =>
         dp_length <= length;
         if dp_trace_detection and wr_trace_last then
-          dp_before_pulse <= (state=FIRSTPULSE or state=WAITPULSEDONE) and 
-                              not m.pulse_threshold_neg;
           dp_state <= DPWAIT;
         end if;
       when DPWAIT =>
         if dp_dump then
           dp_state <= IDLE;
-        elsif dp_valid  then -- can happen before end of pulse need to store
-          if dp_before_pulse then
-            dp_state <= WAITPULSEDONE;
-            dp_word_reg <= dp_word;
-          else
+        elsif dp_valid then  
+          if q_state=DONE then
             dp_state <= IDLE;
-            frame_word <= dp_word;
-            frame_address <= dp_address;
-            frame_length <= dp_length;
-            frame_we <= (others => TRUE); 
-            commit_frame <= TRUE;
-            commit_int <= TRUE;
+          else
+            dp_state <= DONE;
           end if;
-        end if;
-      when WAITPULSEDONE =>
-        if dp_dump then
-          dp_state <= IDLE;
-        elsif dp_write then 
-          dp_state <= WRITE; 
-        end if;  
-      when WRITE =>
-        if q_state=IDLE then 
-          dp_state <= IDLE;
-          frame_word <= dp_word_reg;
+          frame_word <= dp_word;
           frame_address <= dp_address;
           frame_length <= dp_length;
           frame_we <= (others => TRUE); 
-          commit_frame <= TRUE;
-          commit_int <= TRUE;
-         end if;
+          commit_frame <= q_state=DONE;
+          commit_int <= q_state=DONE;
+        end if;
+      when DONE =>
+        if q_state=DONE or (
+             q_state=WORD0 and not (wr_chunk_state=WRITE and s_state=CAPTURE)
+           ) then 
+          dp_state <= IDLE;
+        end if;
       end case;
       
       --trace start
       if state=AVERAGE then
-        trace_start <= start_average;
+        trace_start_reg <= start_average;
       else
-        if TRACE_FROM_STAMP then 
-          trace_start <= m.pre_stamp_pulse; --FIXME
+        if TRACE_FROM_STAMP then
+          trace_start_reg <= m.pre_stamp_pulse and not trace_started; 
         end if;
         if not TRACE_FROM_STAMP then
-          trace_start <= m.pre_pulse_start;
+          trace_start_reg <= m.pre_pulse_start and not trace_started;
         end if;
       end if;
+      
+      if trace_start then
+        trace_started <= TRUE;
+      elsif wr_trace_last or trace_overflow or not enable_reg or state=HOLD then
+        trace_started <= FALSE;
+      end if;
+      
+      if wr_trace_last or trace_overflow then
+        trace_started <= FALSE;
+      end if;
+      
       if trace_start or trace_overflow then
         trace_done <= FALSE;
       end if;
@@ -718,7 +744,7 @@ begin
       -- pulse FSM
       case state is 
       when IDLE =>
-        just_started <= TRUE; -- this is needed when using pre_pulse_start. 
+        
         pulse_stamped <= FALSE;
         if m.pulse_start and enable_reg then 
           if size < free then
@@ -732,14 +758,14 @@ begin
         
       when FIRSTPULSE =>
      
-        just_started <= FALSE; --only needed when using pre_pulse_start 
-        
         if trace_overflow and trace_detection then
           overflow_int <= TRUE;
           dump_int <= pulse_stamped;
           dp_dump <= TRUE;
           
         elsif m.pulse_threshold_neg then
+          
+          -- pulse ending ok to restart pulse
 
           if not m.above_area_threshold then
             --dump the pulse that is ending
@@ -951,14 +977,13 @@ begin
               dp_dump <= TRUE;
             end if;
           end if;
-          if pre_pulse_start then
+          if m.pulse_start then
             --check space for 2 events
             if free < size2 and trace_wr_en and not average_trace_detection then 
               state <= IDLE;
               overflow_int <= TRUE;
             else
               state <= FIRSTPULSE;
-              just_started <= TRUE;
               tflags.multipulse <= FALSE;
               tflags.multipeak <= FALSE;
             end if;
@@ -1042,7 +1067,7 @@ begin
               commit_frame <= TRUE;
               frame_length <= length;
             elsif q_state=IDLE then
-              dp_write <= TRUE; --FIXME what is this
+              dp_write <= TRUE; 
               queue(0) <= to_streambus(trace_this_pulse,0,ENDIAN); 
               queue(1) <= to_streambus(trace_this_pulse,1,ENDIAN);
               frame_length <= length;
@@ -1200,20 +1225,26 @@ begin
       a_state <= IDLE;
       rd_chunk_state <= IDLE;
       acc_ready <= FALSE;
+      stop <= FALSE;
     else
       start_accumulating <= FALSE;
+      stop <= FALSE;
       case a_state is 
       when IDLE =>
         wait_ready <= FALSE;
         wait_valid <= FALSE;
-        if tflags.trace_type=AVERAGE_TRACE_D and enable_reg then
+        if average_trace_detection then
           a_state <= WAITING;
         end if;
         
       when WAITING => 
+        
         wait_ready <= FALSE;
         wait_valid <= FALSE;
-        if valid_int and not wait_ready then
+        if not average_trace_detection then
+          stop <= TRUE;
+          a_state <= IDLE;
+        elsif valid_int and not wait_ready then
           if stream_int.discard(0) then
             a_state <= ACCUM;
             start_accumulating <= TRUE;
@@ -1224,7 +1255,10 @@ begin
         end if;
         
       when ACCUM =>
-        if accumulate_done then
+        if not average_trace_detection then
+          stop <= TRUE;
+          a_state <= IDLE;
+        elsif accumulate_done then
           a_state <= SEND;
           rd_chunk_state <= IDLE;
         end if;
@@ -1235,7 +1269,7 @@ begin
         end if;
         
       when STOPED =>
-        if tflags.trace_type/=AVERAGE_TRACE_D and enable_reg then
+        if not average_trace_detection then
           a_state <= IDLE;
         end if;
       end case;
@@ -1300,7 +1334,7 @@ port map(
   trace_last => dp_trace_last,
   accumulate_start => start_accumulating,
   accumulate_done => accumulate_done,
-  dp_start => dot_product_go,
+  dp_start => dp_start,
   average => average_sample,
   average_start => start_average,
   average_last => average_last,
