@@ -285,7 +285,7 @@ chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(116*8,DSP_BITS-1); 
 --chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
 
-chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(45,TRACE_LENGTH_BITS);
 --------------------------------------------------------------------------------
 
 

@@ -869,6 +869,8 @@ begin
                   commit_frame <= TRUE;
                   frame_length <= length;
                   inc_accum <= TRUE;
+                  commiting <= TRUE;
+                  free <= framer_free - length;
                 elsif q_state=IDLE then 
                   -- commit the trace
                   dp_write <= TRUE;
@@ -979,6 +981,8 @@ begin
                 commit_frame <= TRUE; 
                 inc_accum <= TRUE; 
                 frame_length <= length;
+                commiting <= TRUE;
+                free <= framer_free - length;
               end if;
             else -- not averaging 
               if q_state=IDLE then
@@ -1089,6 +1093,8 @@ begin
               commit_frame <= TRUE;
               frame_length <= length;
               inc_accum <= TRUE;
+              commiting <= TRUE;
+              free <= framer_free - length;
             elsif q_state=IDLE then
               dp_write <= TRUE; 
               queue(0) <= to_streambus(trace_this_pulse,0,ENDIAN); 
@@ -1124,11 +1130,9 @@ begin
         end if;
         
       when HOLD =>
-        if pre_pulse_start and 
-           (not trace_detection or not average_trace_detection) then
+        if pre_pulse_start and not average_trace_detection then
           state <= IDLE;
           t_state <= IDLE;
---          trace_started <= FALSE;
         end if;
         
       end case;
