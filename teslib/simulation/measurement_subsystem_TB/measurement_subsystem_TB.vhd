@@ -43,7 +43,7 @@ generic(
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  FRAMER_ADDRESS_BITS:natural:=5
+  FRAMER_ADDRESS_BITS:natural:=6
 );
 end entity measurement_subsystem_TB;
 
@@ -285,7 +285,7 @@ chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(116*8,DSP_BITS-1); 
 --chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
 
-chan_reg(0).capture.trace_length <= to_unsigned(32,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
 --------------------------------------------------------------------------------
 
 

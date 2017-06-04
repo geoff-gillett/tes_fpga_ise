@@ -165,13 +165,13 @@ signal start_accumulating:boolean;
 signal dp_trace_detection:boolean;
 signal trace_done:boolean;
 --signal pre_trace_start:boolean;
-signal trace_started:boolean;
+--signal trace_started:boolean;
 signal trace_start_reg:boolean;
-signal trace_started_reg:boolean;
+--signal trace_started_reg:boolean;
 
 signal dp_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal commit_pulse:boolean;
--- TRACE_DETECTION but not DOT_PRODUCT
+-- TRACE_DETECTION and not DOT_PRODUCT
 signal trace_wr_en:boolean;
 signal inc_accum:boolean;
 
@@ -183,7 +183,7 @@ signal trace_overflow:boolean;
 signal eflags:detection_flags_t;
 signal dp_length:unsigned(ADDRESS_BITS downto 0);
 -- The trace ended before the pulse.
-signal dp_before_pulse:boolean;
+--signal dp_before_pulse:boolean;
 signal dp_dump,dp_write:boolean;
 -- size of the event part (not including any trace)
 -- DEPENDS on PEAK_COUNT_BITS FIXME change to 3 bits to minimise comparator.
@@ -262,7 +262,7 @@ pulse.threshold <= m.timing_threshold; --FIXME
 --flags for the average trace
 atflags.offset <= tflags.offset;
 atflags.stride <= tflags.stride;
-atflags.multipeak <= multipeak;
+--atflags.multipeak <= multipeak;
 --atflags.multipulse <= multipulse;
 atflags.trace_signal <= tflags.trace_signal;
 atflags.trace_type <= AVERAGE_TRACE_D;
@@ -367,8 +367,13 @@ begin
       multipeak <= FALSE;
       
       last_trace_count <= FALSE;
-      trace_started <= FALSE;
+--      trace_started <= FALSE;
       trace_start_address <= (others => '-');
+      
+      atflags.multipulse <= FALSE;
+      atflags.multipeak <= FALSE;
+      tflags.multipulse <= FALSE;
+      tflags.multipeak <= FALSE;
     else
       
       start_int <= FALSE;
@@ -624,21 +629,23 @@ begin
         next_trace_count <= trace_count_init-1;
         last_trace_count <= FALSE;
         wr_chunk_state <= STORE0; 
+        tflags.multipulse <= FALSE;
+        tflags.multipeak <= FALSE;
         
-        if trace_start and state/=HOLD and enable_reg then
+        if trace_start_reg and state/=HOLD and enable_reg then
           t_state <= CAPTURE; 
         end if;
         
       when CAPTURE =>
-        if trace_start then 
-          wr_chunk_state <= STORE0; 
-          trace_address <= trace_start_address;
-          trace_count <= trace_count_init;
-          next_trace_count <= trace_count_init-1;
-          last_trace_count <= FALSE;
-        elsif wr_trace_last or trace_overflow then
+        if wr_trace_last or trace_overflow then
           t_state <= IDLE;
           wr_chunk_state <= STORE0; 
+--        elsif trace_start then 
+--          wr_chunk_state <= STORE0; 
+--          trace_address <= trace_start_address;
+--          trace_count <= trace_count_init;
+--          next_trace_count <= trace_count_init-1;
+--          last_trace_count <= FALSE;
         end if;
          
       end case;
@@ -709,23 +716,20 @@ begin
       if state=AVERAGE then
         trace_start_reg <= start_average;
       else
+        --FIXME replace trace_started with t_state=IDLE ???
         if TRACE_FROM_STAMP then
-          trace_start_reg <= m.pre_stamp_pulse and not trace_started; 
+          trace_start_reg <= m.pre_stamp_pulse and t_state=IDLE; --not trace_started; 
         end if;
         if not TRACE_FROM_STAMP then
-          trace_start_reg <= m.pre_pulse_start and not trace_started;
+          trace_start_reg <= m.pre_pulse_start and t_state=IDLE; --not trace_started;
         end if;
       end if;
       
-      if trace_start then
-        trace_started <= TRUE;
-      elsif wr_trace_last or trace_overflow or not enable_reg or state=HOLD then
-        trace_started <= FALSE;
-      end if;
-      
-      if wr_trace_last or trace_overflow then
-        trace_started <= FALSE;
-      end if;
+--      if trace_start then
+--        trace_started <= TRUE;
+--      elsif wr_trace_last or trace_overflow or not enable_reg or state=HOLD then
+--        trace_started <= FALSE;
+--      end if;
       
       if trace_start or trace_overflow then
         trace_done <= FALSE;
@@ -794,11 +798,13 @@ begin
               if trace_detection then
                 if average_trace_detection then
                   atflags.multipulse <= TRUE;
+                  tflags.multipulse <= TRUE;
                   -- multiple pulses in trace, don't include either pulse in 
                   -- the average.
                   state <= IDLE; 
                   t_state <= IDLE; -- restart the trace
-                  dump_int <= pulse_stamped; 
+--                  trace_started <= FALSE;
+--                  dump_int <= pulse_stamped; 
                   error_int <= TRUE;
                 else
                   if wr_trace_last then
@@ -916,14 +922,17 @@ begin
         ------------------------------------------------------------------------
         if trace_overflow then
           state <= IDLE;
+          overflow_int <= TRUE;
+          dump_int <= pulse_stamped;
+          dp_dump <= TRUE;
         elsif wr_trace_last or trace_done then
           if last_accum_count and average_trace_detection then
             state <= AVERAGE;
           else
-            if pre_pulse_start then 
-              -- trace_last 1 clk before new pulse
+            if m.pulse_start then --FIXME this should check for mulipulse dump 
+              
               -- make sure twice the space is free for new pulse
-              if (free < size & '0') and not average_trace_detection then 
+              if free < size2 and not average_trace_detection then 
                 --second pulse overflows
                 state <= IDLE;
 --                t_state <= IDLE;
@@ -943,6 +952,9 @@ begin
               -- multipulse dump
               state <= IDLE;
               t_state <= IDLE;
+              atflags.multipulse <= TRUE;
+              tflags.multipulse <= TRUE;
+--              trace_started <= FALSE;
             end if;
           end if;
         end if;
@@ -1006,6 +1018,7 @@ begin
           if not m.above_area_threshold then
             --dump the pulse that is ending
             t_state <= IDLE;
+--            trace_started <= FALSE;
             dump_int <= pulse_stamped; 
             dp_dump <= TRUE;
             if m.pulse_start then 
@@ -1096,8 +1109,8 @@ begin
           free <= framer_free - length - 1;
           q_state <= WORD0;
           state <= HOLD;
-          multipeak <= FALSE;
-          multipulse <= FALSE;
+          atflags.multipeak <= FALSE;
+          atflags.multipulse <= FALSE;
           mux_wr_en <= TRUE;
         end if;
         
@@ -1106,6 +1119,7 @@ begin
            (not trace_detection or not average_trace_detection) then
           state <= IDLE;
           t_state <= IDLE;
+--          trace_started <= FALSE;
         end if;
         
       end case;
@@ -1114,14 +1128,17 @@ begin
       if m.peak_stop and enable_reg then 
         if state=FIRSTPULSE or state=WAITPULSEDONE then 
           if m.eflags.peak_number/=0 and average_trace_detection then --FIXME check
-            multipeak <= TRUE;
-            q_state <= IDLE;
+            tflags.multipeak <= TRUE;
+            atflags.multipeak <= TRUE;
+--            q_state <= IDLE;
+            t_state <= IDLE;
             state <= IDLE;
             pulse_stamped <= FALSE;
           elsif pulse_peak_valid and wr_chunk_state=WRITE and 
                 s_state=CAPTURE then
             error_int <= TRUE;
-            q_state <= IDLE;
+--            q_state <= IDLE;
+            t_state <= IDLE;
             state <= IDLE;
             dump_int <= m.pulse_stamped and mux_wr_en;
             pulse_stamped <= FALSE;
