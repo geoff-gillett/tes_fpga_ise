@@ -15,6 +15,7 @@ use work.events.all;
 use work.registers.all;
 use work.functions.all;
 
+--FIXME mux full errors????
 entity measurement_framer12 is
 generic(
   WIDTH:natural:=16;
@@ -739,7 +740,8 @@ begin
         accum_count <= (ACCUMULATE_N => '0', others => '1');
         next_accum_count <= to_unsigned(2**ACCUMULATE_N-2,ACCUMULATE_N+1);
         last_accum_count <= ACCUMULATE_N=0;
-      elsif wr_trace_last and a_state=ACCUM and not last_accum_count then
+--      elsif wr_trace_last and a_state=ACCUM and not last_accum_count then
+      elsif inc_accum and not last_accum_count then
         accum_count <= next_accum_count;
         next_accum_count <= next_accum_count-1;
         last_accum_count <= next_accum_count=0;
@@ -810,6 +812,7 @@ begin
                   if wr_trace_last then
                     -- May have queue error handled in output block.
                     state <= IDLE; -- New pulse and trace.
+--                    inc_accum <= TRUE;
                   else
                     -- End of first pulse, continue single_trace_D.
                     state <= TRACING; 
@@ -832,6 +835,7 @@ begin
                     state <= AVERAGE;
                   else
                     state <= IDLE; -- all done.
+--                    inc_accum <= TRUE;
                   end if;
                 else
                   state <= TRACING; -- end of first pulse, tracing.
@@ -864,6 +868,7 @@ begin
                   --commit for averaging if not a multipulse
                   commit_frame <= TRUE;
                   frame_length <= length;
+                  inc_accum <= TRUE;
                 elsif q_state=IDLE then 
                   -- commit the trace
                   dp_write <= TRUE;
@@ -906,11 +911,11 @@ begin
           end if;
         else -- not pulse_threshold_neg
           if trace_detection and wr_trace_last then
-            if average_trace_detection and last_accum_count then
-              state <= AVERAGE;
-            else
-              state <= WAITPULSEDONE;
-            end if;
+--            if average_trace_detection and last_accum_count then
+--              state <= AVERAGE;
+--            else
+            state <= WAITPULSEDONE;
+--            end if;
           end if;
         end if;
         -- output valid pulse_threshold_neg
@@ -923,91 +928,95 @@ begin
         if trace_overflow then
           state <= IDLE;
           overflow_int <= TRUE;
-          dump_int <= pulse_stamped;
+          dump_int <= pulse_stamped; 
           dp_dump <= TRUE;
         elsif wr_trace_last or trace_done then
-          if last_accum_count and average_trace_detection then
-            state <= AVERAGE;
-          else
-            if m.pulse_start then --FIXME this should check for mulipulse dump 
+          if average_trace_detection then 
+            if m.pulse_start then
+              -- multipulse dump
+              error_int <= TRUE;
+              atflags.multipulse <= TRUE;
+              state <= IDLE;
+--              t_state <= IDLE; 
+            elsif last_accum_count then
+              state <= AVERAGE;
+            end if;
+          else -- not averaging
+            if m.pulse_start then 
               
               -- make sure twice the space is free for new pulse
-              if free < size2 and not average_trace_detection then 
+              if free < size2 then 
                 --second pulse overflows
                 state <= IDLE;
+                overflow_int <= TRUE;
 --                t_state <= IDLE;
               else
-                state <= FIRSTPULSE;
+                state <= FIRSTPULSE; --new pulse
 --                t_state <= IDLE;
               end if;
             else
 --              t_state <= IDLE;
-              state <= IDLE;
+              state <= IDLE; -- all done
             end if;
           end if;
         else
           --still tracing
-          if m.pulse_start then
-            if average_trace_detection then
-              -- multipulse dump
-              state <= IDLE;
-              t_state <= IDLE;
-              atflags.multipulse <= TRUE;
-              tflags.multipulse <= TRUE;
---              trace_started <= FALSE;
-            end if;
+          if m.pulse_start and average_trace_detection then
+            -- multipulse dump
+            state <= IDLE;
+            t_state <= IDLE;
+            atflags.multipulse <= TRUE;
           end if;
         end if;
         
         ------------------------------------------------------------------------
         -- output logic (TRACING)
         ------------------------------------------------------------------------
-        if trace_overflow then
-          overflow_int <= TRUE;
-          dump_int <= pulse_stamped;
-          dp_dump <= TRUE;
-        elsif wr_trace_last or trace_done then
-          if average_trace_detection then 
-            commit_frame <= TRUE; 
---            inc_accum <= TRUE; --FIXME can 
-            frame_length <= length;
-          else 
-            if q_state=IDLE then
-              dp_write <= TRUE;
---              queue(0) <= to_streambus(trace_pulse,0,ENDIAN); 
---              queue(1) <= to_streambus(trace_pulse,1,ENDIAN);
-              queue(0) <= to_streambus(trace_ends_last,0,ENDIAN); 
-              queue(1) <= to_streambus(trace_ends_last,1,ENDIAN);
-              frame_length <= length;
-              commit_pulse <= not dp_trace_detection; --because dp will commit
-              commiting <= TRUE;
-              free <= framer_free - length;
-              q_state <= WORD1;
-            else  
-              error_int <= TRUE;
-              dump_int <= pulse_stamped;
-              dp_dump <= TRUE;
+        if not trace_overflow then
+          if wr_trace_last or trace_done then
+            if average_trace_detection then 
+              if not m.pulse_start then
+                commit_frame <= TRUE; 
+                inc_accum <= TRUE; 
+                frame_length <= length;
+              end if;
+            else -- not averaging 
+              if q_state=IDLE then
+                dp_write <= TRUE;
+                queue(0) <= to_streambus(trace_ends_last,0,ENDIAN); 
+                queue(1) <= to_streambus(trace_ends_last,1,ENDIAN);
+                frame_length <= length;
+                commit_pulse <= not dp_trace_detection; --because dp will commit
+                commiting <= TRUE;
+                free <= framer_free - length;
+                q_state <= WORD1;
+              else  
+                error_int <= TRUE;
+                dump_int <= pulse_stamped;
+                dp_dump <= TRUE;
+              end if;
             end if;
-          end if;
-          if m.pulse_start then
-            --check space for 2 events
-            if free < size2 and trace_wr_en and not average_trace_detection then 
-              state <= IDLE;
-              overflow_int <= TRUE;
-            else
-              state <= FIRSTPULSE;
-              tflags.multipulse <= FALSE;
-              tflags.multipeak <= FALSE;
-            end if;
-          end if;
-        else
-          if m.pulse_start then
-            --multipulse dump
-            if average_trace_detection then
-              multipulse <= TRUE;
-              pulse_stamped <= FALSE;
-              tflags.multipulse <= TRUE;
-            end if;
+--            if m.pulse_start then
+--              --check space for 2 events
+--              if free < size2 and trace_wr_en and not average_trace_detection then 
+--                state <= IDLE;
+--                overflow_int <= TRUE;
+--              else
+--                state <= FIRSTPULSE;
+--                tflags.multipulse <= FALSE;
+--                tflags.multipeak <= FALSE;
+--              end if;
+--            end if;
+--          else
+--            if m.pulse_start then
+--              --multipulse dump
+--              if average_trace_detection then
+--                multipulse <= TRUE;
+--                pulse_stamped <= FALSE;
+--                tflags.multipulse <= TRUE;
+--              end if;
+--            end if;
+--          end if;
           end if;
         end if;
         
@@ -1079,6 +1088,7 @@ begin
             if average_trace_detection then 
               commit_frame <= TRUE;
               frame_length <= length;
+              inc_accum <= TRUE;
             elsif q_state=IDLE then
               dp_write <= TRUE; 
               queue(0) <= to_streambus(trace_this_pulse,0,ENDIAN); 
@@ -1097,7 +1107,6 @@ begin
             -- END of valid pulse_threshold_neg (WAITPULSEDONE) block
           
           end if;
-        else -- not pulse_threshold_neg (WAITPULSE)
         end if;
         
       when AVERAGE =>
@@ -1134,13 +1143,14 @@ begin
             t_state <= IDLE;
             state <= IDLE;
             pulse_stamped <= FALSE;
-          elsif pulse_peak_valid and wr_chunk_state=WRITE and 
-                s_state=CAPTURE then
+          elsif pulse_peak_valid and ((wr_chunk_state=WRITE and 
+                s_state=CAPTURE) or q_state/=IDLE) then 
+            -- queue error 
             error_int <= TRUE;
---            q_state <= IDLE;
+--            q_state <= IDLE; --FIXME should the queue be reset?
             t_state <= IDLE;
             state <= IDLE;
-            dump_int <= m.pulse_stamped and mux_wr_en;
+            dump_int <= pulse_stamped and mux_wr_en;
             pulse_stamped <= FALSE;
           else
             pulse_peak_word <= to_streambus(pulse_peak,FALSE,ENDIAN);--?? last?

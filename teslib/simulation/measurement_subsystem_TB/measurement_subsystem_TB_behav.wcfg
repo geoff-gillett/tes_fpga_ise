@@ -21,14 +21,14 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="7696000000fs"></ZoomStartTime>
-      <ZoomEndTime time="37216000001fs"></ZoomEndTime>
-      <Cursor1Time time="21068000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="16760000001fs"></ZoomEndTime>
+      <Cursor1Time time="0fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
-      <marker time="6728000000" label="" />
       <marker time="84552000000" label="" />
+      <marker time="6728000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -611,6 +611,7 @@
       <wvobject fp_name="group622" type="group">
          <obj_property name="label">ports</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/clk" type="logic">
             <obj_property name="ElementShortName">clk</obj_property>
             <obj_property name="ObjectShortName">clk</obj_property>
@@ -696,7 +697,6 @@
       <wvobject fp_name="group642" type="group">
          <obj_property name="label">mux</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/start_int" type="other">
             <obj_property name="ElementShortName">start_int</obj_property>
             <obj_property name="ObjectShortName">start_int</obj_property>
@@ -831,12 +831,6 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/measurements.above_area_threshold" type="other">
             <obj_property name="ElementShortName">.above_area_threshold</obj_property>
             <obj_property name="ObjectShortName">measurements.above_area_threshold</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_started" type="other">
-            <obj_property name="ElementShortName">trace_started</obj_property>
-            <obj_property name="ObjectShortName">trace_started</obj_property>
-            <obj_property name="CustomSignalColor">#FF0000</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_done" type="other">
             <obj_property name="ElementShortName">trace_done</obj_property>
@@ -996,6 +990,10 @@
          <obj_property name="label">accumulator</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/inc_accum" type="other">
+            <obj_property name="ElementShortName">inc_accum</obj_property>
+            <obj_property name="ObjectShortName">inc_accum</obj_property>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/accum_count" type="array">
             <obj_property name="ElementShortName">accum_count[3:0]</obj_property>
             <obj_property name="ObjectShortName">accum_count[3:0]</obj_property>
@@ -1054,12 +1052,6 @@
             <obj_property name="CustomSignalColor">#00FFFF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dp_before_pulse" type="other">
-            <obj_property name="ElementShortName">dp_before_pulse</obj_property>
-            <obj_property name="ObjectShortName">dp_before_pulse</obj_property>
-            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dp_start" type="other">
             <obj_property name="ElementShortName">dp_start</obj_property>
             <obj_property name="ObjectShortName">dp_start</obj_property>
@@ -1082,12 +1074,6 @@
             <obj_property name="ElementShortName">dp_state</obj_property>
             <obj_property name="ObjectShortName">dp_state</obj_property>
             <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dp_before_pulse" type="other">
-            <obj_property name="ElementShortName">dp_before_pulse</obj_property>
-            <obj_property name="ObjectShortName">dp_before_pulse</obj_property>
-            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dp_trace_start" type="other">
@@ -1369,6 +1355,7 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse" type="array">
          <obj_property name="ElementShortName">pulse</obj_property>
          <obj_property name="ObjectShortName">pulse</obj_property>
+         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse_peak" type="array">
          <obj_property name="ElementShortName">pulse_peak</obj_property>

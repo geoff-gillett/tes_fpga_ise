@@ -267,8 +267,8 @@ chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(5*8,DSP_BITS-1);
 chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 --chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
---chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
-chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
+chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
+--chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
@@ -426,7 +426,7 @@ begin
   chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
   wait for 4 us;
   global.channel_enable <= "00000001";
-  wait for 12 us;
+  wait for 20 us;
   chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
 
 --  wait for 70511 ns;
