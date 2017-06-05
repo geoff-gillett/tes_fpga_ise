@@ -209,6 +209,9 @@ begin
   return s;
 end function;
 
+attribute debug:string;
+attribute debug of pending:signal is "FALSE";
+
 begin
   
 debugPending:process (clk) is
@@ -391,6 +394,7 @@ begin
       dp_start <= FALSE;
       dp_dump <= FALSE;
       dp_write <= FALSE;
+      trace_overflow <= FALSE;
       trace_reset <= FALSE;
       
       -- capture register settings when pulse FSM is idle and a new pulse starts
@@ -608,6 +612,8 @@ begin
           wr_trace_last <= FALSE;
           if trace_full and trace_wr_en then 
             wr_chunk_state <= STORE0;
+            t_state <= IDLE;
+            s_state <= INIT;
             trace_overflow <= TRUE;
           else --if trace_wr_en then --4th chunk captured
             wr_chunk_state <= STORE0;
@@ -649,21 +655,25 @@ begin
         end if;
         
       when CAPTURE =>
-        if wr_trace_last or trace_overflow then
-          t_state <= IDLE;
-          wr_chunk_state <= STORE0; 
-        elsif trace_reset then 
-          if trace_start_reg and enable_reg then
-            wr_chunk_state <= STORE0; 
-            trace_address <= trace_start_address;
-            trace_count <= trace_count_init;
-            next_trace_count <= trace_count_init-1;
-            last_trace_count <= FALSE;
-          else
+        if not trace_overflow then
+--          t_state <= IDLE;
+--          s_state <= INIT;
+--          wr_chunk_state <= STORE0; 
+          if wr_trace_last then
             t_state <= IDLE;
+            wr_chunk_state <= STORE0; 
+          elsif trace_reset then 
+            if trace_start_reg and enable_reg then
+              wr_chunk_state <= STORE0; 
+              trace_address <= trace_start_address;
+              trace_count <= trace_count_init;
+              next_trace_count <= trace_count_init-1;
+              last_trace_count <= FALSE;
+            else
+              t_state <= IDLE;
+            end if;
           end if;
         end if;
-         
       end case;
       
       -- SINGLE_TRACE_D and DOT_PRODUCT_D move through same FSM states
@@ -782,7 +792,9 @@ begin
         if trace_overflow and trace_detection then
           overflow_int <= TRUE;
           dump_int <= pulse_stamped;
+          pulse_stamped <= FALSE;
           dp_dump <= TRUE;
+          state <= IDLE;
           
         elsif m.pulse_threshold_neg then
           
@@ -792,6 +804,7 @@ begin
             --dump the pulse that is ending
             trace_reset <= TRUE;
             dump_int <= pulse_stamped; 
+            pulse_stamped <= FALSE;
             dp_dump <= TRUE;
             -- if pre_pulse_start space will be free as previous pulse was 
             -- dumped.
@@ -869,6 +882,7 @@ begin
                   state <= IDLE;  -- queue error dump this pulse 
                   error_int <= TRUE;
                   dump_int <= pulse_stamped;
+                  pulse_stamped <= FALSE;
                   dp_dump <= TRUE;
                 end if;
               end if;       
@@ -947,6 +961,7 @@ begin
           state <= IDLE;
           overflow_int <= TRUE;
           dump_int <= pulse_stamped; 
+          pulse_stamped <= FALSE;
           dp_dump <= TRUE;
         elsif wr_trace_last or trace_done then
           if average_trace_detection then 
@@ -1013,6 +1028,7 @@ begin
               else  
                 error_int <= TRUE;
                 dump_int <= pulse_stamped;
+                pulse_stamped <= FALSE;
                 dp_dump <= TRUE;
               end if;
             end if;
@@ -1050,6 +1066,7 @@ begin
             trace_reset <= TRUE;
 --            trace_started <= FALSE;
             dump_int <= pulse_stamped; 
+            pulse_stamped <= FALSE;
             dp_dump <= TRUE;
             if m.pulse_start then 
               -- space will be free for new pulse as current one was dumped.
@@ -1119,7 +1136,8 @@ begin
               q_state <= WORD1;
             else
               error_int <= TRUE;
-              dump_int <= pulse_stamped or m.stamp_pulse;
+              dump_int <= pulse_stamped;
+              pulse_stamped <= FALSE;
             end if;
             
             -- END of valid pulse_threshold_neg (WAITPULSEDONE) block
@@ -1199,6 +1217,7 @@ begin
           start_int <= TRUE;  
           peak_stamped <= TRUE;
         end if;
+        --FIXME think about this
       elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse and 
             enable_reg then
         if mux_full then

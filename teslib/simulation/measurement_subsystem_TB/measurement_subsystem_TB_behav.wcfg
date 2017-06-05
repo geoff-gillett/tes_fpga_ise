@@ -21,13 +21,16 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="5580083333fs"></ZoomStartTime>
-      <ZoomEndTime time="5719183334fs"></ZoomEndTime>
-      <Cursor1Time time="5696000000fs"></Cursor1Time>
+      <ZoomStartTime time="240047000000fs"></ZoomStartTime>
+      <ZoomEndTime time="240268000001fs"></ZoomEndTime>
+      <Cursor1Time time="240308000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
       <marker time="5308000000" label="" />
+      <marker time="154120000000" label="" />
+      <marker time="214592000000" label="" />
+      <marker time="215628000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -725,6 +728,12 @@
             <obj_property name="CustomSignalColor">#00FFFF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pending" type="array">
+            <obj_property name="ElementShortName">pending[3:0]</obj_property>
+            <obj_property name="ObjectShortName">pending[3:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/overflow_int" type="other">
             <obj_property name="ElementShortName">overflow_int</obj_property>
             <obj_property name="ObjectShortName">overflow_int</obj_property>
@@ -796,6 +805,7 @@
       <wvobject fp_name="group624" type="group">
          <obj_property name="label">Trace</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/clk" type="logic">
             <obj_property name="ElementShortName">clk</obj_property>
             <obj_property name="ObjectShortName">clk</obj_property>
@@ -826,6 +836,18 @@
             <obj_property name="AnalogHorizLine">0.000000</obj_property>
             <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
             <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_full" type="other">
+            <obj_property name="ElementShortName">trace_full</obj_property>
+            <obj_property name="ObjectShortName">trace_full</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_overflow" type="other">
+            <obj_property name="ElementShortName">trace_overflow</obj_property>
+            <obj_property name="ObjectShortName">trace_overflow</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_start_reg" type="other">
@@ -1173,7 +1195,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.raw" type="array">
             <obj_property name="ElementShortName">.raw</obj_property>
             <obj_property name="ObjectShortName">m.raw</obj_property>
