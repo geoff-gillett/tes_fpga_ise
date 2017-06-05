@@ -21,16 +21,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="73075520000fs"></ZoomStartTime>
-      <ZoomEndTime time="102635520001fs"></ZoomEndTime>
-      <Cursor1Time time="87640000000fs"></Cursor1Time>
+      <ZoomStartTime time="5580083333fs"></ZoomStartTime>
+      <ZoomEndTime time="5719183334fs"></ZoomEndTime>
+      <Cursor1Time time="5696000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
-      <marker time="84552000000" label="" />
-      <marker time="34644000000" label="" />
-      <marker time="6728000000" label="" />
-      <marker time="21380000000" label="" />
+      <marker time="5308000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -613,7 +610,6 @@
       <wvobject fp_name="group622" type="group">
          <obj_property name="label">ports</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/clk" type="logic">
             <obj_property name="ElementShortName">clk</obj_property>
             <obj_property name="ObjectShortName">clk</obj_property>
@@ -700,6 +696,17 @@
       <wvobject fp_name="group642" type="group">
          <obj_property name="label">mux</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/enable_reg" type="other">
+            <obj_property name="ElementShortName">enable_reg</obj_property>
+            <obj_property name="ObjectShortName">enable_reg</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/mux_wr_en" type="other">
+            <obj_property name="ElementShortName">mux_wr_en</obj_property>
+            <obj_property name="ObjectShortName">mux_wr_en</obj_property>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/start_int" type="other">
             <obj_property name="ElementShortName">start_int</obj_property>
             <obj_property name="ObjectShortName">start_int</obj_property>
@@ -738,6 +745,7 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word" type="array">
             <obj_property name="ElementShortName">frame_word</obj_property>
             <obj_property name="ObjectShortName">frame_word</obj_property>
+            <obj_property name="isExpanded"></obj_property>
             <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word.discard" type="array">
                <obj_property name="ElementShortName">.discard[3:0]</obj_property>
                <obj_property name="ObjectShortName">frame_word.discard[3:0]</obj_property>
@@ -745,6 +753,8 @@
             <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word.last" type="array">
                <obj_property name="ElementShortName">.last[3:0]</obj_property>
                <obj_property name="ObjectShortName">frame_word.last[3:0]</obj_property>
+               <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
             </wvobject>
             <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word.data" type="array">
                <obj_property name="ElementShortName">.data[63:0]</obj_property>
@@ -753,16 +763,16 @@
             </wvobject>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_address" type="array">
-            <obj_property name="ElementShortName">frame_address[5:0]</obj_property>
-            <obj_property name="ObjectShortName">frame_address[5:0]</obj_property>
+            <obj_property name="ElementShortName">frame_address[7:0]</obj_property>
+            <obj_property name="ObjectShortName">frame_address[7:0]</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_we" type="array">
             <obj_property name="ElementShortName">frame_we[3:0]</obj_property>
             <obj_property name="ObjectShortName">frame_we[3:0]</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_length" type="array">
-            <obj_property name="ElementShortName">frame_length[6:0]</obj_property>
-            <obj_property name="ObjectShortName">frame_length[6:0]</obj_property>
+            <obj_property name="ElementShortName">frame_length[8:0]</obj_property>
+            <obj_property name="ObjectShortName">frame_length[8:0]</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/commit_frame" type="other">
             <obj_property name="ElementShortName">commit_frame</obj_property>
@@ -775,8 +785,8 @@
             <obj_property name="ObjectShortName">commiting</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/free" type="array">
-            <obj_property name="ElementShortName">free[6:0]</obj_property>
-            <obj_property name="ObjectShortName">free[6:0]</obj_property>
+            <obj_property name="ElementShortName">free[8:0]</obj_property>
+            <obj_property name="ObjectShortName">free[8:0]</obj_property>
          </wvobject>
          <wvobject type="divider" fp_name="divider625">
             <obj_property name="label">end framer</obj_property>
@@ -786,7 +796,6 @@
       <wvobject fp_name="group624" type="group">
          <obj_property name="label">Trace</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/clk" type="logic">
             <obj_property name="ElementShortName">clk</obj_property>
             <obj_property name="ObjectShortName">clk</obj_property>
@@ -860,12 +869,12 @@
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_start_address" type="array">
-            <obj_property name="ElementShortName">trace_start_address[5:0]</obj_property>
-            <obj_property name="ObjectShortName">trace_start_address[5:0]</obj_property>
+            <obj_property name="ElementShortName">trace_start_address[7:0]</obj_property>
+            <obj_property name="ObjectShortName">trace_start_address[7:0]</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_address" type="array">
-            <obj_property name="ElementShortName">trace_address[5:0]</obj_property>
-            <obj_property name="ObjectShortName">trace_address[5:0]</obj_property>
+            <obj_property name="ElementShortName">trace_address[7:0]</obj_property>
+            <obj_property name="ObjectShortName">trace_address[7:0]</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_count" type="array">
             <obj_property name="ElementShortName">trace_count[9:0]</obj_property>
@@ -919,8 +928,8 @@
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/length" type="array">
-            <obj_property name="ElementShortName">length[6:0]</obj_property>
-            <obj_property name="ObjectShortName">length[6:0]</obj_property>
+            <obj_property name="ElementShortName">length[8:0]</obj_property>
+            <obj_property name="ObjectShortName">length[8:0]</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/size" type="array">
             <obj_property name="ElementShortName">size[4:0]</obj_property>
@@ -964,13 +973,21 @@
             <obj_property name="ElementShortName">.pre_stamp_pulse</obj_property>
             <obj_property name="ObjectShortName">m.pre_stamp_pulse</obj_property>
          </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse_peak_valid" type="other">
-            <obj_property name="ElementShortName">pulse_peak_valid</obj_property>
-            <obj_property name="ObjectShortName">pulse_peak_valid</obj_property>
-         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/state" type="other">
             <obj_property name="ElementShortName">state</obj_property>
             <obj_property name="ObjectShortName">state</obj_property>
+            <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse_peak_valid" type="other">
+            <obj_property name="ElementShortName">pulse_peak_valid</obj_property>
+            <obj_property name="ObjectShortName">pulse_peak_valid</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/q_state" type="other">
+            <obj_property name="ElementShortName">q_state</obj_property>
+            <obj_property name="ObjectShortName">q_state</obj_property>
             <obj_property name="CustomSignalColor">#F0E68C</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
@@ -996,6 +1013,26 @@
             <obj_property name="ElementShortName">.pre_pulse_threshold_neg</obj_property>
             <obj_property name="ObjectShortName">m.pre_pulse_threshold_neg</obj_property>
          </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak_stamped" type="other">
+            <obj_property name="ElementShortName">peak_stamped</obj_property>
+            <obj_property name="ObjectShortName">peak_stamped</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse_stamped" type="other">
+            <obj_property name="ElementShortName">pulse_stamped</obj_property>
+            <obj_property name="ObjectShortName">pulse_stamped</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak_address" type="array">
+            <obj_property name="ElementShortName">peak_address[7:0]</obj_property>
+            <obj_property name="ObjectShortName">peak_address[7:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_stamp_peak" type="other">
+            <obj_property name="ElementShortName">.pre_stamp_peak</obj_property>
+            <obj_property name="ObjectShortName">m.pre_stamp_peak</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.peak_stop" type="other">
+            <obj_property name="ElementShortName">.peak_stop</obj_property>
+            <obj_property name="ObjectShortName">m.peak_stop</obj_property>
+         </wvobject>
          <wvobject type="divider" fp_name="divider618">
             <obj_property name="label">end FSM</obj_property>
             <obj_property name="DisplayName">label</obj_property>
@@ -1004,7 +1041,6 @@
       <wvobject fp_name="group598" type="group">
          <obj_property name="label">accumulator</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/inc_accum" type="other">
             <obj_property name="ElementShortName">inc_accum</obj_property>
             <obj_property name="ObjectShortName">inc_accum</obj_property>
@@ -1137,6 +1173,7 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.raw" type="array">
             <obj_property name="ElementShortName">.raw</obj_property>
             <obj_property name="ObjectShortName">m.raw</obj_property>
@@ -1370,7 +1407,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse" type="array">
          <obj_property name="ElementShortName">pulse</obj_property>
          <obj_property name="ObjectShortName">pulse</obj_property>
-         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse_peak" type="array">
          <obj_property name="ElementShortName">pulse_peak</obj_property>
@@ -1393,12 +1429,12 @@
          <obj_property name="ObjectShortName">atflags</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/framer_free" type="array">
-         <obj_property name="ElementShortName">framer_free[6:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_free[6:0]</obj_property>
+         <obj_property name="ElementShortName">framer_free[8:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_free[8:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/length" type="array">
-         <obj_property name="ElementShortName">length[6:0]</obj_property>
-         <obj_property name="ObjectShortName">length[6:0]</obj_property>
+         <obj_property name="ElementShortName">length[8:0]</obj_property>
+         <obj_property name="ObjectShortName">length[8:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse_valid" type="other">
          <obj_property name="ElementShortName">pulse_valid</obj_property>
@@ -1412,21 +1448,9 @@
          <obj_property name="ElementShortName">pulse_overflow</obj_property>
          <obj_property name="ObjectShortName">pulse_overflow</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak_address" type="array">
-         <obj_property name="ElementShortName">peak_address[5:0]</obj_property>
-         <obj_property name="ObjectShortName">peak_address[5:0]</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/area_overflow" type="other">
          <obj_property name="ElementShortName">area_overflow</obj_property>
          <obj_property name="ObjectShortName">area_overflow</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak_stamped" type="other">
-         <obj_property name="ElementShortName">peak_stamped</obj_property>
-         <obj_property name="ObjectShortName">peak_stamped</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse_stamped" type="other">
-         <obj_property name="ElementShortName">pulse_stamped</obj_property>
-         <obj_property name="ObjectShortName">pulse_stamped</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/full" type="other">
          <obj_property name="ElementShortName">full</obj_property>
@@ -1457,8 +1481,8 @@
          <obj_property name="ObjectShortName">stride_count[4:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_address" type="array">
-         <obj_property name="ElementShortName">trace_address[5:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_address[5:0]</obj_property>
+         <obj_property name="ElementShortName">trace_address[7:0]</obj_property>
+         <obj_property name="ObjectShortName">trace_address[7:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_count" type="array">
          <obj_property name="ElementShortName">trace_count[9:0]</obj_property>
@@ -2280,12 +2304,12 @@
          <obj_property name="ObjectShortName">framer_word</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/framer_address" type="array">
-         <obj_property name="ElementShortName">framer_address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_address[9:0]</obj_property>
+         <obj_property name="ElementShortName">framer_address[6:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_address[6:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/next_address" type="array">
-         <obj_property name="ElementShortName">next_address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">next_address[9:0]</obj_property>
+         <obj_property name="ElementShortName">next_address[6:0]</obj_property>
+         <obj_property name="ObjectShortName">next_address[6:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/framer_we" type="array">
          <obj_property name="ElementShortName">framer_we[3:0]</obj_property>
@@ -2296,8 +2320,8 @@
          <obj_property name="ObjectShortName">commit_frame</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/framer_free" type="array">
-         <obj_property name="ElementShortName">framer_free[10:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_free[10:0]</obj_property>
+         <obj_property name="ElementShortName">framer_free[7:0]</obj_property>
+         <obj_property name="ObjectShortName">framer_free[7:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/mtu_int" type="array">
          <obj_property name="ElementShortName">mtu_int[15:0]</obj_property>
@@ -2328,16 +2352,16 @@
          <obj_property name="ObjectShortName">lookahead_valid</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/frame_address" type="array">
-         <obj_property name="ElementShortName">frame_address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_address[9:0]</obj_property>
+         <obj_property name="ElementShortName">frame_address[6:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_address[6:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/frame_length" type="array">
-         <obj_property name="ElementShortName">frame_length[10:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_length[10:0]</obj_property>
+         <obj_property name="ElementShortName">frame_length[7:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_length[7:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/frame_free_m1" type="array">
-         <obj_property name="ElementShortName">frame_free_m1[10:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_free_m1[10:0]</obj_property>
+         <obj_property name="ElementShortName">frame_free_m1[7:0]</obj_property>
+         <obj_property name="ObjectShortName">frame_free_m1[7:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/frame_last" type="other">
          <obj_property name="ElementShortName">frame_last</obj_property>
@@ -2384,8 +2408,8 @@
          <obj_property name="ObjectShortName">mca_s_hs</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/last_frame_address" type="array">
-         <obj_property name="ElementShortName">last_frame_address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">last_frame_address[9:0]</obj_property>
+         <obj_property name="ElementShortName">last_frame_address[6:0]</obj_property>
+         <obj_property name="ObjectShortName">last_frame_address[6:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/last_frame_word" type="array">
          <obj_property name="ElementShortName">last_frame_word</obj_property>

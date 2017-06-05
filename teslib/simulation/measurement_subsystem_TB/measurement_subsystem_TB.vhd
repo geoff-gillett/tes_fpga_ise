@@ -43,7 +43,8 @@ generic(
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  FRAMER_ADDRESS_BITS:natural:=6
+  FRAMER_ADDRESS_BITS:natural:=8;
+  ETHERNET_ADDRESS_BITS:natural:=7
 );
 end entity measurement_subsystem_TB;
 
@@ -123,7 +124,7 @@ reset0 <= '0' after 2*IO_CLK_PERIOD;
 reset1 <= '0' after 10*IO_CLK_PERIOD; 
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
 --bytestream_ready <= sim_count(2 downto 0) /= "101";
-bytestream_ready <= TRUE after 20 us;
+bytestream_ready <= TRUE after 300 us;
 
 UUT:entity work.measurement_subsystem5
 generic map(
@@ -140,7 +141,8 @@ generic map(
   ACCUMULATE_N => 3,
   TRACE_FROM_STAMP => TRUE,
   MIN_TICK_PERIOD => 2000,
-  MEASUREMENT_FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS
+  MEASUREMENT_FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS,
+  ETHERNET_FRAMER_ADDRESS_BITS => ETHERNET_ADDRESS_BITS
 )
 port map(
   clk => sample_clk,
@@ -170,7 +172,8 @@ cdc_din <= '0' & ethernetstream.data(63 downto 56) &
            to_std_logic(ethernetstream.last(0)) & 
            ethernetstream.data(7 downto 0);
            
-ethernetstream_ready <= cdc_full='0';
+--ethernetstream_ready <= cdc_full='0';
+ethernetstream_ready <= FALSE;
 cdc_wr_en <= to_std_logic(ethernetstream_valid); 
 
 cdcFIFO:enet_cdc_fifo
@@ -207,7 +210,7 @@ bytestream <= bytestream_int(7 downto 0);
 bytestream_last <= bytestream_int(8)='1';
 
 --register settings
-global.mtu <= to_unsigned(256,MTU_BITS);
+global.mtu <= to_unsigned(64,MTU_BITS);
 global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
 global.tick_period <= to_unsigned(2049,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
@@ -270,7 +273,7 @@ chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
 --chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
-chan_reg(0).capture.detection <= TRACE_DETECTION_D;
+chan_reg(0).capture.detection <= PULSE_DETECTION_D;
 chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
@@ -421,13 +424,13 @@ begin
 	
   wait for 1000 ns;
   global.channel_enable <= "00000001";
-  wait for 12 us;
-  global.channel_enable <= "00000000";
-  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
-  wait for 4 us;
-  global.channel_enable <= "00000001";
-  wait for 20 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
+--  wait for 12 us;
+--  global.channel_enable <= "00000000";
+--  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
+--  wait for 4 us;
+--  global.channel_enable <= "00000001";
+--  wait for 20 us;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
 
 --  wait for 70511 ns;
 --  global.channel_enable <= "00000000";

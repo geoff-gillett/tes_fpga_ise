@@ -60,7 +60,7 @@ signal peak:peak_detection_t;
 signal area:area_detection_t;
 signal pulse,first_pulse:pulse_detection_t;
 signal pulse_peak:pulse_peak_t;
-signal pulse_peak_word,dp_word,dp_word_reg:streambus_t;
+signal pulse_peak_word,dp_word:streambus_t;
 signal trace_this_pulse,trace_ends_last,average_trace:trace_detection_t;
 signal tflags,atflags:trace_flags_t;
 
@@ -80,6 +80,7 @@ signal frame_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal commit_frame,commit_int,start_int,dump_int:boolean; --,just_started:boolean;
 
 signal peak_address:unsigned(ADDRESS_BITS-1 downto 0);
+signal last_peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
 signal pre_pulse_start:boolean;
 signal peak_stamped,pulse_stamped:boolean:=FALSE;
@@ -122,7 +123,7 @@ type rdChunkState is (IDLE,WAIT_TRACE,READ3,READ2,READ1,READ0);
 signal rd_chunk_state:rdChunkState;
 type traceFSMstate is (IDLE,CAPTURE);
 signal t_state:traceFSMstate;
-type queueFSMstate is (IDLE,SINGLE,WORD0,WORD1,DONE);
+type queueFSMstate is (IDLE,SINGLE,WORD0,WORD1,LASTPEAK,DONE);
 signal q_state:queueFSMstate;
 type strideFSMstate is (INIT,IDLE,CAPTURE);
 signal s_state:strideFSMstate;
@@ -369,7 +370,6 @@ begin
       multipeak <= FALSE;
       
       last_trace_count <= FALSE;
---      trace_started <= FALSE;
       trace_start_address <= (others => '-');
       trace_reset <= FALSE;
       
@@ -387,7 +387,6 @@ begin
       commit_int <= FALSE;
       frame_we <= (others => FALSE);
       trace_start_reg <= FALSE;
---      space_for_trace:=free > trace_address;
       inc_accum <= FALSE;
       dp_start <= FALSE;
       dp_dump <= FALSE;
@@ -421,10 +420,12 @@ begin
                                                          
         trace_wr_en <= pre_detection=TRACE_DETECTION_D and
                        m.pre_tflags.trace_type/=DOT_PRODUCT_D;
-        mux_wr_en <= pre_detection=TRACE_DETECTION_D and 
+        mux_wr_en <= pre_detection/=TRACE_DETECTION_D or 
                      (
-                       m.pre_tflags.trace_type=SINGLE_TRACE_D or 
-                       m.pre_tflags.trace_type=DOT_PRODUCT_D
+                       pre_detection=TRACE_DETECTION_D and (
+                         m.pre_tflags.trace_type=SINGLE_TRACE_D or 
+                         m.pre_tflags.trace_type=DOT_PRODUCT_D
+                       )
                      );
                      
         trace_count_init <= m.pre_tflags.trace_length-1;
@@ -504,8 +505,8 @@ begin
               commit_int <= dp_state=DONE;
             else
               --FIXME these can probably set to TRUE -- check
-              commit_frame <= commit_pulse;
-              commit_int <= mux_wr_en and commit_pulse;
+              commit_frame <= TRUE; --commit_pulse;
+              commit_int <= mux_wr_en; -- and commit_pulse;
             end if;
             
             if dp_trace_detection then
@@ -524,6 +525,13 @@ begin
             frame_we <= (others => TRUE);
             frame_address <= to_unsigned(1,ADDRESS_BITS);
             q_state <= WORD0;
+          end if;
+        when LASTPEAK =>
+          if not (dp_trace_detection and dp_valid) then 
+            frame_word <= queue(2);
+            frame_we <= (others => TRUE);
+            frame_address <= last_peak_address;
+            q_state <= WORD1;
           end if;
         when DONE =>
           if dp_state=DONE or dp_valid then
@@ -856,6 +864,7 @@ begin
                     -- new pulse wont start no need for dump 
                     overflow_int <= TRUE; 
                   end if;
+                  state <= IDLE;
                 else
                   state <= IDLE;  -- queue error dump this pulse 
                   error_int <= TRUE;
@@ -904,11 +913,11 @@ begin
                   queue(0) <= to_streambus(pulse,0,ENDIAN);
                   queue(1) <= to_streambus(pulse,1,ENDIAN);
                   -- write last 
-                  pulse_peak_word <= to_streambus(pulse_peak,TRUE,ENDIAN);
-                  pulse_peak_valid <= TRUE;
-                  peak_address <= resize(m.last_peak_address,ADDRESS_BITS);
-                  commit_pulse <= TRUE;
-                  q_state <= WORD1;
+                  queue(2) <= to_streambus(pulse_peak,TRUE,ENDIAN);
+--                  pulse_peak_valid <= TRUE;
+                  last_peak_address <= resize(m.last_peak_address,ADDRESS_BITS);
+--                  commit_pulse <= TRUE;
+                  q_state <= LASTPEAK;
                 end if;
                 
                 frame_length <= length;
@@ -1150,8 +1159,8 @@ begin
             t_state <= IDLE;
             state <= IDLE;
             pulse_stamped <= FALSE;
-          elsif pulse_peak_valid and ((wr_chunk_state=WRITE and 
-                s_state=CAPTURE) or q_state/=IDLE) then 
+          elsif (pulse_peak_valid and (wr_chunk_state=WRITE and 
+                s_state=CAPTURE)) or q_state/=IDLE then 
             -- queue error 
             error_int <= TRUE;
 --            q_state <= IDLE; --FIXME should the queue be reset?
