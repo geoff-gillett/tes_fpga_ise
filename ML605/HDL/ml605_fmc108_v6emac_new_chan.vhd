@@ -45,7 +45,7 @@ generic(
   DEFAULT_IODELAY_VALUE:integer:=24;
   DEFAULT_CLK_IODELAY_VALUE:integer:=0;
   DSP_CHANNELS:integer:=2;
-  ACCUMULATE_N:natural:=14;
+  ACCUMULATE_N:natural:=10;
   ENDIAN:string:="LITTLE";
   PACKET_GEN:boolean:=FALSE
 );

@@ -175,6 +175,7 @@ signal commit_pulse:boolean;
 -- TRACE_DETECTION and not DOT_PRODUCT
 signal trace_wr_en:boolean;
 signal inc_accum:boolean;
+signal trace_reset:boolean;
 
 -- TRACE_DETECTION_D and AVERAGE_TRACE_D
 signal average_trace_detection:boolean;
@@ -316,7 +317,7 @@ pre_full <= free < resize(m.pre_size,ADDRESS_BITS+1);
 
 full <= free <= length;
 
-trace_start <= trace_start_reg and enable_reg;
+trace_start <= trace_start_reg and enable_reg and t_state=IDLE;
 
 trace_chunk_debug <= set_endianness(trace_chunk,ENDIAN);
 traceSignalMux:process(clk)
@@ -340,7 +341,7 @@ begin
 end process traceSignalMux;
 
 main:process(clk)
-variable space_for_trace:boolean;
+--variable space_for_trace:boolean;
 begin
   if rising_edge(clk) then
     if reset='1' then
@@ -370,6 +371,7 @@ begin
       last_trace_count <= FALSE;
 --      trace_started <= FALSE;
       trace_start_address <= (others => '-');
+      trace_reset <= FALSE;
       
       atflags.multipulse <= FALSE;
       atflags.multipeak <= FALSE;
@@ -385,11 +387,12 @@ begin
       commit_int <= FALSE;
       frame_we <= (others => FALSE);
       trace_start_reg <= FALSE;
-      space_for_trace:=free > trace_address;
+--      space_for_trace:=free > trace_address;
       inc_accum <= FALSE;
       dp_start <= FALSE;
       dp_dump <= FALSE;
       dp_write <= FALSE;
+      trace_reset <= FALSE;
       
       -- capture register settings when pulse FSM is idle and a new pulse starts
       -- TODO consider if there is an issue when registers change upstream
@@ -641,12 +644,16 @@ begin
         if wr_trace_last or trace_overflow then
           t_state <= IDLE;
           wr_chunk_state <= STORE0; 
---        elsif trace_start then 
---          wr_chunk_state <= STORE0; 
---          trace_address <= trace_start_address;
---          trace_count <= trace_count_init;
---          next_trace_count <= trace_count_init-1;
---          last_trace_count <= FALSE;
+        elsif trace_reset then 
+          if trace_start_reg and enable_reg then
+            wr_chunk_state <= STORE0; 
+            trace_address <= trace_start_address;
+            trace_count <= trace_count_init;
+            next_trace_count <= trace_count_init-1;
+            last_trace_count <= FALSE;
+          else
+            t_state <= IDLE;
+          end if;
         end if;
          
       end case;
@@ -719,10 +726,10 @@ begin
       else
         --FIXME replace trace_started with t_state=IDLE ???
         if TRACE_FROM_STAMP then
-          trace_start_reg <= m.pre_stamp_pulse and t_state=IDLE; --not trace_started; 
+          trace_start_reg <= m.pre_stamp_pulse; --not trace_started; 
         end if;
         if not TRACE_FROM_STAMP then
-          trace_start_reg <= m.pre_pulse_start and t_state=IDLE; --not trace_started;
+          trace_start_reg <= m.pre_pulse_start; --not trace_started;
         end if;
       end if;
       
@@ -775,7 +782,7 @@ begin
 
           if not m.above_area_threshold then
             --dump the pulse that is ending
-            t_state <= IDLE;
+            trace_reset <= TRUE;
             dump_int <= pulse_stamped; 
             dp_dump <= TRUE;
             -- if pre_pulse_start space will be free as previous pulse was 
@@ -804,7 +811,8 @@ begin
                   -- multiple pulses in trace, don't include either pulse in 
                   -- the average.
                   state <= IDLE; 
-                  t_state <= IDLE; -- restart the trace
+                  trace_reset <= TRUE;
+--                  t_state <= IDLE; -- restart the trace
 --                  trace_started <= FALSE;
 --                  dump_int <= pulse_stamped; 
                   error_int <= TRUE;
@@ -812,6 +820,7 @@ begin
                   if wr_trace_last then
                     -- May have queue error handled in output block.
                     state <= IDLE; -- New pulse and trace.
+                    t_state <= IDLE;
 --                    inc_accum <= TRUE;
                   else
                     -- End of first pulse, continue single_trace_D.
@@ -862,14 +871,12 @@ begin
 
             if trace_detection then
               if wr_trace_last then
-                -- TODO test pre_pulse_start here
                 -- dump if SINGLE_TRACE_D
                 if average_trace_detection and not m.pulse_start then
                   --commit for averaging if not a multipulse
                   commit_frame <= TRUE;
                   frame_length <= length;
                   inc_accum <= TRUE;
-                  commiting <= TRUE;
                   free <= framer_free - length;
                 elsif q_state=IDLE then 
                   -- commit the trace
@@ -966,7 +973,8 @@ begin
           if m.pulse_start and average_trace_detection then
             -- multipulse dump
             state <= IDLE;
-            t_state <= IDLE;
+--            t_state <= IDLE;
+            trace_reset <= TRUE;
             atflags.multipulse <= TRUE;
           end if;
         end if;
@@ -981,7 +989,6 @@ begin
                 commit_frame <= TRUE; 
                 inc_accum <= TRUE; 
                 frame_length <= length;
-                commiting <= TRUE;
                 free <= framer_free - length;
               end if;
             else -- not averaging 
@@ -1031,6 +1038,7 @@ begin
           if not m.above_area_threshold then
             --dump the pulse that is ending
             t_state <= IDLE;
+            trace_reset <= TRUE;
 --            trace_started <= FALSE;
             dump_int <= pulse_stamped; 
             dp_dump <= TRUE;
@@ -1048,20 +1056,16 @@ begin
             -- next state & mux logic for valid pulse_threshold_neg 
             -- (WAITPULSEDONE)
             --------------------------------------------------------------------
-            if m.pulse_start then -- new pulse will start next clock
+            if m.pulse_start then -- new pulse starts as this one ends
               if q_state=IDLE then
                 if single_trace_detection then
-                  -- Don't start the NEW pulse because free space calculation 
-                  -- for the new pulse is difficult when a trace is included 
-                  -- also, the loss of single traces is not an issue as they are 
-                  -- purely diagnostic.
                   if free < size2 then
                     state <= IDLE;
                     overflow_int <= TRUE; -- overflow the new pulse;
                   else
                     state <= FIRSTPULSE;
                   end if;
-                elsif average_trace_detection and last_accum_count then
+                elsif average_trace_detection and last_accum_count then 
                   -- ending pulse will be committed, and was the last required 
                   -- for the average.
                   state <= AVERAGE;
@@ -1093,7 +1097,6 @@ begin
               commit_frame <= TRUE;
               frame_length <= length;
               inc_accum <= TRUE;
-              commiting <= TRUE;
               free <= framer_free - length;
             elsif q_state=IDLE then
               dp_write <= TRUE; 
