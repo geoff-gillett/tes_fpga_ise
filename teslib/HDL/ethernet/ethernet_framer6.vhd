@@ -703,7 +703,7 @@ begin
 				frame_address <= next_address;
         frame_free <= next_frame_free;
         next_frame_free <= next_frame_free-1;
-        frame_last <= next_frame_free < header.event_size;
+        frame_last <= next_frame_free <= header.event_size;
         frame_under <= framer_address < MIN_FRAME;
 			end if;
 		end if;

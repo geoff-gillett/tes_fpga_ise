@@ -124,7 +124,7 @@ reset0 <= '0' after 2*IO_CLK_PERIOD;
 reset1 <= '0' after 10*IO_CLK_PERIOD; 
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
 --bytestream_ready <= sim_count(2 downto 0) /= "101";
-bytestream_ready <= TRUE; -- after 10 us;
+bytestream_ready <= not bytestream_ready after 50 us;
 --bytestream_ready <= FALSE;
 
 UUT:entity work.measurement_subsystem5
@@ -213,7 +213,7 @@ bytestream_last <= bytestream_int(8)='1';
 --register settings
 global.mtu_words <= to_unsigned(16,MTU_BITS);
 global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(2049,TICK_PERIOD_BITS);
+global.tick_period <= to_unsigned(2**12,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= (others => '0');
 global.mca.channel <= (others => '0');
@@ -419,12 +419,12 @@ begin
   chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
 	wait for SAMPLE_CLK_PERIOD*64;
   simenable <= TRUE;
---	global.mca.value <= MCA_FILTERED_SIGNAL_D;
---	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
---	global.mca.qualifier <= ALL_MCA_QUAL_D;
---	global.mca.update_asap <= TRUE;
---	wait for SAMPLE_CLK_PERIOD;
---	global.mca.update_asap <= FALSE;
+	global.mca.value <= MCA_FILTERED_SIGNAL_D;
+	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
+	global.mca.qualifier <= ALL_MCA_QUAL_D;
+	global.mca.update_asap <= TRUE;
+	wait for SAMPLE_CLK_PERIOD;
+	global.mca.update_asap <= FALSE;
 	
   wait for 1000 ns;
   global.channel_enable <= "00000001";

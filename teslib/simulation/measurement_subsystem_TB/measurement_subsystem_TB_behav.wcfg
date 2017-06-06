@@ -21,14 +21,16 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="8104833333fs"></ZoomStartTime>
-      <ZoomEndTime time="15159833334fs"></ZoomEndTime>
-      <Cursor1Time time="13984000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="70550000001fs"></ZoomEndTime>
+      <Cursor1Time time="32960000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
       <marker time="352628000000" label="" />
       <marker time="1398836000000" label="" />
+      <marker time="377248000000" label="" />
+      <marker time="32960000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -599,6 +601,7 @@
    <wvobject fp_name="group239" type="group">
       <obj_property name="label">framer</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="group622" type="group">
          <obj_property name="label">ports</obj_property>
          <obj_property name="DisplayName">label</obj_property>
@@ -688,6 +691,7 @@
       <wvobject fp_name="group642" type="group">
          <obj_property name="label">mux</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/enable_reg" type="other">
             <obj_property name="ElementShortName">enable_reg</obj_property>
             <obj_property name="ObjectShortName">enable_reg</obj_property>
@@ -2380,7 +2384,7 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/header.event_type.tick" type="other">
          <obj_property name="ElementShortName">.tick</obj_property>
          <obj_property name="ObjectShortName">header.event_type.tick</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_hs" type="other">
@@ -2462,6 +2466,7 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/framer_word" type="array">
          <obj_property name="ElementShortName">framer_word</obj_property>
          <obj_property name="ObjectShortName">framer_word</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/framer_word.discard" type="array">
             <obj_property name="ElementShortName">.discard[3:0]</obj_property>
             <obj_property name="ObjectShortName">framer_word.discard[3:0]</obj_property>
@@ -2479,6 +2484,8 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/framer_address" type="array">
          <obj_property name="ElementShortName">framer_address[7:0]</obj_property>
          <obj_property name="ObjectShortName">framer_address[7:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/next_address" type="array">
          <obj_property name="ElementShortName">next_address[7:0]</obj_property>
