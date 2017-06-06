@@ -43,7 +43,7 @@ generic(
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  FRAMER_ADDRESS_BITS:natural:=8;
+  FRAMER_ADDRESS_BITS:natural:=7;
   ETHERNET_ADDRESS_BITS:natural:=7
 );
 end entity measurement_subsystem_TB;
@@ -142,8 +142,8 @@ generic map(
   ACCUMULATE_N => 3,
   TRACE_FROM_STAMP => TRUE,
   MIN_TICK_PERIOD => 2000,
-  MEASUREMENT_FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS,
-  ETHERNET_FRAMER_ADDRESS_BITS => ETHERNET_ADDRESS_BITS
+  FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS,
+  ENET_FRAMER_ADDRESS_BITS => ETHERNET_ADDRESS_BITS
 )
 port map(
   clk => sample_clk,
@@ -273,7 +273,6 @@ chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 --chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
 --chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
-chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 chan_reg(0).capture.detection <= PULSE_DETECTION_D;
 --chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
@@ -282,16 +281,19 @@ chan_reg(0).capture.trace_stride <= (others => '0');
 
 --------------------------------------------------------------------------------
 -- pulse_threshold_neg & pulse_start simultaneous.
-chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
 --chan_reg(0).capture.trace_length <= to_unsigned(16,TRACE_LENGTH_BITS);
 
 -- trace_last & pulse_start simultaneous.
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(116*8,DSP_BITS-1); 
 --chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
 
+-- double peaked pulse
+chan_reg(0).capture.pulse_threshold <= to_unsigned(108*8,DSP_BITS-1); 
+chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
+
 chan_reg(0).capture.trace_length <= to_unsigned(32,TRACE_LENGTH_BITS);
 --------------------------------------------------------------------------------
-
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
 chan_reg(1).capture.delay <= (0 => '0', others => '0');
