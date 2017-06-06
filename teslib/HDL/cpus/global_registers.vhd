@@ -25,7 +25,7 @@ entity global_registers is
 generic(
   HDL_VERSION:register_data_t:=to_std_logic(66,REGISTER_DATA_BITS);
   MIN_TICK_PERIOD:integer:=MIN_TICK_PERIOD;
-  MIN_MTU:integer:=64
+  MIN_MTU:integer:=8
 );
 port (
   clk:in std_logic;
@@ -69,7 +69,7 @@ begin
 			reg.adc_enable <= (others => '0');
 			reg.channel_enable <= (others => '0');
 			reg.iodelay_control <= (others => '0');
-			reg.mtu <= DEFAULT_MTU;
+			reg.mtu_words <= DEFAULT_MTU;
 			reg.tick_period <= DEFAULT_TICK_PERIOD;
 			reg.tick_latency <= DEFAULT_TICK_LATENCY;
 			reg.mca.bin_n <= DEFAULT_MCA_BIN_N;
@@ -102,9 +102,9 @@ begin
 				end if;
 				if address_reg(MTU_ADDR_BIT)='1' then
 					if unsigned(data_reg(MTU_BITS-1 downto 0)) < MIN_MTU then
-						reg.mtu <= to_unsigned(MIN_MTU,MTU_BITS);
+						reg.mtu_words <= to_unsigned(MIN_MTU,MTU_BITS);
 					else
-						reg.mtu <= unsigned(data_reg(MTU_BITS-1 downto 0));
+						reg.mtu_words <= unsigned(data_reg(MTU_BITS-1 downto 0));
 					end if;
 				end if;
 				if address_reg(TICK_PERIOD_ADDR_BIT)='1' then
@@ -162,7 +162,7 @@ reg_data(MCA_LOWEST_VALUE_ADDR_BIT)
    <= to_std_logic(resize(reg.mca.lowest_value,AXI_DATA_BITS));
 reg_data(MCA_TICKS_ADDR_BIT)
    <= to_std_logic(resize(reg.mca.ticks,AXI_DATA_BITS));
-reg_data(MTU_ADDR_BIT) <= to_std_logic(resize(reg.mtu,AXI_DATA_BITS));
+reg_data(MTU_ADDR_BIT) <= to_std_logic(resize(reg.mtu_words,AXI_DATA_BITS));
 reg_data(TICK_PERIOD_ADDR_BIT)
    <= to_std_logic(resize(reg.tick_period,AXI_DATA_BITS));
 reg_data(TICK_LATENCY_ADDR_BIT)

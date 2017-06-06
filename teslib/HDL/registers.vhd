@@ -376,7 +376,7 @@ end record;
 
 type global_registers_t is record
 	-- MTU must be a multiple of 8
-	mtu:unsigned(MTU_BITS-1 downto 0);
+	mtu_words:unsigned(MTU_BITS-1 downto 0); --FIXME make this chunks
 	tick_period:unsigned(TICK_PERIOD_BITS-1 downto 0);
 	tick_latency:unsigned(TICK_LATENCY_BITS-1 downto 0);
 	adc_enable:std_logic_vector(ADC_CHANNELS-1 downto 0);
@@ -456,7 +456,7 @@ function mca_control_register(m:mca_registers_t) return register_data_t;
 constant DEFAULT_TICK_PERIOD_INT:integer:=25000000;
 constant DEFAULT_TICK_PERIOD:unsigned(TICK_PERIOD_BITS-1 downto 0)
 				 :=to_unsigned(DEFAULT_TICK_PERIOD_INT,TICK_PERIOD_BITS);
-constant DEFAULT_MTU:unsigned(MTU_BITS-1 downto 0):=to_unsigned(1496,MTU_BITS);
+constant DEFAULT_MTU:unsigned(MTU_BITS-1 downto 0):=to_unsigned(1496/8,MTU_BITS);
 constant DEFAULT_TICK_LATENCY:unsigned(TICK_LATENCY_BITS-1 downto 0)
 				 :=to_unsigned(2*DEFAULT_TICK_PERIOD_INT,TICK_LATENCY_BITS);
 constant DEFAULT_MCA_TICKS:unsigned(MCA_TICKCOUNT_BITS-1 downto 0)

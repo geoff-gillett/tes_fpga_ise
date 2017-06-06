@@ -43,8 +43,8 @@ generic(
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  FRAMER_ADDRESS_BITS:natural:=7;
-  ETHERNET_ADDRESS_BITS:natural:=7
+  FRAMER_ADDRESS_BITS:natural:=8;
+  ETHERNET_ADDRESS_BITS:natural:=8
 );
 end entity measurement_subsystem_TB;
 
@@ -124,7 +124,7 @@ reset0 <= '0' after 2*IO_CLK_PERIOD;
 reset1 <= '0' after 10*IO_CLK_PERIOD; 
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
 --bytestream_ready <= sim_count(2 downto 0) /= "101";
-bytestream_ready <= TRUE after 1400 us;
+bytestream_ready <= TRUE; -- after 10 us;
 --bytestream_ready <= FALSE;
 
 UUT:entity work.measurement_subsystem5
@@ -211,7 +211,7 @@ bytestream <= bytestream_int(7 downto 0);
 bytestream_last <= bytestream_int(8)='1';
 
 --register settings
-global.mtu <= to_unsigned(64,MTU_BITS);
+global.mtu_words <= to_unsigned(16,MTU_BITS);
 global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
 global.tick_period <= to_unsigned(2049,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);

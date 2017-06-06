@@ -502,7 +502,7 @@ port map(
   ready => mcastream_ready
 );
 
-enet:entity work.ethernet_framer5
+enet:entity work.ethernet_framer6
 generic map(
   MTU_BITS => MTU_BITS,
   FRAMER_ADDRESS_BITS => ENET_FRAMER_ADDRESS_BITS,
@@ -513,7 +513,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  mtu => global_reg.mtu,
+  mtu => g_reg.mtu_words,
   tick_latency => g_reg.tick_latency,
   eventstream => muxstream,
   eventstream_valid => muxstream_valid,

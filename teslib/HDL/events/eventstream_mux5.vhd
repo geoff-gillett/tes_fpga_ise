@@ -109,7 +109,7 @@ signal aux_data,aux_data_in:std_logic_vector(CHUNK_DATABITS+1 downto 0);
 --signal tick_s_last,tick_s_ready,tick_s_valid:boolean;
 --signal muxstream_out_last:boolean;
 --attribute S:string;
-constant DEBUG:string:="TRUE";
+constant DEBUG:string:="FALSE";
 attribute MARK_DEBUG:string;
 signal pending:signed(7 downto 0);
 attribute MARK_DEBUG of pending:signal is DEBUG;
