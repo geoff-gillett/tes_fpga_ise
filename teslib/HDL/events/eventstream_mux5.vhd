@@ -109,8 +109,10 @@ signal aux_data,aux_data_in:std_logic_vector(CHUNK_DATABITS+1 downto 0);
 --signal tick_s_last,tick_s_ready,tick_s_valid:boolean;
 --signal muxstream_out_last:boolean;
 --attribute S:string;
-
---attribute MARK_DEBUG:string;
+constant DEBUG:string:="TRUE";
+attribute MARK_DEBUG:string;
+signal pending:signed(7 downto 0);
+attribute MARK_DEBUG of pending:signal is DEBUG;
 --attribute MARK_DEBUG of arb_state_v:signal is DEBUG;
 ----attribute MARK_DEBUG of valids:signal is DEBUG;
 ----attribute MARK_DEBUG of readys:signal is DEBUG;
@@ -119,11 +121,36 @@ signal aux_data,aux_data_in:std_logic_vector(CHUNK_DATABITS+1 downto 0);
 --attribute MARK_DEBUG of tick:signal is DEBUG;
 
 begin
+--------------------------------------------------------------------------------
+-- debuging
+--------------------------------------------------------------------------------
+debugGen:if DEBUG="TRUE" generate
+begin
+debugPending:process (clk) is
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      pending <= (others => '0');
+    else
+      if start(0) and not (commit(0) or dump(0)) then
+        pending <= pending + 1;
+      end if;
+      if (commit(0) or dump(0)) and not start(0) then
+        pending <= pending - 1;
+      end if;
+    end if;
+  end if;
+end process debugPending;
+end generate;
+
 --tick_s_last <= streams(0).last(0);
 --tick_s_valid <= valids(0);
 --tick_s_ready <= readys(0);
 --muxstream_out_last <= muxstream_out.last(0);
 --arb_state_v <= to_std_logic(arb_state,3);
+--------------------------------------------------------------------------------
+-- debuging
+--------------------------------------------------------------------------------
 valid <= valid_out;
 muxstream <= muxstream_out;
 full <= time_full;

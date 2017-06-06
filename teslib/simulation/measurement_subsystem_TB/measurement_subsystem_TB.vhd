@@ -124,7 +124,8 @@ reset0 <= '0' after 2*IO_CLK_PERIOD;
 reset1 <= '0' after 10*IO_CLK_PERIOD; 
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
 --bytestream_ready <= sim_count(2 downto 0) /= "101";
-bytestream_ready <= TRUE after 125 us;
+bytestream_ready <= TRUE after 1400 us;
+--bytestream_ready <= FALSE;
 
 UUT:entity work.measurement_subsystem5
 generic map(
@@ -273,8 +274,8 @@ chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
 --chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
-chan_reg(0).capture.detection <= TRACE_DETECTION_D;
-chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
+chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+--chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
 chan_reg(0).capture.trace_stride <= (others => '0');
@@ -411,6 +412,7 @@ begin
   global.mca.update_asap <= FALSE;
   global.mca.update_on_completion <= FALSE;
   global.channel_enable <= "00000000";
+  chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
   chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
   chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
 	wait for SAMPLE_CLK_PERIOD*64;
