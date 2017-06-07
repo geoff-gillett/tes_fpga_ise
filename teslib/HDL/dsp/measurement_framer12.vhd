@@ -82,10 +82,11 @@ signal commit_frame,commit_int,start_int,dump_int:boolean; --,just_started:boole
 signal peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal last_peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
-signal pre_pulse_start:boolean;
+--signal pre_pulse_start:boolean;
 signal peak_stamped,pulse_stamped:boolean:=FALSE;
 
-signal pre_detection,detection:detection_d;
+--signal pre_detection,detection:detection_d;
+signal pre_detection:detection_d;
 --signal full,pre_full:boolean;
 
 -- TRACE control registers implemented as constants
@@ -311,7 +312,7 @@ dp_word <= to_streambus(resize(dot_product,BUS_DATABITS),TRUE,ENDIAN);
 
 pre_detection <= m.pre_eflags.event_type.detection;
   
-pre_pulse_start <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start;  
+--pre_pulse_start <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start;  
 
 can_q_single <= q_state=IDLE;
 can_q_trace <= q_state=IDLE;
@@ -436,7 +437,7 @@ begin
         
         dp_address <= resize(m.pre_size, ADDRESS_BITS);
         
-        detection <= m.eflags.event_type.detection;
+--        detection <= m.eflags.event_type.detection;
         
         case m.pre_eflags.event_type.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
@@ -777,7 +778,7 @@ begin
       when IDLE =>
         
         pulse_stamped <= FALSE;
-        if m.pulse_start and enable_reg then 
+        if m.pulse_start and not peak_detection and enable_reg then 
           if size < free then
             state <= FIRSTPULSE;
             tflags.multipulse <= FALSE;
@@ -1160,7 +1161,7 @@ begin
         end if;
         
       when HOLD =>
-        if pre_pulse_start and not average_trace_detection then
+        if m.pre_pulse_start and not average_trace_detection then
           state <= IDLE;
           t_state <= IDLE;
         end if;
@@ -1191,7 +1192,7 @@ begin
             peak_address <= resize(m.peak_address,ADDRESS_BITS);
             pulse_peak_valid <= mux_wr_en;
           end if;
-        elsif m.eflags.event_type.detection=PEAK_DETECTION_D then
+        elsif peak_detection then
           if free=0 then
             overflow_int <= TRUE;
             q_state <= IDLE;
@@ -1209,7 +1210,7 @@ begin
       end if;
       
       -- time stamping
-      if detection=PEAK_DETECTION_D and m.stamp_peak and enable_reg then
+      if peak_detection and m.stamp_peak and enable_reg then
         if mux_full then
           error_int <= TRUE;
           peak_stamped <= FALSE;
