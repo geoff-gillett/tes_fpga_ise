@@ -98,14 +98,14 @@ begin
   write(l,to_integer(signed(to_0(setEndian(d,e)))));
 end procedure;
 
-procedure writeint(l:inout integer_file;d:in unsigned;e:in string) is
+procedure writeInt(l:inout integer_file;d:in unsigned;e:in string) is
 begin
-  writeInt(l,std_logic_vector(d),e);
+  writeInt(l,resize(d,32),e);
 end procedure;
 
-procedure writeint(l:inout integer_file;d:in signed;e:in string) is
+procedure writeInt(l:inout integer_file;d:in signed;e:in string) is
 begin
-  writeInt(l,std_logic_vector(d),e);
+  writeInt(l,resize(d,32),e);
 end procedure;
 
 end package body debug;

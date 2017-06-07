@@ -18,6 +18,7 @@ use std.textio.all;
 library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
+use extensions.debug.all;
 
 library streamlib;
 use streamlib.types.all;
@@ -29,7 +30,7 @@ use work.types.all;
 use work.registers.all;
 use work.events.all;
 use work.measurements.all;
-use work.debug.all;
+--use work.debug.all;
 
 entity measurement_subsystem_TB is
 generic(
@@ -43,8 +44,8 @@ generic(
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  FRAMER_ADDRESS_BITS:natural:=8;
-  ETHERNET_ADDRESS_BITS:natural:=8
+  FRAMER_ADDRESS_BITS:natural:=MEASUREMENT_FRAMER_ADDRESS_BITS;
+  ETHERNET_ADDRESS_BITS:natural:=ETHERNET_FRAMER_ADDRESS_BITS
 );
 end entity measurement_subsystem_TB;
 
@@ -100,9 +101,9 @@ signal cdc_empty:std_logic;
 signal bytestream_int:std_logic_vector(8 downto 0);
 signal global:global_registers_t;
 signal clk_count,io_clk_count:integer:=0;
+signal enable:boolean:=FALSE;
 
-type int_file is file of integer;
-file bytestream_file,trace_file:int_file;
+file bytestream_file,trace_file:extensions.debug.integer_file;
 
 signal filter_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal slope_config:fir_ctl_in_array(CHANNELS-1 downto 0);
@@ -123,9 +124,9 @@ io_clk <= not IO_clk after IO_CLK_PERIOD/2;
 reset0 <= '0' after 2*IO_CLK_PERIOD; 
 reset1 <= '0' after 10*IO_CLK_PERIOD; 
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
---bytestream_ready <= sim_count(2 downto 0) /= "101";
-bytestream_ready <= not bytestream_ready after 50 us;
---bytestream_ready <= FALSE;
+--bytestream_ready <= io_clk_count mod 37 = 0;
+                    
+bytestream_ready <= TRUE;
 
 UUT:entity work.measurement_subsystem5
 generic map(
@@ -212,14 +213,14 @@ bytestream_last <= bytestream_int(8)='1';
 
 --register settings
 global.mtu_words <= to_unsigned(16,MTU_BITS);
-global.tick_latency <= to_unsigned(2**16,TICK_LATENCY_BITS);
+global.tick_latency <= to_unsigned(2**12,TICK_LATENCY_BITS);
 global.tick_period <= to_unsigned(2**12,TICK_PERIOD_BITS);
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
-global.mca.bin_n <= (others => '0');
+global.mca.bin_n <= to_unsigned(3,MCA_BIN_N_BITS);
 global.mca.channel <= (others => '0');
-global.mca.last_bin <= (others => '1');
+global.mca.last_bin <= to_unsigned(1023,MCA_ADDRESS_BITS); --(others => '1');
 --global.mca.lowest_value <= to_signed(-2500,MCA_VALUE_BITS);
-global.mca.lowest_value <= to_signed(-2000,MCA_VALUE_BITS);
+global.mca.lowest_value <= to_signed(-201,MCA_VALUE_BITS);
 --global.mca.qualifier <= VALID_PEAK0_MCA_QUAL_D;
 --TODO normalise these type names
 --global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
@@ -273,7 +274,7 @@ chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 --chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
 --chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
-chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+chan_reg(0).capture.detection <= PEAK_DETECTION_D;
 --chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
@@ -292,7 +293,7 @@ chan_reg(0).capture.trace_stride <= (others => '0');
 chan_reg(0).capture.pulse_threshold <= to_unsigned(108*8,DSP_BITS-1); 
 chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 
-chan_reg(0).capture.trace_length <= to_unsigned(32,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 --------------------------------------------------------------------------------
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
@@ -313,9 +314,10 @@ chan_reg(1).capture.trace_stride <= (others => '0');
 chan_reg(1).capture.trace_length <= to_unsigned(4,TRACE_LENGTH_BITS);
 
 file_open(bytestream_file,"../bytestream",WRITE_MODE);
-byteStreamWriter:process(io_clk)
+byteStreamWriter:process
 begin
-  if rising_edge(io_clk) then
+  while TRUE loop
+    wait until rising_edge(io_clk);
     if bytestream_valid and bytestream_ready then
       write(bytestream_file, to_integer(unsigned(bytestream)));
       if bytestream_last then
@@ -324,24 +326,28 @@ begin
         write(bytestream_file, io_clk_count);
       end if;
     end if;
-  end if;
+  end loop;
 end process byteStreamWriter;
 
 file_open(trace_file, "../traces",WRITE_MODE);
-traceWriter:process(sample_clk)
+traceWriter:process
 begin
-  if rising_edge(sample_clk) then
-    write(trace_file, to_integer(to_0(m(0).raw.sample)));
-    write(trace_file, to_integer(to_0(m(0).filtered.sample)));
-    write(trace_file, to_integer(to_0(m(0).slope.sample)));
-    write(trace_file, to_integer(to_0(m(0).filtered_long)));
-  end if;
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    write(trace_file, to_integer(m(0).raw.sample));
+    write(trace_file, to_integer(m(0).filtered.sample));
+    write(trace_file, to_integer(m(0).slope.sample));
+    write(trace_file, to_integer(m(0).filtered_long));
+  end loop;
 end process traceWriter; 
 
 clkCount:process(sample_clk)
 begin
   if rising_edge(sample_clk) then
     clk_count <= clk_count+1;
+    if clk_count mod 1000 = 0 then
+      enable <= not enable;
+    end if;
   end if;
 end process clkCount;
 
@@ -353,7 +359,7 @@ begin
 end process ioClkCount;
 
 stimulusFile:process
-	file sample_file:int_file is in 
+	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
 	     "../input_signals/50mvCh1on_amp_100khzdiode_250_1.bin";
 	variable sample:integer;
@@ -409,11 +415,13 @@ adc_samples(0) <= std_logic_vector(signed(doublesig));
 --adc_samples(0) <= std_logic_vector(adc_count);
 --adc_samples(0) <= (others => '0');
 
+--enable test
+global.channel_enable <= "00000001" when enable else "00000000";
 mcaControlStimulus:process
 begin
   global.mca.update_asap <= FALSE;
   global.mca.update_on_completion <= FALSE;
-  global.channel_enable <= "00000000";
+--  global.channel_enable <= "00000000";
   chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
   chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
   chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
@@ -426,8 +434,8 @@ begin
 	wait for SAMPLE_CLK_PERIOD;
 	global.mca.update_asap <= FALSE;
 	
-  wait for 1000 ns;
-  global.channel_enable <= "00000001";
+--  wait until clk_count=1000;
+--  global.channel_enable <= "00000001";
 --  wait for 12 us;
 --  global.channel_enable <= "00000000";
 --  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;

@@ -261,24 +261,26 @@ attribute MARK_DEBUG of estream_last:signal is DEBUG;
 
 begin
 --------------------------------------------------------------------------------
- framestream_firstbyte <= framestream.data(63 downto 56);
- framestream_last <= framestream.last(0);
- lookahead_type_s <= to_std_logic(lookahead_type);
- estream_s <= event_s.data;
- estream_last <= event_s.last(0);
- 
- frameStart:process (clk) is
- begin
-   if rising_edge(clk) then
-     if reset = '1' then
-       new_frame <= FALSE;
-     else
-       if framestream_ready and framestream_valid then
-         new_frame <= framestream_last;
+debugGen:if DEBUG="TRUE" generate 
+  framestream_firstbyte <= framestream.data(63 downto 56);
+  framestream_last <= framestream.last(0);
+  lookahead_type_s <= to_std_logic(lookahead_type);
+  estream_s <= event_s.data;
+  estream_last <= event_s.last(0);
+    
+   frameStart:process (clk) is
+   begin
+     if rising_edge(clk) then
+       if reset = '1' then
+         new_frame <= FALSE;
+       else
+         if framestream_ready and framestream_valid then
+           new_frame <= framestream_last;
+         end if;
        end if;
      end if;
-   end if;
- end process frameStart;
+   end process frameStart;
+ end generate;
  
 --simulation only (for VCD dump)
 --synthesis translate_off
@@ -336,8 +338,10 @@ port map(
   ready => event_s_ready
 );
 
-event_s_ready <= arbiter_state=EVENT and frame_state=PAYLOAD and inc_address;
-mca_s_ready <= arbiter_state=MCA and frame_state=PAYLOAD and framer_ready;
+--event_s_ready <= arbiter_state=EVENT and frame_state=PAYLOAD and inc_address;
+--mca_s_ready <= arbiter_state=MCA and frame_state=PAYLOAD and framer_ready;
+--mca_s_ready <= arbiter_state=MCA and frame_state=PAYLOAD and inc_address;
+
 event_s_hs <= event_s_valid and event_s_ready;
 mca_s_hs <= mca_s_valid and mca_s_ready;
 
@@ -377,8 +381,10 @@ begin
     	
     	if event_s_hs or not event_s_valid then
     	  
-    	  event_head <= event_s.last(0) or single_word;
---    	  end_frame <= event_s.last or single_word 
+--    	  if event_s.last(0) or single_word then
+    	    event_head <= event_s.last(0) or single_word;
+--    	    event_head <= TRUE;
+--        end if;
     	  
         if lookahead_valid then
           
@@ -551,7 +557,7 @@ begin
 	arbiter_nextstate <= arbiter_state;
 	case arbiter_state is 
 	when IDLE =>
-		if flush_events or wait_for_tick then
+		if (flush_events or wait_for_tick) and event_s_valid then
 			arbiter_nextstate <= EVENT;
 		elsif mca_s_valid then
 			arbiter_nextstate <= MCA;
@@ -581,6 +587,8 @@ begin
   framer_word.discard <= (others => FALSE);
   framer_we <= (others => FALSE); 
   inc_address <= FALSE;
+  mca_s_ready <= FALSE;
+  event_s_ready <= FALSE;
 	case frame_state is 
 	when IDLE =>
 		if arbiter_nextstate /= IDLE then
@@ -615,12 +623,11 @@ begin
 		if arbiter_state=MCA then
 			
       framer_word.data <= mca_s.data;
-      framer_we <= (others => mca_s_valid and framer_ready);
-      --inc_address <= mca_s_valid and framer_ready;
     	if mca_s_valid and framer_ready then 
-    		inc_address <= TRUE;
+    	  inc_address <= TRUE;
+    	  mca_s_ready <= TRUE;
+        framer_we <= (others => TRUE);
     		if frame_last or flush_events or mca_s.last(0) then
-    			--inc_address <= FALSE;
         	frame_nextstate <= LENGTH;
         	framer_word.last(0) <= TRUE;
         end if;
@@ -629,18 +636,19 @@ begin
     else -- must be event
     	
 	    framer_word.data <= event_s.data;
+	    --FIXME is it possible to register this?
 	    if event_head and (type_change or size_change or frame_last) then
         -- Want to keep one type and size in a frame so when it arrives at the 
         -- the buffer can be addressed as a array.
         -- at event head so at the beginning of a new event and can terminate.
         frame_nextstate <= TERMINATE;
-        framer_we <= (others => FALSE);
       elsif event_s_valid then 
         -- no room for another event
         if frame_last then
           framer_word.last(0) <= event_s.last(0) or single_word; 
           framer_we <= (others => framer_ready);
           inc_address <= framer_ready;
+          event_s_ready <= framer_ready;
           if (event_s.last(0) or single_word) and framer_ready then
             frame_nextstate <= LENGTH;
           end if;
@@ -648,6 +656,7 @@ begin
           framer_word.last(0) <= event_s.last(0) and header.event_type.tick; 
           framer_we <= (others => framer_ready);
           inc_address <= framer_ready;
+          event_s_ready <= framer_ready;
           if (event_s.last(0) and header.event_type.tick) and framer_ready then
             frame_nextstate <= LENGTH;
           end if;

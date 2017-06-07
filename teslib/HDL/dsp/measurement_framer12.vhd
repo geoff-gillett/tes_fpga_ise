@@ -86,7 +86,7 @@ signal pre_pulse_start:boolean;
 signal peak_stamped,pulse_stamped:boolean:=FALSE;
 
 signal pre_detection,detection:detection_d;
-signal full,pre_full:boolean;
+--signal full,pre_full:boolean;
 
 -- TRACE control registers implemented as constants
 
@@ -146,6 +146,7 @@ signal reg_ready:boolean;
 signal reg_valid:boolean;
 signal average_sample:signed(WIDTH-1 downto 0);
 -- TRACE_DETECTION and (SINGLE_TRACE or DOT_PRODUCT)
+signal mux_enable:boolean;
 signal mux_wr_en:boolean;
 signal start_average,average_last:boolean;
 
@@ -309,7 +310,6 @@ area.area <= m.pulse_area;
 dp_word <= to_streambus(resize(dot_product,BUS_DATABITS),TRUE,ENDIAN);
 
 pre_detection <= m.pre_eflags.event_type.detection;
-detection <= m.eflags.event_type.detection;
   
 pre_pulse_start <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start;  
 
@@ -317,10 +317,10 @@ can_q_single <= q_state=IDLE;
 can_q_trace <= q_state=IDLE;
 can_q_pulse <= q_state=IDLE;
 
-pre_full <= free < resize(m.pre_size,ADDRESS_BITS+1);
+--pre_full <= free < resize(m.pre_size,ADDRESS_BITS+1);
 
-full <= free <= length;
-
+--full <= free <= length;
+mux_wr_en <= mux_enable and enable_reg;
 trace_start <= trace_start_reg and enable_reg and t_state=IDLE;
 
 trace_chunk_debug <= set_endianness(trace_chunk,ENDIAN);
@@ -367,7 +367,7 @@ begin
       t_state <= IDLE;
       wr_chunk_state <= STORE0;
       
-      mux_wr_en <= FALSE;
+      mux_enable <= FALSE;
       frame_word.discard <= (others => FALSE);
       multipulse <= FALSE;
       multipeak <= FALSE;
@@ -424,18 +424,19 @@ begin
                                                          
         trace_wr_en <= pre_detection=TRACE_DETECTION_D and
                        m.pre_tflags.trace_type/=DOT_PRODUCT_D;
-        mux_wr_en <= pre_detection/=TRACE_DETECTION_D or 
-                     (
-                       pre_detection=TRACE_DETECTION_D and (
-                         m.pre_tflags.trace_type=SINGLE_TRACE_D or 
-                         m.pre_tflags.trace_type=DOT_PRODUCT_D
-                       )
-                     );
+        mux_enable <= pre_detection/=TRACE_DETECTION_D or 
+                      (
+                          pre_detection=TRACE_DETECTION_D and (
+                            m.pre_tflags.trace_type=SINGLE_TRACE_D or 
+                            m.pre_tflags.trace_type=DOT_PRODUCT_D
+                          )
+                      );
                      
         trace_count_init <= m.pre_tflags.trace_length-1;
         
         dp_address <= resize(m.pre_size, ADDRESS_BITS);
         
+        detection <= m.eflags.event_type.detection;
         
         case m.pre_eflags.event_type.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
@@ -765,7 +766,6 @@ begin
         accum_count <= (ACCUMULATE_N => '0', others => '1');
         next_accum_count <= to_unsigned(2**ACCUMULATE_N-2,ACCUMULATE_N+1);
         last_accum_count <= ACCUMULATE_N=0;
---      elsif wr_trace_last and a_state=ACCUM and not last_accum_count then
       elsif inc_accum and not last_accum_count then
         accum_count <= next_accum_count;
         next_accum_count <= next_accum_count-1;
@@ -1156,7 +1156,7 @@ begin
           state <= HOLD;
           atflags.multipeak <= FALSE;
           atflags.multipulse <= FALSE;
-          mux_wr_en <= TRUE;
+          mux_enable <= TRUE;
         end if;
         
       when HOLD =>
