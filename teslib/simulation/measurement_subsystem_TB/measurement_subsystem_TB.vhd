@@ -124,9 +124,9 @@ io_clk <= not IO_clk after IO_CLK_PERIOD/2;
 reset0 <= '0' after 2*IO_CLK_PERIOD; 
 reset1 <= '0' after 10*IO_CLK_PERIOD; 
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
---bytestream_ready <= io_clk_count mod 37 = 0;
+bytestream_ready <= io_clk_count mod 3 = 0;
                     
-bytestream_ready <= TRUE;
+--bytestream_ready <= TRUE;
 
 UUT:entity work.measurement_subsystem5
 generic map(
@@ -274,7 +274,7 @@ chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 --chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
 --chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
-chan_reg(0).capture.detection <= PEAK_DETECTION_D;
+chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 --chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 chan_reg(0).capture.height <= CFD_HEIGHT_D;
 chan_reg(0).capture.cfd_rel2min <= FALSE;
@@ -345,7 +345,7 @@ clkCount:process(sample_clk)
 begin
   if rising_edge(sample_clk) then
     clk_count <= clk_count+1;
-    if clk_count mod 1000 = 0 then
+    if clk_count mod 501 = 0 then
       enable <= not enable;
     end if;
   end if;
