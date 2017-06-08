@@ -70,15 +70,14 @@ attribute equivalent_register_removal of mux_full:signal is "no";
 signal framer_free:unsigned(ADDRESS_BITS downto 0);
 signal free:unsigned(ADDRESS_BITS downto 0);
 signal next_free:signed(ADDRESS_BITS+1 downto 0);
-signal frame_length,length:unsigned(ADDRESS_BITS downto 0)
-       :=(others => '0');
+signal frame_length,length:unsigned(ADDRESS_BITS downto 0):=(others => '0');
 --
 signal pulse_valid,pulse_peak_valid:boolean;
 signal pulse_overflow:boolean;
 signal frame_word:streambus_t;
 signal frame_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal frame_we:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal commit_frame,commit_int,start_int,dump_int:boolean; --,just_started:boolean;
+signal commit_frame,commit_int,start_int,dump_int:boolean; 
 
 signal peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal last_peak_address:unsigned(ADDRESS_BITS-1 downto 0);
@@ -409,9 +408,9 @@ begin
                               
         tflags.trace_length <= m.pre_tflags.trace_length;
         tflags.stride <= m.pre_tflags.stride;
-        zero_stride <= m.pre_tflags.stride=0; 
         tflags.trace_signal <= m.pre_tflags.trace_signal;
         tflags.trace_type <= m.pre_tflags.trace_type;
+        zero_stride <= m.pre_tflags.stride=0; 
         
         eflags <= m.pre_eflags;
          
@@ -419,15 +418,19 @@ begin
         area_detection <= pre_detection=AREA_DETECTION_D;
         pulse_detection <= pre_detection=PULSE_DETECTION_D;
         peak_detection <= pre_detection=PEAK_DETECTION_D;
+
         single_trace_detection <= pre_detection=TRACE_DETECTION_D and
                                   m.pre_tflags.trace_type=SINGLE_TRACE_D;
+
         average_trace_detection <= m.pre_tflags.trace_type=AVERAGE_TRACE_D and 
                                    pre_detection=TRACE_DETECTION_D;
+                                   
         dp_trace_detection <= m.pre_tflags.trace_type=DOT_PRODUCT_D and
                               pre_detection=TRACE_DETECTION_D;
                                                          
         trace_wr_en <= pre_detection=TRACE_DETECTION_D and
                        m.pre_tflags.trace_type/=DOT_PRODUCT_D;
+                       
         mux_enable <= pre_detection/=TRACE_DETECTION_D or 
                       (
                           pre_detection=TRACE_DETECTION_D and (
@@ -451,6 +454,7 @@ begin
 --          size2 <= resize(m.pre_size,ADDRESS_BITS) & '0';
 
         when TRACE_DETECTION_D => 
+
           case m.pre_tflags.trace_type is
           when SINGLE_TRACE_D =>
             new_length:=resize(m.pre_size,ADDRESS_BITS+1)+
@@ -470,24 +474,21 @@ begin
             trace_start_address <= to_unsigned(0,ADDRESS_BITS);
             
           when DOT_PRODUCT_D => 
-            new_length:=resize(m.pre_size,ADDRESS_BITS+1) + 1;
+            new_length:=resize(m.pre_size,ADDRESS_BITS+1)+1;
 --            size2 <= resize(m.pre_size,ADDRESS_BITS) & '0' + 1;
             new_size:=resize(m.pre_size,SIZE_BITS)+1;
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= (others => '-'); 
             dp_start <= TRUE;
-            
---          when DOT_PRODUCT_TRACE_D =>
---            trace_start_address <= (others => '-'); --resize(m.size+1,ADDRESS_BITS); --FIXME ??
-            
           end case;
+          
         end case;
         
         length <= new_length;
         size <= new_size;
         
         next_free <= signed('0' & framer_free) - signed('0' & new_length); 
-        space_available <= new_length < free;
+        space_available <= new_size < framer_free;
         space_available2 <= FALSE;
         free <= framer_free;
         
@@ -823,9 +824,8 @@ begin
           state <= IDLE;
           
         elsif m.pulse_threshold_neg then
-          
           -- pulse ending ok to restart pulse
-
+          
           if not m.above_area_threshold then
             --dump the pulse that is ending
             trace_reset <= TRUE;
@@ -837,6 +837,7 @@ begin
             if not m.pulse_start then 
               state <= IDLE; 
             end if;
+            
           else
             -- End of valid pulse (pulse_threshold_neg).
             -- Could also have pre_pulse_start and/or trace_last. 
@@ -845,7 +846,6 @@ begin
             
             --Store the first_pulse for use in trace_detections
             first_pulse <= pulse; 
-            
             --------------------------------------------------------------------
             -- next state logic for valid pulse_threshold_neg (FIRSTPULSE)
             -- handles MUX logic except queue errors.

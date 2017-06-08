@@ -21,9 +21,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="13430000001fs"></ZoomEndTime>
-      <Cursor1Time time="1000000000fs"></Cursor1Time>
+      <ZoomStartTime time="42958333333fs"></ZoomStartTime>
+      <ZoomEndTime time="112608333334fs"></ZoomEndTime>
+      <Cursor1Time time="101000000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
@@ -770,12 +770,6 @@
          <obj_property name="label">mux</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/detection" type="other">
-            <obj_property name="ElementShortName">detection</obj_property>
-            <obj_property name="ObjectShortName">detection</obj_property>
-            <obj_property name="CustomSignalColor">#FF0000</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak_stamped" type="other">
             <obj_property name="ElementShortName">peak_stamped</obj_property>
             <obj_property name="ObjectShortName">peak_stamped</obj_property>
@@ -783,6 +777,10 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse_stamped" type="other">
             <obj_property name="ElementShortName">pulse_stamped</obj_property>
             <obj_property name="ObjectShortName">pulse_stamped</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/enable" type="other">
+            <obj_property name="ElementShortName">enable</obj_property>
+            <obj_property name="ObjectShortName">enable</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/enable_reg" type="other">
             <obj_property name="ElementShortName">enable_reg</obj_property>
@@ -848,9 +846,11 @@
       <wvobject fp_name="group623" type="group">
          <obj_property name="label">Framer</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word" type="array">
             <obj_property name="ElementShortName">frame_word</obj_property>
             <obj_property name="ObjectShortName">frame_word</obj_property>
+            <obj_property name="isExpanded"></obj_property>
             <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word.discard" type="array">
                <obj_property name="ElementShortName">.discard[3:0]</obj_property>
                <obj_property name="ObjectShortName">frame_word.discard[3:0]</obj_property>
@@ -879,22 +879,91 @@
             <obj_property name="ElementShortName">frame_length[10:0]</obj_property>
             <obj_property name="ObjectShortName">frame_length[10:0]</obj_property>
          </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/framer_free" type="array">
+            <obj_property name="ElementShortName">framer_free[10:0]</obj_property>
+            <obj_property name="ObjectShortName">framer_free[10:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/commit_frame" type="other">
             <obj_property name="ElementShortName">commit_frame</obj_property>
             <obj_property name="ObjectShortName">commit_frame</obj_property>
             <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/commiting" type="other">
-            <obj_property name="ElementShortName">commiting</obj_property>
-            <obj_property name="ObjectShortName">commiting</obj_property>
+         <wvobject type="divider" fp_name="divider625">
+            <obj_property name="label">end framer</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group657" type="group">
+         <obj_property name="label">freespace</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_tflags.trace_type" type="other">
+            <obj_property name="ElementShortName">.trace_type</obj_property>
+            <obj_property name="ObjectShortName">m.pre_tflags.trace_type</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_eflags.event_type.detection" type="other">
+            <obj_property name="ElementShortName">.detection</obj_property>
+            <obj_property name="ObjectShortName">m.pre_eflags.event_type.detection</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_pulse_start" type="other">
+            <obj_property name="ElementShortName">.pre_pulse_start</obj_property>
+            <obj_property name="ObjectShortName">m.pre_pulse_start</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_size" type="array">
+            <obj_property name="ElementShortName">.pre_size[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.pre_size[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/size" type="array">
+            <obj_property name="ElementShortName">size[4:0]</obj_property>
+            <obj_property name="ObjectShortName">size[4:0]</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/length" type="array">
+            <obj_property name="ElementShortName">length[10:0]</obj_property>
+            <obj_property name="ObjectShortName">length[10:0]</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/committing" type="other">
+            <obj_property name="ElementShortName">committing</obj_property>
+            <obj_property name="ObjectShortName">committing</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/commit_frame" type="other">
+            <obj_property name="ElementShortName">commit_frame</obj_property>
+            <obj_property name="ObjectShortName">commit_frame</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/framer_free" type="array">
+            <obj_property name="ElementShortName">framer_free[10:0]</obj_property>
+            <obj_property name="ObjectShortName">framer_free[10:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/free" type="array">
             <obj_property name="ElementShortName">free[10:0]</obj_property>
             <obj_property name="ObjectShortName">free[10:0]</obj_property>
          </wvobject>
-         <wvobject type="divider" fp_name="divider625">
-            <obj_property name="label">end framer</obj_property>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/next_free" type="array">
+            <obj_property name="ElementShortName">next_free[11:0]</obj_property>
+            <obj_property name="ObjectShortName">next_free[11:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/space_available" type="other">
+            <obj_property name="ElementShortName">space_available</obj_property>
+            <obj_property name="ObjectShortName">space_available</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/space_available2" type="other">
+            <obj_property name="ElementShortName">space_available2</obj_property>
+            <obj_property name="ObjectShortName">space_available2</obj_property>
+         </wvobject>
+         <wvobject type="divider" fp_name="divider669">
+            <obj_property name="label">end freespace</obj_property>
             <obj_property name="DisplayName">label</obj_property>
          </wvobject>
       </wvobject>
@@ -1050,10 +1119,6 @@
          <obj_property name="label">FSM</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/length" type="array">
-            <obj_property name="ElementShortName">length[10:0]</obj_property>
-            <obj_property name="ObjectShortName">length[10:0]</obj_property>
-         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/size" type="array">
             <obj_property name="ElementShortName">size[4:0]</obj_property>
             <obj_property name="ObjectShortName">size[4:0]</obj_property>
@@ -1078,12 +1143,6 @@
             <obj_property name="ElementShortName">.above_area_threshold</obj_property>
             <obj_property name="ObjectShortName">measurements.above_area_threshold</obj_property>
             <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/detection" type="other">
-            <obj_property name="ElementShortName">detection</obj_property>
-            <obj_property name="ObjectShortName">detection</obj_property>
-            <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/tflags.trace_type" type="other">
@@ -1472,6 +1531,35 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_eflags" type="array">
             <obj_property name="ElementShortName">.pre_eflags</obj_property>
             <obj_property name="ObjectShortName">m.pre_eflags</obj_property>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_eflags.peak_number" type="array">
+               <obj_property name="ElementShortName">.peak_number[3:0]</obj_property>
+               <obj_property name="ObjectShortName">m.pre_eflags.peak_number[3:0]</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_eflags.cfd_rel2min" type="other">
+               <obj_property name="ElementShortName">.cfd_rel2min</obj_property>
+               <obj_property name="ObjectShortName">m.pre_eflags.cfd_rel2min</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_eflags.height" type="other">
+               <obj_property name="ElementShortName">.height</obj_property>
+               <obj_property name="ObjectShortName">m.pre_eflags.height</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_eflags.timing" type="other">
+               <obj_property name="ElementShortName">.timing</obj_property>
+               <obj_property name="ObjectShortName">m.pre_eflags.timing</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_eflags.channel" type="array">
+               <obj_property name="ElementShortName">.channel[2:0]</obj_property>
+               <obj_property name="ObjectShortName">m.pre_eflags.channel[2:0]</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_eflags.event_type" type="array">
+               <obj_property name="ElementShortName">.event_type</obj_property>
+               <obj_property name="ObjectShortName">m.pre_eflags.event_type</obj_property>
+               <obj_property name="isExpanded"></obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_eflags.new_window" type="other">
+               <obj_property name="ElementShortName">.new_window</obj_property>
+               <obj_property name="ObjectShortName">m.pre_eflags.new_window</obj_property>
+            </wvobject>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.size" type="array">
             <obj_property name="ElementShortName">.size[15:0]</obj_property>
@@ -1512,6 +1600,7 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_tflags" type="array">
             <obj_property name="ElementShortName">.pre_tflags</obj_property>
             <obj_property name="ObjectShortName">m.pre_tflags</obj_property>
+            <obj_property name="isExpanded"></obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.tflags" type="array">
             <obj_property name="ElementShortName">.tflags</obj_property>
@@ -1573,14 +1662,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/area_overflow" type="other">
          <obj_property name="ElementShortName">area_overflow</obj_property>
          <obj_property name="ObjectShortName">area_overflow</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/full" type="other">
-         <obj_property name="ElementShortName">full</obj_property>
-         <obj_property name="ObjectShortName">full</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pre_full" type="other">
-         <obj_property name="ElementShortName">pre_full</obj_property>
-         <obj_property name="ObjectShortName">pre_full</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_reg" type="array">
          <obj_property name="ElementShortName">trace_reg[63:16]</obj_property>

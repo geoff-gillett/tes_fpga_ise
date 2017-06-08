@@ -436,7 +436,7 @@ begin
           when PEAK_DETECTION_D | AREA_DETECTION_D => 
             pre_size <= (0 => '1', others => '0');
           when PULSE_DETECTION_D | TRACE_DETECTION_D => 
-            pre_size <= resize(registers.max_peaks + 3, SIZE_WIDTH); --max_peaks 0 -> 1 peak
+            pre_size <= resize(registers.max_peaks, SIZE_WIDTH) + 3; 
           end case;
           
           --area_threshold <= signed('0' & registers.area_threshold);
