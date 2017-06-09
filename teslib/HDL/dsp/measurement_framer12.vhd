@@ -20,7 +20,7 @@ entity measurement_framer12 is
 generic(
   WIDTH:natural:=16;
   ADDRESS_BITS:integer:=11;
-  DP_ADDRESS_BITS:integer:=11; -- sets max trace length
+  DP_ADDRESS_BITS:integer:=11; 
   ACCUMULATOR_WIDTH:natural:=36;
   ACCUMULATE_N:natural:=18;
   TRACE_FROM_STAMP:boolean:=TRUE;
@@ -82,22 +82,9 @@ signal commit_frame,commit_int,start_int,dump_int:boolean;
 signal peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal last_peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
---signal pre_pulse_start:boolean;
 signal peak_stamped,pulse_stamped:boolean:=FALSE;
 
---signal pre_detection,detection:detection_d;
 signal pre_detection:detection_d;
---signal full,pre_full:boolean;
-
--- TRACE control registers implemented as constants
-
---constant TRACE_CHUNK_LENGTH_BITS:natural:=ceilLog2(TRACE_CHUNKS+1);
---constant trace_chunk_len:unsigned(TRACE_CHUNK_LENGTH_BITS-1 downto 0)
-----         :=to_unsigned((268/16)+1,FRAMER_ADDRESS_BITS+1);
---         :=to_unsigned(TRACE_CHUNKS,TRACE_CHUNK_LENGTH_BITS);
---constant TRACE_STRIDE_BITS:integer:=5;
---constant trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0)
---         :=(others => '0');
 -- trace signals
 signal trace_reg:std_logic_vector(BUS_DATABITS-1 downto 16);
 signal trace_chunk,trace_chunk_debug:std_logic_vector(CHUNK_DATABITS-1 downto 0);
@@ -201,6 +188,8 @@ signal trace_detection,area_detection,pulse_detection,peak_detection:boolean;
 signal single_trace_detection:boolean;
 signal trace_chunks:unsigned(DP_ADDRESS_BITS downto 0);
 
+signal space_available,space_available2:boolean;
+
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
 variable s:streambus_t;
@@ -211,12 +200,15 @@ begin
   return s;
 end function;
 
-attribute debug:string;
-attribute debug of pending:signal is "FALSE";
-signal space_available,space_available2:boolean;
+--------------------------------------------------------------------------------
+-- debugging
+--------------------------------------------------------------------------------
+constant DEBUG:string:="TRUE";
+attribute MARK_DEBUG:string;
+attribute mark_debug of pending:signal is "FALSE";
 
 begin
-  
+debugGen:if DEBUG="TRUE" generate
 debugPending:process (clk) is
 begin
   if rising_edge(clk) then
@@ -229,9 +221,13 @@ begin
       if (commit_int or dump_int) and not start_int then
         pending <= pending - 1;
       end if;
+      
+      assert (pending < 0 or pending > 1) report "out of sync" severity WARNING;
+        
     end if;
   end if;
 end process debugPending;
+end generate;
 
 m <= measurements;
 commit <= commit_int;
@@ -449,34 +445,34 @@ begin
         -- size is the free space required to *start* a new event
         case m.pre_eflags.event_type.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
-          new_length:=resize(m.pre_size,ADDRESS_BITS+1);
           new_size:=resize(m.pre_size,SIZE_BITS);
+          new_length:=resize(m.pre_size,ADDRESS_BITS+1);
 --          size2 <= resize(m.pre_size,ADDRESS_BITS) & '0';
 
         when TRACE_DETECTION_D => 
 
           case m.pre_tflags.trace_type is
           when SINGLE_TRACE_D =>
-            new_length:=resize(m.pre_size,ADDRESS_BITS+1)+
-                      resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
+            new_size:=resize(m.pre_size,SIZE_BITS);
+            new_length:=resize(m.pre_tflags.trace_length,ADDRESS_BITS+1)+
+                        new_size;
 --            size2 <= resize(m.pre_size ,ADDRESS_BITS) & '0' +
 --                     resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
-            new_size:=resize(m.pre_size,SIZE_BITS);
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= resize(m.pre_size,ADDRESS_BITS);
               
           when AVERAGE_TRACE_D =>
+            new_size:=resize(m.pre_size,SIZE_BITS)+1;
             new_length:=resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
 --            size2 <= (others => '-');
             --FIXME is size right here?
-            new_size:=resize(m.pre_size,SIZE_BITS)+1;
             tflags.offset <= to_unsigned(1,PEAK_COUNT_BITS);
             trace_start_address <= to_unsigned(0,ADDRESS_BITS);
             
           when DOT_PRODUCT_D => 
-            new_length:=resize(m.pre_size,ADDRESS_BITS+1)+1;
---            size2 <= resize(m.pre_size,ADDRESS_BITS) & '0' + 1;
             new_size:=resize(m.pre_size,SIZE_BITS)+1;
+            new_length:=resize(new_size,ADDRESS_BITS+1);
+--            size2 <= resize(m.pre_size,ADDRESS_BITS) & '0' + 1;
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= (others => '-'); 
             dp_start <= TRUE;
@@ -492,7 +488,7 @@ begin
         space_available2 <= FALSE;
         free <= framer_free;
         
-      elsif committing then 
+      elsif committing then -- FIXME 
         -- free space can only decrease here.
         free <= framer_free - frame_length;
         space_available <= length < framer_free;
@@ -522,6 +518,7 @@ begin
               pulse_peak_valid <= FALSE; 
             end if;
           end if;
+          
         when SINGLE => 
           if not (dp_trace_detection and dp_valid) then 
             frame_word <= queue(0);
@@ -531,6 +528,7 @@ begin
             commit_int <= TRUE;
             q_state <= IDLE;
           end if;
+
         when WORD0 =>
           if not (dp_trace_detection and dp_valid) then 
             frame_word <= queue(0);
@@ -555,6 +553,7 @@ begin
               q_state <= IDLE;
             end if;
           end if;
+          
         when WORD1 =>
           if not (dp_trace_detection and dp_valid) then 
             frame_word <= queue(1);
@@ -562,6 +561,7 @@ begin
             frame_address <= to_unsigned(1,ADDRESS_BITS);
             q_state <= WORD0;
           end if;
+          
         when LASTPEAK =>
           if not (dp_trace_detection and dp_valid) then 
             frame_word <= queue(2);
@@ -569,6 +569,7 @@ begin
             frame_address <= last_peak_address;
             q_state <= WORD1;
           end if;
+          
         when DONE =>
           if dp_state=DONE or dp_valid then
             q_state <= IDLE;
@@ -587,11 +588,11 @@ begin
       when IDLE =>
         if stride_count=0 or trace_start then
           s_state <= CAPTURE;
-          if wr_chunk_state=WRITE then
-            wr_trace_last <= last_trace_count;
-            if last_trace_count then
-              trace_done <= TRUE;
-            end if;
+          if wr_chunk_state=WRITE then --FIXME????
+            wr_trace_last <= last_trace_count and trace_detection;
+--            if last_trace_count then
+--              trace_done <= TRUE;
+--            end if;
           end if;
         else 
           stride_count <= stride_count-1;
@@ -604,10 +605,10 @@ begin
         elsif not zero_stride then
           s_state <= IDLE;
         elsif wr_chunk_state=STORE2 then
-          wr_trace_last <= last_trace_count and zero_stride;
-          if last_trace_count then
-            trace_done <= zero_stride;
-          end if;
+          wr_trace_last <= last_trace_count and zero_stride and trace_detection;
+--          if last_trace_count then
+--            trace_done <= zero_stride;
+--          end if;
         end if;
       end case;
      
@@ -632,7 +633,7 @@ begin
         trace_reg(31 downto 16) <= trace_chunk;
         if s_state=CAPTURE then -- 3rd chunk valid
           wr_chunk_state <= WRITE;
-          trace_full <= free <= trace_address;
+          trace_full <= framer_free <= trace_address;
         end if;
       
       -- TODO check that dp_valid cannot clash with this trace write.
@@ -646,7 +647,7 @@ begin
             wr_chunk_state <= STORE0;
             t_state <= IDLE;
             s_state <= INIT;
-            trace_overflow <= TRUE;
+            trace_overflow <= trace_detection;
           else --if trace_wr_en then --4th chunk captured
             wr_chunk_state <= STORE0;
             frame_we <= (others => trace_wr_en);
@@ -712,34 +713,25 @@ begin
       -- But DOT_PRODUCT_D does not write trace words to the framer.
       -- AVERAGE_TRACE_D dumps immediately on second pulse or peak
       
+      if commit_frame then
+        assert frame_length <= framer_free report "BAD commit" severity FAILURE;
+      end if;
+      
+      if unaryOR(frame_we) then
+        assert frame_address < framer_free report "BAD write" severity FAILURE;
+      end if;
       
       if commit_frame or dump_int or error_int then
         committing <= FALSE;
       end if;
       
-      -- dot product valid 5 clks after trace last
-      -- if trace_last before pulse done FSM could have transitioned to IDLE 
-      -- trace_pulse_reg not written till trace_last so can assume 
-      -- dot_product word always written after trace_pulse_reg?
-      -- 
-      -- case 1 trace shorter than pulse
-      --   can write dp and pulse at same time
-      --   will be WAITPULSEDONE *or* IDLE when dp_valid add WAITDP state?
-      -- case 2 trace longer than pulse 
-      --    write pulse when done 
-      --    dp valid 5 clocks after trace_last would be nice to keep main fsm 
-      --    running
-      -- set commiting when trace_last
       
-      -- if dp valid before end of pulse
-      --    write it without committing
-      
-      -- dot product FSM dp is not valid till 5 clocks after trace_last
-      
+      -- dot product FSM
+      -- dp_valid 5 clocks after trace_last
       case dp_state is 
       when IDLE =>
         dp_length <= length;
-        if dp_trace_detection and wr_trace_last then
+        if dp_trace_detection and wr_trace_last then --FIXME trace_last 
           dp_state <= DPWAIT;
         end if;
       when DPWAIT =>
@@ -785,7 +777,9 @@ begin
 --        trace_started <= FALSE;
 --      end if;
       
-      if trace_start or trace_overflow then
+      if wr_trace_last then
+        trace_done <= TRUE;
+      elsif trace_start or trace_overflow then
         trace_done <= FALSE;
       end if;
         
@@ -816,7 +810,7 @@ begin
         
       when FIRSTPULSE =>
      
-        if trace_overflow and trace_detection then
+        if trace_overflow or (wr_trace_last and trace_full) then
           overflow_int <= TRUE;
           dump_int <= pulse_stamped;
           pulse_stamped <= FALSE;
@@ -864,7 +858,7 @@ begin
 --                  dump_int <= pulse_stamped; 
                   error_int <= TRUE;
                 else
-                  if wr_trace_last then
+                  if wr_trace_last then -- 
                     -- May have queue error handled in output block.
                     state <= IDLE; -- New pulse and trace.
                     t_state <= IDLE;
@@ -887,7 +881,7 @@ begin
               end if;
             else -- no new pulse.
               if trace_detection then
-                if wr_trace_last then
+                if wr_trace_last then --FIXME trace_last
                   if average_trace_detection and last_accum_count then
                     state <= AVERAGE;
                   else
@@ -920,7 +914,7 @@ begin
             --------------------------------------------------------------------
 
             if trace_detection then
-              if wr_trace_last then
+              if wr_trace_last and not trace_full then
                 -- dump if SINGLE_TRACE_D
                 if average_trace_detection and not m.pulse_start then
                   --commit for averaging if not a multipulse
@@ -977,8 +971,12 @@ begin
           if trace_detection and wr_trace_last then
 --            if average_trace_detection and last_accum_count then
 --              state <= AVERAGE;
---            else
-            state <= WAITPULSEDONE;
+--            else  
+              if trace_full then
+                state <= IDLE; --FIXME 
+              else
+                state <= WAITPULSEDONE;
+              end if;
 --            end if;
           end if;
         end if;
@@ -989,13 +987,15 @@ begin
         ------------------------------------------------------------------------
         -- next state logic (TRACING)
         ------------------------------------------------------------------------
-        if trace_overflow then
+        if trace_overflow or (wr_trace_last and trace_full) then
           state <= IDLE;
           overflow_int <= TRUE;
           dump_int <= pulse_stamped; 
           pulse_stamped <= FALSE;
           dp_dump <= TRUE;
+          
         elsif wr_trace_last or trace_done then
+          
           if average_trace_detection then 
             if m.pulse_start then
               -- multipulse dump
@@ -1024,6 +1024,7 @@ begin
               state <= IDLE; -- all done
             end if;
           end if;
+          
         else
           --still tracing
           if m.pulse_start and average_trace_detection then
@@ -1039,7 +1040,7 @@ begin
         -- output logic (TRACING)
         ------------------------------------------------------------------------
         if not trace_overflow then
-          if wr_trace_last or trace_done then
+          if (wr_trace_last and not trace_full) or trace_done then
             if average_trace_detection then 
               if not m.pulse_start then
                 commit_frame <= TRUE; 
@@ -1066,27 +1067,6 @@ begin
                 dp_dump <= TRUE;
               end if;
             end if;
---            if m.pulse_start then
---              --check space for 2 events
---              if free < size2 and trace_wr_en and not average_trace_detection then 
---                state <= IDLE;
---                overflow_int <= TRUE;
---              else
---                state <= FIRSTPULSE;
---                tflags.multipulse <= FALSE;
---                tflags.multipeak <= FALSE;
---              end if;
---            end if;
---          else
---            if m.pulse_start then
---              --multipulse dump
---              if average_trace_detection then
---                multipulse <= TRUE;
---                pulse_stamped <= FALSE;
---                tflags.multipulse <= TRUE;
---              end if;
---            end if;
---          end if;
           end if;
         end if;
         
@@ -1182,7 +1162,7 @@ begin
         end if;
         
       when AVERAGE =>
-        if wr_trace_last then
+        if wr_trace_last then --FIXME trace_full?
           queue(0) <= to_streambus(average_trace,0,ENDIAN); 
           frame_length <= length+1;
           committing <= TRUE;

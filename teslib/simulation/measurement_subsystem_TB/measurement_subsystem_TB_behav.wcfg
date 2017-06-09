@@ -21,20 +21,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="42958333333fs"></ZoomStartTime>
-      <ZoomEndTime time="112608333334fs"></ZoomEndTime>
-      <Cursor1Time time="101000000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="69650000001fs"></ZoomEndTime>
+      <Cursor1Time time="14936000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
-      <marker time="68496000000" label="" />
-      <marker time="78736000000" label="" />
-      <marker time="88976000000" label="" />
-      <marker time="98256000000" label="" />
-      <marker time="99984000000" label="" />
-      <marker time="58256000000" label="" />
-      <marker time="49572000000" label="" />
-      <marker time="176452000000" label="" />
+      <marker time="227916000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -781,11 +774,13 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/enable" type="other">
             <obj_property name="ElementShortName">enable</obj_property>
             <obj_property name="ObjectShortName">enable</obj_property>
+            <obj_property name="CustomSignalColor">#808000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/enable_reg" type="other">
             <obj_property name="ElementShortName">enable_reg</obj_property>
             <obj_property name="ObjectShortName">enable_reg</obj_property>
-            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="CustomSignalColor">#808000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/mux_wr_en" type="other">
@@ -850,7 +845,6 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word" type="array">
             <obj_property name="ElementShortName">frame_word</obj_property>
             <obj_property name="ObjectShortName">frame_word</obj_property>
-            <obj_property name="isExpanded"></obj_property>
             <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word.discard" type="array">
                <obj_property name="ElementShortName">.discard[3:0]</obj_property>
                <obj_property name="ObjectShortName">frame_word.discard[3:0]</obj_property>
@@ -914,6 +908,10 @@
             <obj_property name="CustomSignalColor">#00FFFF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_tflags.trace_length" type="array">
+            <obj_property name="ElementShortName">.trace_length[9:0]</obj_property>
+            <obj_property name="ObjectShortName">m.pre_tflags.trace_length[9:0]</obj_property>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_size" type="array">
             <obj_property name="ElementShortName">.pre_size[15:0]</obj_property>
             <obj_property name="ObjectShortName">m.pre_size[15:0]</obj_property>
@@ -921,13 +919,13 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/size" type="array">
             <obj_property name="ElementShortName">size[4:0]</obj_property>
             <obj_property name="ObjectShortName">size[4:0]</obj_property>
-            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="CustomSignalColor">#808000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/length" type="array">
             <obj_property name="ElementShortName">length[10:0]</obj_property>
             <obj_property name="ObjectShortName">length[10:0]</obj_property>
-            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="CustomSignalColor">#808000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/committing" type="other">
@@ -953,6 +951,7 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/next_free" type="array">
             <obj_property name="ElementShortName">next_free[11:0]</obj_property>
             <obj_property name="ObjectShortName">next_free[11:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/space_available" type="other">
             <obj_property name="ElementShortName">space_available</obj_property>
@@ -970,6 +969,7 @@
       <wvobject fp_name="group624" type="group">
          <obj_property name="label">Trace</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/clk" type="logic">
             <obj_property name="ElementShortName">clk</obj_property>
             <obj_property name="ObjectShortName">clk</obj_property>
@@ -1023,7 +1023,7 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_start_reg" type="other">
             <obj_property name="ElementShortName">trace_start_reg</obj_property>
             <obj_property name="ObjectShortName">trace_start_reg</obj_property>
-            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="CustomSignalColor">#FFFF00</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_reset" type="other">
@@ -1041,7 +1041,7 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/wr_trace_last" type="other">
             <obj_property name="ElementShortName">wr_trace_last</obj_property>
             <obj_property name="ObjectShortName">wr_trace_last</obj_property>
-            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="CustomSignalColor">#808000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/measurements.above_area_threshold" type="other">
