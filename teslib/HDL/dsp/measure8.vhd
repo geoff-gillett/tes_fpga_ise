@@ -25,7 +25,8 @@ generic(
   TIME_WIDTH:natural:=16;
   SIZE_WIDTH:natural:=16;
   CFD_DELAY:natural:=1026;
-  STRICT_CROSSING:boolean:=TRUE
+  STRICT_CROSSING:boolean:=TRUE;
+  ADDRESS_BITS:natural:=MEASUREMENT_FRAMER_ADDRESS_BITS
 );
 port (
   clk:in std_logic;
@@ -54,7 +55,6 @@ signal pulse_time_n,pulse_length_n,rise_time_n:unsigned(16 downto 0);
 --------------------------------------------------------------------------------
 constant XLAT:natural:=2; -- crossing latency
 constant ALAT:natural:=5; --accumulator latency
---constant RLAT:natural:=3; --round latency
 constant ELAT:natural:=1; --extrema latency
 constant DEPTH:integer:=ALAT+XLAT;--5; --main pipeline depth
 
@@ -70,7 +70,6 @@ signal cfd_error_pipe,cfd_valid_pipe:boolean_vector(1 to DEPTH)
        :=(others => FALSE);
 signal valid_peak_pipe,first_peak_pipe:boolean_vector(1 to DEPTH)
        :=(others => FALSE);
---signal valid_peak_p:boolean_vector(1 to DEPTH);
 --------------------------------------------------------------------------------
 
 signal pulse_area:signed(AREA_WIDTH-1 downto 0);
@@ -80,7 +79,6 @@ signal slope_threshold:signed(WIDTH-1 downto 0);
 signal pulse_threshold:signed(WIDTH-1 downto 0);
 signal valid_peak:boolean;
 signal peak_number_n:unsigned(PEAK_COUNT_BITS downto 0);
---new
 signal cfd_low_threshold,cfd_high_threshold:signed(WIDTH-1 downto 0);
 signal max_slope_threshold:signed(WIDTH-1 downto 0);
 signal max_cfd,min_cfd:boolean;
@@ -103,7 +101,6 @@ signal filtered_extrema:signed(WIDTH-1 downto 0);
 signal area_threshold:signed(AREA_WIDTH-1 downto 0);
 signal slope_area:signed(AREA_WIDTH-1 downto 0);
 signal slope_extrema:signed(WIDTH-1 downto 0);
---signal enabled:boolean;
 signal peak_address_n,max_peaks,pre_max_peaks:unsigned(PEAK_COUNT_BITS downto 0);
 signal pre_stamp_peak,pre_stamp_pulse:boolean;
 
@@ -116,7 +113,6 @@ signal above_area_threshold:boolean;
 signal filtered_0_pos_x,filtered_0_neg_x,filtered_0xing,slope_0xing:boolean;
 signal filtered_0_pos_pipe:boolean_vector(1 to DEPTH);
 signal filtered_0_neg_pipe:boolean_vector(1 to DEPTH);
---signal filtered_rounded,slope_rounded:signed(WIDTH-1 downto 0);
 signal pulse_start:boolean;
 signal slope_area_m1:signed(AREA_WIDTH-1 downto 0);
 signal slope_zero_xing : boolean;
@@ -132,13 +128,19 @@ signal peak_address:unsigned(PEAK_COUNT_BITS downto 0);
 signal last_peak:boolean;
 signal valid_peak0,valid_peak1,valid_peak2:boolean;
 signal height_thresh_out,timing_thresh_out:signed(WIDTH-1 downto 0);
-signal size,pre_size:unsigned(SIZE_WIDTH-1 downto 0);
+signal size,pre_size,pre2_size:unsigned(PEAK_COUNT_BITS downto 0);
+signal pre_frame_length:unsigned(ADDRESS_BITS downto 0);
+signal pre_size2:unsigned(ADDRESS_BITS downto 0);
+signal pre2_detection:detection_d;
+signal pre2_trace_type:trace_type_d;
+
 signal last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
 signal peak_start:boolean;
 signal pulse_t_xing:boolean;
 signal pre_pulse_start,pre_peak_start:boolean;
 signal minima:signed(WIDTH-1 downto 0);
---signal cfd_high_thresh_rounded:signed(WIDTH-1 downto 0);
+
+
 
 constant DEBUG:string:="FALSE";
 attribute mark_debug:string;
@@ -427,16 +429,82 @@ begin
         timing_thresh_out <= low_pipe(DEPTH-1);
       end if;
       height_thresh_out <= high_pipe(DEPTH-1);
+      
+      -- pre2
+      if (min_pipe(DEPTH-3)) then 
+        if first_peak_pipe(DEPTH-3) then 
+          pre2_detection <= registers.detection;
+          pre2_trace_type <= registers.trace_type;
+          
+          case registers.detection is
+          when PEAK_DETECTION_D | AREA_DETECTION_D => 
+            pre2_size <= (0 => '1', others => '0');
+            
+          when PULSE_DETECTION_D => 
+            pre2_size <= '0' & registers.max_peaks + 3; 
+          when TRACE_DETECTION_D => 
+            case registers.trace_type is
+              when SINGLE_TRACE_D =>
+                pre2_size <= '0' & registers.max_peaks + 3; 
+              when AVERAGE_TRACE_D =>
+                pre2_size <= '0' & registers.max_peaks + 3; 
+              when DOT_PRODUCT_D =>
+                pre2_size <= '0' & registers.max_peaks + 4; 
+              when DOT_PRODUCT_TRACE_D =>
+                pre2_size <= '0' & registers.max_peaks + 4; 
+            end case;
+          end case;
+          
+        end if;
+      end if;
           
       if (min_pipe(DEPTH-2)) then 
         if first_peak_pipe(DEPTH-2) then 
           
+          pre_size <= pre2_size;
           
           case registers.detection is
-          when PEAK_DETECTION_D | AREA_DETECTION_D => 
-            pre_size <= (0 => '1', others => '0');
-          when PULSE_DETECTION_D | TRACE_DETECTION_D => 
-            pre_size <= resize(registers.max_peaks, SIZE_WIDTH) + 3; 
+          when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D => 
+            pre_frame_length <=resize(pre2_size,ADDRESS_BITS+1); 
+            
+          when TRACE_DETECTION_D => 
+
+            case registers.trace_type is
+              
+              when SINGLE_TRACE_D =>
+                pre_frame_length <= resize(
+                                      registers.trace_length,ADDRESS_BITS+1
+                                    )+pre2_size; 
+                                    
+                pre_size2 <= resize(
+                                      registers.trace_length,ADDRESS_BITS+1
+                                     )+(pre2_size & '0'); 
+                                    
+              when AVERAGE_TRACE_D =>
+                pre_frame_length <= resize( 
+                                      registers.trace_length,ADDRESS_BITS+1
+                                    ); 
+                                    
+                pre_size2 <= resize(
+                                      registers.trace_length,ADDRESS_BITS+1
+                                     )+pre_size; 
+                
+              when DOT_PRODUCT_D =>
+                pre_frame_length <= resize(
+                                      registers.trace_length,ADDRESS_BITS+1
+                                    )+pre2_size; 
+                pre_size2 <= resize(
+                                      registers.trace_length,ADDRESS_BITS+1
+                                     )+(pre2_size & '0'); 
+                
+              when DOT_PRODUCT_TRACE_D =>
+                pre_frame_length <= resize(
+                                      registers.trace_length,ADDRESS_BITS+1
+                                    )+pre2_size; 
+                pre_size2 <= resize(
+                                      registers.trace_length,ADDRESS_BITS+1
+                                     )+(pre2_size & '0'); 
+            end case;
           end case;
           
           --area_threshold <= signed('0' & registers.area_threshold);
@@ -473,7 +541,7 @@ begin
       if (min_pipe(DEPTH-1)) then 
         if first_peak_pipe(DEPTH-1) then 
           
-          size <= pre_size;
+          size <= pre_size; --FIXME remove
           
           area_threshold <= signed('0' & registers.area_threshold);
           flags <= pre_flags;
@@ -716,6 +784,9 @@ m.eflags <= flags;
 m.pre_eflags <= pre_flags;
 m.size <= size;
 m.pre_size <= pre_size;
+m.pre_frame_length <= pre_frame_length;
+m.pre_size2 <= pre_size2;
+
 --m.pre2_size <= pre2_size;
 m.timing_threshold <= resize(timing_thresh_out,16);
 --m.height_threshold <= height_thresh_out;

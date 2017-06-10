@@ -69,7 +69,7 @@ attribute equivalent_register_removal of mux_full:signal is "no";
 
 signal framer_free:unsigned(ADDRESS_BITS downto 0);
 signal free:unsigned(ADDRESS_BITS downto 0);
-signal next_free:signed(ADDRESS_BITS+1 downto 0);
+--signal next_free:signed(ADDRESS_BITS+1 downto 0);
 signal frame_length,length:unsigned(ADDRESS_BITS downto 0):=(others => '0');
 --
 signal pulse_valid,pulse_peak_valid:boolean;
@@ -180,7 +180,12 @@ signal dp_dump,dp_write:boolean;
 -- size of the event part (not including any trace)
 -- DEPENDS on PEAK_COUNT_BITS FIXME change to 3 bits to minimise comparator.
 constant SIZE_BITS:natural:=5; 
-signal size:unsigned(SIZE_BITS-1 downto 0);
+
+-- the free space required to start the event
+signal size:unsigned(PEAK_COUNT_BITS downto 0);
+-- the free space required to start a new event while the previous event is 
+-- committing.
+signal size2:unsigned(ADDRESS_BITS downto 0);
 
 -- when true, the current pulse has this detection type.
 signal trace_detection,area_detection,pulse_detection,peak_detection:boolean;
@@ -222,7 +227,7 @@ begin
         pending <= pending - 1;
       end if;
       
-      assert (pending < 0 or pending > 1) report "out of sync" severity WARNING;
+   assert (pending >= 0 and pending <= 1) report "out of sync" severity WARNING;
         
     end if;
   end if;
@@ -343,8 +348,6 @@ begin
 end process traceSignalMux;
 
 main:process(clk)
-variable new_length:unsigned(ADDRESS_BITS downto 0);
-variable new_size:unsigned(SIZE_BITS-1 downto 0);
 begin
   if rising_edge(clk) then
     if reset='1' then
@@ -443,67 +446,46 @@ begin
         
         -- length is the frame length to be committed
         -- size is the free space required to *start* a new event
-        case m.pre_eflags.event_type.detection is
-        when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D =>
-          new_size:=resize(m.pre_size,SIZE_BITS);
-          new_length:=resize(m.pre_size,ADDRESS_BITS+1);
---          size2 <= resize(m.pre_size,ADDRESS_BITS) & '0';
 
-        when TRACE_DETECTION_D => 
+        if m.pre_eflags.event_type.detection=TRACE_DETECTION_D then
 
           case m.pre_tflags.trace_type is
           when SINGLE_TRACE_D =>
-            new_size:=resize(m.pre_size,SIZE_BITS);
-            new_length:=resize(m.pre_tflags.trace_length,ADDRESS_BITS+1)+
-                        new_size;
---            size2 <= resize(m.pre_size ,ADDRESS_BITS) & '0' +
---                     resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= resize(m.pre_size,ADDRESS_BITS);
               
           when AVERAGE_TRACE_D =>
-            new_size:=resize(m.pre_size,SIZE_BITS)+1;
-            new_length:=resize(m.pre_tflags.trace_length,ADDRESS_BITS+1);
---            size2 <= (others => '-');
-            --FIXME is size right here?
             tflags.offset <= to_unsigned(1,PEAK_COUNT_BITS);
             trace_start_address <= to_unsigned(0,ADDRESS_BITS);
             
           when DOT_PRODUCT_D => 
-            new_size:=resize(m.pre_size,SIZE_BITS)+1;
-            new_length:=resize(new_size,ADDRESS_BITS+1);
---            size2 <= resize(m.pre_size,ADDRESS_BITS) & '0' + 1;
+            tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
+            trace_start_address <= (others => '-'); 
+            dp_start <= TRUE;
+            
+          when DOT_PRODUCT_TRACE_D =>
             tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
             trace_start_address <= (others => '-'); 
             dp_start <= TRUE;
           end case;
           
-        end case;
+        end if;
         
-        length <= new_length;
-        size <= new_size;
+        length <= m.pre_frame_length;
+        size <= m.pre_size;
+        size2 <= m.pre_size2;
         
-        next_free <= signed('0' & framer_free) - signed('0' & new_length); 
-        space_available <= new_size < framer_free;
-        space_available2 <= FALSE;
-        free <= framer_free;
-        
-      elsif committing then -- FIXME 
+        if not committing then
+          space_available <= m.pre_size <= framer_free;
+          space_available2 <= m.pre_size2 <= framer_free;
+          free <= framer_free;
+        end if;
+          
+      elsif not committing then -- FIXME 
         -- free space can only decrease here.
-        free <= framer_free - frame_length;
-        space_available <= length < framer_free;
-        space_available2 <= FALSE;
-        next_free <= (others => '0');
-        
-      else 
-        -- not committing so framer_free can only increase, free space can only
-        -- be underestimated which is safe.
-        
-        -- FIXME could be issue when length changes.
-        next_free <= signed('0' & framer_free) - signed('0' & length); 
-        space_available <= length < free;
-        space_available2 <= signed('0' & size) < next_free;
-        free <= framer_free;
+          space_available <= size <= framer_free;
+          space_available2 <= size2 <= framer_free;
+          free <= framer_free;
       end if; 
       
       -- event writing queue
@@ -633,14 +615,14 @@ begin
         trace_reg(31 downto 16) <= trace_chunk;
         if s_state=CAPTURE then -- 3rd chunk valid
           wr_chunk_state <= WRITE;
-          trace_full <= framer_free <= trace_address;
+          trace_full <= free <= trace_address;
         end if;
       
       -- TODO check that dp_valid cannot clash with this trace write.
       -- dp_valid is 5 clks after wr_trace_last, and the next possible
       -- trace write should be 1 clk after that.  
       when WRITE => 
-        trace_full <= framer_free <= trace_address;
+        trace_full <= free <= trace_address;
         if s_state=CAPTURE then 
           wr_trace_last <= FALSE;
           if trace_full and trace_wr_en then 
@@ -734,6 +716,7 @@ begin
         if dp_trace_detection and wr_trace_last then --FIXME trace_last 
           dp_state <= DPWAIT;
         end if;
+
       when DPWAIT =>
         if dp_dump then
           dp_state <= IDLE;
@@ -750,6 +733,7 @@ begin
           commit_frame <= q_state=DONE;
           commit_int <= q_state=DONE;
         end if;
+        
       when DONE =>
         if q_state=DONE or (
              q_state=WORD0 and not (wr_chunk_state=WRITE and s_state=CAPTURE)
@@ -777,7 +761,7 @@ begin
 --        trace_started <= FALSE;
 --      end if;
       
-      if wr_trace_last then
+      if wr_trace_last and not trace_full then
         trace_done <= TRUE;
       elsif trace_start or trace_overflow then
         trace_done <= FALSE;
@@ -799,7 +783,7 @@ begin
         
         pulse_stamped <= FALSE;
         if m.pulse_start and not peak_detection and enable_reg then 
-          if size < free then
+          if space_available then
             state <= FIRSTPULSE;
             tflags.multipulse <= FALSE;
             tflags.multipeak <= FALSE;
@@ -921,9 +905,10 @@ begin
                   commit_frame <= TRUE;
                   frame_length <= length;
                   inc_accum <= TRUE;
---                  free <= framer_free - length;
---                  free <= next_free;
                   committing <= TRUE;
+                  free <= framer_free - length;
+                  space_available <= size2 <= framer_free;
+                  space_available2 <= size2 <= framer_free;
                   
                 elsif q_state=IDLE then 
                   -- commit the trace
@@ -933,8 +918,9 @@ begin
                   frame_length <= length;
                   commit_pulse <= not dp_trace_detection; -- dp will do commit 
                   committing <= TRUE;
---                  free <= framer_free - length;
---                  free <= next_free;
+                  free <= framer_free - length;
+                  space_available <= size2 <= framer_free;
+                  space_available2 <= size2 <= framer_free;
                   q_state <= WORD1;
                 end if;
               end if;
@@ -960,9 +946,10 @@ begin
                 end if;
                 
                 frame_length <= length;
---                free <= framer_free - length;
---                free <= next_free;
                 committing <= TRUE;
+                free <= framer_free - length;
+                space_available <= size2 <= framer_free;
+                space_available2 <= size2 <= framer_free;
                 
               end if;
             end if;
@@ -1057,8 +1044,9 @@ begin
                 frame_length <= length;
                 commit_pulse <= not dp_trace_detection; --because dp will commit
                 committing <= TRUE;
---                free <= next_free;
---                free <= framer_free - length;
+                free <= framer_free - length;
+                space_available <= size2 <= framer_free;
+                space_available2 <= size2 <= framer_free;
                 q_state <= WORD1;
               else  
                 error_int <= TRUE;
@@ -1135,6 +1123,9 @@ begin
             --------------------------------------------------------------------
             if average_trace_detection then 
               commit_frame <= TRUE;
+              free <= framer_free - length;
+              space_available <= size2 <= framer_free;
+              space_available2 <= size2 <= framer_free;
               frame_length <= length;
               inc_accum <= TRUE;
 --              free <= next_free;
@@ -1147,8 +1138,9 @@ begin
               -- will commit when dp_valid
               commit_pulse <= not dp_trace_detection; -- because dp will commit
               committing <= TRUE;
---              free <= framer_free - length;
---              free <= next_free;
+              free <= framer_free - length;
+              space_available <= size2 <= framer_free;
+              space_available2 <= size2 <= framer_free;
               q_state <= WORD1;
             else
               error_int <= TRUE;
@@ -1166,9 +1158,10 @@ begin
           queue(0) <= to_streambus(average_trace,0,ENDIAN); 
           frame_length <= length+1;
           committing <= TRUE;
+          free <= framer_free - length - 1;
+          space_available <= size2 <= framer_free;
+          space_available2 <= size2 <= framer_free;
           start_int <= TRUE;
---          free <= framer_free - length - 1;
---          free <= next_free -1 ;
           q_state <= WORD0;
           state <= HOLD;
           atflags.multipeak <= FALSE;
@@ -1220,8 +1213,9 @@ begin
             frame_length <= length;
             q_state <= SINGLE;
             committing <= TRUE;
---            free <= next_free;
---            free <= framer_free-1;
+            free <= framer_free - length;
+            space_available <= size2 <= framer_free;
+            space_available2 <= size2 <= framer_free;
           end if;
         end if;
       end if;

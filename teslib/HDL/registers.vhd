@@ -124,8 +124,8 @@ function to_trace_signal_d(i:natural range 0 to NUM_TRACE_D-1)
 type trace_type_d is(
 	SINGLE_TRACE_D,
 	AVERAGE_TRACE_D,
-	DOT_PRODUCT_D
---	DOT_PRODUCT_TRACE_D
+	DOT_PRODUCT_D,
+  DOT_PRODUCT_TRACE_D
 );
 
 constant NUM_TRACE_TYPE_D:integer:=trace_type_d'pos(trace_type_d'high)+1;

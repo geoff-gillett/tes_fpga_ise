@@ -164,8 +164,11 @@ type measurements_t is record
   
   eflags,pre_eflags:detection_flags_t;
   --pre_detection:detection_d;
-  size:unsigned(15 downto 0);
-  pre_size:unsigned(15 downto 0);
+  size:unsigned(PEAK_COUNT_BITS downto 0);
+  pre_size:unsigned(PEAK_COUNT_BITS downto 0);
+  pre_frame_length:unsigned(MEASUREMENT_FRAMER_ADDRESS_BITS downto 0);
+  -- frame_length + size
+  pre_size2:unsigned(MEASUREMENT_FRAMER_ADDRESS_BITS downto 0);
 --  pre2_size:unsigned(15 downto 0);
   
   -- actually max peaks -1

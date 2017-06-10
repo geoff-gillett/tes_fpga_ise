@@ -272,7 +272,6 @@ chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(5*8,DSP_BITS-1);
 chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 --chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
-chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
 --chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 --chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
@@ -281,19 +280,22 @@ chan_reg(0).capture.cfd_rel2min <= FALSE;
 chan_reg(0).capture.trace_stride <= (others => '0');
 
 --------------------------------------------------------------------------------
+--reject first pulse
+--chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
+chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 -- pulse_threshold_neg & pulse_start simultaneous.
-chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
 --chan_reg(0).capture.trace_length <= to_unsigned(16,TRACE_LENGTH_BITS);
 
 -- trace_last & pulse_start simultaneous.
---chan_reg(0).capture.pulse_threshold <= to_unsigned(116*8,DSP_BITS-1); 
---chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
+chan_reg(0).capture.pulse_threshold <= to_unsigned(116*8,DSP_BITS-1); 
+chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
 
 -- double peaked pulse
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(108*8,DSP_BITS-1); 
 
 chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-chan_reg(0).capture.trace_length <= to_unsigned(128,TRACE_LENGTH_BITS);
+--chan_reg(0).capture.trace_length <= to_unsigned(128,TRACE_LENGTH_BITS);
 --------------------------------------------------------------------------------
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
@@ -416,7 +418,8 @@ adc_samples(0) <= std_logic_vector(signed(doublesig));
 --adc_samples(0) <= (others => '0');
 
 --enable test
-global.channel_enable <= "00000001" when enable else "00000000";
+--global.channel_enable <= "00000001" when enable else "00000000";
+global.channel_enable <= "00000001";
 mcaControlStimulus:process
 begin
   global.mca.update_asap <= FALSE;
