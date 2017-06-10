@@ -227,7 +227,7 @@ begin
         pending <= pending - 1;
       end if;
       
-   assert (pending >= 0 and pending <= 1) report "out of sync" severity WARNING;
+   assert (pending >= 0 and pending <= 1) report "out of sync" severity FAILURE;
         
     end if;
   end if;
@@ -796,7 +796,7 @@ begin
      
         if trace_overflow or (wr_trace_last and trace_full) then
           overflow_int <= TRUE;
-          dump_int <= pulse_stamped;
+          dump_int <= pulse_stamped or m.stamp_pulse;
           pulse_stamped <= FALSE;
           dp_dump <= TRUE;
           state <= IDLE;
@@ -807,7 +807,7 @@ begin
           if not m.above_area_threshold then
             --dump the pulse that is ending
             trace_reset <= TRUE;
-            dump_int <= pulse_stamped; 
+            dump_int <= pulse_stamped or m.stamp_pulse; 
             pulse_stamped <= FALSE;
             dp_dump <= TRUE;
             -- if pre_pulse_start space will be free as previous pulse was 
@@ -886,6 +886,7 @@ begin
                 else
                   state <= IDLE;  -- queue error dump this pulse 
                   error_int <= TRUE;
+                  -- anyn m.pulse_stamp belongs to the new pulse
                   dump_int <= pulse_stamped;
                   pulse_stamped <= FALSE;
                   dp_dump <= TRUE;

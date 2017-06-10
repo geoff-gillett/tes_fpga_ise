@@ -288,14 +288,14 @@ chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --chan_reg(0).capture.trace_length <= to_unsigned(16,TRACE_LENGTH_BITS);
 
 -- trace_last & pulse_start simultaneous.
-chan_reg(0).capture.pulse_threshold <= to_unsigned(116*8,DSP_BITS-1); 
-chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(116*8,DSP_BITS-1); 
+--chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
 
 -- double peaked pulse
---chan_reg(0).capture.pulse_threshold <= to_unsigned(108*8,DSP_BITS-1); 
+chan_reg(0).capture.pulse_threshold <= to_unsigned(108*8,DSP_BITS-1); 
 
 chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
---chan_reg(0).capture.trace_length <= to_unsigned(128,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(128,TRACE_LENGTH_BITS);
 --------------------------------------------------------------------------------
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
