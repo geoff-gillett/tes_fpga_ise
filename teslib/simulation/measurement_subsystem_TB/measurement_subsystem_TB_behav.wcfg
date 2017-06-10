@@ -21,13 +21,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="10723700000fs"></ZoomStartTime>
-      <ZoomEndTime time="10880500001fs"></ZoomEndTime>
-      <Cursor1Time time="10828000000fs"></Cursor1Time>
+      <ZoomStartTime time="654959666667fs"></ZoomStartTime>
+      <ZoomEndTime time="670249666668fs"></ZoomEndTime>
+      <Cursor1Time time="657508000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="6" />
    <wave_markers>
       <marker time="227916000000" label="" />
+      <marker time="358728000000" label="" />
+      <marker time="356412000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -1197,6 +1199,10 @@
             <obj_property name="ElementShortName">.pre_pulse_threshold_neg</obj_property>
             <obj_property name="ObjectShortName">m.pre_pulse_threshold_neg</obj_property>
          </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.stamp_pulse" type="other">
+            <obj_property name="ElementShortName">.stamp_pulse</obj_property>
+            <obj_property name="ObjectShortName">m.stamp_pulse</obj_property>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak_stamped" type="other">
             <obj_property name="ElementShortName">peak_stamped</obj_property>
             <obj_property name="ObjectShortName">peak_stamped</obj_property>
@@ -1204,6 +1210,8 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/pulse_stamped" type="other">
             <obj_property name="ElementShortName">pulse_stamped</obj_property>
             <obj_property name="ObjectShortName">pulse_stamped</obj_property>
+            <obj_property name="CustomSignalColor">#808000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak_address" type="array">
             <obj_property name="ElementShortName">peak_address[9:0]</obj_property>
@@ -1357,7 +1365,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
-         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak" type="array">
          <obj_property name="ElementShortName">peak</obj_property>
