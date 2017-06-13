@@ -279,7 +279,7 @@ chan_reg(0).capture.cfd_rel2min <= FALSE;
 chan_reg(0).capture.trace_stride <= (others => '0');
 
 --------------------------------------------------------------------------------
-chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
+--chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 --reject first pulse
 --chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
@@ -299,7 +299,7 @@ chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
 chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
 
 chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-chan_reg(0).capture.trace_length <= to_unsigned(256,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(128,TRACE_LENGTH_BITS);
 --------------------------------------------------------------------------------
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
