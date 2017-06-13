@@ -445,7 +445,7 @@ begin
 			header.total <= total_in_bounds;
 			header.most_frequent <= resize(most_frequent_bin,CHUNK_DATABITS);
 		
-    	header.size <= shift_right(resize(header_reg.last_bin,SIZE_BITS),1) + 7;
+    	header.size <= resize(header_reg.last_bin & "00" + 48 ,SIZE_BITS);
     	               
     	header.flags.bin_n <= header_reg.bin_n;
     	header.flags.qualifier <= header_reg.qualifier;

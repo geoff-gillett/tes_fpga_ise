@@ -1,2 +1,3 @@
 ../simulation/measurement_subsystem_TB/wave.tcl
 ../../input_signals
+../../../bin_traces

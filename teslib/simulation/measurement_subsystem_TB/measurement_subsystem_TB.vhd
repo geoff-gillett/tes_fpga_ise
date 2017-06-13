@@ -363,7 +363,7 @@ end process ioClkCount;
 stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
-	     "../input_signals/50mvCh1on_amp_100khzdiode_250_1.bin";
+	     " ../../input_signals/50mvCh1on_amp_100khzdiode_250_1.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
