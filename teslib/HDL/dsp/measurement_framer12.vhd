@@ -471,9 +471,9 @@ begin
           
         end if;
         
-        length <= m.pre_frame_length;
+        length <= resize(m.pre_frame_length,ADDRESS_BITS+1);
         size <= m.pre_size;
-        size2 <= m.pre_size2;
+        size2 <= resize(m.pre_size2,ADDRESS_BITS+1);
         
         if not committing then
           space_available <= m.pre_size <= framer_free;

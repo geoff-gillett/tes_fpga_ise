@@ -44,8 +44,8 @@ generic(
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  FRAMER_ADDRESS_BITS:natural:=MEASUREMENT_FRAMER_ADDRESS_BITS;
-  ETHERNET_ADDRESS_BITS:natural:=ETHERNET_FRAMER_ADDRESS_BITS
+  FRAMER_ADDRESS_BITS:natural:=8; --MEASUREMENT_FRAMER_ADDRESS_BITS;
+  ETHERNET_ADDRESS_BITS:natural:=8 --ETHERNET_FRAMER_ADDRESS_BITS
 );
 end entity measurement_subsystem_TB;
 
@@ -248,7 +248,7 @@ slope_config(1).reload_data <= (others => '0');
 slope_config(1).reload_last <= '0';
 slope_config(1).reload_valid <= '0';
 
-chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
+chan_reg(0).baseline.offset <= to_signed(-3230*8,DSP_BITS);
 chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 chan_reg(0).baseline.threshold <= (others => '1'); --to_unsigned(700,BASELINE_BITS-1);--(others => '1');
 chan_reg(0).baseline.new_only <= TRUE;
@@ -270,7 +270,6 @@ chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --chan_reg(0).capture.slope_threshold <= to_unsigned(2*256,DSP_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(800*8,DSP_BITS-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(5*8,DSP_BITS-1);
-chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 --chan_reg(0).capture.area_threshold <= to_unsigned(100000,AREA_WIDTH-1);
 --chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).capture.detection <= TRACE_DETECTION_D;
@@ -280,6 +279,7 @@ chan_reg(0).capture.cfd_rel2min <= FALSE;
 chan_reg(0).capture.trace_stride <= (others => '0');
 
 --------------------------------------------------------------------------------
+chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 --reject first pulse
 --chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
@@ -292,10 +292,14 @@ chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --chan_reg(0).capture.trace_length <= to_unsigned(15,TRACE_LENGTH_BITS);
 
 -- double peaked pulse
-chan_reg(0).capture.pulse_threshold <= to_unsigned(108*8,DSP_BITS-1); 
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(108*8,DSP_BITS-1); 
+
+--noise test
+chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
+chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
 
 chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-chan_reg(0).capture.trace_length <= to_unsigned(128,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(256,TRACE_LENGTH_BITS);
 --------------------------------------------------------------------------------
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
@@ -363,14 +367,14 @@ end process ioClkCount;
 stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
-	     " ../../input_signals/50mvCh1on_amp_100khzdiode_250_1.bin";
+	     "../bin_traces/june 13/100mv_div.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(sample_clk);
-		--adc_samples(0) <= to_std_logic(sample, 14);
+		adc_samples(0) <= to_std_logic(sample, 14);
 		--sample_reg <= resize(sample_in, 14);
 		adc_samples(1) <= (others => '0'); -- adc_samples(0);
 --		if clk_count mod 10000 = 0 then
@@ -413,7 +417,7 @@ doublesig <= to_signed(-200,ADC_WIDTH)
              when sim_count < 300
              else to_signed(-200,ADC_WIDTH);
                
-adc_samples(0) <= std_logic_vector(signed(doublesig));
+--adc_samples(0) <= std_logic_vector(signed(doublesig));
 --adc_samples(0) <= std_logic_vector(adc_count);
 --adc_samples(0) <= (others => '0');
 
