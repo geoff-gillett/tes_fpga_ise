@@ -983,7 +983,7 @@ begin
           dp_dump <= TRUE;
           
         elsif wr_trace_last or trace_done then
-          
+          -- end of trace
           if average_trace_detection then 
             if m.pulse_start then
               -- multipulse dump
@@ -996,7 +996,6 @@ begin
             end if;
           else -- not averaging
             if m.pulse_start then 
-              
               -- make sure twice the space is free for new pulse
               if not space_available2 then 
                 --second pulse overflows
@@ -1015,12 +1014,15 @@ begin
           
         else
           --still tracing
-          if m.pulse_start and average_trace_detection then
+          if m.pulse_start then 
+            tflags.multipulse <= TRUE;
+            if average_trace_detection then
             -- multipulse dump
-            state <= IDLE;
---            t_state <= IDLE;
-            trace_reset <= TRUE;
-            atflags.multipulse <= TRUE;
+              atflags.multipulse <= TRUE;
+              state <= IDLE;
+  --            t_state <= IDLE;
+              trace_reset <= TRUE;
+            end if;
           end if;
         end if;
         

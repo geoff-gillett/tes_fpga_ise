@@ -124,9 +124,9 @@ io_clk <= not IO_clk after IO_CLK_PERIOD/2;
 reset0 <= '0' after 2*IO_CLK_PERIOD; 
 reset1 <= '0' after 10*IO_CLK_PERIOD; 
 reset2 <= '0' after 20*IO_CLK_PERIOD; 
-bytestream_ready <= io_clk_count mod 3 = 0;
+--bytestream_ready <= io_clk_count mod 3 = 0;
                     
---bytestream_ready <= TRUE;
+bytestream_ready <= TRUE;
 
 UUT:entity work.measurement_subsystem5
 generic map(
@@ -343,7 +343,7 @@ begin
     write(trace_file, to_integer(m(0).raw.sample));
     write(trace_file, to_integer(m(0).filtered.sample));
     write(trace_file, to_integer(m(0).slope.sample));
-    write(trace_file, to_integer(m(0).filtered_long));
+--    write(trace_file, to_integer(m(0).filtered_long)); --FIXME remove
   end loop;
 end process traceWriter; 
 
