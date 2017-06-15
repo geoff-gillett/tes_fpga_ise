@@ -295,8 +295,8 @@ chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(108*8,DSP_BITS-1); 
 
 --noise test
-chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
-chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
+chan_reg(0).capture.slope_threshold <= to_unsigned(2000,DSP_BITS-1); --2300
+chan_reg(0).capture.pulse_threshold <= to_unsigned(4000,DSP_BITS-1); 
 
 chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
@@ -343,7 +343,7 @@ begin
     write(trace_file, to_integer(m(0).raw.sample));
     write(trace_file, to_integer(m(0).filtered.sample));
     write(trace_file, to_integer(m(0).slope.sample));
---    write(trace_file, to_integer(m(0).filtered_long)); --FIXME remove
+--    write(trace_file, to_integer(m(0).filtered_long)); 
   end loop;
 end process traceWriter; 
 
