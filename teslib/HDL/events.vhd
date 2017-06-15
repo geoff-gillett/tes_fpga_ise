@@ -586,8 +586,8 @@ begin
 end function;
   
 ------------------------ trace_flags_t 16 bits ---------------------------------
--- |  2  |  1  |    5   ||    2   |   2    |    4   |
--- | res |multi| stride ||  type  | signal | offset |
+-- |  1  |  1  |   1  |    5   ||    2   |   2    |    4   |
+-- | res |mpeak|mpulse| stride ||  type  | signal | offset |
 function to_std_logic(f:trace_flags_t) return std_logic_vector is
 	variable slv:std_logic_vector(CHUNK_DATABITS-1 downto 0):=(others => '0');
 begin

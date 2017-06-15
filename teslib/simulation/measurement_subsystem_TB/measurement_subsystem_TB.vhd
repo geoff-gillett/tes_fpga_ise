@@ -44,8 +44,8 @@ generic(
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  FRAMER_ADDRESS_BITS:natural:=8; --MEASUREMENT_FRAMER_ADDRESS_BITS;
-  ETHERNET_ADDRESS_BITS:natural:=8 --ETHERNET_FRAMER_ADDRESS_BITS
+  FRAMER_ADDRESS_BITS:natural:=MEASUREMENT_FRAMER_ADDRESS_BITS;
+  ETHERNET_ADDRESS_BITS:natural:=ETHERNET_FRAMER_ADDRESS_BITS
 );
 end entity measurement_subsystem_TB;
 
@@ -299,7 +299,7 @@ chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
 chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
 
 chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-chan_reg(0).capture.trace_length <= to_unsigned(128,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 --------------------------------------------------------------------------------
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
