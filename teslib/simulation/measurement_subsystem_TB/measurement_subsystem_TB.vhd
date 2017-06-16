@@ -295,8 +295,12 @@ chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(108*8,DSP_BITS-1); 
 
 --noise test
-chan_reg(0).capture.slope_threshold <= to_unsigned(2000,DSP_BITS-1); --2300
-chan_reg(0).capture.pulse_threshold <= to_unsigned(4000,DSP_BITS-1); 
+--chan_reg(0).capture.slope_threshold <= to_unsigned(2000,DSP_BITS-1); --2300
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(4000,DSP_BITS-1); 
+
+--double_peak
+chan_reg(0).capture.slope_threshold <= to_unsigned(500,DSP_BITS-1); --2300
+chan_reg(0).capture.pulse_threshold <= to_unsigned(1000,DSP_BITS-1); 
 
 chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
@@ -367,7 +371,8 @@ end process ioClkCount;
 stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
-	     "../bin_traces/june 13/100mv_div.bin";
+--	     "../bin_traces/june 13/100mv_div.bin";
+	     "../bin_traces/double_peak.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
