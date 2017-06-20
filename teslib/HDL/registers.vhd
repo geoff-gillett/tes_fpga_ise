@@ -137,7 +137,7 @@ function to_trace_type_d(i:natural range 0 to NUM_TRACE_TYPE_D-1)
   
 -- the value sampled into the MCA
 type mca_value_d is (
-  MCA_ZERO_SIGNAL_D,
+  MCA_ZERO_SIGNAL_D, --FIXME can use this slot?
 	MCA_FILTERED_SIGNAL_D, -- the output of the dsp filter
   MCA_FILTERED_AREA_D, -- the area between zero crossings
   MCA_FILTERED_EXTREMA_D, -- max or min between zero crossings
@@ -145,8 +145,8 @@ type mca_value_d is (
   MCA_SLOPE_AREA_D,
   MCA_SLOPE_EXTREMA_D,
   MCA_RAW_SIGNAL_D,
-  MCA_RAW_AREA_D,
-  MCA_RAW_EXTREMA_D,
+  MCA_RAW_AREA_D, -- FIXME replace with CFD_HIGH
+  MCA_RAW_EXTREMA_D, --FIXME replace with ??
   MCA_PULSE_AREA_D, -- the area between threshold crossings
   MCA_PULSE_LENGTH_D, -- the time between threshold xings
   MCA_RISE_TIME_D -- make this start at minima
@@ -169,9 +169,9 @@ type mca_trigger_d is (
   PULSE_THRESHOLD_NEG_MCA_TRIGGER_D, 
   FILTERED_0XING_MCA_TRIGGER_D,
   SLOPE_0XING_MCA_TRIGGER_D,
-  RAW_0XING_MCA_TRIGGER_D,
+  RAW_0XING_MCA_TRIGGER_D, -- FIXME replace with height valid
   SLOPE_THRESHOLD_MCA_TRIGGER_D,
-  CFD_HIGH_MCA_TRIGGER_D,
+  CFD_HIGH_MCA_TRIGGER_D, --FIXME replace
   CFD_LOW_MCA_TRIGGER_D,
   MAX_SLOPE_MCA_TRIGGER_D,
   SLOPE_POS_0XING_MCA_TRIGGER_D, --peak start minima
