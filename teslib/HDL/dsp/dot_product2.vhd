@@ -155,7 +155,7 @@ if rising_edge(clk) then
 end if;
 end process readPort;
 
-fsm:process (clk)
+fsm:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
@@ -209,9 +209,12 @@ begin
         end if;
         
       when DOTPRODUCT =>
---        if stop then
---          state <= IDLE;
-        if trace_start then
+        if stop then
+          state <= IDLE;
+        elsif accumulate_start then
+            state <= WAITSAMPLE;
+            first_trace <= TRUE;
+        elsif trace_start then
           address <= (others => '0');
         else
           address <= address+1;

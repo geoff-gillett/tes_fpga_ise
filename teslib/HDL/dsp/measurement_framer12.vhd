@@ -713,7 +713,7 @@ begin
       case dp_state is 
       when IDLE =>
         dp_length <= length;
-        if dp_trace_detection and wr_trace_last then --FIXME trace_last 
+        if dp_trace_detection and wr_trace_last and state/=IDLE then 
           dp_state <= DPWAIT;
         end if;
 
@@ -986,13 +986,13 @@ begin
           -- end of trace
           if average_trace_detection then 
             if m.pulse_start then
-              -- multipulse dump
               error_int <= TRUE;
               atflags.multipulse <= TRUE;
               state <= IDLE;
---              t_state <= IDLE; 
             elsif last_accum_count then
               state <= AVERAGE;
+            else
+              state <= IDLE;
             end if;
           else -- not averaging
             if m.pulse_start then 
@@ -1312,6 +1312,8 @@ begin
         wait_valid <= FALSE;
         if average_trace_detection then
           a_state <= WAITING;
+        elsif not dp_trace_detection then
+          stop <= TRUE;
         end if;
         
       when WAITING => 

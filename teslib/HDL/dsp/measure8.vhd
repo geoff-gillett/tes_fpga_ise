@@ -490,12 +490,8 @@ begin
                                      )+pre_size; 
                 
               when DOT_PRODUCT_D =>
-                pre_frame_length <= resize(
-                                      registers.trace_length,ADDRESS_BITS+1
-                                    )+pre2_size; 
-                pre_size2 <= resize(
-                                      registers.trace_length,ADDRESS_BITS+1
-                                     )+(pre2_size & '0'); 
+                pre_frame_length <= resize(pre2_size,ADDRESS_BITS+1);
+                pre_size2 <= resize(pre2_size & '0',ADDRESS_BITS+1); 
                 
               when DOT_PRODUCT_TRACE_D =>
                 pre_frame_length <= resize(
@@ -791,6 +787,7 @@ m.pre_size2 <= pre_size2;
 m.timing_threshold <= resize(timing_thresh_out,16);
 --m.height_threshold <= height_thresh_out;
 m.cfd_high <= cfd_high_pos_pipe(DEPTH);
+m.cfd_high_threshold <= high_pipe(DEPTH);
 m.cfd_low <= cfd_low_pos_pipe(DEPTH);
 m.max_slope <= max_slope_pipe(DEPTH);
 m.cfd_error <= cfd_error_pipe(DEPTH);

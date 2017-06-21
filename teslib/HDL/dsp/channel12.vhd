@@ -297,6 +297,7 @@ m.will_arm <= dsp_m.will_arm;
 m.cfd_error <= dsp_m.cfd_error;
 m.cfd_valid <= dsp_m.cfd_valid;
 m.cfd_high <= dsp_m.cfd_high;
+m.cfd_high_threshold <= dsp_m.cfd_high_threshold;
 m.cfd_low <= dsp_m.cfd_low;
 m.eflags <= dsp_m.eflags;
 m.pre_eflags <= dsp_m.pre_eflags;

@@ -349,8 +349,8 @@ end function;
 
 --------------------------- tick flags2 16 bits ---------------------------------
 -- First byte
--- |5|    1     |      1      |     1     |   4   |      3     |1|
--- |0| mux_full | events_lost | tick_lost |   0   | type_flags |0|
+-- |5|    1     |      1      |     1     |   4   |      2     |1||1|
+-- |0| mux_full | events_lost | tick_lost |   0   | type_flags |1||N|
 function to_std_logic(f:tickflags2_t) 
 return std_logic_vector is 
 begin

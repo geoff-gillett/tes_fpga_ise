@@ -145,11 +145,11 @@ type mca_value_d is (
   MCA_SLOPE_AREA_D,
   MCA_SLOPE_EXTREMA_D,
   MCA_RAW_SIGNAL_D,
-  MCA_RAW_AREA_D, -- FIXME replace with CFD_HIGH
-  MCA_RAW_EXTREMA_D, --FIXME replace with ??
+  MCA_CFD_HIGH_D,    --this is the threshold
+  MCA_RAW_EXTREMA_D, --FIXME replace with peak time starts at minima
   MCA_PULSE_AREA_D, -- the area between threshold crossings
-  MCA_PULSE_LENGTH_D, -- the time between threshold xings
-  MCA_RISE_TIME_D -- make this start at minima
+  MCA_PULSE_LENGTH_D, -- make this start at pulse_pos
+  MCA_RISE_TIME_D -- make this start at timing point
 );
 
 constant NUM_MCA_VALUE_D:integer:=mca_value_d'pos(mca_value_d'high)+1;										
@@ -169,9 +169,9 @@ type mca_trigger_d is (
   PULSE_THRESHOLD_NEG_MCA_TRIGGER_D, 
   FILTERED_0XING_MCA_TRIGGER_D,
   SLOPE_0XING_MCA_TRIGGER_D,
-  RAW_0XING_MCA_TRIGGER_D, -- FIXME replace with height valid
+  RAW_0XING_MCA_TRIGGER_D, -- FIXME replace
   SLOPE_THRESHOLD_MCA_TRIGGER_D,
-  CFD_HIGH_MCA_TRIGGER_D, --FIXME replace
+  CFD_HIGH_MCA_TRIGGER_D, 
   CFD_LOW_MCA_TRIGGER_D,
   MAX_SLOPE_MCA_TRIGGER_D,
   SLOPE_POS_0XING_MCA_TRIGGER_D, --peak start minima

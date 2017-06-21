@@ -140,6 +140,7 @@ type measurements_t is record
   
 	cfd_low:boolean; 
 	cfd_high:boolean;
+	cfd_high_threshold:signed(DSP_BITS-1 downto 0);
   max_slope:boolean;
   pulse_start:boolean; --minima at start of pulse
   pre_pulse_start:boolean; -- clk before
