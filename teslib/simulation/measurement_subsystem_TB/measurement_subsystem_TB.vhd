@@ -128,7 +128,7 @@ reset2 <= '0' after 20*IO_CLK_PERIOD;
                     
 bytestream_ready <= TRUE;
 
-UUT:entity work.measurement_subsystem5
+UUT:entity work.measurement_subsystem6
 generic map(
   DSP_CHANNELS => CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
@@ -453,7 +453,7 @@ begin
   wait for 100 us;
   chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
   wait for 50 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
+  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
   wait for 50 us;
   chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
   wait for 100 us;
@@ -461,15 +461,17 @@ begin
   wait for 50 us;
   chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
   wait for 50 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
   wait for 50 us;
   chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
   wait for 100 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
   wait for 50 us;
   chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
   wait for 50 us;
   chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
+  wait for 50 us;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
 --  wait for 70511 ns;
 --  global.channel_enable <= "00000000";
 --  wait for 12011 ns;

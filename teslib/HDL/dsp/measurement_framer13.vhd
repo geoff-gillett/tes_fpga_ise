@@ -16,7 +16,7 @@ use work.registers.all;
 use work.functions.all;
 
 --FIXME mux full errors????
-entity measurement_framer12 is
+entity measurement_framer13 is
 generic(
   WIDTH:natural:=16;
   ADDRESS_BITS:integer:=11;
@@ -44,9 +44,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity measurement_framer12;
+end entity measurement_framer13;
 
-architecture RTL of measurement_framer12 is
+architecture RTL of measurement_framer13 is
 
 --  
 constant CHUNKS:integer:=BUS_CHUNKS;
@@ -324,12 +324,19 @@ can_q_pulse <= q_state=IDLE;
 
 --full <= free <= length;
 mux_wr_en <= mux_enable and enable_reg;
-trace_start <= trace_start_reg and enable_reg and t_state=IDLE;
 
+trace_start <= trace_start_reg and enable_reg and t_state=IDLE;
 trace_chunk_debug <= set_endianness(trace_chunk,ENDIAN);
-traceSignalMux:process(clk)
+--------------------------------------------------------------------------------
+-- Traces
+--------------------------------------------------------------------------------
+traceCapture:process(clk)
 begin
   if rising_edge(clk) then
+    
+    ----------------------------------------------------------------------------
+    --MUX for trace chunk
+    ----------------------------------------------------------------------------
     if state=AVERAGE then
       trace_chunk <= set_endianness(average_sample,ENDIAN);
     else
@@ -344,8 +351,151 @@ begin
         trace_chunk <= set_endianness(m.slope.sample,ENDIAN);
       end case;
     end if;
+    
+    ----------------------------------------------------------------------------
+    --trace start
+    ----------------------------------------------------------------------------
+    if state=AVERAGE then
+      trace_start_reg <= start_average;
+    else
+      --FIXME replace trace_started with t_state=IDLE ???
+      if TRACE_FROM_STAMP then
+        trace_start_reg <= m.pre_stamp_pulse and  
+                          (enable_reg or (m.pre_pulse_start and enable)); 
+      end if;
+      if not TRACE_FROM_STAMP then
+        trace_start_reg <= m.pre_pulse_start and enable; 
+      end if;
+    end if;
+    
+    ----------------------------------------------------------------------------
+    --trace stride FSM --FIXME need to check this actually works
+    ----------------------------------------------------------------------------
+    wr_trace_last <= FALSE;
+    case s_state is 
+      
+    when INIT => 
+      if trace_start then
+         s_state <= CAPTURE; -- 
+      end if;
+      
+    when IDLE =>
+      if stride_count=0 or trace_start then
+        s_state <= CAPTURE;
+        if wr_chunk_state=WRITE then --FIXME????
+          wr_trace_last <= last_trace_count and trace_detection;
+        end if;
+      else 
+        stride_count <= stride_count-1;
+      end if;
+      
+    when CAPTURE =>
+      stride_count <= tflags.stride;
+      if wr_trace_last then
+        s_state <= INIT;
+      elsif not zero_stride then
+        s_state <= IDLE;
+      elsif wr_chunk_state=STORE2 then
+        wr_trace_last <= last_trace_count and zero_stride and trace_detection;
+      end if;
+    end case;
+     
+     --wr_chunk FSM gathers samples into a bus word
+    case wr_chunk_state is
+    when STORE0 => 
+      trace_reg(63 downto 48) <= trace_chunk;
+      if s_state=CAPTURE then
+        wr_chunk_state <= STORE1;
+      end if;
+      
+    when STORE1 => 
+      trace_reg(47 downto 32) <= trace_chunk;
+      if s_state=CAPTURE then
+        wr_chunk_state <= STORE2;
+      end if;
+      
+    when STORE2 => 
+      trace_reg(31 downto 16) <= trace_chunk;
+      if s_state=CAPTURE then -- 3rd chunk valid
+        wr_chunk_state <= WRITE;
+        trace_full <= free <= trace_address;
+      end if;
+    
+    -- TODO check that dp_valid cannot clash with this trace write.
+    -- dp_valid is 5 clks after wr_trace_last, and the next possible
+    -- trace write should be 1 clk after that.  
+    when WRITE => 
+      trace_full <= free <= trace_address;
+      if s_state=CAPTURE then 
+        wr_trace_last <= FALSE;
+        if trace_full and trace_wr_en then 
+          wr_chunk_state <= STORE0;
+          t_state <= IDLE;
+          s_state <= INIT;
+          trace_overflow <= trace_detection;
+        else --if trace_wr_en then --4th chunk captured
+          wr_chunk_state <= STORE0;
+          frame_we <= (others => trace_wr_en);
+          frame_word.data(63 downto 16) <= trace_reg(63 downto 16);
+          frame_word.data(15 downto 0) <= trace_chunk;
+          frame_word.last <= (0 => last_trace_count, others => FALSE);
+          frame_word.discard(0) <= average_trace_detection;
+          frame_address <= trace_address;
+          if not last_trace_count then 
+            trace_address <= trace_address+1;
+          end if;
+          trace_count <= next_trace_count;
+          next_trace_count <= next_trace_count-1;
+          last_trace_count <= next_trace_count=0;
+        end if;
+      end if;
+    end case;
+      
+    ----------------------------------------------------------------------------
+    --trace control FSM
+    ----------------------------------------------------------------------------
+    case t_state is
+    when IDLE =>
+      
+      if a_state=SEND then
+        trace_address <= trace_start_address+1;
+      else
+        trace_address <= trace_start_address;
+      end if;
+      
+      trace_count <= trace_count_init;
+      next_trace_count <= trace_count_init-1;
+      last_trace_count <= FALSE;
+      wr_chunk_state <= STORE0; 
+      tflags.multipulse <= FALSE; --FIXME main FSM
+      tflags.multipeak <= FALSE; --FIXME main FSM
+      
+      if trace_start_reg and state/=HOLD and enable_reg then
+        t_state <= CAPTURE; 
+      end if;
+      
+    when CAPTURE =>
+      if not trace_overflow then
+        if wr_trace_last then
+          t_state <= IDLE;
+          wr_chunk_state <= STORE0; 
+        elsif trace_reset then 
+          if trace_start_reg and enable_reg then
+            wr_chunk_state <= STORE0; 
+            trace_address <= trace_start_address;
+            trace_count <= trace_count_init;
+            next_trace_count <= trace_count_init-1;
+            last_trace_count <= FALSE;
+          else
+            t_state <= IDLE;
+          end if;
+        end if;
+      end if;
+    end case;
+    
   end if;
-end process traceSignalMux;
+end process traceCapture;
+
 
 main:process(clk)
 begin
@@ -559,137 +709,6 @@ begin
         end case;
       end if;
       
-      --trace stride FSM --FIXME need to check this actually works
-      wr_trace_last <= FALSE;
-      case s_state is 
-      when INIT => 
-        if trace_start then
-           s_state <= CAPTURE; -- 
-        end if;
-        
-      when IDLE =>
-        if stride_count=0 or trace_start then
-          s_state <= CAPTURE;
-          if wr_chunk_state=WRITE then --FIXME????
-            wr_trace_last <= last_trace_count and trace_detection;
---            if last_trace_count then
---              trace_done <= TRUE;
---            end if;
-          end if;
-        else 
-          stride_count <= stride_count-1;
-        end if;
-        
-      when CAPTURE =>
-        stride_count <= tflags.stride;
-        if wr_trace_last then
-          s_state <= INIT;
-        elsif not zero_stride then
-          s_state <= IDLE;
-        elsif wr_chunk_state=STORE2 then
-          wr_trace_last <= last_trace_count and zero_stride and trace_detection;
---          if last_trace_count then
---            trace_done <= zero_stride;
---          end if;
-        end if;
-      end case;
-     
-     --wr_chunk FSM gathers samples into a bus word
---      trace_overflow <= wr_chunk_state=WRITE and s_state=CAPTURE and 
---                        trace_wr_en and trace_full;
-
-      case wr_chunk_state is
-      when STORE0 => 
-        trace_reg(63 downto 48) <= trace_chunk;
-        if s_state=CAPTURE then
-          wr_chunk_state <= STORE1;
-        end if;
-        
-      when STORE1 => 
-        trace_reg(47 downto 32) <= trace_chunk;
-        if s_state=CAPTURE then
-          wr_chunk_state <= STORE2;
-        end if;
-        
-      when STORE2 => 
-        trace_reg(31 downto 16) <= trace_chunk;
-        if s_state=CAPTURE then -- 3rd chunk valid
-          wr_chunk_state <= WRITE;
-          trace_full <= free <= trace_address;
-        end if;
-      
-      -- TODO check that dp_valid cannot clash with this trace write.
-      -- dp_valid is 5 clks after wr_trace_last, and the next possible
-      -- trace write should be 1 clk after that.  
-      when WRITE => 
-        trace_full <= free <= trace_address;
-        if s_state=CAPTURE then 
-          wr_trace_last <= FALSE;
-          if trace_full and trace_wr_en then 
-            wr_chunk_state <= STORE0;
-            t_state <= IDLE;
-            s_state <= INIT;
-            trace_overflow <= trace_detection;
-          else --if trace_wr_en then --4th chunk captured
-            wr_chunk_state <= STORE0;
-            frame_we <= (others => trace_wr_en);
-            frame_word.data(63 downto 16) <= trace_reg(63 downto 16);
-            frame_word.data(15 downto 0) <= trace_chunk;
-            frame_word.last <= (0 => last_trace_count, others => FALSE);
-            frame_word.discard(0) <= average_trace_detection;
-            frame_address <= trace_address;
-            if not last_trace_count then 
-              trace_address <= trace_address+1;
-            end if;
-            trace_count <= next_trace_count;
-            next_trace_count <= next_trace_count-1;
-            last_trace_count <= next_trace_count=0;
-          end if;
-        end if;
-      end case;
-      
-      --trace control FSM
-      case t_state is
-      when IDLE =>
-        
-        if a_state=SEND then
-          trace_address <= trace_start_address+1;
-        else
-          trace_address <= trace_start_address;
-        end if;
-        
-        trace_count <= trace_count_init;
-        next_trace_count <= trace_count_init-1;
-        last_trace_count <= FALSE;
-        wr_chunk_state <= STORE0; 
-        tflags.multipulse <= FALSE;
-        tflags.multipeak <= FALSE;
-        
-        if trace_start_reg and state/=HOLD and enable_reg then
-          t_state <= CAPTURE; 
-        end if;
-        
-      when CAPTURE =>
-        if not trace_overflow then
---          t_state <= IDLE;
---          s_state <= INIT;
---          wr_chunk_state <= STORE0; 
-          if wr_trace_last then
-            t_state <= IDLE;
-            wr_chunk_state <= STORE0; 
-          elsif trace_reset then 
-            if trace_start_reg and enable_reg then
-              wr_chunk_state <= STORE0; 
-              trace_address <= trace_start_address;
-              trace_count <= trace_count_init;
-              next_trace_count <= trace_count_init-1;
-              last_trace_count <= FALSE;
-            else
-              t_state <= IDLE;
-            end if;
-          end if;
-        end if;
-      end case;
       
       -- SINGLE_TRACE_D and DOT_PRODUCT_D move through same FSM states
       -- But DOT_PRODUCT_D does not write trace words to the framer.
@@ -742,18 +761,6 @@ begin
         end if;
       end case;
       
-      --trace start
-      if state=AVERAGE then
-        trace_start_reg <= start_average;
-      else
-        --FIXME replace trace_started with t_state=IDLE ???
-        if TRACE_FROM_STAMP then
-          trace_start_reg <= m.pre_stamp_pulse; --not trace_started; 
-        end if;
-        if not TRACE_FROM_STAMP then
-          trace_start_reg <= m.pre_pulse_start; --not trace_started;
-        end if;
-      end if;
       
 --      if trace_start then
 --        trace_started <= TRUE;
