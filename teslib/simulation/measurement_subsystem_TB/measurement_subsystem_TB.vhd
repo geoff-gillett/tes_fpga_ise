@@ -450,10 +450,10 @@ begin
 	wait for SAMPLE_CLK_PERIOD;
 	global.mca.update_asap <= FALSE;
 	
---  wait for 100 us;
---  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
---  wait for 50 us;
---  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
+  wait for 300 us;
+  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
+  wait for 100 us;
+  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
 --  wait for 50 us;
 --  chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
 --  wait for 100 us;

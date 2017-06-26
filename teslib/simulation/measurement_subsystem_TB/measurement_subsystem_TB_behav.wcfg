@@ -21,13 +21,14 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="5621666666fs"></ZoomStartTime>
-      <ZoomEndTime time="5749266667fs"></ZoomEndTime>
-      <Cursor1Time time="5724000000fs"></Cursor1Time>
+      <ZoomStartTime time="389975000000fs"></ZoomStartTime>
+      <ZoomEndTime time="462125000001fs"></ZoomEndTime>
+      <Cursor1Time time="402000000000fs"></Cursor1Time>
    </zoom_setting>
-   <WVObjectSize size="6" />
+   <WVObjectSize size="7" />
    <wave_markers>
-      <marker time="5308000000" label="" />
+      <marker time="300628000000" label="" />
+      <marker time="335500000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -59,7 +60,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/chan_reg" type="array">
          <obj_property name="ElementShortName">chan_reg[1:0]</obj_property>
          <obj_property name="ObjectShortName">chan_reg[1:0]</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/chan_reg[1]" type="array">
             <obj_property name="ElementShortName">[1]</obj_property>
             <obj_property name="ObjectShortName">chan_reg[1]</obj_property>
@@ -850,6 +850,7 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word" type="array">
             <obj_property name="ElementShortName">frame_word</obj_property>
             <obj_property name="ObjectShortName">frame_word</obj_property>
+            <obj_property name="isExpanded"></obj_property>
             <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word.discard" type="array">
                <obj_property name="ElementShortName">.discard[3:0]</obj_property>
                <obj_property name="ObjectShortName">frame_word.discard[3:0]</obj_property>
@@ -881,7 +882,6 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_length" type="array">
             <obj_property name="ElementShortName">frame_length[8:0]</obj_property>
             <obj_property name="ObjectShortName">frame_length[8:0]</obj_property>
-            <obj_property name="isExpanded"></obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/framer_free" type="array">
             <obj_property name="ElementShortName">framer_free[8:0]</obj_property>
@@ -894,6 +894,14 @@
             <obj_property name="ObjectShortName">commit_frame</obj_property>
             <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/reg_ready" type="other">
+            <obj_property name="ElementShortName">reg_ready</obj_property>
+            <obj_property name="ObjectShortName">reg_ready</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/reg_valid" type="other">
+            <obj_property name="ElementShortName">reg_valid</obj_property>
+            <obj_property name="ObjectShortName">reg_valid</obj_property>
          </wvobject>
          <wvobject type="divider" fp_name="divider625">
             <obj_property name="label">end framer</obj_property>
@@ -982,6 +990,7 @@
       <wvobject fp_name="group624" type="group">
          <obj_property name="label">Trace</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/clk" type="logic">
             <obj_property name="ElementShortName">clk</obj_property>
             <obj_property name="ObjectShortName">clk</obj_property>
@@ -1041,6 +1050,12 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_start" type="other">
             <obj_property name="ElementShortName">trace_start</obj_property>
             <obj_property name="ObjectShortName">trace_start</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_last" type="other">
+            <obj_property name="ElementShortName">trace_last</obj_property>
+            <obj_property name="ObjectShortName">trace_last</obj_property>
             <obj_property name="CustomSignalColor">#00FFFF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
@@ -1155,6 +1170,34 @@
             <obj_property name="ElementShortName">.pre_stamp_pulse</obj_property>
             <obj_property name="ObjectShortName">m.pre_stamp_pulse</obj_property>
          </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pulse_start" type="other">
+            <obj_property name="ElementShortName">.pulse_start</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_start</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_reset" type="other">
+            <obj_property name="ElementShortName">trace_reset</obj_property>
+            <obj_property name="ObjectShortName">trace_reset</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_overflow" type="other">
+            <obj_property name="ElementShortName">trace_overflow</obj_property>
+            <obj_property name="ObjectShortName">trace_overflow</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_start" type="other">
+            <obj_property name="ElementShortName">trace_start</obj_property>
+            <obj_property name="ObjectShortName">trace_start</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_last" type="other">
+            <obj_property name="ElementShortName">trace_last</obj_property>
+            <obj_property name="ObjectShortName">trace_last</obj_property>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/state" type="other">
             <obj_property name="ElementShortName">state</obj_property>
             <obj_property name="ObjectShortName">state</obj_property>
@@ -1185,21 +1228,9 @@
             <obj_property name="CustomSignalColor">#00FFFF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/q_pulse_peak" type="other">
-            <obj_property name="ElementShortName">q_pulse_peak</obj_property>
-            <obj_property name="ObjectShortName">q_pulse_peak</obj_property>
-            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/q_single" type="other">
             <obj_property name="ElementShortName">q_single</obj_property>
             <obj_property name="ObjectShortName">q_single</obj_property>
-            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/q_trace_pulse" type="other">
-            <obj_property name="ElementShortName">q_trace_pulse</obj_property>
-            <obj_property name="ObjectShortName">q_trace_pulse</obj_property>
             <obj_property name="CustomSignalColor">#00FFFF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
@@ -1210,12 +1241,6 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_pulse_start" type="other">
             <obj_property name="ElementShortName">.pre_pulse_start</obj_property>
             <obj_property name="ObjectShortName">m.pre_pulse_start</obj_property>
-            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pulse_start" type="other">
-            <obj_property name="ElementShortName">.pulse_start</obj_property>
-            <obj_property name="ObjectShortName">m.pulse_start</obj_property>
             <obj_property name="CustomSignalColor">#00FFFF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
@@ -1263,10 +1288,17 @@
       <wvobject fp_name="group598" type="group">
          <obj_property name="label">accumulator</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/tflags.trace_type" type="other">
             <obj_property name="ElementShortName">.trace_type</obj_property>
             <obj_property name="ObjectShortName">tflags.trace_type</obj_property>
             <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_last" type="other">
+            <obj_property name="ElementShortName">trace_last</obj_property>
+            <obj_property name="ObjectShortName">trace_last</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/inc_accum" type="other">
@@ -1892,6 +1924,262 @@
          <obj_property name="ObjectShortName">ROUND[47:0]</obj_property>
       </wvobject>
    </wvobject>
+   <wvobject fp_name="group620" type="group">
+      <obj_property name="label">buffers</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/start" type="array">
+         <obj_property name="ElementShortName">start[1:0]</obj_property>
+         <obj_property name="ObjectShortName">start[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/commit" type="array">
+         <obj_property name="ElementShortName">commit[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/dump" type="array">
+         <obj_property name="ElementShortName">dump[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dump[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/tick" type="other">
+         <obj_property name="ElementShortName">tick</obj_property>
+         <obj_property name="ObjectShortName">tick</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/timestamp" type="array">
+         <obj_property name="ElementShortName">timestamp[63:0]</obj_property>
+         <obj_property name="ObjectShortName">timestamp[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/window" type="array">
+         <obj_property name="ElementShortName">window[15:0]</obj_property>
+         <obj_property name="ObjectShortName">window[15:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/eventtime" type="array">
+         <obj_property name="ElementShortName">eventtime[63:0]</obj_property>
+         <obj_property name="ObjectShortName">eventtime[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/reltime" type="array">
+         <obj_property name="ElementShortName">reltime[15:0]</obj_property>
+         <obj_property name="ObjectShortName">reltime[15:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/new_window" type="other">
+         <obj_property name="ElementShortName">new_window</obj_property>
+         <obj_property name="ObjectShortName">new_window</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/started" type="array">
+         <obj_property name="ElementShortName">started[1:0]</obj_property>
+         <obj_property name="ObjectShortName">started[1:0]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/ticked" type="other">
+         <obj_property name="ElementShortName">ticked</obj_property>
+         <obj_property name="ObjectShortName">ticked</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/commited" type="array">
+         <obj_property name="ElementShortName">commited[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commited[1:0]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/dumped" type="array">
+         <obj_property name="ElementShortName">dumped[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dumped[1:0]</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/valid" type="other">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/read_next" type="other">
+         <obj_property name="ElementShortName">read_next</obj_property>
+         <obj_property name="ObjectShortName">read_next</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/full" type="other">
+         <obj_property name="ElementShortName">full</obj_property>
+         <obj_property name="ObjectShortName">full</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/buffer_state" type="other">
+         <obj_property name="ElementShortName">buffer_state</obj_property>
+         <obj_property name="ObjectShortName">buffer_state</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/buffer_nextstate" type="other">
+         <obj_property name="ElementShortName">buffer_nextstate</obj_property>
+         <obj_property name="ObjectShortName">buffer_nextstate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/reltime_state" type="other">
+         <obj_property name="ElementShortName">reltime_state</obj_property>
+         <obj_property name="ObjectShortName">reltime_state</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/reltime_nextstate" type="other">
+         <obj_property name="ElementShortName">reltime_nextstate</obj_property>
+         <obj_property name="ObjectShortName">reltime_nextstate</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/timedif" type="array">
+         <obj_property name="ElementShortName">timedif[63:0]</obj_property>
+         <obj_property name="ObjectShortName">timedif[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/last_eventtime" type="array">
+         <obj_property name="ElementShortName">last_eventtime[63:0]</obj_property>
+         <obj_property name="ObjectShortName">last_eventtime[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/eventtime_reg" type="array">
+         <obj_property name="ElementShortName">eventtime_reg[63:0]</obj_property>
+         <obj_property name="ObjectShortName">eventtime_reg[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/window_starttime" type="array">
+         <obj_property name="ElementShortName">window_starttime[63:0]</obj_property>
+         <obj_property name="ObjectShortName">window_starttime[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/window_time" type="array">
+         <obj_property name="ElementShortName">window_time[63:0]</obj_property>
+         <obj_property name="ObjectShortName">window_time[63:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/commit_out" type="array">
+         <obj_property name="ElementShortName">commit_out[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_out[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/commited_reg" type="array">
+         <obj_property name="ElementShortName">commited_reg[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commited_reg[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/started_reg" type="array">
+         <obj_property name="ElementShortName">started_reg[1:0]</obj_property>
+         <obj_property name="ObjectShortName">started_reg[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/commit_wr_en" type="array">
+         <obj_property name="ElementShortName">commit_wr_en[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_wr_en[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/commit_rd_en" type="array">
+         <obj_property name="ElementShortName">commit_rd_en[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_rd_en[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/commit_empty" type="array">
+         <obj_property name="ElementShortName">commit_empty[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_empty[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/commit_full" type="array">
+         <obj_property name="ElementShortName">commit_full[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commit_full[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/commited_int" type="array">
+         <obj_property name="ElementShortName">commited_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">commited_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/dumped_int" type="array">
+         <obj_property name="ElementShortName">dumped_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dumped_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/dumped_reg" type="array">
+         <obj_property name="ElementShortName">dumped_reg[1:0]</obj_property>
+         <obj_property name="ObjectShortName">dumped_reg[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/time_in" type="array">
+         <obj_property name="ElementShortName">time_in[71:0]</obj_property>
+         <obj_property name="ObjectShortName">time_in[71:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/time_out" type="array">
+         <obj_property name="ElementShortName">time_out[71:0]</obj_property>
+         <obj_property name="ObjectShortName">time_out[71:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/time_out_reg" type="array">
+         <obj_property name="ElementShortName">time_out_reg[71:0]</obj_property>
+         <obj_property name="ObjectShortName">time_out_reg[71:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/time_vec" type="array">
+         <obj_property name="ElementShortName">time_vec[66:0]</obj_property>
+         <obj_property name="ObjectShortName">time_vec[66:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/buffers_full" type="logic">
+         <obj_property name="ElementShortName">buffers_full</obj_property>
+         <obj_property name="ObjectShortName">buffers_full</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/time_empty" type="logic">
+         <obj_property name="ElementShortName">time_empty</obj_property>
+         <obj_property name="ObjectShortName">time_empty</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/time_rd_en" type="logic">
+         <obj_property name="ElementShortName">time_rd_en</obj_property>
+         <obj_property name="ObjectShortName">time_rd_en</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/time_wr_en" type="logic">
+         <obj_property name="ElementShortName">time_wr_en</obj_property>
+         <obj_property name="ObjectShortName">time_wr_en</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/ticked_reg" type="other">
+         <obj_property name="ElementShortName">ticked_reg</obj_property>
+         <obj_property name="ObjectShortName">ticked_reg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/valid_event" type="other">
+         <obj_property name="ElementShortName">valid_event</obj_property>
+         <obj_property name="ObjectShortName">valid_event</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/all_dumped" type="other">
+         <obj_property name="ElementShortName">all_dumped</obj_property>
+         <obj_property name="ObjectShortName">all_dumped</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/timedif_valid" type="other">
+         <obj_property name="ElementShortName">timedif_valid</obj_property>
+         <obj_property name="ObjectShortName">timedif_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/timefifo_valid" type="other">
+         <obj_property name="ElementShortName">timefifo_valid</obj_property>
+         <obj_property name="ObjectShortName">timefifo_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/no_starts" type="other">
+         <obj_property name="ElementShortName">no_starts</obj_property>
+         <obj_property name="ObjectShortName">no_starts</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/all_dumped_reg" type="other">
+         <obj_property name="ElementShortName">all_dumped_reg</obj_property>
+         <obj_property name="ObjectShortName">all_dumped_reg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/ticked_int" type="other">
+         <obj_property name="ElementShortName">ticked_int</obj_property>
+         <obj_property name="ObjectShortName">ticked_int</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/no_starts_reg" type="other">
+         <obj_property name="ElementShortName">no_starts_reg</obj_property>
+         <obj_property name="ObjectShortName">no_starts_reg</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/started_int" type="array">
+         <obj_property name="ElementShortName">started_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">started_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/commited_starts" type="other">
+         <obj_property name="ElementShortName">commited_starts</obj_property>
+         <obj_property name="ObjectShortName">commited_starts</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/CHANNELS" type="other">
+         <obj_property name="ElementShortName">CHANNELS</obj_property>
+         <obj_property name="ObjectShortName">CHANNELS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/TIME_BITS" type="other">
+         <obj_property name="ElementShortName">TIME_BITS</obj_property>
+         <obj_property name="ObjectShortName">TIME_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/TIMESTAMP_BITS" type="other">
+         <obj_property name="ElementShortName">TIMESTAMP_BITS</obj_property>
+         <obj_property name="ObjectShortName">TIMESTAMP_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/TIMEFIFO_BITS" type="other">
+         <obj_property name="ElementShortName">TIMEFIFO_BITS</obj_property>
+         <obj_property name="ObjectShortName">TIMEFIFO_BITS</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/buffers/TIMETAG_BITS" type="other">
+         <obj_property name="ElementShortName">TIMETAG_BITS</obj_property>
+         <obj_property name="ObjectShortName">TIMETAG_BITS</obj_property>
+      </wvobject>
+   </wvobject>
    <wvobject fp_name="group336" type="group">
       <obj_property name="label">mux</obj_property>
       <obj_property name="DisplayName">label</obj_property>
@@ -1918,14 +2206,65 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instreams" type="array">
          <obj_property name="ElementShortName">instreams[1:0]</obj_property>
          <obj_property name="ObjectShortName">instreams[1:0]</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instreams[1]" type="array">
+            <obj_property name="ElementShortName">[1]</obj_property>
+            <obj_property name="ObjectShortName">instreams[1]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instreams[0]" type="array">
+            <obj_property name="ElementShortName">[0]</obj_property>
+            <obj_property name="ObjectShortName">instreams[0]</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instreams[0].discard" type="array">
+               <obj_property name="ElementShortName">.discard[3:0]</obj_property>
+               <obj_property name="ObjectShortName">instreams[0].discard[3:0]</obj_property>
+               <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instreams[0].last" type="array">
+               <obj_property name="ElementShortName">.last[3:0]</obj_property>
+               <obj_property name="ObjectShortName">instreams[0].last[3:0]</obj_property>
+               <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instreams[0].data" type="array">
+               <obj_property name="ElementShortName">.data[63:0]</obj_property>
+               <obj_property name="ObjectShortName">instreams[0].data[63:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+               <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
+         </wvobject>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instream_valids" type="array">
          <obj_property name="ElementShortName">instream_valids[1:0]</obj_property>
          <obj_property name="ObjectShortName">instream_valids[1:0]</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instream_valids[1]" type="other">
+            <obj_property name="ElementShortName">[1]</obj_property>
+            <obj_property name="ObjectShortName">instream_valids[1]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instream_valids[0]" type="other">
+            <obj_property name="ElementShortName">[0]</obj_property>
+            <obj_property name="ObjectShortName">instream_valids[0]</obj_property>
+            <obj_property name="CustomSignalColor">#808000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instream_readys" type="array">
          <obj_property name="ElementShortName">instream_readys[1:0]</obj_property>
          <obj_property name="ObjectShortName">instream_readys[1:0]</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instream_readys[1]" type="other">
+            <obj_property name="ElementShortName">[1]</obj_property>
+            <obj_property name="ObjectShortName">instream_readys[1]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/instream_readys[0]" type="other">
+            <obj_property name="ElementShortName">[0]</obj_property>
+            <obj_property name="ObjectShortName">instream_readys[0]</obj_property>
+            <obj_property name="CustomSignalColor">#808000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/full" type="other">
          <obj_property name="ElementShortName">full</obj_property>
@@ -1976,6 +2315,19 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/muxstream" type="array">
          <obj_property name="ElementShortName">muxstream</obj_property>
          <obj_property name="ObjectShortName">muxstream</obj_property>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/muxstream.discard" type="array">
+            <obj_property name="ElementShortName">.discard[3:0]</obj_property>
+            <obj_property name="ObjectShortName">muxstream.discard[3:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/muxstream.last" type="array">
+            <obj_property name="ElementShortName">.last[3:0]</obj_property>
+            <obj_property name="ObjectShortName">muxstream.last[3:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/muxstream.data" type="array">
+            <obj_property name="ElementShortName">.data[63:0]</obj_property>
+            <obj_property name="ObjectShortName">muxstream.data[63:0]</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/valid" type="other">
          <obj_property name="ElementShortName">valid</obj_property>
@@ -2006,18 +2358,26 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/started" type="array">
          <obj_property name="ElementShortName">started[1:0]</obj_property>
          <obj_property name="ObjectShortName">started[1:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/commited" type="array">
          <obj_property name="ElementShortName">commited[1:0]</obj_property>
          <obj_property name="ObjectShortName">commited[1:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/dumped" type="array">
          <obj_property name="ElementShortName">dumped[1:0]</obj_property>
          <obj_property name="ObjectShortName">dumped[1:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/handled" type="array">
          <obj_property name="ElementShortName">handled[2:0]</obj_property>
          <obj_property name="ObjectShortName">handled[2:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/mux/ticked" type="other">
          <obj_property name="ElementShortName">ticked</obj_property>

@@ -309,6 +309,7 @@ m.offset <= dsp_m.offset;
 m.last_peak <= dsp_m.last_peak;
 m.max_slope <= dsp_m.max_slope;
 m.peak_address <= dsp_m.peak_address;
+m.dp_address <= dsp_m.dp_address;
 m.peak_start <= dsp_m.peak_start;
 m.peak_stop <= dsp_m.peak_stop;
 m.pre_peak_start <= dsp_m.pre_peak_start;

@@ -178,6 +178,7 @@ type measurements_t is record
   peak_overflow:boolean;
   peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
+  dp_address:unsigned(PEAK_COUNT_BITS downto 0);
   
   timing_threshold:signed(15 downto 0);
 	cfd_error:boolean;

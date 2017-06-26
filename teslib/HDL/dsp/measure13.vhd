@@ -134,7 +134,7 @@ signal pre_size2:unsigned(ADDRESS_BITS downto 0);
 signal pre2_detection:detection_d;
 signal pre2_trace_type:trace_type_d;
 
-signal last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
+signal last_peak_address,dp_address:unsigned(PEAK_COUNT_BITS downto 0);
 signal peak_start:boolean;
 signal pulse_t_xing:boolean;
 signal pre_pulse_start,pre_peak_start:boolean;
@@ -441,17 +441,15 @@ begin
             pre2_size <= (0 => '1', others => '0');
             
           when PULSE_DETECTION_D => 
-            pre2_size <= '0' & registers.max_peaks + 3; 
+            pre2_size <= ('0' & registers.max_peaks) + 3; 
           when TRACE_DETECTION_D => 
             case registers.trace_type is
               when SINGLE_TRACE_D =>
-                pre2_size <= '0' & registers.max_peaks + 3; 
+                pre2_size <= ('0' & registers.max_peaks) + 3; 
               when AVERAGE_TRACE_D =>
-                pre2_size <= '0' & registers.max_peaks + 3; 
-              when DOT_PRODUCT_D =>
-                pre2_size <= '0' & registers.max_peaks + 4; 
-              when DOT_PRODUCT_TRACE_D =>
-                pre2_size <= '0' & registers.max_peaks + 4; 
+                pre2_size <= to_unsigned(2,PEAK_COUNT_BITS+1); 
+              when DOT_PRODUCT_D | DOT_PRODUCT_TRACE_D =>
+                pre2_size <= ('0' & registers.max_peaks) + 4; 
             end case;
           end case;
           
@@ -471,7 +469,7 @@ begin
 
             case registers.trace_type is
               
-              when SINGLE_TRACE_D =>
+              when SINGLE_TRACE_D | AVERAGE_TRACE_D | DOT_PRODUCT_TRACE_D =>
                 pre_frame_length <= resize(
                                       registers.trace_length,ADDRESS_BITS+1
                                     )+pre2_size; 
@@ -480,26 +478,11 @@ begin
                                       registers.trace_length,ADDRESS_BITS+1
                                      )+(pre2_size & '0'); 
                                     
-              when AVERAGE_TRACE_D =>
-                pre_frame_length <= resize( 
-                                      registers.trace_length,ADDRESS_BITS+1
-                                    ); 
-                                    
-                pre_size2 <= resize(
-                                      registers.trace_length,ADDRESS_BITS+1
-                                     )+pre_size; 
                 
               when DOT_PRODUCT_D =>
                 pre_frame_length <= resize(pre2_size,ADDRESS_BITS+1);
                 pre_size2 <= resize(pre2_size & '0',ADDRESS_BITS+1); 
                 
-              when DOT_PRODUCT_TRACE_D =>
-                pre_frame_length <= resize(
-                                      registers.trace_length,ADDRESS_BITS+1
-                                    )+pre2_size; 
-                pre_size2 <= resize(
-                                      registers.trace_length,ADDRESS_BITS+1
-                                     )+(pre2_size & '0'); 
             end case;
           end case;
           
@@ -516,7 +499,7 @@ begin
 
           pre_flags.peak_number <= (others => '0');
           peak_number_n <= (0 => '1',others => '0');
-          
+
           pre_tflags.trace_signal <= registers.trace_signal;
           pre_tflags.trace_type <= registers.trace_type;
           pre_tflags.stride <= registers.trace_stride;
@@ -544,7 +527,9 @@ begin
           tflags <= pre_tflags;
           max_peaks <= pre_max_peaks;
           last_peak_address <= pre_max_peaks+2;
-          m.offset <= resize(pre_max_peaks+3,PEAK_COUNT_BITS);
+          dp_address <= pre_max_peaks+3;
+          
+          m.offset <= resize(pre_size,PEAK_COUNT_BITS);
 
           peak_number_n <= (0 => '1',others => '0');
           last_peak <= pre_max_peaks=0;
@@ -756,6 +741,7 @@ m.valid_peak2 <= valid_peak2;
 m.last_peak <= last_peak;
 m.peak_address <= peak_address;
 m.last_peak_address <= last_peak_address;
+m.dp_address <= dp_address;
 
 m.peak_start <= peak_start;
 m.pre_peak_start <= pre_peak_start;

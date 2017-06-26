@@ -39,7 +39,7 @@ use work.registers.all;
 use work.measurements.all;
 use work.events.all;
 
-entity measurement_subsystem6 is
+entity measurement_subsystem13 is
 generic(
   DSP_CHANNELS:natural:=2;
   ADC_CHANNELS:natural:=2;
@@ -85,9 +85,9 @@ port(
   ethernetstream_valid:out boolean;
   ethernetstream_ready:in boolean
 );
-end entity measurement_subsystem6;
+end entity measurement_subsystem13;
 
-architecture fixed_16_3 of measurement_subsystem6 is
+architecture fixed_16_3 of measurement_subsystem13 is
 	
 attribute equivalent_register_removal:string;
 
