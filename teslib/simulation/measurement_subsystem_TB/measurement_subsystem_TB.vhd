@@ -44,8 +44,9 @@ generic(
   SLOPE_FRAC:natural:=8;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  FRAMER_ADDRESS_BITS:natural:=8;--MEASUREMENT_FRAMER_ADDRESS_BITS;
-  ETHERNET_ADDRESS_BITS:natural:=9 --ETHERNET_FRAMER_ADDRESS_BITS
+  FRAMER_ADDRESS_BITS:natural:=MEASUREMENT_FRAMER_ADDRESS_BITS;
+  ETHERNET_ADDRESS_BITS:natural:=ETHERNET_FRAMER_ADDRESS_BITS;
+  ACCUMULATE_N:natural:=3
 );
 end entity measurement_subsystem_TB;
 
@@ -140,7 +141,7 @@ generic map(
   SLOPE_FRAC => SLOPE_FRAC,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  ACCUMULATE_N => 4,
+  ACCUMULATE_N => ACCUMULATE_N,
   TRACE_FROM_STAMP => TRUE,
   MIN_TICK_PERIOD => 2000,
   FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS,
@@ -282,14 +283,13 @@ chan_reg(0).capture.trace_stride <= (others => '0');
 --chan_reg(0).capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
 --reject first pulse
 --chan_reg(0).capture.area_threshold <= to_unsigned(14000,AREA_WIDTH-1);
-chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --two separate peaks
-chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
-chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+3,DSP_BITS-1); 
+--chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+3,DSP_BITS-1); 
 
 -- pulse_threshold_neg & pulse_start simultaneous.
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
-chan_reg(0).capture.trace_length <= to_unsigned(16,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 
 -- trace_last & pulse_start simultaneous.
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(116*8,DSP_BITS-1); 
@@ -308,6 +308,11 @@ chan_reg(0).capture.trace_length <= to_unsigned(16,TRACE_LENGTH_BITS);
 
 chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 --chan_reg(0).capture.trace_length <= to_unsigned(16,TRACE_LENGTH_BITS);
+--sample file
+chan_reg(0).capture.slope_threshold <= to_unsigned(800,DSP_BITS-1); --2300
+chan_reg(0).capture.pulse_threshold <= to_unsigned(529*8,DSP_BITS-1); 
+chan_reg(0).capture.area_threshold <= to_unsigned(200000,AREA_WIDTH-1);
+
 --------------------------------------------------------------------------------
 
 chan_reg(1).capture.adc_select <= (0 => '0', others => '0');
@@ -383,7 +388,7 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(sample_clk);
---		adc_samples(0) <= to_std_logic(sample, 14);
+		adc_samples(0) <= to_std_logic(sample, 14);
 		--sample_reg <= resize(sample_in, 14);
 		adc_samples(1) <= (others => '0'); -- adc_samples(0);
 --		if clk_count mod 10000 = 0 then
@@ -426,7 +431,7 @@ doublesig <= to_signed(-200,ADC_WIDTH)
              when sim_count < 300
              else to_signed(-200,ADC_WIDTH);
                
-adc_samples(0) <= std_logic_vector(signed(doublesig));
+--adc_samples(0) <= std_logic_vector(signed(doublesig));
 --adc_samples(0) <= std_logic_vector(adc_count);
 --adc_samples(0) <= (others => '0');
 
@@ -450,28 +455,28 @@ begin
 	wait for SAMPLE_CLK_PERIOD;
 	global.mca.update_asap <= FALSE;
 	
-  wait for 100 us;
+--  wait for 2000 us;
   chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
-  wait for 100 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
-  wait for 50 us;
-  chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
-  wait for 100 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
-  wait for 50 us;
-  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
-  wait for 50 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
-  wait for 50 us;
-  chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
-  wait for 100 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
-  wait for 50 us;
-  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
-  wait for 50 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
-  wait for 50 us;
-  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
+--  wait for 100 us;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
+--  wait for 50 us;
+--  chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
+--  wait for 100 us;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
+--  wait for 50 us;
+--  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
+--  wait for 50 us;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
+--  wait for 50 us;
+--  chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
+--  wait for 100 us;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
+--  wait for 50 us;
+--  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
+--  wait for 50 us;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
+--  wait for 50 us;
+--  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
 --  wait for 70511 ns;
 --  global.channel_enable <= "00000000";
 --  wait for 12011 ns;

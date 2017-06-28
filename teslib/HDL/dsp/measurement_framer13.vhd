@@ -1127,9 +1127,11 @@ begin
               state <= IDLE;
             elsif last_accum_count then
               state <= AVERAGE;
+              commit_average <= TRUE;
             else
               state <= IDLE;
               inc_accum <= TRUE;
+              commit_average <= TRUE;
             end if;
           else -- not averaging
             if m.pulse_start then 
@@ -1557,7 +1559,7 @@ begin
   end if;
 end process accumFSM;
 
-trace_chunks <= resize(length,DP_ADDRESS_BITS+1);
+trace_chunks <= resize(tflags.trace_length,DP_ADDRESS_BITS+1);
 dotproductDSP:entity work.dot_product2
 generic map(
   ADDRESS_BITS => DP_ADDRESS_BITS,

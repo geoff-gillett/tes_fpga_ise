@@ -106,6 +106,7 @@ signal send_last:boolean;
 signal acc_count:unsigned(ACCUMULATE_N downto 0);
 signal first_trace,write:boolean;
 signal ram_in:std_logic_vector(ACCUMULATOR_WIDTH-1 downto 0);
+signal average_int:signed(WIDTH-1 downto 0);
 
 --if dot then accumulate p=sample*RAM (a*b+p)
 --if dot and start then p=sample*RAM (p=a*b)
@@ -131,10 +132,11 @@ if rising_edge(clk) then
 end if;
 end process writePort;
 
+average_int <= signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N));
 writeMux:process(clk)
 begin
   if rising_edge(clk) then
-    average <= signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N));
+    average <= average_int;
     average_start <= send_pipe(DEPTH-2) and not send_pipe(DEPTH-1);
     accumulate_done <= send_pipe(1) and not send_pipe(2);
     if send_pipe(DEPTH-1) then
@@ -246,7 +248,7 @@ inputMux:process(
 )
 begin
   b <= resize(sample_pipe(RD_LAT),18);
-  a <= (others => '0');
+  a <= (others => sample_pipe(RD_LAT)(WIDTH-1));
   carryin <= '0';
   opmode <= "0000011"; 
   if state=DOTPRODUCT then
@@ -258,18 +260,19 @@ begin
     end if;
   elsif send_pipe(RD_LAT) then --read average
     b <= resize(ROUND,18);
-    opmode <= "0001111"; --A:B + C (sample + rounding mask)
+    a <= (others  => '0');
+    opmode <= "0001111"; --A:B + C (rounding mask + dout)
     if ACCUMULATE_N/=0 then
       carryin <= dout(ACCUMULATOR_WIDTH-1);
     end if;
   elsif accum_pipe(RD_LAT) then --write average
     if first_pipe(RD_LAT) then
-      opmode <= "0000011"; -- A:B + 0 (sample)
+      opmode <= "0000011"; -- A:B + 0 (sample) 
     else
       opmode <= "0001111"; --A:B + C (sample + dout)
     end if;
   end if;
-  --need dot product mux muxstate pipe?
+  --need dot product muxstate pipe?
 end process inputMux;
 
 addRound:DSP48E1
