@@ -60,9 +60,9 @@ signal peak:peak_detection_t;
 signal area:area_detection_t;
 signal pulse,first_pulse:pulse_detection_t;
 signal pulse_peak:pulse_peak_t;
-signal aux_word_reg,dp_word:streambus_t;
-signal this_pulse_trace_header,first_pulse_trace_header,average_trace:trace_detection_t;
-signal tflags,atflags:trace_flags_t;
+signal aux_word_reg:streambus_t;
+signal this_pulse_trace_header,first_pulse_trace_header:trace_detection_t;
+signal tflags:trace_flags_t;
 
 attribute equivalent_register_removal:string;
 attribute equivalent_register_removal of mux_full:signal is "no";
@@ -191,8 +191,8 @@ signal size2:unsigned(ADDRESS_BITS downto 0);
 
 -- when true, the current pulse has this detection type.
 signal trace_detection,area_detection,pulse_detection,peak_detection:boolean;
--- trace_type=DOT_PRODUCT_TRACE_d
-signal dp_trace:boolean;
+-- trace_type=DOT_PRODUCT_D no trace
+signal dp_only:boolean;
 -- TRACE_DETECTION_D and SINGLE_TRACE_D
 signal single_trace_detection:boolean;
 signal trace_chunks:unsigned(DP_ADDRESS_BITS downto 0);
@@ -201,6 +201,7 @@ signal space_available,space_available2:boolean;
 signal q_can_write,q_ready:boolean;
 signal q_aux,q_single,q_header,q_pulse:boolean;
 signal q_length:unsigned(ADDRESS_BITS downto 0);
+signal commit_average:boolean;
 
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
@@ -215,11 +216,10 @@ end function;
 type average_trace_detection_t is 
 record
 	size:unsigned(SIZE_BITS-1 downto 0);
-	length:time_t; 
 	flags:detection_flags_t;
 	trace_flags:trace_flags_t;
-	multi_pulse_count:unsigned(31 downto 0);
-	multi_peak_count:unsigned(31 downto 0);
+	multipulses:unsigned(31 downto 0);
+	multipeaks:unsigned(31 downto 0);
 end record;
 
 signal average_trace_header:average_trace_detection_t;
@@ -237,10 +237,11 @@ begin
 		sb.data(31 downto 16) := to_std_logic(t.flags); 
 		sb.data(15 downto 0) := (others => '-');
 	when 1 =>
-		sb.data(63 downto 32) := set_endianness(t.multi_pulse_count,endianness);
-		sb.data(31 downto 0) := set_endianness(t.multi_peak_count,endianness);
+		sb.data(63 downto 32) := set_endianness(t.multipulses,endianness);
+		sb.data(31 downto 0) := set_endianness(t.multipeaks,endianness);
 	when others =>
-		assert FALSE report "bad word number in trace_detection_t to_streambus"	
+		assert FALSE report 
+		             "bad word number in average_trace_detection_t to_streambus"	
 						 		 severity FAILURE;
 	end case;
   sb.discard := (others => FALSE);
@@ -278,7 +279,7 @@ begin
         pending <= pending - 1;
       end if;
       
-   assert (pending >= 0 and pending <= 1) report "out of sync" severity FAILURE;
+   assert (pending >= 0 and pending <= 2) report "out of sync" severity FAILURE;
         
     end if;
   end if;
@@ -316,11 +317,12 @@ pulse.threshold <= m.timing_threshold; --FIXME
 --tflags.trace_type <= trace_type;
 
 
-average_trace_header.size <= resize(length,CHUNK_DATABITS)+1;
+average_trace_header.size <= resize(length & "000",CHUNK_DATABITS);
 average_trace_header.flags <= eflags;
 --average_trace_header.trace_flags <= atflags;
 average_trace_header.trace_flags.offset <= tflags.offset;
 average_trace_header.trace_flags.stride <= tflags.stride;
+average_trace_header.trace_flags.trace_length <= tflags.trace_length;
 --atflags.multipeak <= multipeak;
 --atflags.multipulse <= multipulse;
 average_trace_header.trace_flags.trace_signal <= tflags.trace_signal;
@@ -329,7 +331,7 @@ average_trace_header.trace_flags.trace_type <= AVERAGE_TRACE_D;
 
 
 --when trace shorter than pulse need to use current pulse data
-this_pulse_trace_header.size <= resize(length,CHUNK_DATABITS);
+this_pulse_trace_header.size <= resize(length & "000",CHUNK_DATABITS);
 this_pulse_trace_header.flags <= eflags; 
 this_pulse_trace_header.trace_flags <= tflags;
 this_pulse_trace_header.length <= m.pulse_length;
@@ -338,7 +340,7 @@ this_pulse_trace_header.area <= m.pulse_area;
 
 
 --used when trace longer than pulse use stored pulse data
-first_pulse_trace_header.size <= resize(length,CHUNK_DATABITS);
+first_pulse_trace_header.size <= resize(length & "000",CHUNK_DATABITS);
 first_pulse_trace_header.flags <= first_pulse.flags;
 first_pulse_trace_header.trace_flags <= tflags;
 first_pulse_trace_header.length <= first_pulse.length;
@@ -417,13 +419,11 @@ begin
       wr_chunk_state <= STORE0;
       t_state <= IDLE;
       trace_overflow <= FALSE;
-      inc_accum <= FALSE;
     else
       frame_we <= (others => FALSE);
       commit_frame <= FALSE;
       commit_int <= FALSE;
       trace_overflow <= FALSE;
-      inc_accum <= FALSE;
     
 --------------------------------------------------------------------------------
 -- Traces
@@ -563,8 +563,8 @@ begin
       case t_state is
       when IDLE | DONE =>
         
-        if a_state=SEND then
-          trace_address <= trace_start_address+1;
+        if average_detection and state/=AVERAGE then --FIXME
+          trace_address <= (others => '0');
         else
           trace_address <= trace_start_address;
         end if;
@@ -591,7 +591,11 @@ begin
       if trace_reset then 
         if trace_start then
           wr_chunk_state <= STORE0; 
-          trace_address <= trace_start_address;
+          if average_detection and state/=AVERAGE then --FIXME
+            trace_address <= (others => '0');
+          else
+            trace_address <= trace_start_address;
+          end if;
           trace_count <= trace_count_init;
           next_trace_count <= trace_count_init-1;
           last_trace_count <= FALSE;
@@ -687,12 +691,10 @@ begin
 -- Average trace captures to the framer two allow dumping
 -- framer output is routed to the accumulator
 --------------------------------------------------------------------------------
-      if average_detection and not m.pulse_start and trace_last 
-         and not trace_full then
+      if average_detection and (a_state=ACCUM or a_state=WAITING) then
         --commit for averaging if not a multipulse
-        commit_frame <= a_state/=SEND;
+        commit_frame <= commit_average;
         frame_length <= resize(tflags.trace_length,ADDRESS_BITS+1);
-        inc_accum <= TRUE;
       end if;
       
 --------------------------------------------------------------------------------
@@ -719,7 +721,7 @@ begin
           --safe to assume that trace not writing??? 5 clocks should be enough
           --FIXME What about queue state? make a specific state for DP?
           frame_word 
-          <= to_streambus(resize(dot_product,BUS_DATABITS),not dp_trace,ENDIAN);
+            <= to_streambus(resize(dot_product,BUS_DATABITS),dp_only,ENDIAN);
           frame_address <= dp_address;
           frame_length <= dp_length;
           frame_we <= (others => TRUE); 
@@ -769,6 +771,8 @@ begin
       
       average_trace_header.trace_flags.multipulse <= FALSE;
       average_trace_header.trace_flags.multipeak <= FALSE;
+      average_trace_header.multipeaks <= (others => '0');
+      average_trace_header.multipulses <= (others => '0');
       tflags.multipulse <= FALSE; -- FIXME need to reset at trace start as well
       tflags.multipeak <= FALSE;
     
@@ -776,11 +780,14 @@ begin
       q_pulse <= FALSE;
       q_header <= FALSE;
       q_aux <= FALSE;
+      inc_accum <= FALSE;
+      commit_average <= FALSE;
     else
       q_single <= FALSE;
       q_pulse <= FALSE;
       q_header <= FALSE;
       q_aux <= FALSE;
+      inc_accum <= FALSE;
       
       start_int <= FALSE;
       dump_int <= FALSE;
@@ -792,6 +799,7 @@ begin
 --      dp_write <= FALSE;
 --      trace_overflow <= FALSE;
       trace_reset <= FALSE;
+      commit_average <= FALSE;
       
       -- capture register settings when pulse FSM is idle and a new pulse starts
       -- TODO consider if there is an issue when registers change upstream
@@ -822,8 +830,8 @@ begin
                          m.pre_tflags.trace_type=DOT_PRODUCT_TRACE_D) and
                          pre_detection=TRACE_DETECTION_D;
                          
-        dp_trace <=  m.pre_tflags.trace_type=DOT_PRODUCT_TRACE_D and
-                     pre_detection=TRACE_DETECTION_D;
+        dp_only <=  m.pre_tflags.trace_type=DOT_PRODUCT_D and
+                    pre_detection=TRACE_DETECTION_D;
                                                          
         trace_wr_en <= pre_detection=TRACE_DETECTION_D and
                        m.pre_tflags.trace_type/=DOT_PRODUCT_D;
@@ -844,26 +852,11 @@ begin
         -- size is the free space required to *start* a new event
 
         if m.pre_eflags.event_type.detection=TRACE_DETECTION_D then
+          tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
+          trace_start_address <= resize(m.pre_size,ADDRESS_BITS);
 
-          case m.pre_tflags.trace_type is
-          when SINGLE_TRACE_D =>
-            tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
-            trace_start_address <= resize(m.pre_size,ADDRESS_BITS);
-              
-          when AVERAGE_TRACE_D =>
-            tflags.offset <= to_unsigned(1,PEAK_COUNT_BITS);
-            trace_start_address <= to_unsigned(0,ADDRESS_BITS);
-            
-          when DOT_PRODUCT_D => 
-            tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
-            trace_start_address <= (others => '-'); 
-            dp_start <= TRUE;
-            
-          when DOT_PRODUCT_TRACE_D =>
-            tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
-            trace_start_address <= resize(m.pre_size,ADDRESS_BITS); 
-            dp_start <= TRUE;
-          end case;
+          dp_start <= m.pre_tflags.trace_type=DOT_PRODUCT_D or
+                      m.pre_tflags.trace_type=DOT_PRODUCT_TRACE_D;
           
         end if;
         
@@ -963,6 +956,8 @@ begin
               if trace_detection then
                 if average_detection then
                   average_trace_header.trace_flags.multipulse <= TRUE;
+                  average_trace_header.multipulses 
+                    <= average_trace_header.multipulses+1;
                   tflags.multipulse <= TRUE;
                   -- multiple pulses in trace, don't include either pulse in 
                   -- the average.
@@ -996,12 +991,15 @@ begin
               end if;
             else -- no new pulse.
               if trace_detection then
-                if trace_last then --FIXME trace_last
-                  if average_detection and last_accum_count then
-                    state <= AVERAGE;
-                  else
-                    state <= IDLE; -- all done.
---                    inc_accum <= TRUE;
+                if trace_last then 
+                  if average_detection then
+                    commit_average <= TRUE;
+                    if last_accum_count then
+                      state <= AVERAGE;
+                    else
+                      state <= IDLE; -- all done.
+                      inc_accum <= TRUE;
+                    end if;
                   end if;
                 else
                   state <= TRACING; -- end of first pulse, tracing.
@@ -1124,11 +1122,14 @@ begin
             if m.pulse_start then
               error_int <= TRUE;
               average_trace_header.trace_flags.multipulse <= TRUE;
+              average_trace_header.multipulses 
+                <= average_trace_header.multipulses+1;
               state <= IDLE;
             elsif last_accum_count then
               state <= AVERAGE;
             else
               state <= IDLE;
+              inc_accum <= TRUE;
             end if;
           else -- not averaging
             if m.pulse_start then 
@@ -1155,7 +1156,10 @@ begin
             if average_detection then
             -- multipulse dump
               average_trace_header.trace_flags.multipulse <= TRUE;
+              average_trace_header.multipulses 
+                <= average_trace_header.multipulses+1;
               state <= IDLE;
+              error_int <= TRUE;
   --            t_state <= IDLE;
               trace_reset <= TRUE;
             end if;
@@ -1200,7 +1204,6 @@ begin
         end if;
         
       when WAITPULSEDONE =>
-        
         -- must have a TRACE_DETECTION_D pulse with completed trace.
         if m.pulse_threshold_neg then
           if not m.above_area_threshold then
@@ -1234,10 +1237,15 @@ begin
                   else
                     state <= FIRSTPULSE;
                   end if;
-                elsif average_detection and last_accum_count then 
+                elsif average_detection then 
+                  commit_average <= TRUE;
+                  if last_accum_count then 
                   -- ending pulse will be committed, and was the last required 
                   -- for the average.
-                  state <= AVERAGE;
+                    state <= AVERAGE; 
+                  else
+                    inc_accum <= TRUE;
+                  end if; 
                 elsif not space_available2 then
                   -- ending pulse will be committed, check space for two events.
                   state <= IDLE;  
@@ -1250,9 +1258,15 @@ begin
                 state <= FIRSTPULSE;
               end if;
             else  -- not pre_pulse start
-              if average_detection and last_accum_count then
-                state <= AVERAGE;
-              else 
+              if average_detection then
+                commit_average <= TRUE;
+                if last_accum_count then
+                  state <= AVERAGE;
+                else 
+                  state <= IDLE;
+                  inc_accum <= TRUE;
+                end if;
+              else
                 state <= IDLE;
               end if;
             end if;
@@ -1312,6 +1326,8 @@ begin
           state <= HOLD;
           average_trace_header.trace_flags.multipeak <= FALSE;
           average_trace_header.trace_flags.multipulse <= FALSE;
+          average_trace_header.multipulses <= (others => '0'); 
+          average_trace_header.multipeaks <= (others => '0'); 
           mux_enable <= TRUE;
         end if;
         
@@ -1329,6 +1345,8 @@ begin
           if m.eflags.peak_number/=0 and average_detection then --FIXME check
             tflags.multipeak <= TRUE;
             average_trace_header.trace_flags.multipeak <= TRUE;
+            average_trace_header.multipeaks 
+              <= average_trace_header.multipeaks+1;
 --            q_state <= IDLE;
 --            t_state <= IDLE;
             state <= IDLE;

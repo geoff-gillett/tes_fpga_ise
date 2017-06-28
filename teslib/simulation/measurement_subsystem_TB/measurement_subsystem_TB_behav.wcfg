@@ -21,14 +21,17 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="389975000000fs"></ZoomStartTime>
-      <ZoomEndTime time="462125000001fs"></ZoomEndTime>
-      <Cursor1Time time="402000000000fs"></Cursor1Time>
+      <ZoomStartTime time="67372666666fs"></ZoomStartTime>
+      <ZoomEndTime time="87272666667fs"></ZoomEndTime>
+      <Cursor1Time time="92006000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="7" />
    <wave_markers>
       <marker time="300628000000" label="" />
+      <marker time="489280000000" label="" />
+      <marker time="488328000000" label="" />
       <marker time="335500000000" label="" />
+      <marker time="316268000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -115,6 +118,8 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/bytestream_last" type="other">
          <obj_property name="ElementShortName">bytestream_last</obj_property>
          <obj_property name="ObjectShortName">bytestream_last</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/cdc_din" type="array">
          <obj_property name="ElementShortName">cdc_din[71:0]</obj_property>
@@ -152,6 +157,7 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/bytestream_int" type="array">
          <obj_property name="ElementShortName">bytestream_int[8:0]</obj_property>
          <obj_property name="ObjectShortName">bytestream_int[8:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="group624" type="group">
          <obj_property name="label">bytestream reg</obj_property>
@@ -675,6 +681,7 @@
       <wvobject fp_name="group622" type="group">
          <obj_property name="label">ports</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/clk" type="logic">
             <obj_property name="ElementShortName">clk</obj_property>
             <obj_property name="ObjectShortName">clk</obj_property>
@@ -846,7 +853,6 @@
       <wvobject fp_name="group623" type="group">
          <obj_property name="label">Framer</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word" type="array">
             <obj_property name="ElementShortName">frame_word</obj_property>
             <obj_property name="ObjectShortName">frame_word</obj_property>
@@ -1007,6 +1013,12 @@
             <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/tflags.trace_type" type="other">
+            <obj_property name="ElementShortName">.trace_type</obj_property>
+            <obj_property name="ObjectShortName">tflags.trace_type</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_wr_en" type="other">
             <obj_property name="ElementShortName">trace_wr_en</obj_property>
             <obj_property name="ObjectShortName">trace_wr_en</obj_property>
@@ -1090,6 +1102,10 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/last_trace_count" type="other">
             <obj_property name="ElementShortName">last_trace_count</obj_property>
             <obj_property name="ObjectShortName">last_trace_count</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/last_accum_count" type="other">
+            <obj_property name="ElementShortName">last_accum_count</obj_property>
+            <obj_property name="ObjectShortName">last_accum_count</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/state" type="other">
             <obj_property name="ElementShortName">state</obj_property>
@@ -1198,9 +1214,56 @@
             <obj_property name="ElementShortName">trace_last</obj_property>
             <obj_property name="ObjectShortName">trace_last</obj_property>
          </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/accum_count" type="array">
+            <obj_property name="ElementShortName">accum_count[4:0]</obj_property>
+            <obj_property name="ObjectShortName">accum_count[4:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/average_trace_header" type="array">
+            <obj_property name="ElementShortName">average_trace_header</obj_property>
+            <obj_property name="ObjectShortName">average_trace_header</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/this_pulse_trace_header" type="array">
+            <obj_property name="ElementShortName">this_pulse_trace_header</obj_property>
+            <obj_property name="ObjectShortName">this_pulse_trace_header</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header" type="array">
+            <obj_property name="ElementShortName">first_pulse_trace_header</obj_property>
+            <obj_property name="ObjectShortName">first_pulse_trace_header</obj_property>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.size" type="array">
+               <obj_property name="ElementShortName">.size[15:0]</obj_property>
+               <obj_property name="ObjectShortName">first_pulse_trace_header.size[15:0]</obj_property>
+               <obj_property name="Radix">HEXRADIX</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.length" type="array">
+               <obj_property name="ElementShortName">.length[15:0]</obj_property>
+               <obj_property name="ObjectShortName">first_pulse_trace_header.length[15:0]</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.flags" type="array">
+               <obj_property name="ElementShortName">.flags</obj_property>
+               <obj_property name="ObjectShortName">first_pulse_trace_header.flags</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.trace_flags" type="array">
+               <obj_property name="ElementShortName">.trace_flags</obj_property>
+               <obj_property name="ObjectShortName">first_pulse_trace_header.trace_flags</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.offset" type="array">
+               <obj_property name="ElementShortName">.offset[15:0]</obj_property>
+               <obj_property name="ObjectShortName">first_pulse_trace_header.offset[15:0]</obj_property>
+            </wvobject>
+            <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.area" type="array">
+               <obj_property name="ElementShortName">.area[31:0]</obj_property>
+               <obj_property name="ObjectShortName">first_pulse_trace_header.area[31:0]</obj_property>
+            </wvobject>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/state" type="other">
             <obj_property name="ElementShortName">state</obj_property>
             <obj_property name="ObjectShortName">state</obj_property>
+            <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/a_state" type="other">
+            <obj_property name="ElementShortName">a_state</obj_property>
+            <obj_property name="ObjectShortName">a_state</obj_property>
             <obj_property name="CustomSignalColor">#F0E68C</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
@@ -1242,6 +1305,12 @@
             <obj_property name="ElementShortName">.pre_pulse_start</obj_property>
             <obj_property name="ObjectShortName">m.pre_pulse_start</obj_property>
             <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pulse_threshold_pos" type="other">
+            <obj_property name="ElementShortName">.pulse_threshold_pos</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_threshold_pos</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pulse_threshold_neg" type="other">
@@ -1341,6 +1410,10 @@
             <obj_property name="CustomSignalColor">#F0E68C</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/commit_average" type="other">
+            <obj_property name="ElementShortName">commit_average</obj_property>
+            <obj_property name="ObjectShortName">commit_average</obj_property>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/a_state" type="other">
             <obj_property name="ElementShortName">a_state</obj_property>
             <obj_property name="ObjectShortName">a_state</obj_property>
@@ -1428,6 +1501,7 @@
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m" type="array">
             <obj_property name="ElementShortName">m</obj_property>
             <obj_property name="ObjectShortName">m</obj_property>
+            <obj_property name="isExpanded"></obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak" type="array">
             <obj_property name="ElementShortName">peak</obj_property>
@@ -1445,17 +1519,9 @@
             <obj_property name="ElementShortName">pulse_peak</obj_property>
             <obj_property name="ObjectShortName">pulse_peak</obj_property>
          </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/average_trace" type="array">
-            <obj_property name="ElementShortName">average_trace</obj_property>
-            <obj_property name="ObjectShortName">average_trace</obj_property>
-         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/tflags" type="array">
             <obj_property name="ElementShortName">tflags</obj_property>
             <obj_property name="ObjectShortName">tflags</obj_property>
-         </wvobject>
-         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/atflags" type="array">
-            <obj_property name="ElementShortName">atflags</obj_property>
-            <obj_property name="ObjectShortName">atflags</obj_property>
          </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/framer_free" type="array">
             <obj_property name="ElementShortName">framer_free[8:0]</obj_property>
@@ -1658,6 +1724,7 @@
    <wvobject fp_name="group369" type="group">
       <obj_property name="label">dot product</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproductDSP/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
