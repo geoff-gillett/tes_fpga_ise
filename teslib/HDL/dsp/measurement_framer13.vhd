@@ -72,14 +72,14 @@ signal free:unsigned(ADDRESS_BITS downto 0);
 --signal next_free:signed(ADDRESS_BITS+1 downto 0);
 signal frame_length,length:unsigned(ADDRESS_BITS downto 0):=(others => '0');
 --
-signal pulse_valid,pulse_peak_valid:boolean;
+signal pulse_valid:boolean;
 signal pulse_overflow:boolean;
 signal frame_word:streambus_t;
 signal frame_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal frame_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal commit_frame,commit_int,start_int,dump_int:boolean; 
 
-signal peak_address:unsigned(ADDRESS_BITS-1 downto 0);
+signal aux_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal last_peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
 signal peak_stamped,pulse_stamped:boolean:=FALSE;
@@ -624,7 +624,7 @@ begin
         -- pulse_peak, dot_product
         if q_can_write then 
           frame_word <= aux_word_reg;
-          frame_address <= peak_address;
+          frame_address <= aux_address;
           frame_we <= (others => TRUE);
           q_state <= IDLE; 
         end if;
@@ -655,11 +655,11 @@ begin
           end if;
           
           if dp_detection then
-            if dp_state=DONE then
-              q_state <= IDLE;
-            else
-              q_state <= DONE;
-            end if;
+--            if dp_state=DONE then
+--              q_state <= IDLE;
+--            else
+            q_state <= DONE;
+--            end if;
           else
             q_state <= IDLE;
           end if;
@@ -1362,8 +1362,9 @@ begin
             pulse_stamped <= FALSE;
           else
             aux_word_reg <= to_streambus(pulse_peak,FALSE,ENDIAN);--?? last?
-            peak_address <= resize(m.peak_address,ADDRESS_BITS);
-            pulse_peak_valid <= mux_wr_en;
+            aux_address <= resize(m.peak_address,ADDRESS_BITS);
+            q_aux <= not average_detection;
+--            pulse_peak_valid <= mux_wr_en;
           end if;
         elsif peak_detection then
           if free=0 then
