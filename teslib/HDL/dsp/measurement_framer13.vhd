@@ -502,9 +502,9 @@ begin
         end if;
       end case;
        
-      ----------------------------------------------------------------------------
+      --------------------------------------------------------------------------
        --wr_chunk FSM gathers samples into a bus word
-      ----------------------------------------------------------------------------
+      --------------------------------------------------------------------------
       case wr_chunk_state is
       when STORE0 => 
         trace_reg(63 downto 48) <= trace_chunk;
@@ -557,9 +557,9 @@ begin
         end if;
       end case;
         
-      ----------------------------------------------------------------------------
+      --------------------------------------------------------------------------
       --trace control FSM
-      ----------------------------------------------------------------------------
+      --------------------------------------------------------------------------
       case t_state is
       when IDLE | DONE =>
         
@@ -824,7 +824,7 @@ begin
                                   m.pre_tflags.trace_type=SINGLE_TRACE_D;
 
         average_detection <= m.pre_tflags.trace_type=AVERAGE_TRACE_D and 
-                                   pre_detection=TRACE_DETECTION_D;
+                             pre_detection=TRACE_DETECTION_D;
                                    
         dp_detection <= (m.pre_tflags.trace_type=DOT_PRODUCT_D or 
                          m.pre_tflags.trace_type=DOT_PRODUCT_TRACE_D) and
@@ -1160,7 +1160,7 @@ begin
               average_trace_header.trace_flags.multipulse <= TRUE;
               average_trace_header.multipulses 
                 <= average_trace_header.multipulses+1;
-              state <= IDLE;
+              state <= FIRSTPULSE;
               error_int <= TRUE;
   --            t_state <= IDLE;
               trace_reset <= TRUE;
@@ -1343,7 +1343,7 @@ begin
      
       -- peak recording FIXME issue with pulse_peak_valid being multiply driven
       if m.peak_stop and enable_reg then 
-        if state=FIRSTPULSE or state=WAITPULSEDONE then 
+        if (state=FIRSTPULSE or state=WAITPULSEDONE) and not area_detection then 
           if m.eflags.peak_number/=0 and average_detection then --FIXME check
             tflags.multipeak <= TRUE;
             average_trace_header.trace_flags.multipeak <= TRUE;
@@ -1451,7 +1451,7 @@ begin
     ready_int <= acc_ready;
     reg_valid <= FALSE;
   else
-    --calculating dot product
+    --calculating dot product or normal operation
     dp_sample <= signed(set_endianness(trace_chunk,ENDIAN));
     dp_trace_last <= trace_last;
     dp_trace_start <= trace_start;
@@ -1488,7 +1488,7 @@ begin
         if not average_detection then
           stop <= TRUE;
           a_state <= IDLE;
-        elsif valid_int and not wait_ready then
+        elsif valid_int and not wait_ready then --??
           if stream_int.discard(0) then
             a_state <= ACCUM;
             start_accumulating <= TRUE;

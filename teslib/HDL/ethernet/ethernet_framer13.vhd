@@ -127,12 +127,15 @@ signal lookahead_type,event_s_type:event_type_t;
 signal lookahead_trace_type,event_s_trace_type:trace_type_d;
 -- the frame can be broken at event_head
 signal event_head:boolean;
+signal has_trace:boolean;
+signal min_trace_frame:unsigned(MTU_BITS-1 downto 0);
 
 --------------------------------------------------------------------------------
 -- Ethernet Header
 --------------------------------------------------------------------------------
 constant ETHERNET_HEADER_WORDS:integer:=3;
 constant MIN_FRAME:integer:=8;
+--constant MIN_TRACE_FRAME:=MTU;
 constant SEQUENCE_BITS:integer:=16;
 type ethernet_header_t is record
 	destination_address:unsigned(47 downto 0);
@@ -393,6 +396,7 @@ begin
           if lookahead_head then	
             event_s_type <= lookahead_type;
             event_s_trace_type <= lookahead_trace_type;
+            has_trace <= FALSE;
             if frame_state=PAYLOAD then
               type_change <= header.event_type/=lookahead_type;
             end if;
@@ -412,15 +416,17 @@ begin
                 size_change <= FALSE;
                 single_word <= TRUE;
               when PULSE_DETECTION_D =>
-                size := lookahead_size;
+--                size := lookahead_size;
+                size:=resize(lookahead_size(SIZE_BITS-1 downto 3),SIZE_BITS);
                 size_change <= header.event_size/=lookahead_size;
                 single_word <= FALSE;
               when TRACE_DETECTION_D =>
                 if lookahead_trace_type=DOT_PRODUCT_D then
-                  size := lookahead_size;
+                  size:=resize(lookahead_size(SIZE_BITS-1 downto 3),SIZE_BITS);
                   size_change <= header.event_size/=lookahead_size;
                   single_word <= FALSE;
                 else
+                  has_trace <= TRUE;
                   size := to_unsigned(1, SIZE_BITS); 
                   size_change <= TRUE; --??
                   single_word <= TRUE;
@@ -637,20 +643,23 @@ begin
     	
 	    framer_word.data <= event_s.data;
 	    --FIXME is it possible to register this?
-	    if event_head and (type_change or size_change or frame_last) then
+	    if event_head and (type_change or size_change or 
+	       (frame_last and not frame_under)) then
         -- Want to keep one type and size in a frame so when it arrives at the 
         -- the buffer can be addressed as a array.
         -- at event head so at the beginning of a new event and can terminate.
         frame_nextstate <= TERMINATE;
       elsif event_s_valid then 
-        -- no room for another event
         if frame_last then
-          framer_word.last(0) <= event_s.last(0) or single_word; 
-          framer_we <= (others => framer_ready);
-          inc_address <= framer_ready;
-          event_s_ready <= framer_ready;
-          if (event_s.last(0) or single_word) and framer_ready then
-            frame_nextstate <= LENGTH;
+          -- no room for another event
+          if not frame_under then -- stop runt frames when buffers are full.
+            framer_word.last(0) <= event_s.last(0) or single_word; 
+            framer_we <= (others => framer_ready);
+            inc_address <= framer_ready;
+            event_s_ready <= framer_ready;
+            if (event_s.last(0) or single_word) and framer_ready then
+              frame_nextstate <= LENGTH;
+            end if;
           end if;
         else 
           framer_word.last(0) <= event_s.last(0) and header.event_type.tick; 
@@ -662,7 +671,8 @@ begin
           end if;
         end if;
 			elsif not lookahead_valid and event_head and not frame_under and 
-				    mca_s_valid then
+			     mca_s_valid then
+			    -- send MCA frames when eventstream bandwidth is low
 					frame_nextstate <= TERMINATE;
 				end if;
       end if;
@@ -696,6 +706,7 @@ begin
 			last_frame_address <= (others => '0');
       frame_free <= resize(mtu,FRAMER_ADDRESS_BITS+1);
       next_frame_free <= resize(mtu-1,FRAMER_ADDRESS_BITS+1);
+      min_trace_frame <= mtu-1;
 		else
 			framer_ready <= framer_free > next_address;
 			if commit_frame then
@@ -703,6 +714,7 @@ begin
 				next_address <= (0 => '1', others => '0');
 				frame_free <= resize(mtu,FRAMER_ADDRESS_BITS+1);
 				next_frame_free <= resize(mtu-1,FRAMER_ADDRESS_BITS+1);
+        min_trace_frame <= mtu-1;
 			elsif inc_address then
 				last_frame_word <= framer_word;
 				last_frame_word.discard <= framer_word.discard;
@@ -713,7 +725,11 @@ begin
         frame_free <= next_frame_free;
         next_frame_free <= next_frame_free-1;
         frame_last <= next_frame_free <= header.event_size;
-        frame_under <= framer_address < MIN_FRAME;
+        if has_trace then
+          frame_under <= next_address < min_trace_frame;
+        else
+          frame_under <= next_address < MIN_FRAME;
+        end if;
 			end if;
 		end if;
 	end if;
