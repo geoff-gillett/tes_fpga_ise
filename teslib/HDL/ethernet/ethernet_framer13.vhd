@@ -87,8 +87,8 @@ signal framer_word:streambus_t;
 signal framer_address,next_address:unsigned(FRAMER_ADDRESS_BITS-1 downto 0);
 signal framer_we:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal commit_frame:boolean;
-signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0):=
-       to_unsigned(to_integer(DEFAULT_MTU/8),FRAMER_ADDRESS_BITS+1);
+signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);--:=
+--       to_unsigned(to_integer(DEFAULT_MTU/8),FRAMER_ADDRESS_BITS+1);
 --signal frame_we:boolean;
 --signal mtu_int:unsigned(MTU_BITS-1 downto 0):=
 --			 to_unsigned(to_integer(DEFAULT_MTU/8),MTU_BITS);
@@ -128,13 +128,13 @@ signal lookahead_trace_type,event_s_trace_type:trace_type_d;
 -- the frame can be broken at event_head
 signal event_head:boolean;
 signal has_trace:boolean;
-signal min_trace_frame:unsigned(MTU_BITS-1 downto 0);
+signal min_frame:unsigned(MTU_BITS-1 downto 0);
 
 --------------------------------------------------------------------------------
 -- Ethernet Header
 --------------------------------------------------------------------------------
 constant ETHERNET_HEADER_WORDS:integer:=3;
-constant MIN_FRAME:integer:=8;
+--constant MIN_FRAME:integer:=8;
 --constant MIN_TRACE_FRAME:=MTU;
 constant SEQUENCE_BITS:integer:=16;
 type ethernet_header_t is record
@@ -643,37 +643,35 @@ begin
     	
 	    framer_word.data <= event_s.data;
 	    --FIXME is it possible to register this?
-	    if event_head and (type_change or size_change or 
-	       (frame_last and not frame_under)) then
+	    if event_head and (type_change or size_change) then --or 
+--	       (frame_last and not frame_under)) then
         -- Want to keep one type and size in a frame so when it arrives at the 
         -- the buffer can be addressed as a array.
         -- at event head so at the beginning of a new event and can terminate.
         frame_nextstate <= TERMINATE;
       elsif event_s_valid then 
+        framer_we <= (others => framer_ready);
+        inc_address <= framer_ready;
+        event_s_ready <= framer_ready;
         if frame_last then
           -- no room for another event
-          if not frame_under then -- stop runt frames when buffers are full.
-            framer_word.last(0) <= event_s.last(0) or single_word; 
-            framer_we <= (others => framer_ready);
-            inc_address <= framer_ready;
-            event_s_ready <= framer_ready;
-            if (event_s.last(0) or single_word) and framer_ready then
-              frame_nextstate <= LENGTH;
-            end if;
+          -- end frame at earliest opportunity
+          framer_word.last(0) <= event_s.last(0) or single_word; 
+          if (event_s.last(0) or single_word) and framer_ready then
+            frame_nextstate <= LENGTH;
           end if;
         else 
+          -- if frame contains a tick end at the last
           framer_word.last(0) <= event_s.last(0) and header.event_type.tick; 
-          framer_we <= (others => framer_ready);
-          inc_address <= framer_ready;
-          event_s_ready <= framer_ready;
           if (event_s.last(0) and header.event_type.tick) and framer_ready then
             frame_nextstate <= LENGTH;
           end if;
         end if;
-			elsif not lookahead_valid and event_head and mca_s_valid then
-			    -- send MCA frames when eventstream bandwidth is low
+			elsif not lookahead_valid and event_head and mca_s_valid  and 
+			      not frame_under then
+			    -- if no events in stream and MCA frames waiting end this frame
 					frame_nextstate <= TERMINATE;
-				end if;
+				end if; 
       end if;
     
 	when TERMINATE =>  -- write last
@@ -705,7 +703,7 @@ begin
 			last_frame_address <= (others => '0');
       frame_free <= resize(mtu,FRAMER_ADDRESS_BITS+1);
       next_frame_free <= resize(mtu-1,FRAMER_ADDRESS_BITS+1);
-      min_trace_frame <= mtu-1;
+      min_frame <= to_unsigned(8, MTU_BITS);
 		else
 			framer_ready <= framer_free > next_address;
 			if commit_frame then
@@ -713,7 +711,8 @@ begin
 				next_address <= (0 => '1', others => '0');
 				frame_free <= resize(mtu,FRAMER_ADDRESS_BITS+1);
 				next_frame_free <= resize(mtu-1,FRAMER_ADDRESS_BITS+1);
-        min_trace_frame <= mtu-1;
+        min_frame <= to_unsigned(8, MTU_BITS);
+--        min_frame <= mtu-1;
 			elsif inc_address then
 				last_frame_word <= framer_word;
 				last_frame_word.discard <= framer_word.discard;
@@ -724,11 +723,7 @@ begin
         frame_free <= next_frame_free;
         next_frame_free <= next_frame_free-1;
         frame_last <= next_frame_free <= header.event_size;
---        if has_trace then
-          frame_under <= next_address < min_trace_frame;
---        else
---          frame_under <= next_address < MIN_FRAME;
---        end if;
+        frame_under <= next_address < min_frame;
 			end if;
 		end if;
 	end if;

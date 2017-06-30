@@ -251,7 +251,7 @@ slope_config(1).reload_valid <= '0';
 
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(0).baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
-chan_reg(0).baseline.threshold <= (others => '1'); --to_unsigned(700,BASELINE_BITS-1);--(others => '1');
+chan_reg(0).baseline.threshold <= (others => '1'); 
 chan_reg(0).baseline.new_only <= TRUE;
 chan_reg(0).baseline.subtraction <= FALSE;
 chan_reg(0).baseline.timeconstant <= to_unsigned(25000,32);
