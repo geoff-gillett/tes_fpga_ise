@@ -670,8 +670,7 @@ begin
             frame_nextstate <= LENGTH;
           end if;
         end if;
-			elsif not lookahead_valid and event_head and not frame_under and 
-			     mca_s_valid then
+			elsif not lookahead_valid and event_head and mca_s_valid then
 			    -- send MCA frames when eventstream bandwidth is low
 					frame_nextstate <= TERMINATE;
 				end if;
@@ -725,11 +724,11 @@ begin
         frame_free <= next_frame_free;
         next_frame_free <= next_frame_free-1;
         frame_last <= next_frame_free <= header.event_size;
-        if has_trace then
+--        if has_trace then
           frame_under <= next_address < min_trace_frame;
-        else
-          frame_under <= next_address < MIN_FRAME;
-        end if;
+--        else
+--          frame_under <= next_address < MIN_FRAME;
+--        end if;
 			end if;
 		end if;
 	end if;

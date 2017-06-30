@@ -21,14 +21,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="21766616667fs"></ZoomStartTime>
-      <ZoomEndTime time="21918816668fs"></ZoomEndTime>
-      <Cursor1Time time="21782017000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="3044000000001fs"></ZoomEndTime>
+      <Cursor1Time time="2001000000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="8" />
    <wave_markers>
       <marker time="138428000000" label="" />
       <marker time="501312000000" label="" />
+      <marker time="352312000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -1215,7 +1216,6 @@
    <wvobject fp_name="group239" type="group">
       <obj_property name="label">framer</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="group622" type="group">
          <obj_property name="label">ports</obj_property>
          <obj_property name="DisplayName">label</obj_property>
@@ -3497,7 +3497,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/eventstream" type="array">
          <obj_property name="ElementShortName">eventstream</obj_property>
          <obj_property name="ObjectShortName">eventstream</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/eventstream.discard" type="array">
             <obj_property name="ElementShortName">.discard[3:0]</obj_property>
             <obj_property name="ObjectShortName">eventstream.discard[3:0]</obj_property>
@@ -3539,7 +3538,6 @@
          <obj_property name="ObjectShortName">ethernetstream</obj_property>
          <obj_property name="CustomSignalColor">#00FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/ethernetstream.discard" type="array">
             <obj_property name="ElementShortName">.discard[3:0]</obj_property>
             <obj_property name="ObjectShortName">ethernetstream.discard[3:0]</obj_property>
@@ -3586,10 +3584,14 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_ready" type="other">
          <obj_property name="ElementShortName">event_s_ready</obj_property>
          <obj_property name="ObjectShortName">event_s_ready</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_valid" type="other">
          <obj_property name="ElementShortName">event_s_valid</obj_property>
          <obj_property name="ObjectShortName">event_s_valid</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/eventstream_ready_int" type="other">
          <obj_property name="ElementShortName">eventstream_ready_int</obj_property>
@@ -3844,6 +3846,42 @@
          <obj_property name="label">end framer</obj_property>
          <obj_property name="DisplayName">label</obj_property>
       </wvobject>
+      <wvobject type="divider" fp_name="divider971">
+         <obj_property name="label">lookahead</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_valid" type="other">
+         <obj_property name="ElementShortName">lookahead_valid</obj_property>
+         <obj_property name="ObjectShortName">lookahead_valid</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_head" type="other">
+         <obj_property name="ElementShortName">lookahead_head</obj_property>
+         <obj_property name="ObjectShortName">lookahead_head</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_type" type="array">
+         <obj_property name="ElementShortName">lookahead_type</obj_property>
+         <obj_property name="ObjectShortName">lookahead_type</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_size" type="array">
+         <obj_property name="ElementShortName">lookahead_size[15:0]</obj_property>
+         <obj_property name="ObjectShortName">lookahead_size[15:0]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_trace_type" type="other">
+         <obj_property name="ElementShortName">lookahead_trace_type</obj_property>
+         <obj_property name="ObjectShortName">lookahead_trace_type</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_type" type="array">
+         <obj_property name="ElementShortName">event_s_type</obj_property>
+         <obj_property name="ObjectShortName">event_s_type</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_trace_type" type="other">
+         <obj_property name="ElementShortName">event_s_trace_type</obj_property>
+         <obj_property name="ObjectShortName">event_s_trace_type</obj_property>
+      </wvobject>
+      <wvobject type="divider" fp_name="divider972">
+         <obj_property name="label">end look \ahead</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/tick_latency_count" type="array">
          <obj_property name="ElementShortName">tick_latency_count[31:0]</obj_property>
          <obj_property name="ObjectShortName">tick_latency_count[31:0]</obj_property>
@@ -3860,10 +3898,6 @@
          <obj_property name="ElementShortName">lookahead</obj_property>
          <obj_property name="ObjectShortName">lookahead</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_valid" type="other">
-         <obj_property name="ElementShortName">lookahead_valid</obj_property>
-         <obj_property name="ObjectShortName">lookahead_valid</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/frame_address" type="array">
          <obj_property name="ElementShortName">frame_address[8:0]</obj_property>
          <obj_property name="ObjectShortName">frame_address[8:0]</obj_property>
@@ -3879,10 +3913,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_size" type="array">
          <obj_property name="ElementShortName">event_s_size[15:0]</obj_property>
          <obj_property name="ObjectShortName">event_s_size[15:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_head" type="other">
-         <obj_property name="ElementShortName">lookahead_head</obj_property>
-         <obj_property name="ObjectShortName">lookahead_head</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_last_hs" type="other">
          <obj_property name="ElementShortName">event_s_last_hs</obj_property>
@@ -3907,26 +3937,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/trace_last" type="other">
          <obj_property name="ElementShortName">trace_last</obj_property>
          <obj_property name="ObjectShortName">trace_last</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_size" type="array">
-         <obj_property name="ElementShortName">lookahead_size[15:0]</obj_property>
-         <obj_property name="ObjectShortName">lookahead_size[15:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_type" type="array">
-         <obj_property name="ElementShortName">lookahead_type</obj_property>
-         <obj_property name="ObjectShortName">lookahead_type</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_type" type="array">
-         <obj_property name="ElementShortName">event_s_type</obj_property>
-         <obj_property name="ObjectShortName">event_s_type</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/lookahead_trace_type" type="other">
-         <obj_property name="ElementShortName">lookahead_trace_type</obj_property>
-         <obj_property name="ObjectShortName">lookahead_trace_type</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_s_trace_type" type="other">
-         <obj_property name="ElementShortName">event_s_trace_type</obj_property>
-         <obj_property name="ObjectShortName">event_s_trace_type</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/enet/event_head" type="other">
          <obj_property name="ElementShortName">event_head</obj_property>
