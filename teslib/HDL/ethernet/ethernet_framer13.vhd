@@ -17,6 +17,7 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
+
 library streamlib;
 use streamlib.types.all;
 
@@ -97,7 +98,7 @@ signal framer_free:unsigned(FRAMER_ADDRESS_BITS downto 0);--:=
 signal tick_latency_count:unsigned(TICK_LATENCY_BITS-1 downto 0);
 signal tick_latency_int:unsigned(TICK_LATENCY_BITS-1 downto 0):=
 			 DEFAULT_TICK_LATENCY;
-signal wait_for_tick,tick_overdue:boolean;
+signal tick_overdue:boolean;
 --signal event_frame_full:boolean;
 signal lookahead:streambus_t;
 signal lookahead_valid:boolean;
@@ -122,7 +123,7 @@ signal last_frame_word:streambus_t;
 signal mca_last,trace_last:boolean;
 --signal trace_last:boolean;
 -- frame type switching
-signal lookahead_size:unsigned(SIZE_BITS-1 downto 0);
+signal lookahead_size,lh_size_temp:unsigned(SIZE_BITS-1 downto 0);
 signal lookahead_type,event_s_type:event_type_t;
 signal lookahead_trace_type,event_s_trace_type:trace_type_d;
 -- the frame can be broken at event_head
@@ -355,8 +356,11 @@ lookahead_type <= to_event_type_t(lookahead);
 lookahead_trace_type <= to_trace_type_d(lookahead.data(39 downto 38));
 
 -- swap back to big endian if needed
-lookahead_size 
-	<= unsigned(set_endianness(lookahead.data(63 downto 48),endianness));
+lh_size_temp <= unsigned(
+  set_endianness(lookahead.data(63 downto 48),endianness)
+);
+lookahead_size <= resize(lh_size_temp(15 downto 3),SIZE_BITS);
+
 
 event_s_last_hs <= event_s_hs and event_s.last(0);
 
@@ -417,18 +421,18 @@ begin
                 single_word <= TRUE;
               when PULSE_DETECTION_D =>
 --                size := lookahead_size;
-                size:=resize(lookahead_size(SIZE_BITS-1 downto 3),SIZE_BITS);
+                size:=lookahead_size;
                 size_change <= header.event_size/=lookahead_size;
                 single_word <= FALSE;
               when TRACE_DETECTION_D =>
                 if lookahead_trace_type=DOT_PRODUCT_D then
-                  size:=resize(lookahead_size(SIZE_BITS-1 downto 3),SIZE_BITS);
+                  size:=lookahead_size;
                   size_change <= header.event_size/=lookahead_size;
                   single_word <= FALSE;
                 else
                   has_trace <= TRUE;
                   size := to_unsigned(1, SIZE_BITS); 
-                  size_change <= TRUE; --??
+                  size_change <= FALSE; 
                   single_word <= TRUE;
                 end if;
               end case;
@@ -449,9 +453,9 @@ begin
 		if reset = '1' then
 			tick_latency_count <= (others => '0');
 		else
-			if tick_overdue then
-				wait_for_tick <= TRUE;
-			end if;
+--			if tick_overdue then
+--				wait_for_tick <= TRUE;
+--			end if;
 			
 			if buffer_full then 
 				flush_events <= TRUE;
@@ -462,9 +466,9 @@ begin
 			end if;
 		
 		  tick_overdue <= tick_latency_count >= tick_latency_int; 	
-      if header.event_type.tick and event_s_last_hs then
+      if header.event_type.tick then
         tick_latency_count <= (others => '0');
-        wait_for_tick <= FALSE;
+--        wait_for_tick <= FALSE;
       elsif not tick_overdue then
         tick_latency_count <= tick_latency_count+1;
       end if;
@@ -558,12 +562,12 @@ begin
 end process FSMnextstate;
 
 arbiterFSMtransition:process(arbiter_state,flush_events,mca_s_valid,
-												 		 event_s_valid,frame_state,wait_for_tick)
+												 		 event_s_valid,frame_state,tick_overdue)
 begin
 	arbiter_nextstate <= arbiter_state;
 	case arbiter_state is 
 	when IDLE =>
-		if (flush_events or wait_for_tick) and event_s_valid then
+		if (flush_events or tick_overdue) and event_s_valid then
 			arbiter_nextstate <= EVENT;
 		elsif mca_s_valid then
 			arbiter_nextstate <= MCA;
@@ -705,6 +709,14 @@ begin
       next_frame_free <= resize(mtu-1,FRAMER_ADDRESS_BITS+1);
       min_frame <= to_unsigned(8, MTU_BITS);
 		else
+      -- simulation checks on framing
+      if commit_frame then
+        assert frame_length <= framer_free report "BAD commit" severity FAILURE;
+      end if;
+      if unaryOR(framer_we) then
+        assert framer_address < framer_free report "BAD write" severity FAILURE;
+      end if;
+      
 			framer_ready <= framer_free > next_address;
 			if commit_frame then
 				frame_address <= (others => '0');
