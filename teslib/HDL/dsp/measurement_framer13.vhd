@@ -298,7 +298,7 @@ m <= measurements;
 --
 --  | height | low1 |  low2  | time | -- use this for pulse2
                                       -- low2 is @ time
-pulse.size <= resize(length,CHUNK_DATABITS);
+pulse.size <= resize(length & "000",CHUNK_DATABITS);
 pulse.flags <= eflags;
 pulse.length <= m.pulse_length;
 pulse.offset <= m.time_offset;
