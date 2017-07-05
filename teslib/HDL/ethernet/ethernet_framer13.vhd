@@ -128,7 +128,7 @@ signal lookahead_type,event_s_type:event_type_t;
 signal lookahead_trace_type,event_s_trace_type:trace_type_d;
 -- the frame can be broken at event_head
 signal event_head:boolean;
-signal has_trace:boolean;
+signal one_per_frame:boolean;
 signal min_frame:unsigned(MTU_BITS-1 downto 0);
 
 --------------------------------------------------------------------------------
@@ -233,7 +233,7 @@ signal estream_s:std_logic_vector(BUS_DATABITS-1 downto 0);
 signal estream_last:boolean;
 -- the frame can terminate on any word.
 signal single_word:boolean;
-signal event_last:boolean;
+--signal event_last:boolean;
 --signal end_frame:boolean;
 
 constant DEBUG:string:="FALSE";
@@ -400,7 +400,7 @@ begin
           if lookahead_head then	
             event_s_type <= lookahead_type;
             event_s_trace_type <= lookahead_trace_type;
-            has_trace <= FALSE;
+            one_per_frame <= FALSE;
             if frame_state=PAYLOAD then
               type_change <= header.event_type/=lookahead_type;
             end if;
@@ -409,12 +409,14 @@ begin
               size := to_unsigned(3, SIZE_BITS);
               size_change <= FALSE;
               single_word <= FALSE;
+              one_per_frame <= TRUE;
             else
               case lookahead_type.detection is
               when PEAK_DETECTION_D =>
                 size := (0 =>'1', others => '0');
                 size_change <= FALSE;
                 single_word <= TRUE;
+                
               when AREA_DETECTION_D =>
                 size := (0 =>'1', others => '0');
                 size_change <= FALSE;
@@ -430,7 +432,7 @@ begin
                   size_change <= header.event_size/=lookahead_size;
                   single_word <= FALSE;
                 else
-                  has_trace <= TRUE;
+                  one_per_frame <= TRUE;
                   size := to_unsigned(1, SIZE_BITS); 
                   size_change <= FALSE; 
                   single_word <= TRUE;
@@ -581,7 +583,7 @@ begin
 	end case;
 end process arbiterFSMtransition;
 
-event_last <= event_s.last(0) or single_word;
+--event_last <= event_s.last(0) or single_word;
 
 frameFSMtransition:process(frame_state,arbiter_nextstate,arbiter_state,
 													 framer_ready,mca_s_valid,flush_events,
@@ -665,15 +667,16 @@ begin
             frame_nextstate <= LENGTH;
           end if;
         else 
-          -- if frame contains a tick end at the last
-          framer_word.last(0) <= event_s.last(0) and header.event_type.tick; 
-          if (event_s.last(0) and header.event_type.tick) and framer_ready then
+          -- if only one per transmission (trace or tick) end at last
+          framer_word.last(0) <= event_s.last(0) and one_per_frame; 
+          if (event_s.last(0) and one_per_frame) and framer_ready then
             frame_nextstate <= LENGTH;
           end if;
         end if;
-			elsif not lookahead_valid and event_head and mca_s_valid  and 
+			elsif not lookahead_valid and event_head and mca_s_valid and 
 			      not frame_under then
 			    -- if no events in stream and MCA frames waiting end this frame
+			    -- to give arbiter chance to switch to MCA
 					frame_nextstate <= TERMINATE;
 				end if; 
       end if;
