@@ -175,7 +175,7 @@ signal average_detection:boolean;
 signal zero_stride:boolean;
 signal trace_full:boolean;
 signal trace_overflow:boolean;
-signal eflags:detection_flags_t;
+signal eflags_reg,eflags:detection_flags_t;
 signal dp_length:unsigned(ADDRESS_BITS downto 0);
 -- The trace ended before the pulse.
 --signal dp_before_pulse:boolean;
@@ -298,6 +298,14 @@ m <= measurements;
 --
 --  | height | low1 |  low2  | time | -- use this for pulse2
                                       -- low2 is @ time
+eflags.event_type <= eflags_reg.event_type;
+eflags.timing <= eflags_reg.timing;                             
+eflags.height <= eflags_reg.height;                             
+eflags.cfd_rel2min <= eflags_reg.cfd_rel2min;                             
+eflags.channel <= eflags_reg.channel;                             
+eflags.new_window <= eflags_reg.new_window;                             
+eflags.peak_number <= m.eflags.peak_number;                             
+                                      
 pulse.size <= resize(length & "000",CHUNK_DATABITS);
 pulse.flags <= eflags;
 pulse.length <= m.pulse_length;
@@ -318,7 +326,7 @@ pulse.threshold <= m.timing_threshold; --FIXME
 
 
 average_trace_header.size <= resize(length & "000",CHUNK_DATABITS);
-average_trace_header.flags <= eflags;
+average_trace_header.flags <= eflags_reg;
 --average_trace_header.trace_flags <= atflags;
 average_trace_header.trace_flags.offset <= tflags.offset;
 average_trace_header.trace_flags.stride <= tflags.stride;
@@ -813,7 +821,7 @@ begin
         tflags.trace_type <= m.pre_tflags.trace_type;
         zero_stride <= m.pre_tflags.stride=0; 
         
-        eflags <= m.pre_eflags;
+        eflags_reg <= m.pre_eflags;
          
         trace_detection <= pre_detection=TRACE_DETECTION_D;
         area_detection <= pre_detection=AREA_DETECTION_D;
