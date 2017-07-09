@@ -60,7 +60,7 @@ generic(
   ACCUMULATE_N:natural:=18;
   TRACE_FROM_STAMP:boolean:=TRUE;
   ENET_FRAMER_ADDRESS_BITS:natural:=ETHERNET_FRAMER_ADDRESS_BITS;
-  MIN_TICK_PERIOD:natural:=2**16-1
+  MIN_TICK_PERIOD:natural:=26500
 );
 port(
   clk:in std_logic;
