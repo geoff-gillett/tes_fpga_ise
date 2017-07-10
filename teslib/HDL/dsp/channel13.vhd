@@ -72,7 +72,7 @@ constant RAW_DELAY:natural:=1026;
 signal sample_in,raw,filtered,slope:signed(WIDTH-1 downto 0);
 signal sample_d:std_logic_vector(WIDTH-1 downto 0);
 signal m,dsp_m:measurements_t;
-signal sample_inv,baseline_sample:signed(ADC_WIDTH+FRAC-1 downto 0);
+signal sample_inv,baseline_sample:signed(ADC_WIDTH+FRAC downto 0);
 signal baseline_estimate,baseline_in:signed(WIDTH-1 downto 0);
 signal sat:boolean;
 signal baseline_sign:std_logic;
@@ -110,21 +110,21 @@ measurements <= m;
 
 -- baseline offset is fixed WIDTH.FRAC
 --FIXME use a DSP slice?
-sat <= not (unaryAND(baseline_sample(ADC_WIDTH+FRAC-1 downto WIDTH-1)) or 
-       not unaryOR(baseline_sample(ADC_WIDTH+FRAC-1 downto WIDTH-1)));
-baseline_sign <= baseline_sample(ADC_WIDTH+FRAC-1);
+sat <= not ( unaryAND(baseline_sample(ADC_WIDTH+FRAC downto WIDTH-1)) or 
+       (unaryAND(not baseline_sample(ADC_WIDTH+FRAC downto WIDTH-1))) );
+baseline_sign <= baseline_sample(ADC_WIDTH+FRAC);
 sampleoffset:process(clk)
 begin
-if rising_edge(clk) then
+if rising_edge(clk)  then
   if reset2='1' then
     --FIXME sample_inv could be a variable
     sample_inv <= (others => '0');
     baseline_sample  <= (others => '0');
   else
     if registers.capture.invert then
-      sample_inv <= shift_left(-resize(adc_sample,ADC_WIDTH+FRAC),FRAC); 
+      sample_inv <= shift_left(-resize(adc_sample,ADC_WIDTH+FRAC+1),FRAC); 
     else
-      sample_inv <= shift_left(resize(adc_sample,ADC_WIDTH+FRAC),FRAC); 
+      sample_inv <= shift_left(resize(adc_sample,ADC_WIDTH+FRAC+1),FRAC); 
     end if;
     
     baseline_sample 

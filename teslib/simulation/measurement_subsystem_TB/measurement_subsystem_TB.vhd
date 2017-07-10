@@ -358,7 +358,7 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(sample_clk);
-		adc_samples(0) <= to_std_logic(sample, 14);
+--		adc_samples(0) <= to_std_logic(sample, 14);
 		--sample_reg <= resize(sample_in, 14);
 --		adc_samples(1) <= adc_samples(0);
 --		if clk_count mod 10000 = 0 then
@@ -393,17 +393,20 @@ end process simcount;
 
 doublesig <= to_signed(-200,ADC_WIDTH)
              when sim_count < 10
-             else to_signed(8000,ADC_WIDTH)
-             when sim_count < 500
+             else to_signed(800,ADC_WIDTH)
+             when sim_count < 40
              else to_signed(-100,ADC_WIDTH)
-             when sim_count < 700
+             when sim_count < 100
              else to_signed(1000,ADC_WIDTH)
-             when sim_count < 1000
+             when sim_count < 300
              else to_signed(-200,ADC_WIDTH);
                
 --adc_samples(0) <= std_logic_vector(signed(doublesig));
 --adc_samples(0) <= std_logic_vector(adc_count);
 --adc_samples(0) <= (others => '0');
+adc_samples(0) <= (ADC_WIDTH-1 => '0',others => '1') when 
+                  adc_count < to_signed(200,ADC_WIDTH) else
+                  (ADC_WIDTH-1 => '1',others => '0');
 
 --enable test
 --global.channel_enable <= "00000001" when enable else "00000000";
