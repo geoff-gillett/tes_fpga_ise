@@ -268,7 +268,8 @@ begin
       end if; 
       first_peak_pipe(4 to DEPTH) <= first_peak & first_peak_pipe(4 to DEPTH-1);
       
-      if slope_0_p_pipe(DEPTH-1) then 
+--      if slope_0_p_pipe(DEPTH-1) then 
+      if slope_0_p_pipe(DEPTH) then 
         delay_counter <= 1;
       else
         if not overrun_i then
@@ -323,10 +324,14 @@ begin
       end if;
       cfd_high_i <= filtered_pipe(DEPTH-1) - p; 
       
-      if slope_0_n_pipe(DEPTH-1) and not overrun_i then 
-        q_wr_en <= '1';
+      if slope_0_n_pipe(DEPTH-1) then
+        q_wr_en <=  to_std_logic(not overrun_i);
+        overrun_d <= overrun_i; 
       else 
         q_wr_en <= '0';
+        if min_d then
+          overrun_d <= FALSE;
+        end if;
       end if;
       
     end if;
@@ -417,7 +422,7 @@ port map(
   delayed => slope_d
 );
 
-overrun_d <= to_boolean(flags_d(8));
+--overrun_d <= to_boolean(flags_d(8));
 read_d <= to_boolean(flags_d(7)); --FIXME not used
 max_d <= to_boolean(flags_d(6));
 min_d <= to_boolean(flags_d(5));

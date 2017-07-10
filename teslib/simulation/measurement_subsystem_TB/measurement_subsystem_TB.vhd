@@ -404,9 +404,9 @@ doublesig <= to_signed(-200,ADC_WIDTH)
 --adc_samples(0) <= std_logic_vector(signed(doublesig));
 --adc_samples(0) <= std_logic_vector(adc_count);
 --adc_samples(0) <= (others => '0');
-adc_samples(0) <= (ADC_WIDTH-1 => '0',others => '1') when 
-                  adc_count < to_signed(200,ADC_WIDTH) else
-                  (ADC_WIDTH-1 => '1',others => '0');
+adc_samples(0) <= (ADC_WIDTH-1 => '1',others => '0') when 
+                  adc_count < to_signed(16000,ADC_WIDTH) else
+                  (ADC_WIDTH-1 => '0',others => '1');
 
 --enable test
 --global.channel_enable <= "00000001" when enable else "00000000";
