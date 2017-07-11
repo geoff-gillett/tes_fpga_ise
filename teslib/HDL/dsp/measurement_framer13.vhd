@@ -202,6 +202,7 @@ signal q_can_write,q_ready:boolean;
 signal q_aux,q_single,q_header,q_pulse:boolean;
 signal q_length:unsigned(ADDRESS_BITS downto 0);
 signal commit_average:boolean;
+signal started:boolean;
 
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
@@ -379,7 +380,7 @@ can_q_pulse <= q_state=IDLE;
 --pre_full <= free < resize(m.pre_size,ADDRESS_BITS+1);
 
 --full <= free <= length;
-mux_wr_en <= mux_enable and enable_reg;
+--mux_wr_en <= mux_enable and enable_reg;
 
 --trace_start <= trace_start_reg and enable_reg and t_state=IDLE;
 trace_chunk_debug <= set_endianness(trace_chunk,ENDIAN);
@@ -394,10 +395,10 @@ begin
       dump <= FALSE;
     else
       commit <= commit_int and mux_wr_en;
-      start <= start_int and mux_wr_en;
+      start <= start_int and mux_enable;
       dump <= dump_int and mux_wr_en;
-      overflow <= overflow_int;
-      error <= error_int;
+      overflow <= overflow_int and mux_wr_en;
+      error <= error_int and mux_wr_en;
     end if;
   end if;
 end process muxOutput;
@@ -757,6 +758,7 @@ begin
     if reset='1' then
       
       start_int <= FALSE;
+      started <= FALSE;
       dump_int <= FALSE;
       overflow_int <= FALSE;
       error_int <= FALSE;
@@ -844,11 +846,11 @@ begin
         trace_wr_en <= pre_detection=TRACE_DETECTION_D and
                        m.pre_tflags.trace_type/=DOT_PRODUCT_D;
                        
-        mux_enable <= pre_detection/=TRACE_DETECTION_D or 
+        mux_enable <= (pre_detection/=TRACE_DETECTION_D or 
                       (
                         pre_detection=TRACE_DETECTION_D and 
                         m.pre_tflags.trace_type/=AVERAGE_TRACE_D
-                      );
+                      )) and enable;
                      
         trace_count_init <= m.pre_tflags.trace_length-1;
         
@@ -891,6 +893,11 @@ begin
       
       if commit_frame or dump_int or error_int then
         committing <= FALSE;
+        mux_enable <= pre_detection/=TRACE_DETECTION_D or 
+                      (
+                        pre_detection=TRACE_DETECTION_D and 
+                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
+                      );
       end if;
       
 --      if trace_start then
@@ -1331,6 +1338,7 @@ begin
           space_available <= size2 <= framer_free;
           space_available2 <= size2 <= framer_free;
           start_int <= TRUE;
+          mux_wr_en <= TRUE;
           q_header <= TRUE;
 --          q_state <= WORD0; --FIXME
           state <= HOLD;
@@ -1338,7 +1346,6 @@ begin
           average_trace_header.trace_flags.multipulse <= FALSE;
           average_trace_header.multipulses <= (others => '0'); 
           average_trace_header.multipeaks <= (others => '0'); 
-          mux_enable <= TRUE;
         end if;
         
       when HOLD =>
@@ -1402,7 +1409,6 @@ begin
 --          peak_stamped <= FALSE;
         else
           start_int <= TRUE;  
---          peak_stamped <= TRUE;
         end if;
         --FIXME think about this
       elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse and 
@@ -1411,8 +1417,9 @@ begin
           error_int <= TRUE;
           pulse_stamped <= FALSE;
         else
-          start_int <= mux_wr_en;  
-          pulse_stamped <= mux_wr_en;
+          start_int <= mux_enable;  
+          mux_wr_en <= mux_enable;  
+          pulse_stamped <= mux_enable;
         end if;
       end if; 
         

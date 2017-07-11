@@ -413,7 +413,7 @@ doublesig <= to_signed(-200,ADC_WIDTH)
 
 --enable test
 --global.channel_enable <= "00000001";
-event_enable <= not event_enable after 15 us;
+event_enable <= not event_enable after 10 us;
 global.channel_enable <= "0000000" & event_enable;
 
 
@@ -507,10 +507,16 @@ chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 --
-chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 
   chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
---  wait for 20 us;
+  wait for 200 us;
+  chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+  wait for 200 us;
+  chan_reg(0).capture.detection <= PEAK_DETECTION_D;
+  wait for 200 us;
+  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
+  chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 --  global.channel_enable <= "00000001";
   
 --------------------------------------------------------------------------------
