@@ -115,7 +115,7 @@ signal flags_i:boolean_vector(8 downto 0);
 signal flags_d,flags_i_s:std_logic_vector(8 downto 0);
 signal filtered_d:std_logic_vector(WIDTH-1 downto 0);
 signal slope_d:std_logic_vector(WIDTH-1 downto 0);
-signal slope_t_p_d,pulse_t_p_d,pulse_t_n_d:boolean;
+signal slope_t_p_d, pulse_t_p_d, pulse_t_n_d:boolean;
 --signal overran:boolean;
 signal max_d,min_d,above_pulse_threshold_d,pulse_threshold_pos_d:boolean;
 signal pulse_threshold_neg_d,slope_threshold_pos_d:boolean;
@@ -142,6 +142,7 @@ signal cfd_low_threshold_d,cfd_high_threshold_d:signed(WIDTH-1 downto 0);
 signal max_slope_d:signed(WIDTH-1 downto 0);
 signal will_go_above_pulse_threshold_d,will_arm_d:boolean;
 signal pulse_t_n:boolean;
+signal pending : integer;
 
 begin
 --------------------------------------------------------------------------------
@@ -250,6 +251,13 @@ begin
       q_wr_en <= '0'; 
       good_write <= FALSE;
     else
+      --counter to track pending MUX starts 
+      if q_wr_en='1' and q_rd_en='0' then
+        pending <= pending + 1;
+      end if;
+      if q_rd_en ='1' and q_wr_en='0' then
+        pending <= pending - 1;
+      end if;
       slope_0_n_pipe <= (slope_0_n and started) & slope_0_n_pipe(1 to DEPTH-1);
       slope_0_p_pipe <= slope_0_p & slope_0_p_pipe(1 to DEPTH-1);
       

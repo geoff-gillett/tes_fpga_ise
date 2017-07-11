@@ -444,9 +444,9 @@ begin
         trace_done <= FALSE;
       end if;
       
-      ----------------------------------------------------------------------------
+      --------------------------------------------------------------------------
       --MUX for trace chunk
-      ----------------------------------------------------------------------------
+      --------------------------------------------------------------------------
       if state=AVERAGE then
         trace_chunk <= set_endianness(average_sample,ENDIAN);
       else
@@ -462,9 +462,9 @@ begin
         end case;
       end if;
       
-      ----------------------------------------------------------------------------
+      --------------------------------------------------------------------------
       --trace start
-      ----------------------------------------------------------------------------
+      --------------------------------------------------------------------------
       if state=AVERAGE then
         trace_start <= start_average;
       else
@@ -478,9 +478,9 @@ begin
         end if;
       end if;
       
-      ----------------------------------------------------------------------------
+      --------------------------------------------------------------------------
       --trace stride FSM --FIXME need to check this actually works
-      ----------------------------------------------------------------------------
+      --------------------------------------------------------------------------
       trace_last <= FALSE;
       case s_state is 
         
@@ -1377,7 +1377,7 @@ begin
 --            pulse_peak_valid <= mux_wr_en;
           end if;
         elsif peak_detection then
-          if free=0 then
+          if not space_available then
             overflow_int <= TRUE;
 --            q_state <= IDLE;
             state <= IDLE;
@@ -1390,8 +1390,8 @@ begin
 --            q_state <= SINGLE_WORD_EVENT;
             committing <= TRUE;
             free <= framer_free - length;
-            space_available <= size2 <= framer_free;
-            space_available2 <= size2 <= framer_free;
+--            space_available <= size2 <= framer_free;
+--            space_available2 <= size2 <= framer_free;
           end if;
         end if;
       end if;

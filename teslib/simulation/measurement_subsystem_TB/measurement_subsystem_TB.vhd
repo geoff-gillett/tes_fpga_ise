@@ -358,7 +358,7 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(sample_clk);
---		adc_samples(0) <= to_std_logic(sample, 14);
+		adc_samples(0) <= to_std_logic(sample, 14);
 		--sample_reg <= resize(sample_in, 14);
 --		adc_samples(1) <= adc_samples(0);
 --		if clk_count mod 10000 = 0 then
@@ -404,9 +404,9 @@ doublesig <= to_signed(-200,ADC_WIDTH)
 --adc_samples(0) <= std_logic_vector(signed(doublesig));
 --adc_samples(0) <= std_logic_vector(adc_count);
 --adc_samples(0) <= (others => '0');
-adc_samples(0) <= (ADC_WIDTH-1 => '1',others => '0') when 
-                  adc_count < to_signed(16000,ADC_WIDTH) else
-                  (ADC_WIDTH-1 => '0',others => '1');
+--adc_samples(0) <= (ADC_WIDTH-1 => '1',others => '0') when 
+--                  adc_count < to_signed(8000,ADC_WIDTH) else
+--                  (ADC_WIDTH-1 => '0',others => '1');
 
 --enable test
 --global.channel_enable <= "00000001" when enable else "00000000";
@@ -492,30 +492,32 @@ chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(-500*8,DSP_BITS);
 --
---chan_reg(0).capture.detection <= PULSE_DETECTION_D;
---wait for 100 us;
---global.channel_enable <= "00000000";
---wait for 10 us;
+chan_reg(0).capture.detection <= PEAK_DETECTION_D;
+--wait for 13 us;
 --global.channel_enable <= "00000001";
---wait for 100 us;
+--wait for 13 us;
 --global.channel_enable <= "00000000";
---wait for 10 us;
+--wait for 13 us;
 --global.channel_enable <= "00000001";
---wait for 100 us;
+--wait for 13 us;
 --global.channel_enable <= "00000000";
---wait for 10 us;
+--wait for 13 us;
 --global.channel_enable <= "00000001";
---wait for 100 us;
+--wait for 13 us;
 --global.channel_enable <= "00000000";
---wait for 10 us;
+--wait for 13 us;
 --global.channel_enable <= "00000001";
---wait for 100 us;
+--wait for 13 us;
 --global.channel_enable <= "00000000";
---wait for 10 us;
+--wait for 13 us;
 --global.channel_enable <= "00000001";
---wait for 100 us;
+--wait for 13 us;
 --global.channel_enable <= "00000000";
---wait for 10 us;
+--wait for 13 us;
+--global.channel_enable <= "00000001";
+--wait for 13 us;
+--global.channel_enable <= "00000000";
+--wait for 13 us;
 --global.channel_enable <= "00000001";
 
 

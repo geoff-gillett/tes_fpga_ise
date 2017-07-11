@@ -399,7 +399,8 @@ begin
 
           if lookahead_head then	
             event_s_type <= lookahead_type;
-            event_s_trace_type <= lookahead_trace_type;
+--            event_s_trace_type <= lookahead_trace_type;
+            event_s_trace_type <= SINGLE_TRACE_D;
             one_per_frame <= FALSE;
             if frame_state=PAYLOAD then
               type_change <= header.event_type/=lookahead_type;
@@ -427,6 +428,7 @@ begin
                 size_change <= header.event_size/=lookahead_size;
                 single_word <= FALSE;
               when TRACE_DETECTION_D =>
+                event_s_trace_type <= lookahead_trace_type;
                 if lookahead_trace_type=DOT_PRODUCT_D then
                   size:=lookahead_size;
                   size_change <= header.event_size/=lookahead_size;

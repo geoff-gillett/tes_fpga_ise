@@ -140,8 +140,6 @@ signal pulse_t_xing:boolean;
 signal pre_pulse_start,pre_peak_start:boolean;
 signal minima:signed(WIDTH-1 downto 0);
 
-
-
 constant DEBUG:string:="FALSE";
 attribute mark_debug:string;
 attribute mark_debug of valid_peak:signal is DEBUG;
@@ -388,7 +386,6 @@ begin
       valid_peak_pipe(2 to DEPTH) 
         <= valid_peak & valid_peak_pipe(2 to DEPTH-1);
         
-      
       will_go_above_pipe 
         <= will_go_above_cfd & will_go_above_pipe(1 to DEPTH-1);
       will_arm_pipe 

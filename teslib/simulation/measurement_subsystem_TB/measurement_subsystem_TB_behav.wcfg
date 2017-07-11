@@ -21,9 +21,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="70181033334fs"></ZoomStartTime>
-      <ZoomEndTime time="70462833335fs"></ZoomEndTime>
-      <Cursor1Time time="70228000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="501000000001fs"></ZoomEndTime>
+      <Cursor1Time time="1000000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="11" />
    <wave_markers>
@@ -4725,6 +4725,7 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/max_slope_i" type="array">
          <obj_property name="ElementShortName">max_slope_i[15:0]</obj_property>
          <obj_property name="ObjectShortName">max_slope_i[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/filtered_pipe" type="array">
          <obj_property name="ElementShortName">filtered_pipe[1:12][15:0]</obj_property>
