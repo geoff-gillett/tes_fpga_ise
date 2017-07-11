@@ -21,15 +21,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="501000000001fs"></ZoomEndTime>
-      <Cursor1Time time="1000000000fs"></Cursor1Time>
+      <ZoomStartTime time="87976650000fs"></ZoomStartTime>
+      <ZoomEndTime time="88036350001fs"></ZoomEndTime>
+      <Cursor1Time time="88040000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="11" />
    <wave_markers>
-      <marker time="501312000000" label="" />
-      <marker time="352312000000" label="" />
-      <marker time="138428000000" label="" />
+      <marker time="88040000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -274,8 +272,8 @@
          <obj_property name="ObjectShortName">simenable</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/sim_count" type="array">
-         <obj_property name="ElementShortName">sim_count[8:0]</obj_property>
-         <obj_property name="ObjectShortName">sim_count[8:0]</obj_property>
+         <obj_property name="ElementShortName">sim_count[7:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_count[7:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/doublesig" type="array">
          <obj_property name="ElementShortName">doublesig[13:0]</obj_property>
@@ -694,6 +692,7 @@
    <wvobject fp_name="group804" type="group">
       <obj_property name="label">measure</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -713,26 +712,24 @@
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="CellHeight">100</obj_property>
          <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
          <obj_property name="AnalogYRangeMin">0.000000</obj_property>
          <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
          <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
          <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
          <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/filtered" type="array">
          <obj_property name="ElementShortName">filtered[15:0]</obj_property>
          <obj_property name="ObjectShortName">filtered[15:0]</obj_property>
-         <obj_property name="CellHeight">100</obj_property>
          <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
          <obj_property name="AnalogYRangeMin">-4100.000000</obj_property>
          <obj_property name="AnalogYRRangeMax">4100.000000</obj_property>
          <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
          <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
          <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
          <obj_property name="Radix">REALRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
@@ -761,6 +758,244 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.raw" type="array">
+            <obj_property name="ElementShortName">.raw</obj_property>
+            <obj_property name="ObjectShortName">m.raw</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.filtered" type="array">
+            <obj_property name="ElementShortName">.filtered</obj_property>
+            <obj_property name="ObjectShortName">m.filtered</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.slope" type="array">
+            <obj_property name="ElementShortName">.slope</obj_property>
+            <obj_property name="ObjectShortName">m.slope</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.height" type="array">
+            <obj_property name="ElementShortName">.height[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.height[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.height_valid" type="other">
+            <obj_property name="ElementShortName">.height_valid</obj_property>
+            <obj_property name="ObjectShortName">m.height_valid</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.rise_time" type="array">
+            <obj_property name="ElementShortName">.rise_time[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.rise_time[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.filtered_long" type="array">
+            <obj_property name="ElementShortName">.filtered_long[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.filtered_long[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pulse_threshold_pos" type="other">
+            <obj_property name="ElementShortName">.pulse_threshold_pos</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_threshold_pos</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pulse_threshold_neg" type="other">
+            <obj_property name="ElementShortName">.pulse_threshold_neg</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_threshold_neg</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_pulse_threshold_neg" type="other">
+            <obj_property name="ElementShortName">.pre_pulse_threshold_neg</obj_property>
+            <obj_property name="ObjectShortName">m.pre_pulse_threshold_neg</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.above_pulse_threshold" type="other">
+            <obj_property name="ElementShortName">.above_pulse_threshold</obj_property>
+            <obj_property name="ObjectShortName">m.above_pulse_threshold</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pulse_area" type="array">
+            <obj_property name="ElementShortName">.pulse_area[31:0]</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_area[31:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.above_area_threshold" type="other">
+            <obj_property name="ElementShortName">.above_area_threshold</obj_property>
+            <obj_property name="ObjectShortName">m.above_area_threshold</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.will_go_above" type="other">
+            <obj_property name="ElementShortName">.will_go_above</obj_property>
+            <obj_property name="ObjectShortName">m.will_go_above</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pulse_length" type="array">
+            <obj_property name="ElementShortName">.pulse_length[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_length[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pulse_time" type="array">
+            <obj_property name="ElementShortName">.pulse_time[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_time[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.min_value" type="array">
+            <obj_property name="ElementShortName">.min_value[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.min_value[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.slope_threshold_pos" type="other">
+            <obj_property name="ElementShortName">.slope_threshold_pos</obj_property>
+            <obj_property name="ObjectShortName">m.slope_threshold_pos</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.armed" type="other">
+            <obj_property name="ElementShortName">.armed</obj_property>
+            <obj_property name="ObjectShortName">m.armed</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.will_arm" type="other">
+            <obj_property name="ElementShortName">.will_arm</obj_property>
+            <obj_property name="ObjectShortName">m.will_arm</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.cfd_low" type="other">
+            <obj_property name="ElementShortName">.cfd_low</obj_property>
+            <obj_property name="ObjectShortName">m.cfd_low</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.cfd_high" type="other">
+            <obj_property name="ElementShortName">.cfd_high</obj_property>
+            <obj_property name="ObjectShortName">m.cfd_high</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.cfd_high_threshold" type="array">
+            <obj_property name="ElementShortName">.cfd_high_threshold[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.cfd_high_threshold[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.max_slope" type="other">
+            <obj_property name="ElementShortName">.max_slope</obj_property>
+            <obj_property name="ObjectShortName">m.max_slope</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pulse_start" type="other">
+            <obj_property name="ElementShortName">.pulse_start</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_start</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_pulse_start" type="other">
+            <obj_property name="ElementShortName">.pre_pulse_start</obj_property>
+            <obj_property name="ObjectShortName">m.pre_pulse_start</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.peak_start" type="other">
+            <obj_property name="ElementShortName">.peak_start</obj_property>
+            <obj_property name="ObjectShortName">m.peak_start</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_peak_start" type="other">
+            <obj_property name="ElementShortName">.pre_peak_start</obj_property>
+            <obj_property name="ObjectShortName">m.pre_peak_start</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.peak_stop" type="other">
+            <obj_property name="ElementShortName">.peak_stop</obj_property>
+            <obj_property name="ObjectShortName">m.peak_stop</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_peak_stop" type="other">
+            <obj_property name="ElementShortName">.pre_peak_stop</obj_property>
+            <obj_property name="ObjectShortName">m.pre_peak_stop</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.offset" type="array">
+            <obj_property name="ElementShortName">.offset[3:0]</obj_property>
+            <obj_property name="ObjectShortName">m.offset[3:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.valid_peak" type="other">
+            <obj_property name="ElementShortName">.valid_peak</obj_property>
+            <obj_property name="ObjectShortName">m.valid_peak</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.valid_peak0" type="other">
+            <obj_property name="ElementShortName">.valid_peak0</obj_property>
+            <obj_property name="ObjectShortName">m.valid_peak0</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.valid_peak1" type="other">
+            <obj_property name="ElementShortName">.valid_peak1</obj_property>
+            <obj_property name="ObjectShortName">m.valid_peak1</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.valid_peak2" type="other">
+            <obj_property name="ElementShortName">.valid_peak2</obj_property>
+            <obj_property name="ObjectShortName">m.valid_peak2</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.peak_stamped" type="other">
+            <obj_property name="ElementShortName">.peak_stamped</obj_property>
+            <obj_property name="ObjectShortName">m.peak_stamped</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pulse_stamped" type="other">
+            <obj_property name="ElementShortName">.pulse_stamped</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_stamped</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.stamp_peak" type="other">
+            <obj_property name="ElementShortName">.stamp_peak</obj_property>
+            <obj_property name="ObjectShortName">m.stamp_peak</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.stamp_pulse" type="other">
+            <obj_property name="ElementShortName">.stamp_pulse</obj_property>
+            <obj_property name="ObjectShortName">m.stamp_pulse</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_stamp_peak" type="other">
+            <obj_property name="ElementShortName">.pre_stamp_peak</obj_property>
+            <obj_property name="ObjectShortName">m.pre_stamp_peak</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_stamp_pulse" type="other">
+            <obj_property name="ElementShortName">.pre_stamp_pulse</obj_property>
+            <obj_property name="ObjectShortName">m.pre_stamp_pulse</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.time_offset" type="array">
+            <obj_property name="ElementShortName">.time_offset[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.time_offset[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.peak_time" type="array">
+            <obj_property name="ElementShortName">.peak_time[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.peak_time[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.eflags" type="array">
+            <obj_property name="ElementShortName">.eflags</obj_property>
+            <obj_property name="ObjectShortName">m.eflags</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_eflags" type="array">
+            <obj_property name="ElementShortName">.pre_eflags</obj_property>
+            <obj_property name="ObjectShortName">m.pre_eflags</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.size" type="array">
+            <obj_property name="ElementShortName">.size[4:0]</obj_property>
+            <obj_property name="ObjectShortName">m.size[4:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_size" type="array">
+            <obj_property name="ElementShortName">.pre_size[4:0]</obj_property>
+            <obj_property name="ObjectShortName">m.pre_size[4:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_frame_length" type="array">
+            <obj_property name="ElementShortName">.pre_frame_length[10:0]</obj_property>
+            <obj_property name="ObjectShortName">m.pre_frame_length[10:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_size2" type="array">
+            <obj_property name="ElementShortName">.pre_size2[10:0]</obj_property>
+            <obj_property name="ObjectShortName">m.pre_size2[10:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.last_peak" type="other">
+            <obj_property name="ElementShortName">.last_peak</obj_property>
+            <obj_property name="ObjectShortName">m.last_peak</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.peak_overflow" type="other">
+            <obj_property name="ElementShortName">.peak_overflow</obj_property>
+            <obj_property name="ObjectShortName">m.peak_overflow</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.peak_address" type="array">
+            <obj_property name="ElementShortName">.peak_address[4:0]</obj_property>
+            <obj_property name="ObjectShortName">m.peak_address[4:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.last_peak_address" type="array">
+            <obj_property name="ElementShortName">.last_peak_address[4:0]</obj_property>
+            <obj_property name="ObjectShortName">m.last_peak_address[4:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.dp_address" type="array">
+            <obj_property name="ElementShortName">.dp_address[4:0]</obj_property>
+            <obj_property name="ObjectShortName">m.dp_address[4:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.timing_threshold" type="array">
+            <obj_property name="ElementShortName">.timing_threshold[15:0]</obj_property>
+            <obj_property name="ObjectShortName">m.timing_threshold[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.cfd_error" type="other">
+            <obj_property name="ElementShortName">.cfd_error</obj_property>
+            <obj_property name="ObjectShortName">m.cfd_error</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.cfd_valid" type="other">
+            <obj_property name="ElementShortName">.cfd_valid</obj_property>
+            <obj_property name="ObjectShortName">m.cfd_valid</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pre_tflags" type="array">
+            <obj_property name="ElementShortName">.pre_tflags</obj_property>
+            <obj_property name="ObjectShortName">m.pre_tflags</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.tflags" type="array">
+            <obj_property name="ElementShortName">.tflags</obj_property>
+            <obj_property name="ObjectShortName">m.tflags</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/filtered_x" type="array">
          <obj_property name="ElementShortName">filtered_x[15:0]</obj_property>
@@ -858,10 +1093,6 @@
          <obj_property name="ElementShortName">pulse_threshold[15:0]</obj_property>
          <obj_property name="ObjectShortName">pulse_threshold[15:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/valid_peak" type="other">
-         <obj_property name="ElementShortName">valid_peak</obj_property>
-         <obj_property name="ObjectShortName">valid_peak</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/peak_number_n" type="array">
          <obj_property name="ElementShortName">peak_number_n[4:0]</obj_property>
          <obj_property name="ObjectShortName">peak_number_n[4:0]</obj_property>
@@ -877,6 +1108,51 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/max_slope_threshold" type="array">
          <obj_property name="ElementShortName">max_slope_threshold[15:0]</obj_property>
          <obj_property name="ObjectShortName">max_slope_threshold[15:0]</obj_property>
+      </wvobject>
+      <wvobject type="divider" fp_name="divider1205">
+         <obj_property name="label">DEPTH-2</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="BkColor">#FF0000</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/max_pipe[5]" type="other">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">max_pipe[5]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/min_pipe[5]" type="other">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">min_pipe[5]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/first_peak_pipe[5]" type="other">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">first_peak_pipe[5]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/pulse_t_pos_pipe[5]" type="other">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">pulse_t_pos_pipe[5]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/valid_peak_pipe[5]" type="other">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">valid_peak_pipe[5]</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/cfd_low_pos_pipe[5]" type="other">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_pos_pipe[5]</obj_property>
+      </wvobject>
+      <wvobject type="divider" fp_name="divider1261">
+         <obj_property name="label">DEPTH-1</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/pre_stamp_peak" type="other">
+         <obj_property name="ElementShortName">pre_stamp_peak</obj_property>
+         <obj_property name="ObjectShortName">pre_stamp_peak</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/pre_peak_stamped" type="other">
+         <obj_property name="ElementShortName">pre_peak_stamped</obj_property>
+         <obj_property name="ObjectShortName">pre_peak_stamped</obj_property>
+      </wvobject>
+      <wvobject type="divider" fp_name="divider1262">
+         <obj_property name="label">depth</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/max_cfd" type="other">
          <obj_property name="ElementShortName">max_cfd</obj_property>
@@ -974,9 +1250,31 @@
          <obj_property name="ElementShortName">pre_max_peaks[4:0]</obj_property>
          <obj_property name="ObjectShortName">pre_max_peaks[4:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/pre_stamp_peak" type="other">
-         <obj_property name="ElementShortName">pre_stamp_peak</obj_property>
-         <obj_property name="ObjectShortName">pre_stamp_peak</obj_property>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/peak_start" type="other">
+         <obj_property name="ElementShortName">peak_start</obj_property>
+         <obj_property name="ObjectShortName">peak_start</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/stamp_peak" type="other">
+         <obj_property name="ElementShortName">stamp_peak</obj_property>
+         <obj_property name="ObjectShortName">stamp_peak</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/valid_peak" type="other">
+         <obj_property name="ElementShortName">valid_peak</obj_property>
+         <obj_property name="ObjectShortName">valid_peak</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/slope_zero_xing" type="other">
+         <obj_property name="ElementShortName">slope_zero_xing</obj_property>
+         <obj_property name="ObjectShortName">slope_zero_xing</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/peak_stamped" type="other">
+         <obj_property name="ElementShortName">peak_stamped</obj_property>
+         <obj_property name="ObjectShortName">peak_stamped</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/pre_stamp_pulse" type="other">
          <obj_property name="ElementShortName">pre_stamp_pulse</obj_property>
@@ -1005,10 +1303,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/slope_pipe" type="array">
          <obj_property name="ElementShortName">slope_pipe[1:7][15:0]</obj_property>
          <obj_property name="ObjectShortName">slope_pipe[1:7][15:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/peak_stamped" type="other">
-         <obj_property name="ElementShortName">peak_stamped</obj_property>
-         <obj_property name="ObjectShortName">peak_stamped</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/pulse_stamped" type="other">
          <obj_property name="ElementShortName">pulse_stamped</obj_property>
@@ -1050,10 +1344,6 @@
          <obj_property name="ElementShortName">slope_area_m1[31:0]</obj_property>
          <obj_property name="ObjectShortName">slope_area_m1[31:0]</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/slope_zero_xing" type="other">
-         <obj_property name="ElementShortName">slope_zero_xing</obj_property>
-         <obj_property name="ObjectShortName">slope_zero_xing</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/filtered_zero_xing" type="other">
          <obj_property name="ElementShortName">filtered_zero_xing</obj_property>
          <obj_property name="ObjectShortName">filtered_zero_xing</obj_property>
@@ -1085,7 +1375,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/tflags" type="array">
          <obj_property name="ElementShortName">tflags</obj_property>
          <obj_property name="ObjectShortName">tflags</obj_property>
-         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/rise_time" type="array">
          <obj_property name="ElementShortName">rise_time[15:0]</obj_property>
@@ -1094,10 +1383,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/pulse_time" type="array">
          <obj_property name="ElementShortName">pulse_time[15:0]</obj_property>
          <obj_property name="ObjectShortName">pulse_time[15:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/stamp_peak" type="other">
-         <obj_property name="ElementShortName">stamp_peak</obj_property>
-         <obj_property name="ObjectShortName">stamp_peak</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/stamp_pulse" type="other">
          <obj_property name="ElementShortName">stamp_pulse</obj_property>
@@ -1166,10 +1451,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/dp_address" type="array">
          <obj_property name="ElementShortName">dp_address[4:0]</obj_property>
          <obj_property name="ObjectShortName">dp_address[4:0]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/peak_start" type="other">
-         <obj_property name="ElementShortName">peak_start</obj_property>
-         <obj_property name="ObjectShortName">peak_start</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/pulse_t_xing" type="other">
          <obj_property name="ElementShortName">pulse_t_xing</obj_property>
@@ -1259,6 +1540,7 @@
    <wvobject fp_name="group239" type="group">
       <obj_property name="label">framer</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="group622" type="group">
          <obj_property name="label">ports</obj_property>
          <obj_property name="DisplayName">label</obj_property>
@@ -1348,7 +1630,6 @@
       <wvobject fp_name="group642" type="group">
          <obj_property name="label">mux</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/tflags.trace_type" type="other">
             <obj_property name="ElementShortName">.trace_type</obj_property>
             <obj_property name="ObjectShortName">tflags.trace_type</obj_property>
@@ -1732,7 +2013,6 @@
       <wvobject fp_name="group627" type="group">
          <obj_property name="label">FSM</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pre_eflags.event_type" type="array">
             <obj_property name="ElementShortName">.event_type</obj_property>
             <obj_property name="ObjectShortName">m.pre_eflags.event_type</obj_property>
@@ -1764,8 +2044,8 @@
             <obj_property name="radix_otherWidth">0</obj_property>
             <obj_property name="CellHeight">100</obj_property>
             <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-            <obj_property name="AnalogYRangeMin">-4100.000000</obj_property>
-            <obj_property name="AnalogYRRangeMax">4100.000000</obj_property>
+            <obj_property name="AnalogYRangeMin">-1000.000000</obj_property>
+            <obj_property name="AnalogYRRangeMax">1000.000000</obj_property>
             <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
             <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
             <obj_property name="AnalogHorizLine">0.000000</obj_property>
@@ -4559,7 +4839,6 @@
    <wvobject fp_name="group1153" type="group">
       <obj_property name="label">CFD</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>

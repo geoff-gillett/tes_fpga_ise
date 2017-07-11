@@ -82,7 +82,7 @@ signal commit_frame,commit_int,start_int,dump_int:boolean;
 signal aux_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal last_peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
-signal peak_stamped,pulse_stamped:boolean:=FALSE;
+signal pulse_stamped:boolean:=FALSE;
 
 signal pre_detection:detection_d;
 -- trace signals
@@ -1344,7 +1344,6 @@ begin
       when HOLD =>
         if m.pre_pulse_start and not average_detection then
           state <= IDLE;
---          t_state <= IDLE;
         end if;
         
       end case;
@@ -1382,7 +1381,7 @@ begin
 --            q_state <= IDLE;
             state <= IDLE;
             dump_int <= TRUE; --FIXME check that it is always stamped
-            peak_stamped <= FALSE;
+--            peak_stamped <= FALSE;
           else
             queue(0) <= to_streambus(peak,ENDIAN);
             q_single <= TRUE;
@@ -1400,10 +1399,10 @@ begin
       if peak_detection and m.stamp_peak and enable_reg then
         if mux_full then
           error_int <= TRUE;
-          peak_stamped <= FALSE;
+--          peak_stamped <= FALSE;
         else
           start_int <= TRUE;  
-          peak_stamped <= TRUE;
+--          peak_stamped <= TRUE;
         end if;
         --FIXME think about this
       elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse and 
