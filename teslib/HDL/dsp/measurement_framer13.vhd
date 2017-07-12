@@ -256,8 +256,8 @@ end function;
 --------------------------------------------------------------------------------
 constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
-attribute mark_debug of pending:signal is "TRUE";
-attribute mark_debug of enable_reg:signal is "TRUE";
+attribute mark_debug of pending:signal is "FALSE";
+attribute mark_debug of enable_reg:signal is "FALSE";
 
 begin
 debugGen:if DEBUG="TRUE" generate
@@ -1420,6 +1420,7 @@ begin
 --          peak_stamped <= FALSE;
         else
           start_reg <= TRUE;  
+          mux_wr_en <= mux_enable;  
         end if;
         --FIXME think about this
       elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse and 
