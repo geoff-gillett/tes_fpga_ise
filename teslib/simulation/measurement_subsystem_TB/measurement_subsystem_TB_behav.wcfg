@@ -21,14 +21,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="113705250000fs"></ZoomStartTime>
-      <ZoomEndTime time="113857350001fs"></ZoomEndTime>
-      <Cursor1Time time="113727150000fs"></Cursor1Time>
+      <ZoomStartTime time="132874000000fs"></ZoomStartTime>
+      <ZoomEndTime time="163294000001fs"></ZoomEndTime>
+      <Cursor1Time time="151064000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="11" />
    <wave_markers>
       <marker time="39536000000" label="" />
       <marker time="47740000000" label="" />
+      <marker time="37540000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -56,7 +57,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/adc_samples" type="array">
          <obj_property name="ElementShortName">adc_samples[1:0][13:0]</obj_property>
          <obj_property name="ObjectShortName">adc_samples[1:0][13:0]</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/adc_samples[1]" type="array">
             <obj_property name="ElementShortName">[1][13:0]</obj_property>
             <obj_property name="ObjectShortName">adc_samples[1][13:0]</obj_property>
@@ -241,6 +241,47 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global" type="array">
          <obj_property name="ElementShortName">global</obj_property>
          <obj_property name="ObjectShortName">global</obj_property>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global.mtu_words" type="array">
+            <obj_property name="ElementShortName">.mtu_words[15:0]</obj_property>
+            <obj_property name="ObjectShortName">global.mtu_words[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global.tick_period" type="array">
+            <obj_property name="ElementShortName">.tick_period[31:0]</obj_property>
+            <obj_property name="ObjectShortName">global.tick_period[31:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global.tick_latency" type="array">
+            <obj_property name="ElementShortName">.tick_latency[31:0]</obj_property>
+            <obj_property name="ObjectShortName">global.tick_latency[31:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global.adc_enable" type="array">
+            <obj_property name="ElementShortName">.adc_enable[7:0]</obj_property>
+            <obj_property name="ObjectShortName">global.adc_enable[7:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global.channel_enable" type="array">
+            <obj_property name="ElementShortName">.channel_enable[7:0]</obj_property>
+            <obj_property name="ObjectShortName">global.channel_enable[7:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global.mca" type="array">
+            <obj_property name="ElementShortName">.mca</obj_property>
+            <obj_property name="ObjectShortName">global.mca</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global.iodelay_control" type="array">
+            <obj_property name="ElementShortName">.iodelay_control[29:0]</obj_property>
+            <obj_property name="ObjectShortName">global.iodelay_control[29:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global.window" type="array">
+            <obj_property name="ElementShortName">.window[15:0]</obj_property>
+            <obj_property name="ObjectShortName">global.window[15:0]</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global.FMC108_internal_clk" type="other">
+            <obj_property name="ElementShortName">.FMC108_internal_clk</obj_property>
+            <obj_property name="ObjectShortName">global.FMC108_internal_clk</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/global.VCO_power" type="other">
+            <obj_property name="ElementShortName">.VCO_power</obj_property>
+            <obj_property name="ObjectShortName">global.VCO_power</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/clk_count" type="other">
          <obj_property name="ElementShortName">clk_count</obj_property>
@@ -363,7 +404,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/channel_reg" type="array">
          <obj_property name="ElementShortName">channel_reg[1:0]</obj_property>
          <obj_property name="ObjectShortName">channel_reg[1:0]</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/channel_reg[1]" type="array">
             <obj_property name="ElementShortName">[1]</obj_property>
             <obj_property name="ObjectShortName">channel_reg[1]</obj_property>
@@ -1925,6 +1965,30 @@
             <obj_property name="CustomSignalColor">#FF00FF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.peak_stop" type="other">
+            <obj_property name="ElementShortName">.peak_stop</obj_property>
+            <obj_property name="ObjectShortName">m.peak_stop</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pulse_start" type="other">
+            <obj_property name="ElementShortName">.pulse_start</obj_property>
+            <obj_property name="ObjectShortName">m.pulse_start</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.trace_flags.multipulse" type="other">
+            <obj_property name="ElementShortName">.multipulse</obj_property>
+            <obj_property name="ObjectShortName">first_pulse_trace_header.trace_flags.multipulse</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.trace_flags.multipeak" type="other">
+            <obj_property name="ElementShortName">.multipeak</obj_property>
+            <obj_property name="ObjectShortName">first_pulse_trace_header.trace_flags.multipeak</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_full" type="other">
             <obj_property name="ElementShortName">trace_full</obj_property>
             <obj_property name="ObjectShortName">trace_full</obj_property>
@@ -2033,6 +2097,7 @@
       <wvobject fp_name="group627" type="group">
          <obj_property name="label">FSM</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/channel_reg[0].capture.detection" type="other">
             <obj_property name="ElementShortName">.detection</obj_property>
             <obj_property name="ObjectShortName">channel_reg[0].capture.detection</obj_property>
@@ -2186,6 +2251,7 @@
             <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.trace_flags" type="array">
                <obj_property name="ElementShortName">.trace_flags</obj_property>
                <obj_property name="ObjectShortName">first_pulse_trace_header.trace_flags</obj_property>
+               <obj_property name="isExpanded"></obj_property>
             </wvobject>
             <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.offset" type="array">
                <obj_property name="ElementShortName">.offset[15:0]</obj_property>
@@ -2354,8 +2420,8 @@
             <obj_property name="radix_otherWidth">0</obj_property>
             <obj_property name="CellHeight">100</obj_property>
             <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-            <obj_property name="AnalogYRangeMin">-600.000000</obj_property>
-            <obj_property name="AnalogYRRangeMax">4000.000000</obj_property>
+            <obj_property name="AnalogYRangeMin">-800.000000</obj_property>
+            <obj_property name="AnalogYRRangeMax">800.000000</obj_property>
             <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
             <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
             <obj_property name="AnalogHorizLine">0.000000</obj_property>
@@ -2491,7 +2557,7 @@
          <obj_property name="radix_otherWidth">0</obj_property>
          <obj_property name="CellHeight">100</obj_property>
          <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-         <obj_property name="AnalogYRangeMin">-300.000000</obj_property>
+         <obj_property name="AnalogYRangeMin">-1000.000000</obj_property>
          <obj_property name="AnalogYRRangeMax">1000.000000</obj_property>
          <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
          <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>

@@ -77,7 +77,8 @@ signal pulse_overflow:boolean;
 signal frame_word:streambus_t;
 signal frame_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal frame_we:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal commit_frame,commit_int,start_int,dump_int:boolean; 
+signal commit_frame,commit_reg,start_reg,dump_reg:boolean; 
+signal commit_int,start_int,dump_int,error_int,overflow_int:boolean; 
 
 signal aux_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal last_peak_address:unsigned(ADDRESS_BITS-1 downto 0);
@@ -96,7 +97,7 @@ signal next_trace_count:unsigned(TRACE_LENGTH_BITS-1 downto 0);
 signal last_trace_count:boolean;
 signal trace_start:boolean;
 signal committing:boolean;
-signal overflow_int,error_int:boolean;
+signal overflow_reg,error_reg:boolean;
 signal enable_reg:boolean;
 signal can_q_trace,can_q_pulse,can_q_single:boolean;
 signal trace_last:boolean;
@@ -255,7 +256,8 @@ end function;
 --------------------------------------------------------------------------------
 constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
-attribute mark_debug of pending:signal is "FALSE";
+attribute mark_debug of pending:signal is "TRUE";
+attribute mark_debug of enable_reg:signal is "TRUE";
 
 begin
 debugGen:if DEBUG="TRUE" generate
@@ -288,6 +290,11 @@ end process debugPending;
 end generate;
 
 m <= measurements;
+commit <= commit_int;
+start <= start_int;
+dump <= dump_int;
+overflow <= overflow_int;
+error <= error_int;
 
 -- timing threshold to the header in reserved spot
 -- reserved is traces flags or timing threshold
@@ -390,15 +397,17 @@ muxOutput:process (clk) is
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      commit <= FALSE;
-      start <= FALSE;
-      dump <= FALSE;
+      commit_int <= FALSE;
+      start_int <= FALSE;
+      dump_int <= FALSE;
+      overflow_int <= FALSE;
+      error_int <= FALSE;
     else
-      commit <= commit_int and mux_wr_en;
-      start <= start_int and mux_enable;
-      dump <= dump_int and mux_wr_en;
-      overflow <= overflow_int and mux_wr_en;
-      error <= error_int and mux_wr_en;
+      commit_int <= commit_reg and mux_wr_en;
+      start_int <= start_reg and mux_enable;
+      dump_int <= dump_reg and mux_wr_en;
+      overflow_int <= overflow_reg and mux_wr_en;
+      error_int <= error_reg and mux_wr_en;
     end if;
   end if;
 end process muxOutput;
@@ -422,7 +431,7 @@ begin
       frame_word.discard <= (others => FALSE);
       frame_we <= (others => FALSE);
       commit_frame <= FALSE;
-      commit_int <= FALSE;
+      commit_reg <= FALSE;
       q_state <= IDLE;
       s_state <= IDLE;
       wr_chunk_state <= STORE0;
@@ -431,7 +440,7 @@ begin
     else
       frame_we <= (others => FALSE);
       commit_frame <= FALSE;
-      commit_int <= FALSE;
+      commit_reg <= FALSE;
       trace_overflow <= FALSE;
     
 --------------------------------------------------------------------------------
@@ -645,7 +654,7 @@ begin
           frame_length <= (0 => '1', others => '0');
           frame_we <= (others => TRUE);
           commit_frame <= TRUE;
-          commit_int <= TRUE;
+          commit_reg <= TRUE;
           q_state <= IDLE;
         end if;
 
@@ -657,10 +666,10 @@ begin
           frame_length <= q_length;
           if dp_detection then
             commit_frame <= dp_state=DONE;
-            commit_int <= dp_state=DONE;
+            commit_reg <= dp_state=DONE;
           else
             commit_frame <= TRUE; 
-            commit_int <= mux_wr_en; 
+            commit_reg <= mux_wr_en; 
           end if;
           
           if dp_detection then
@@ -735,7 +744,7 @@ begin
           frame_length <= dp_length;
           frame_we <= (others => TRUE); 
           commit_frame <= q_state=DONE;
-          commit_int <= q_state=DONE;
+          commit_reg <= q_state=DONE;
         end if;
         
       when DONE =>
@@ -757,11 +766,11 @@ begin
   if rising_edge(clk) then
     if reset='1' then
       
-      start_int <= FALSE;
+      start_reg <= FALSE;
       started <= FALSE;
-      dump_int <= FALSE;
-      overflow_int <= FALSE;
-      error_int <= FALSE;
+      dump_reg <= FALSE;
+      overflow_reg <= FALSE;
+      error_reg <= FALSE;
       pulse_valid <= FALSE;
       pulse_overflow <= FALSE;
       area_overflow <= FALSE;
@@ -800,10 +809,10 @@ begin
       q_aux <= FALSE;
       inc_accum <= FALSE;
       
-      start_int <= FALSE;
-      dump_int <= FALSE;
-      overflow_int <= FALSE;
-      error_int <= FALSE;
+      start_reg <= FALSE;
+      dump_reg <= FALSE;
+      overflow_reg <= FALSE;
+      error_reg <= FALSE;
 --      inc_accum <= FALSE;
       dp_start <= FALSE;
       dp_dump <= FALSE;
@@ -892,7 +901,7 @@ begin
       -- But DOT_PRODUCT_D does not write trace words to the framer.
       -- AVERAGE_TRACE_D dumps immediately on second pulse or peak
       
-      if commit_frame or dump_int or error_int then
+      if commit_frame or dump_reg or error_reg then
         committing <= FALSE;
         mux_enable <= pre_detection/=TRACE_DETECTION_D or 
                       (
@@ -928,15 +937,15 @@ begin
             tflags.multipulse <= FALSE;
             tflags.multipeak <= FALSE;
           else
-            overflow_int <= TRUE;
+            overflow_reg <= TRUE;
           end if;
         end if;
         
       when FIRSTPULSE =>
      
         if trace_overflow or (trace_last and trace_full) then
-          overflow_int <= TRUE;
-          dump_int <= pulse_stamped or m.stamp_pulse;
+          overflow_reg <= TRUE;
+          dump_reg <= pulse_stamped or m.stamp_pulse;
           pulse_stamped <= FALSE;
           dp_dump <= TRUE;
           state <= IDLE;
@@ -947,7 +956,7 @@ begin
           if not m.above_area_threshold then
             --dump the pulse that is ending
             trace_reset <= TRUE;
-            dump_int <= pulse_stamped or m.stamp_pulse; 
+            dump_reg <= pulse_stamped or m.stamp_pulse; 
             pulse_stamped <= FALSE;
             dp_dump <= TRUE;
             -- if pre_pulse_start space will be free as previous pulse was 
@@ -1001,7 +1010,7 @@ begin
 --                  if free < size2 then
                   if not space_available2 then
                     state <= IDLE;  
-                    overflow_int <= TRUE; --overflow for NEW pulse
+                    overflow_reg <= TRUE; --overflow for NEW pulse
                   end if;
                 end if;
               end if;
@@ -1025,14 +1034,14 @@ begin
                   --if there is a new pulse check for space
                   if m.pulse_start and not space_available2 then
                     -- new pulse wont start no need for dump 
-                    overflow_int <= TRUE; 
+                    overflow_reg <= TRUE; 
                   end if;
                   state <= IDLE;
                 else
                   state <= IDLE;  -- queue error dump this pulse 
-                  error_int <= TRUE;
+                  error_reg <= TRUE;
                   -- anyn m.pulse_stamp belongs to the new pulse
-                  dump_int <= pulse_stamped;
+                  dump_reg <= pulse_stamped;
                   pulse_stamped <= FALSE;
                   dp_dump <= TRUE;
                 end if;
@@ -1073,8 +1082,8 @@ begin
                     q_header <= TRUE;
 --                    q_state <= WORD1;
                   else
-                    error_int <= TRUE;
-                    dump_int <= pulse_stamped;
+                    error_reg <= TRUE;
+                    dump_reg <= pulse_stamped;
                     pulse_stamped <= FALSE;
                   end if;
                 end if;
@@ -1127,8 +1136,8 @@ begin
         ------------------------------------------------------------------------
         if trace_overflow or (trace_last and trace_full) then
           state <= IDLE;
-          overflow_int <= TRUE;
-          dump_int <= pulse_stamped; 
+          overflow_reg <= TRUE;
+          dump_reg <= pulse_stamped; 
           pulse_stamped <= FALSE;
           dp_dump <= TRUE;
           
@@ -1156,7 +1165,7 @@ begin
               if not space_available2 then 
                 --second pulse overflows
                 state <= IDLE;
-                overflow_int <= TRUE;
+                overflow_reg <= TRUE;
 --                t_state <= IDLE;
               else
                 state <= FIRSTPULSE; --new pulse
@@ -1212,8 +1221,8 @@ begin
 --                q_state <= WORD1;
                 q_header <= TRUE;
               else  
-                error_int <= TRUE;
-                dump_int <= pulse_stamped;
+                error_reg <= TRUE;
+                dump_reg <= pulse_stamped;
                 pulse_stamped <= FALSE;
                 dp_dump <= TRUE;
               end if;
@@ -1229,7 +1238,7 @@ begin
 --            t_state <= IDLE;
             trace_reset <= TRUE;
 --            trace_started <= FALSE;
-            dump_int <= pulse_stamped; 
+            dump_reg <= pulse_stamped; 
             pulse_stamped <= FALSE;
             dp_dump <= TRUE;
             if m.pulse_start then 
@@ -1251,7 +1260,7 @@ begin
                 if single_trace_detection then
                   if not space_available2 then
                     state <= IDLE;
-                    overflow_int <= TRUE; -- overflow the new pulse;
+                    overflow_reg <= TRUE; -- overflow the new pulse;
                   else
                     state <= FIRSTPULSE;
                   end if;
@@ -1267,7 +1276,7 @@ begin
                 elsif not space_available2 then
                   -- ending pulse will be committed, check space for two events.
                   state <= IDLE;  
-                  overflow_int <= TRUE; --overflow the NEW pulse.
+                  overflow_reg <= TRUE; --overflow the NEW pulse.
                 else
                   state <= FIRSTPULSE; --all good
                 end if;
@@ -1318,8 +1327,8 @@ begin
 --                q_state <= WORD1;
                 q_header <= TRUE;
               else
-                error_int <= TRUE;
-                dump_int <= pulse_stamped;
+                error_reg <= TRUE;
+                dump_reg <= pulse_stamped;
                 pulse_stamped <= FALSE;
               end if;
             end if;
@@ -1338,7 +1347,7 @@ begin
           free <= framer_free - length;
           space_available <= size2 <= framer_free;
           space_available2 <= size2 <= framer_free;
-          start_int <= TRUE;
+          start_reg <= TRUE;
           mux_wr_en <= TRUE;
           q_header <= TRUE;
 --          q_state <= WORD0; --FIXME
@@ -1356,29 +1365,29 @@ begin
         
       end case;
      
-      -- peak recording FIXME issue with pulse_peak_valid being multiply driven
       if m.peak_stop and enable_reg then 
         if (state=FIRSTPULSE or state=WAITPULSEDONE) and not area_detection then 
           if m.eflags.peak_number/=0 and average_detection then --FIXME check
-            tflags.multipeak <= TRUE;
             average_trace_header.trace_flags.multipeak <= TRUE;
             average_trace_header.multipeaks 
               <= average_trace_header.multipeaks+1;
 --            q_state <= IDLE;
 --            t_state <= IDLE;
+            
             trace_reset <= TRUE;
             state <= IDLE;
             pulse_stamped <= FALSE;
           elsif not q_ready then --(pulse_peak_valid and (wr_chunk_state=WRITE and 
                 --s_state=CAPTURE)) or q_state/=IDLE then 
             -- queue error 
-            error_int <= TRUE;
+            error_reg <= TRUE;
 --            q_state <= IDLE; --FIXME should the queue be reset?
 --            t_state <= IDLE;
             state <= IDLE;
-            dump_int <= pulse_stamped and mux_wr_en;
+            dump_reg <= pulse_stamped and mux_wr_en;
             pulse_stamped <= FALSE;
           else
+            tflags.multipeak <= m.eflags.peak_number/=0;
             aux_word_reg <= to_streambus(pulse_peak,FALSE,ENDIAN);--?? last?
             aux_address <= resize(m.peak_address,ADDRESS_BITS);
             q_aux <= not average_detection;
@@ -1386,10 +1395,10 @@ begin
           end if;
         elsif peak_detection then
           if not space_available then
-            overflow_int <= TRUE;
+            overflow_reg <= TRUE;
 --            q_state <= IDLE;
             state <= IDLE;
-            dump_int <= TRUE; --FIXME check that it is always stamped
+            dump_reg <= TRUE; --FIXME check that it is always stamped
 --            peak_stamped <= FALSE;
           else
             queue(0) <= to_streambus(peak,ENDIAN);
@@ -1407,19 +1416,19 @@ begin
       -- time stamping
       if peak_detection and m.stamp_peak and enable_reg then
         if mux_full then
-          error_int <= TRUE;
+          error_reg <= TRUE;
 --          peak_stamped <= FALSE;
         else
-          start_int <= TRUE;  
+          start_reg <= TRUE;  
         end if;
         --FIXME think about this
       elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse and 
             enable_reg then
         if mux_full then
-          error_int <= TRUE;
+          error_reg <= TRUE;
           pulse_stamped <= FALSE;
         else
-          start_int <= mux_enable;  
+          start_reg <= mux_enable;  
           mux_wr_en <= mux_enable;  
           pulse_stamped <= mux_enable;
         end if;
