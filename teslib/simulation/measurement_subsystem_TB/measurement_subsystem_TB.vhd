@@ -223,8 +223,8 @@ bytestream_last <= bytestream_int(8)='1';
 --global.mtu_words <= to_unsigned(187,MTU_BITS);
 -- sim -------------------------------------------------------------------------
 global.mtu_words <= to_unsigned(187,MTU_BITS);
-global.tick_latency <= to_unsigned(2**17,TICK_LATENCY_BITS);
-global.tick_period <= to_unsigned(2**16,TICK_PERIOD_BITS);
+global.tick_latency <= to_unsigned(120000,TICK_LATENCY_BITS);
+global.tick_period <= to_unsigned(62500,TICK_PERIOD_BITS);
 --global.mca.lowest_value <= to_signed(-2500,MCA_VALUE_BITS);
 --global.mca.qualifier <= VALID_PEAK0_MCA_QUAL_D;
 --TODO normalise these type names
@@ -353,29 +353,6 @@ stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
 --	     "../bin_traces/july 10/gt1_100khz.bin";
-	     "../bin_traces/july 10/randn.bin";
---	     "../bin_traces/double_peak.bin";
-	variable sample:integer;
-	--variable sample_in:std_logic_vector(13 downto 0);
-begin
-	while not endfile(sample_file) loop
-		read(sample_file, sample);
-		wait until rising_edge(sample_clk);
-		adc_samples(0) <= to_std_logic(sample, 14);
-		--sample_reg <= resize(sample_in, 14);
---		adc_samples(1) <= adc_samples(0);
---		if clk_count mod 10000 = 0 then
---			report "sample " & integer'image(clk_count);
---		end if;
-		--assert false report str_sample severity note;
-	end loop;
-	wait;
-end process stimulusFile;
-
-stimulusFile2:process
-	file sample_file:integer_file is in 
---	     "../input_signals/tes2_250_old.bin";
---	     "../bin_traces/july 10/gt1_100khz.bin";
 	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/double_peak.bin";
 	variable sample:integer;
@@ -384,16 +361,28 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(sample_clk);
-		adc_samples(1) <= to_std_logic(sample, 14);
-		--sample_reg <= resize(sample_in, 14);
---		adc_samples(1) <= adc_samples(0);
---		if clk_count mod 10000 = 0 then
---			report "sample " & integer'image(clk_count);
---		end if;
-		--assert false report str_sample severity note;
+		adc_samples(0) <= to_std_logic(sample, 14);
 	end loop;
 	wait;
-end process stimulusFile2;
+end process stimulusFile;
+
+--stimulusFile2:process
+--	file sample_file:integer_file is in 
+----	     "../input_signals/tes2_250_old.bin";
+----	     "../bin_traces/july 10/gt1_100khz.bin";
+--	     "../bin_traces/july 10/randn2.bin";
+----	     "../bin_traces/double_peak.bin";
+--	variable sample:integer;
+--	--variable sample_in:std_logic_vector(13 downto 0);
+--begin
+--	while not endfile(sample_file) loop
+--		read(sample_file, sample);
+--		wait until rising_edge(sample_clk);
+--		adc_samples(1) <= to_std_logic(sample, 14);
+--	end loop;
+--	wait;
+--end process stimulusFile2;
+adc_samples(1) <= (others => '0');
 
 ramp:process (sample_clk) is
 begin
@@ -436,9 +425,9 @@ doublesig <= to_signed(-200,ADC_WIDTH)
 
 --enable test
 --global.channel_enable <= "00000001";
-event_enable <= not event_enable after 5 us;
+--event_enable <= not event_enable after 5 us;
 --global.channel_enable <= "000000" & event_enable & event_enable;
-global.channel_enable <= "0000000" & event_enable;
+--global.channel_enable <= "0000000" & event_enable;
 
 
 mcaControlStimulus:process
@@ -450,7 +439,7 @@ begin
   chan_reg(0).capture.delay <= (others => '0');
   chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --  chan_reg(0).capture.detection <= TRACE_DETECTION_D;
-  chan_reg(0).capture.max_peaks <= to_unsigned(5,PEAK_COUNT_BITS);
+  chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
   chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
   chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
   chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
@@ -462,7 +451,7 @@ begin
   chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
   chan_reg(1).capture.delay <= to_unsigned(10,DELAY_BITS);
   chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
---  chan_reg(1).capture.detection <= TRACE_DETECTION_D;
+  chan_reg(1).capture.detection <= PULSE_DETECTION_D;
   chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
   chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
   chan_reg(1).capture.trace_type <= SINGLE_TRACE_D;
@@ -483,7 +472,7 @@ begin
   global.mca.channel <= (others => '0');
   global.mca.last_bin <= (others => '1'); --to_unsigned(1023,MCA_ADDRESS_BITS);
   global.mca.lowest_value <= to_signed(-8000,MCA_VALUE_BITS);
---	global.mca.update_asap <= TRUE;
+	global.mca.update_asap <= TRUE;
 	wait for SAMPLE_CLK_PERIOD;
 	global.mca.update_asap <= FALSE;
 
@@ -532,16 +521,23 @@ chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 --
 --chan_reg(0).capture.detection <= TRACE_DETECTION_D;
-chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
---wait for 100 us;
+--chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
+--global.channel_enable <= "00000011";
+--wait for 500 us;
+chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+global.channel_enable <= "00000001";
+--wait for 1 ms;
+--chan_reg(0).capture.detection <= AREA_DETECTION_D;
+--wait for 1 ms;
+--chan_reg(0).capture.detection <= PEAK_DETECTION_D;
+--wait for 1 ms;
 --chan_reg(0).capture.detection <= PULSE_DETECTION_D;
---wait for 100 us;
-chan_reg(0).capture.detection <= PEAK_DETECTION_D;
+--chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 --global.channel_enable <= "00000011";
 --  wait for 200 us;
 --  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
 --  chan_reg(0).capture.detection <= TRACE_DETECTION_D;
---  global.channel_enable <= "00000001";
+--global.channel_enable <= "00000001";
   
 --------------------------------------------------------------------------------
 -- sample file 

@@ -21,16 +21,11 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="132874000000fs"></ZoomStartTime>
-      <ZoomEndTime time="163294000001fs"></ZoomEndTime>
-      <Cursor1Time time="151064000000fs"></Cursor1Time>
+      <ZoomStartTime time="597032666666fs"></ZoomStartTime>
+      <ZoomEndTime time="627852666667fs"></ZoomEndTime>
+      <Cursor1Time time="622716000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="11" />
-   <wave_markers>
-      <marker time="39536000000" label="" />
-      <marker time="47740000000" label="" />
-      <marker time="37540000000" label="" />
-   </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
       <obj_property name="DisplayName">label</obj_property>
