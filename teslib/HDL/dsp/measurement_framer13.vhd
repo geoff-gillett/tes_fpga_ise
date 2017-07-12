@@ -773,6 +773,7 @@ begin
 --      wr_chunk_state <= STORE0;
       
       mux_enable <= FALSE;
+      mux_wr_en <= FALSE;
       multipulse <= FALSE;
       multipeak <= FALSE;
       
@@ -981,7 +982,7 @@ begin
 --                  t_state <= IDLE; -- restart the trace
 --                  trace_started <= FALSE;
 --                  dump_int <= pulse_stamped; 
-                  error_int <= TRUE;
+--                  error_int <= TRUE;
                 else
                   if trace_last then -- 
                     -- May have queue error handled in output block.
@@ -1135,7 +1136,8 @@ begin
           -- end of trace
           if average_detection then 
             if m.pulse_start then
-              error_int <= TRUE;
+--              error_int <= TRUE;
+              trace_reset <= TRUE;
               average_trace_header.trace_flags.multipulse <= TRUE;
               average_trace_header.multipulses 
                 <= average_trace_header.multipulses+1;
@@ -1176,8 +1178,7 @@ begin
               average_trace_header.multipulses 
                 <= average_trace_header.multipulses+1;
               state <= FIRSTPULSE;
-              error_int <= TRUE;
-  --            t_state <= IDLE;
+--              error_int <= TRUE;
               trace_reset <= TRUE;
             end if;
           end if;
@@ -1365,6 +1366,7 @@ begin
               <= average_trace_header.multipeaks+1;
 --            q_state <= IDLE;
 --            t_state <= IDLE;
+            trace_reset <= TRUE;
             state <= IDLE;
             pulse_stamped <= FALSE;
           elsif not q_ready then --(pulse_peak_valid and (wr_chunk_state=WRITE and 

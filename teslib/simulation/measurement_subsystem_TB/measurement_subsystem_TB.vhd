@@ -453,7 +453,7 @@ begin
 	global.mca.value <= MCA_FILTERED_SIGNAL_D;
 	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
 	global.mca.qualifier <= ALL_MCA_QUAL_D;
-	global.mca.update_asap <= TRUE;
+--	global.mca.update_asap <= TRUE;
   global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
   global.mca.bin_n <= to_unsigned(0,MCA_BIN_N_BITS);
   global.mca.channel <= (others => '0');
