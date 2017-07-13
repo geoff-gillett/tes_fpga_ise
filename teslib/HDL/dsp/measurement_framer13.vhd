@@ -1288,7 +1288,6 @@ begin
               end if;
             end if;
 
-            
             --------------------------------------------------------------------
             -- other output logic for valid pulse_threshold_neg (WAITPULSEDONE)
             -- mux logic for queue errors also lives here
@@ -1367,10 +1366,11 @@ begin
             trace_reset <= TRUE;
             state <= IDLE;
             pulse_stamped <= FALSE;
-          elsif not q_ready then --(pulse_peak_valid and (wr_chunk_state=WRITE and 
+          elsif not q_ready or m.pre_pulse_threshold_neg then 
                 --s_state=CAPTURE)) or q_state/=IDLE then 
             -- queue error 
             error_reg <= TRUE;
+            trace_reset <= TRUE;
 --            q_state <= IDLE; --FIXME should the queue be reset?
 --            t_state <= IDLE;
             state <= IDLE;
