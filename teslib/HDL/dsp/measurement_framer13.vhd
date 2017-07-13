@@ -1048,32 +1048,17 @@ begin
             if trace_detection then
               if trace_last and not trace_full then
                 -- dump if SINGLE_TRACE_D
-                --FIXME the idea is to handle average trace in the capture 
-                --process
---                if average_trace_detection and not m.pulse_start then
---                  --commit for averaging if not a multipulse
---                  commit_frame <= TRUE;
---                  frame_length <= length;
---                  inc_accum <= TRUE;
---                  committing <= TRUE;
---                  free <= framer_free - length;
---                  space_available <= size2 <= framer_free;
---                  space_available2 <= size2 <= framer_free;
-                  
                 if not average_detection then 
                   if q_ready then 
                     -- commit the trace
---                    dp_write <= TRUE;
                     queue(0) <= to_streambus(this_pulse_trace_header,0,ENDIAN); 
                     queue(1) <= to_streambus(this_pulse_trace_header,1,ENDIAN);
                     q_length <= length;
-                    --commit_pulse <= not dp_detection; -- dp will do commit 
                     committing <= TRUE;
                     free <= framer_free - length;
                     space_available <= size2 <= framer_free;
                     space_available2 <= size2 <= framer_free;
                     q_header <= TRUE;
---                    q_state <= WORD1;
                   else
                     error_reg <= TRUE;
                     dump_reg <= pulse_stamped;
@@ -1085,7 +1070,8 @@ begin
             else 
               -- not trace_detection 
               if q_ready then 
-                
+               
+                --FIXME add ready test 
                 if area_detection then
                   q_single <= TRUE; -- assumption here that q is idle
                   queue(0) <= to_streambus(area,ENDIAN);
