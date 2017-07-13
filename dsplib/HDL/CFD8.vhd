@@ -294,7 +294,7 @@ begin
       
       --FIXME issue with this threshold change? 
       above_pipe(2 to DEPTH) 
-        <= (filtered_0x_reg >= pulse_threshold_int) & above_pipe(2 to DEPTH-1);
+        <= (filtered_0x_reg > pulse_threshold_int) & above_pipe(2 to DEPTH-1);
         
       -- need first peak
       if slope_0_p_pipe(4) then

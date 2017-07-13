@@ -99,7 +99,7 @@ signal trace_start:boolean;
 signal committing:boolean;
 signal overflow_reg,error_reg:boolean;
 signal enable_reg:boolean;
-signal can_q_trace,can_q_pulse,can_q_single:boolean;
+--signal can_q_trace,can_q_pulse,can_q_single:boolean;
 signal trace_last:boolean;
 
 --FSMs
@@ -371,9 +371,9 @@ pre_detection <= m.pre_eflags.event_type.detection;
   
 --pre_pulse_start <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start;  
 
-can_q_single <= q_state=IDLE;
-can_q_trace <= q_state=IDLE;
-can_q_pulse <= q_state=IDLE;
+--can_q_single <= q_state=IDLE;
+--can_q_trace <= q_state=IDLE;
+--can_q_pulse <= q_state=IDLE;
 
 --pre_full <= free < resize(m.pre_size,ADDRESS_BITS+1);
 
@@ -875,17 +875,20 @@ begin
         size2 <= resize(m.pre_size2,ADDRESS_BITS+1);
         
         if not committing then
-          space_available <= m.pre_size <= framer_free;
-          space_available2 <= m.pre_size2 <= framer_free;
           free <= framer_free;
         end if;
+        space_available <= m.pre_size <= free;
+        space_available2 <= m.pre_size2 <= free;
           
-      elsif not committing then -- FIXME 
-        -- free space can only decrease here.
-          space_available <= size <= framer_free;
-          space_available2 <= size2 <= framer_free;
-          free <= framer_free;
-      end if; 
+      else 
+      
+        space_available <= size <= free;
+        space_available2 <= size2 <= free;
+        if not committing then -- FIXME 
+          -- free space can only decrease here.
+            free <= framer_free;
+        end if; 
+      end if;
       
       -- SINGLE_TRACE_D and DOT_PRODUCT_D move through same FSM states
       -- But DOT_PRODUCT_D does not write trace words to the framer.
@@ -893,11 +896,11 @@ begin
       
       if commit_frame or dump_reg or error_reg then
         committing <= FALSE;
-        mux_enable <= pre_detection/=TRACE_DETECTION_D or 
-                      (
-                        pre_detection=TRACE_DETECTION_D and 
-                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
-                      );
+--        mux_enable <= pre_detection/=TRACE_DETECTION_D or 
+--                      (
+--                        pre_detection=TRACE_DETECTION_D and 
+--                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
+--                      );
       end if;
       
 --      if trace_start then

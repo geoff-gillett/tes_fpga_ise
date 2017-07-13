@@ -353,7 +353,8 @@ stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
 --	     "../bin_traces/july 10/gt1_100khz.bin";
-	     "../bin_traces/july 10/randn2.bin";
+--	     "../bin_traces/july 10/randn2.bin";
+	     "../bin_traces/july 10/randn.bin";
 --	     "../bin_traces/double_peak.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);

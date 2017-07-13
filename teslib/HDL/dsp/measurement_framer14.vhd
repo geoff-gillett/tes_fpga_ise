@@ -99,7 +99,7 @@ signal trace_start:boolean;
 signal committing:boolean;
 signal overflow_reg,error_reg:boolean;
 signal enable_reg:boolean;
-signal can_q_trace,can_q_pulse,can_q_single:boolean;
+--signal can_q_trace,can_q_pulse,can_q_single:boolean;
 signal trace_last:boolean;
 
 --FSMs
@@ -371,9 +371,9 @@ pre_detection <= m.pre_eflags.event_type.detection;
   
 --pre_pulse_start <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start;  
 
-can_q_single <= q_state=IDLE;
-can_q_trace <= q_state=IDLE;
-can_q_pulse <= q_state=IDLE;
+--can_q_single <= q_state=IDLE;
+--can_q_trace <= q_state=IDLE;
+--can_q_pulse <= q_state=IDLE;
 
 --pre_full <= free < resize(m.pre_size,ADDRESS_BITS+1);
 
