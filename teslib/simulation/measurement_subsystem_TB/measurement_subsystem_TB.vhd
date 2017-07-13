@@ -525,6 +525,8 @@ chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 --global.channel_enable <= "00000011";
 --wait for 500 us;
 chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+--chan_reg(0).capture.detection <= TRACE_DETECTION_D;
+wait for 6 us;
 global.channel_enable <= "00000001";
 --wait for 1 ms;
 --chan_reg(0).capture.detection <= AREA_DETECTION_D;
