@@ -159,13 +159,8 @@ signal dp_trace_start:boolean;
 signal start_accumulating:boolean;
 signal dp_detection:boolean;
 signal trace_done:boolean;
---signal pre_trace_start:boolean;
---signal trace_started:boolean;
---signal trace_start_reg:boolean;
---signal trace_started_reg:boolean;
 
 signal dp_address:unsigned(ADDRESS_BITS-1 downto 0);
---signal commit_pulse:boolean;
 -- TRACE_DETECTION and not DOT_PRODUCT
 signal trace_wr_en:boolean;
 signal inc_accum:boolean;
@@ -178,11 +173,7 @@ signal trace_full:boolean;
 signal trace_overflow:boolean;
 signal eflags_reg,eflags:detection_flags_t;
 signal dp_length:unsigned(ADDRESS_BITS downto 0);
--- The trace ended before the pulse.
---signal dp_before_pulse:boolean;
 signal dp_dump:boolean; --,dp_write:boolean;
--- size of the event part (not including any trace)
--- DEPENDS on PEAK_COUNT_BITS FIXME change to 3 bits to minimise comparator.
 
 -- the free space required to start the event
 signal size:unsigned(PEAK_COUNT_BITS downto 0);
@@ -866,7 +857,6 @@ begin
         
         dp_address <= resize(m.dp_address, ADDRESS_BITS);
         
---        detection <= m.eflags.event_type.detection;
         
         -- length is the frame length to be committed
         -- size is the free space required to *start* a new event
