@@ -16,7 +16,7 @@ use work.registers.all;
 use work.functions.all;
 
 --FIXME mux full errors????
-entity measurement_framer13 is
+entity measurement_framer14 is
 generic(
   WIDTH:natural:=16;
   ADDRESS_BITS:integer:=11;
@@ -44,9 +44,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity measurement_framer13;
+end entity measurement_framer14;
 
-architecture RTL of measurement_framer13 is
+architecture RTL of measurement_framer14 is
 
 --  
 constant CHUNKS:integer:=BUS_CHUNKS;
@@ -414,7 +414,6 @@ q_can_write <= not (s_state=CAPTURE and wr_chunk_state=WRITE and trace_wr_en)
                
 --FIXME this underestimates, also ready when in a  last word state and 
 q_ready <= q_state=IDLE and not (q_aux or q_single or q_header or q_pulse);
-
 framerControl:process(clk)
 begin
   if rising_edge(clk) then
@@ -1292,15 +1291,6 @@ begin
             -- other output logic for valid pulse_threshold_neg (WAITPULSEDONE)
             -- mux logic for queue errors also lives here
             --------------------------------------------------------------------
---            if average_detection then 
---              commit_frame <= TRUE;-- FIXME need some signal to send to capture
---              free <= framer_free - length;
---              space_available <= size2 <= framer_free;
---              space_available2 <= size2 <= framer_free;
---              frame_length <= length;
---              inc_accum <= TRUE;
-----              free <= next_free;
-----              free <= framer_free - length;
             if not average_detection then
               if q_ready then
 --                dp_write <= TRUE; 
@@ -1354,9 +1344,7 @@ begin
         
       end case;
      
-      --FIXME now that the queue is controlled by registered signals 
-      --there is one clock where its ready signal is false
-      --but a transaction is pending, this can lock it up
+      --FIXME
       --this framer needs major refactoring, a couple of error conditions could
       --be removed, perhaps separate the peak writing from the queue.
       if m.peak_stop and enable_reg then 
