@@ -1354,6 +1354,11 @@ begin
         
       end case;
      
+      --FIXME now that the queue is controlled by registered signals 
+      --there is one clock where its ready signal is false
+      --but a transaction is pending, this can lock it up
+      --this framer needs major refactoring, a couple of error conditions could
+      --be removed, perhaps separate the peak writing from the queue.
       if m.peak_stop and enable_reg then 
         if (state=FIRSTPULSE or state=WAITPULSEDONE) and not area_detection then 
           if m.eflags.peak_number/=0 and average_detection then --FIXME check
@@ -1366,7 +1371,7 @@ begin
             trace_reset <= TRUE;
             state <= IDLE;
             pulse_stamped <= FALSE;
-          elsif not q_ready or m.pre_pulse_threshold_neg then 
+          elsif (not q_ready) or m.pre_pulse_threshold_neg then 
                 --s_state=CAPTURE)) or q_state/=IDLE then 
             -- queue error 
             error_reg <= TRUE;
