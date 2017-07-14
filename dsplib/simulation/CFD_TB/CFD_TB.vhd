@@ -13,6 +13,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+library extensions;
+use extensions.debug.all;
+use extensions.boolean_vector.all;
+use extensions.logic.all;
+
+use std.textio.all;
 use work.types.all;
 
 entity CFD_TB is
@@ -88,7 +94,7 @@ port map(
   stage2 => slope
 );
 
-UUT:entity work.CFD8
+UUT:entity work.CFD20
 generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
@@ -134,11 +140,24 @@ begin
     end if;
   end if;
 end process simsquare;
---adc_sample <= to_signed(-100,WIDTH) 
---              when sim_count(SIM_WIDTH-1)='0' 
---              else to_signed(1000,WIDTH);
-                
---sample_in <= resize(sim_count,WIDTH);
+
+stimulusFile:process
+	file sample_file:integer_file is in 
+--	     "../input_signals/tes2_250_old.bin";
+--	     "../bin_traces/july 10/gt1_100khz.bin";
+--	     "../bin_traces/july 10/randn2.bin";
+	     "../bin_traces/july 10/randn.bin";
+--	     "../bin_traces/double_peak.bin";
+	variable sample:integer;
+	--variable sample_in:std_logic_vector(13 downto 0);
+begin
+	while not endfile(sample_file) loop
+		read(sample_file, sample);
+		wait until rising_edge(clk);
+--		sample_in <= to_signed(sample, WIDTH);
+	end loop;
+	wait;
+end process stimulusFile;
 
 doublesig <= to_signed(-200,WIDTH)
              when sim_count < 10

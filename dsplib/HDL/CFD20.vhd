@@ -66,8 +66,7 @@ port (
 end component;
 
 --constant RAW_CFD_DELAY:integer:=256;
-constant XLAT:natural:=1;
-constant DEPTH:integer:=12;
+constant DEPTH:integer:=11;
 
 signal started:boolean;
 signal slope_0_p,slope_0_n:boolean;
@@ -158,25 +157,10 @@ port map(
   signal_in => slope,
   threshold => (others => '0'),
   signal_out => slope_0x,
-  pos => slope_0_p,  --LAT=1
+  pos => slope_0_p,  --LAT=0
   neg => slope_0_n,
   above => open
 );
-
---filtered0xing:entity work.crossing20
---generic map(
---  WIDTH => WIDTH
---)
---port map(
---  clk => clk,
---  reset => reset,
---  signal_in => filtered,
---  threshold => (others => '0'),
---  signal_out => filtered_0x,
---  pos => filtered_0_p,
---  neg => open,
---  above => open
---);
 
 thresholding:process(clk)
 begin
@@ -197,7 +181,7 @@ if rising_edge(clk) then
       rel2min_int <= rel2min;
     end if;
     slope_0x_reg <= slope_0x;
-    filtered_0x_reg <= filtered_0x;
+    filtered_0x_reg <= filtered_0x; --LAT 1
   end if;
 end if;
 end process thresholding;
@@ -210,7 +194,7 @@ port map(
   clk => clk,
   reset => reset,
   signal_in => slope_0x_reg,
-  threshold => slope_threshold_int,
+  threshold => slope_threshold_int, --LAT 2
   signal_out => slope_int,
   pos => slope_t_p,
   neg => open,
@@ -225,11 +209,11 @@ port map(
   clk => clk,
   reset => reset,
   signal_in => filtered_0x_reg,
-  threshold => pulse_threshold_int,
+  threshold => pulse_threshold_int, --LAT 2
   signal_out => filtered_int,
   pos => pulse_t_p,
   neg => pulse_t_n,
-  above => above_i
+  above => above_i --LAT 2
 );
 
 overrun_i <= delay_counter >= DELAY-1;
@@ -246,7 +230,6 @@ begin
       above_pipe <= (others => FALSE);
       
       armed_i <= FALSE;
-      above_i <= FALSE;
       first_peak <= TRUE;
       delay_counter <= 0;
       q_wr_en <= '0'; 
@@ -263,27 +246,40 @@ begin
       slope_0_n_pipe <= (slope_0_n and started) & slope_0_n_pipe(1 to DEPTH-1);
       slope_0_p_pipe <= slope_0_p & slope_0_p_pipe(1 to DEPTH-1);
       
---      if filtered_0x_reg > pulse_threshold_int then
---        above_i <= TRUE; --LAT 1 ??
---      end if;
---      if filtered_0x_reg < pulse_threshold_int then
---        above_i <= FALSE;
---      end if;
-      above_pipe(2 to DEPTH) <= above_i & above_pipe(2 to DEPTH-1);
+      above_pipe(3 to DEPTH) <= above_i & above_pipe(3 to DEPTH-1);
       
-      if slope_0_p_pipe(3) and not above_pipe(3) then
-        first_peak <= TRUE; -- LAT 4
-      elsif slope_0_n_pipe(4) and armed_i and above_pipe(4) then
+      if slope_0_p_pipe(2) and not above_i then
+        first_peak <= TRUE; -- LAT 3
+      elsif slope_0_n_pipe(3) and armed_i and above_pipe(3) then
         first_peak <= FALSE;
       end if; 
       first_peak_pipe(4 to DEPTH) <= first_peak & first_peak_pipe(4 to DEPTH-1);
       
-      pulse_t_p_pipe(4 to DEPTH) <= pulse_t_p & pulse_t_p_pipe(4 to DEPTH-1);
-      pulse_t_n_pipe(4 to DEPTH) <= pulse_t_n & pulse_t_n_pipe(4 to DEPTH-1);
-      slope_t_p_pipe(4 to DEPTH) <= slope_t_p & slope_t_p_pipe(4 to DEPTH-1);
+      pulse_t_p_pipe(3 to DEPTH) <= pulse_t_p & pulse_t_p_pipe(3 to DEPTH-1);
+      pulse_t_n_pipe(3 to DEPTH) <= pulse_t_n & pulse_t_n_pipe(3 to DEPTH-1);
+      slope_t_p_pipe(3 to DEPTH) <= slope_t_p & slope_t_p_pipe(3 to DEPTH-1);
       
-      filtered_pipe(4 to DEPTH) <= filtered_int & filtered_pipe(4 to DEPTH-1);
-      slope_pipe(4 to DEPTH) <= slope_int & slope_pipe(4 to DEPTH-1);
+      filtered_pipe(3 to DEPTH) <= filtered_int & filtered_pipe(3 to DEPTH-1);
+      slope_pipe(3 to DEPTH) <= slope_int & slope_pipe(3 to DEPTH-1);
+      
+      if slope_t_p then
+        armed_i <= TRUE; -- lat 3
+      elsif slope_0_n_pipe(3) then
+        armed_i <= FALSE;
+      end if; 
+      armed_pipe(4 to DEPTH) <= armed_i & armed_pipe(4 to DEPTH-1);
+      
+      -- need first peak
+      if slope_0_p_pipe(3) then
+        if rel2min_int or not first_peak then -- or not first peak
+          minima <= filtered_pipe(3); --lat 4
+        else
+          minima <= (others => '0');
+        end if;
+        minima_pipe(4 to DEPTH) <= filtered_pipe(3) & minima_pipe(4 to DEPTH-1);
+      else
+        minima_pipe(4 to DEPTH) <= minima_pipe(4) & minima_pipe(4 to DEPTH-1);
+      end if;
       
       if slope_0_p_pipe(DEPTH) then 
         delay_counter <= 1;
@@ -292,31 +288,9 @@ begin
           delay_counter <= delay_counter+1;
         end if;
       end if;
-      
-      if slope_t_p then
-        armed_i <= TRUE; -- lat 4
-      elsif slope_0_n_pipe(4) then
-        armed_i <= FALSE;
-      end if; 
-      armed_pipe(5 to DEPTH) <= armed_i & armed_pipe(5 to DEPTH-1);
-        
-      -- need first peak
-      if slope_0_p_pipe(4) then
-        if rel2min_int or not first_peak then -- or not first peak
-          minima <= filtered_pipe(4);
-        else
-          minima <= (others => '0');
---          minima_pipe(5 to DEPTH) 
---            <= to_signed(0,width) & minima_pipe(5 to DEPTH-1);
-        end if;
-          minima_pipe(5 to DEPTH) <= filtered_pipe(5) & 
-                                     minima_pipe(5 to DEPTH-1);
-      else
-        minima_pipe(5 to DEPTH) <= minima_pipe(5) & minima_pipe(5 to DEPTH-1);
-      end if;
      
       -- FIXME 
-      if slope_0_p_pipe(DEPTH) then
+      if slope_0_p_pipe(DEPTH-1) then
         max_slope_i <= slope_pipe(DEPTH-1);
       else
         if slope_pipe(DEPTH-1) > max_slope_i then
@@ -324,8 +298,9 @@ begin
         end if;
       end if;
       
-      -- p valid @DEPTH-1
-      if first_peak_pipe(DEPTH-1) then 
+      -- p = cf * (sig - minima) valid @DEPTH-1
+      if first_peak_pipe(DEPTH-1) then
+        -- the minima used in the calculation was zero
         if minima_pipe(DEPTH-1) > p then
           cfd_low_i <= minima_pipe(DEPTH-1);
         else
@@ -351,6 +326,7 @@ begin
 end process pipeline;
 
 --latency 5?
+--cf*(sig-min)
 cfCalc:entity work.constant_fraction8
 generic map(
   WIDTH => WIDTH,
@@ -363,7 +339,7 @@ port map(
   reset => reset,
   min => minima,
   cf => cf_int,
-  sig => filtered_pipe(5), 
+  sig => filtered_pipe(4), 
   p => p -- constant fraction of the rise above minimum
 );
 
