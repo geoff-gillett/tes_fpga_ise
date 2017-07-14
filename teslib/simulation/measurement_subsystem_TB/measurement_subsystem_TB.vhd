@@ -426,9 +426,9 @@ doublesig <= to_signed(-200,ADC_WIDTH)
 
 --enable test
 --global.channel_enable <= "00000001";
---event_enable <= not event_enable after 5 us;
+event_enable <= not event_enable after 3 us;
 --global.channel_enable <= "000000" & event_enable & event_enable;
---global.channel_enable <= "0000000" & event_enable;
+global.channel_enable <= "0000000" & event_enable;
 
 
 mcaControlStimulus:process
@@ -522,13 +522,13 @@ chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 --
 --chan_reg(0).capture.detection <= TRACE_DETECTION_D;
---chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
+chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
 --global.channel_enable <= "00000011";
 --wait for 500 us;
-chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 --chan_reg(0).capture.detection <= TRACE_DETECTION_D;
-wait for 6 us;
-global.channel_enable <= "00000001";
+--wait for 6 us;
+--global.channel_enable <= "00000001";
 --wait for 1 ms;
 --chan_reg(0).capture.detection <= AREA_DETECTION_D;
 --wait for 1 ms;
