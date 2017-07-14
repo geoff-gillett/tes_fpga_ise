@@ -16,8 +16,8 @@ use ieee.numeric_std.all;
 library extensions;
 use extensions.logic.all;
 
---latency = 2
-entity crossing13 is
+--latency = 1
+entity crossing20 is
 generic(
 	WIDTH:integer:=18
 );
@@ -32,9 +32,9 @@ port(
   neg:out boolean;
   above:out boolean
 );
-end entity crossing13;
+end entity crossing20;
 
-architecture RTL of crossing13 is
+architecture RTL of crossing20 is
 
 
 signal isbelow,isabove,above_int:boolean;

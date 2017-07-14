@@ -21,9 +21,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="6296291666fs"></ZoomStartTime>
-      <ZoomEndTime time="6372741667fs"></ZoomEndTime>
-      <Cursor1Time time="6360000000fs"></Cursor1Time>
+      <ZoomStartTime time="11530791666fs"></ZoomStartTime>
+      <ZoomEndTime time="11604241667fs"></ZoomEndTime>
+      <Cursor1Time time="11592000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="11" />
    <wave_markers>
@@ -5094,64 +5094,57 @@
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/filtered_pipe" type="array">
-         <obj_property name="ElementShortName">filtered_pipe[1:13][15:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_pipe[1:13][15:0]</obj_property>
+         <obj_property name="ElementShortName">filtered_pipe[1:12][15:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered_pipe[1:12][15:0]</obj_property>
          <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/slope_pipe" type="array">
-         <obj_property name="ElementShortName">slope_pipe[1:13][15:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_pipe[1:13][15:0]</obj_property>
-         <obj_property name="isExpanded"></obj_property>
+         <obj_property name="ElementShortName">slope_pipe[1:12][15:0]</obj_property>
+         <obj_property name="ObjectShortName">slope_pipe[1:12][15:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/minima_pipe" type="array">
-         <obj_property name="ElementShortName">minima_pipe[1:13][15:0]</obj_property>
-         <obj_property name="ObjectShortName">minima_pipe[1:13][15:0]</obj_property>
+         <obj_property name="ElementShortName">minima_pipe[1:12][15:0]</obj_property>
+         <obj_property name="ObjectShortName">minima_pipe[1:12][15:0]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/slope_0_n_pipe" type="array">
-         <obj_property name="ElementShortName">slope_0_n_pipe[1:13]</obj_property>
-         <obj_property name="ObjectShortName">slope_0_n_pipe[1:13]</obj_property>
+         <obj_property name="ElementShortName">slope_0_n_pipe[1:12]</obj_property>
+         <obj_property name="ObjectShortName">slope_0_n_pipe[1:12]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/slope_0_p_pipe" type="array">
-         <obj_property name="ElementShortName">slope_0_p_pipe[1:13]</obj_property>
-         <obj_property name="ObjectShortName">slope_0_p_pipe[1:13]</obj_property>
+         <obj_property name="ElementShortName">slope_0_p_pipe[1:12]</obj_property>
+         <obj_property name="ObjectShortName">slope_0_p_pipe[1:12]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/filtered_0_p_pipe" type="array">
-         <obj_property name="ElementShortName">filtered_0_p_pipe[1:13]</obj_property>
-         <obj_property name="ObjectShortName">filtered_0_p_pipe[1:13]</obj_property>
+         <obj_property name="ElementShortName">filtered_0_p_pipe[1:12]</obj_property>
+         <obj_property name="ObjectShortName">filtered_0_p_pipe[1:12]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/slope_t_p_pipe" type="array">
-         <obj_property name="ElementShortName">slope_t_p_pipe[1:13]</obj_property>
-         <obj_property name="ObjectShortName">slope_t_p_pipe[1:13]</obj_property>
+         <obj_property name="ElementShortName">slope_t_p_pipe[1:12]</obj_property>
+         <obj_property name="ObjectShortName">slope_t_p_pipe[1:12]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/pulse_t_p_pipe" type="array">
-         <obj_property name="ElementShortName">pulse_t_p_pipe[1:13]</obj_property>
-         <obj_property name="ObjectShortName">pulse_t_p_pipe[1:13]</obj_property>
+         <obj_property name="ElementShortName">pulse_t_p_pipe[1:12]</obj_property>
+         <obj_property name="ObjectShortName">pulse_t_p_pipe[1:12]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/pulse_t_n_pipe" type="array">
-         <obj_property name="ElementShortName">pulse_t_n_pipe[1:13]</obj_property>
-         <obj_property name="ObjectShortName">pulse_t_n_pipe[1:13]</obj_property>
+         <obj_property name="ElementShortName">pulse_t_n_pipe[1:12]</obj_property>
+         <obj_property name="ObjectShortName">pulse_t_n_pipe[1:12]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/first_peak_pipe" type="array">
-         <obj_property name="ElementShortName">first_peak_pipe[1:13]</obj_property>
-         <obj_property name="ObjectShortName">first_peak_pipe[1:13]</obj_property>
+         <obj_property name="ElementShortName">first_peak_pipe[1:12]</obj_property>
+         <obj_property name="ObjectShortName">first_peak_pipe[1:12]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/armed_pipe" type="array">
-         <obj_property name="ElementShortName">armed_pipe[1:13]</obj_property>
-         <obj_property name="ObjectShortName">armed_pipe[1:13]</obj_property>
+         <obj_property name="ElementShortName">armed_pipe[1:12]</obj_property>
+         <obj_property name="ObjectShortName">armed_pipe[1:12]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/above_pipe" type="array">
-         <obj_property name="ElementShortName">above_pipe[1:13]</obj_property>
-         <obj_property name="ObjectShortName">above_pipe[1:13]</obj_property>
+         <obj_property name="ElementShortName">above_pipe[1:12]</obj_property>
+         <obj_property name="ObjectShortName">above_pipe[1:12]</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/delay_counter" type="other">
          <obj_property name="ElementShortName">delay_counter</obj_property>
          <obj_property name="ObjectShortName">delay_counter</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/above_i" type="other">
-         <obj_property name="ElementShortName">above_i</obj_property>
-         <obj_property name="ObjectShortName">above_i</obj_property>
-         <obj_property name="CustomSignalColor">#FF0000</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/armed_i" type="other">
          <obj_property name="ElementShortName">armed_i</obj_property>
@@ -5228,6 +5221,12 @@
       <wvobject type="divider" fp_name="divider1259">
          <obj_property name="label">LATENCY 2</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/above_i" type="other">
+         <obj_property name="ElementShortName">above_i</obj_property>
+         <obj_property name="ObjectShortName">above_i</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/above_pipe[2]" type="other">
          <obj_property name="ElementShortName">[2]</obj_property>
@@ -5368,34 +5367,6 @@
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="BkColor">#F0E68C</obj_property>
       </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/armed_pipe[13]" type="other">
-         <obj_property name="ElementShortName">[13]</obj_property>
-         <obj_property name="ObjectShortName">armed_pipe[13]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/above_pipe[13]" type="other">
-         <obj_property name="ElementShortName">[13]</obj_property>
-         <obj_property name="ObjectShortName">above_pipe[13]</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/filtered_pipe[13]" type="array">
-         <obj_property name="ElementShortName">[13][15:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_pipe[13][15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/slope_pipe[13]" type="array">
-         <obj_property name="ElementShortName">[13][15:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_pipe[13][15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/slope_0_n_pipe[13]" type="other">
-         <obj_property name="ElementShortName">[13]</obj_property>
-         <obj_property name="ObjectShortName">slope_0_n_pipe[13]</obj_property>
-      </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/overrun_i" type="other">
          <obj_property name="ElementShortName">overrun_i</obj_property>
          <obj_property name="ObjectShortName">overrun_i</obj_property>
@@ -5513,24 +5484,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/will_arm_d" type="other">
          <obj_property name="ElementShortName">will_arm_d</obj_property>
          <obj_property name="ObjectShortName">will_arm_d</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/pulse_t_p_d" type="other">
-         <obj_property name="ElementShortName">pulse_t_p_d</obj_property>
-         <obj_property name="ObjectShortName">pulse_t_p_d</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/pulse_t_n_d" type="other">
-         <obj_property name="ElementShortName">pulse_t_n_d</obj_property>
-         <obj_property name="ObjectShortName">pulse_t_n_d</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CFD/slope_t_p_d" type="other">
-         <obj_property name="ElementShortName">slope_t_p_d</obj_property>
-         <obj_property name="ObjectShortName">slope_t_p_d</obj_property>
          <obj_property name="CustomSignalColor">#00FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>

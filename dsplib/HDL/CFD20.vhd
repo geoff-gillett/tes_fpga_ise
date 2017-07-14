@@ -6,7 +6,7 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
-entity CFD13 is
+entity CFD20 is
 generic(
   WIDTH:integer:=16;
   CF_WIDTH:integer:=18;
@@ -48,9 +48,9 @@ port (
   cfd_error:out boolean;
   cfd_valid:out boolean
 );
-end entity CFD13;
+end entity CFD20;
 
-architecture RTL of CFD13 is
+architecture RTL of CFD20 is
   
 component cf_queue
 port (
@@ -66,6 +66,7 @@ port (
 end component;
 
 --constant RAW_CFD_DELAY:integer:=256;
+constant XLAT:natural:=1;
 constant DEPTH:integer:=12;
 
 signal started:boolean;
@@ -119,7 +120,6 @@ signal max_d,min_d,above_pulse_threshold_d,pulse_threshold_pos_d:boolean;
 signal pulse_threshold_neg_d,slope_threshold_pos_d:boolean;
 signal q_was_empty:boolean;
 
-signal filtered_0_p:boolean;
 signal first_peak:boolean;
 signal good_write:boolean;
 signal read_d:boolean;
@@ -142,15 +142,15 @@ signal will_go_above_pulse_threshold_d,will_arm_d:boolean;
 signal pulse_t_n:boolean;
 signal pending:integer;
 
+
 begin
 --------------------------------------------------------------------------------
 -- Constant fraction calculation
 --------------------------------------------------------------------------------
 --FIXME make simpler lower latency crossing detector
-slope0xing:entity work.crossing
+slope0xing:entity work.crossing20
 generic map(
-  WIDTH => WIDTH,
-  STRICT => STRICT_CROSSING
+  WIDTH => WIDTH
 )
 port map(
   clk => clk,
@@ -158,24 +158,25 @@ port map(
   signal_in => slope,
   threshold => (others => '0'),
   signal_out => slope_0x,
-  pos => slope_0_p,
-  neg => slope_0_n
+  pos => slope_0_p,  --LAT=1
+  neg => slope_0_n,
+  above => open
 );
 
-filtered0xing:entity work.crossing
-generic map(
-  WIDTH => WIDTH,
-  STRICT => STRICT_CROSSING
-)
-port map(
-  clk => clk,
-  reset => reset,
-  signal_in => filtered,
-  threshold => (others => '0'),
-  signal_out => filtered_0x,
-  pos => filtered_0_p,
-  neg => open
-);
+--filtered0xing:entity work.crossing20
+--generic map(
+--  WIDTH => WIDTH
+--)
+--port map(
+--  clk => clk,
+--  reset => reset,
+--  signal_in => filtered,
+--  threshold => (others => '0'),
+--  signal_out => filtered_0x,
+--  pos => filtered_0_p,
+--  neg => open,
+--  above => open
+--);
 
 thresholding:process(clk)
 begin
@@ -187,6 +188,7 @@ if rising_edge(clk) then
     cf_int <= (others => '0');
   else
     -- FIXME the thresholds changing could cause issues
+    filtered_0x <= filtered;
     if slope_0_p then
       started <= TRUE;
       pulse_threshold_int <= pulse_threshold;
@@ -200,10 +202,9 @@ if rising_edge(clk) then
 end if;
 end process thresholding;
 
-slopeTxing:entity work.crossing
+slopeTxing:entity work.crossing20
 generic map(
-  WIDTH => WIDTH,
-  STRICT => STRICT_CROSSING
+  WIDTH => WIDTH
 )
 port map(
   clk => clk,
@@ -212,13 +213,13 @@ port map(
   threshold => slope_threshold_int,
   signal_out => slope_int,
   pos => slope_t_p,
-  neg => open
+  neg => open,
+  above => open
 );
 
-filteredTxing:entity work.crossing
+filteredTxing:entity work.crossing20
 generic map(
-  WIDTH => WIDTH,
-  STRICT => STRICT_CROSSING
+  WIDTH => WIDTH
 )
 port map(
   clk => clk,
@@ -227,7 +228,8 @@ port map(
   threshold => pulse_threshold_int,
   signal_out => filtered_int,
   pos => pulse_t_p,
-  neg => pulse_t_n
+  neg => pulse_t_n,
+  above => above_i
 );
 
 overrun_i <= delay_counter >= DELAY-1;
@@ -250,6 +252,7 @@ begin
       q_wr_en <= '0'; 
       good_write <= FALSE;
     else
+      
       --counter to track queue pending  
       if q_wr_en='1' and q_rd_en='0' then
         pending <= pending + 1;
@@ -260,20 +263,13 @@ begin
       slope_0_n_pipe <= (slope_0_n and started) & slope_0_n_pipe(1 to DEPTH-1);
       slope_0_p_pipe <= slope_0_p & slope_0_p_pipe(1 to DEPTH-1);
       
-      if filtered_0x_reg > pulse_threshold_int then
-        above_i <= TRUE; --LAT 1 ??
-      end if;
-      if filtered_0x_reg < pulse_threshold_int then
-        above_i <= FALSE;
-      end if;
+--      if filtered_0x_reg > pulse_threshold_int then
+--        above_i <= TRUE; --LAT 1 ??
+--      end if;
+--      if filtered_0x_reg < pulse_threshold_int then
+--        above_i <= FALSE;
+--      end if;
       above_pipe(2 to DEPTH) <= above_i & above_pipe(2 to DEPTH-1);
-      
-      pulse_t_p_pipe(4 to DEPTH) <= pulse_t_p & pulse_t_p_pipe(4 to DEPTH-1);
-      pulse_t_n_pipe(4 to DEPTH) <= pulse_t_n & pulse_t_n_pipe(4 to DEPTH-1);
-      slope_t_p_pipe(4 to DEPTH) <= slope_t_p & slope_t_p_pipe(4 to DEPTH-1);
-      
-      filtered_pipe(4 to DEPTH) <= filtered_int & filtered_pipe(4 to DEPTH-1);
-      slope_pipe(4 to DEPTH) <= slope_int & slope_pipe(4 to DEPTH-1);
       
       if slope_0_p_pipe(3) and not above_pipe(3) then
         first_peak <= TRUE; -- LAT 4
@@ -282,7 +278,13 @@ begin
       end if; 
       first_peak_pipe(4 to DEPTH) <= first_peak & first_peak_pipe(4 to DEPTH-1);
       
---      if slope_0_p_pipe(DEPTH-1) then 
+      pulse_t_p_pipe(4 to DEPTH) <= pulse_t_p & pulse_t_p_pipe(4 to DEPTH-1);
+      pulse_t_n_pipe(4 to DEPTH) <= pulse_t_n & pulse_t_n_pipe(4 to DEPTH-1);
+      slope_t_p_pipe(4 to DEPTH) <= slope_t_p & slope_t_p_pipe(4 to DEPTH-1);
+      
+      filtered_pipe(4 to DEPTH) <= filtered_int & filtered_pipe(4 to DEPTH-1);
+      slope_pipe(4 to DEPTH) <= slope_int & slope_pipe(4 to DEPTH-1);
+      
       if slope_0_p_pipe(DEPTH) then 
         delay_counter <= 1;
       else
