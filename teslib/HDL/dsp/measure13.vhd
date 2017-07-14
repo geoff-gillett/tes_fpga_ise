@@ -139,7 +139,7 @@ signal peak_start:boolean;
 signal pulse_t_xing:boolean;
 signal pre_pulse_start,pre_peak_start:boolean;
 signal minima:signed(WIDTH-1 downto 0);
-signal pre_pulse_stamped,pre_peak_stamped: boolean;
+signal pre_peak_stamped:boolean;
 
 constant DEBUG:string:="FALSE";
 attribute mark_debug:string;

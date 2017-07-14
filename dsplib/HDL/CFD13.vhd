@@ -6,7 +6,7 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
-entity CFD8 is
+entity CFD13 is
 generic(
   WIDTH:integer:=16;
   CF_WIDTH:integer:=18;
@@ -48,9 +48,9 @@ port (
   cfd_error:out boolean;
   cfd_valid:out boolean
 );
-end entity CFD8;
+end entity CFD13;
 
-architecture RTL of CFD8 is
+architecture RTL of CFD13 is
   
 component cf_queue
 port (
@@ -66,7 +66,7 @@ port (
 end component;
 
 --constant RAW_CFD_DELAY:integer:=256;
-constant DEPTH:integer:=13;
+constant DEPTH:integer:=12;
 
 signal started:boolean;
 signal slope_0_p,slope_0_n:boolean;
@@ -140,12 +140,13 @@ signal cfd_low_threshold_d,cfd_high_threshold_d:signed(WIDTH-1 downto 0);
 signal max_slope_d:signed(WIDTH-1 downto 0);
 signal will_go_above_pulse_threshold_d,will_arm_d:boolean;
 signal pulse_t_n:boolean;
-signal pending : integer;
+signal pending:integer;
 
 begin
 --------------------------------------------------------------------------------
 -- Constant fraction calculation
 --------------------------------------------------------------------------------
+--FIXME make simpler lower latency crossing detector
 slope0xing:entity work.crossing
 generic map(
   WIDTH => WIDTH,
@@ -259,6 +260,14 @@ begin
       slope_0_n_pipe <= (slope_0_n and started) & slope_0_n_pipe(1 to DEPTH-1);
       slope_0_p_pipe <= slope_0_p & slope_0_p_pipe(1 to DEPTH-1);
       
+      if filtered_0x_reg > pulse_threshold_int then
+        above_i <= TRUE; --LAT 1 ??
+      end if;
+      if filtered_0x_reg < pulse_threshold_int then
+        above_i <= FALSE;
+      end if;
+      above_pipe(2 to DEPTH) <= above_i & above_pipe(2 to DEPTH-1);
+      
       pulse_t_p_pipe(4 to DEPTH) <= pulse_t_p & pulse_t_p_pipe(4 to DEPTH-1);
       pulse_t_n_pipe(4 to DEPTH) <= pulse_t_n & pulse_t_n_pipe(4 to DEPTH-1);
       slope_t_p_pipe(4 to DEPTH) <= slope_t_p & slope_t_p_pipe(4 to DEPTH-1);
@@ -266,13 +275,12 @@ begin
       filtered_pipe(4 to DEPTH) <= filtered_int & filtered_pipe(4 to DEPTH-1);
       slope_pipe(4 to DEPTH) <= slope_int & slope_pipe(4 to DEPTH-1);
       
-      --  
-      if slope_0_p_pipe(4) and not above_i then
-        first_peak <= TRUE; -- LAT 5
-      elsif slope_0_n_pipe(5) and armed_pipe(5) and above_pipe(5) then
+      if slope_0_p_pipe(3) and not above_pipe(3) then
+        first_peak <= TRUE; -- LAT 4
+      elsif slope_0_n_pipe(4) and armed_i and above_pipe(4) then
         first_peak <= FALSE;
       end if; 
-      first_peak_pipe(5 to DEPTH) <= first_peak & first_peak_pipe(5 to DEPTH-1);
+      first_peak_pipe(4 to DEPTH) <= first_peak & first_peak_pipe(4 to DEPTH-1);
       
 --      if slope_0_p_pipe(DEPTH-1) then 
       if slope_0_p_pipe(DEPTH) then 
@@ -288,31 +296,21 @@ begin
       elsif slope_0_n_pipe(4) then
         armed_i <= FALSE;
       end if; 
-      
-      if pulse_t_p then
-        above_i  <= TRUE; -- lat 4
-      end if;
-      if pulse_t_n then
-        above_i <= FALSE;
-      end if;
-      
-      
       armed_pipe(5 to DEPTH) <= armed_i & armed_pipe(5 to DEPTH-1);
-      above_pipe(5 to DEPTH) <= above_i & above_pipe(5 to DEPTH-1);
         
       -- need first peak
-      if slope_0_p_pipe(5) then
+      if slope_0_p_pipe(4) then
         if rel2min_int or not first_peak then -- or not first peak
-          minima <= filtered_pipe(5);
+          minima <= filtered_pipe(4);
         else
           minima <= (others => '0');
 --          minima_pipe(5 to DEPTH) 
 --            <= to_signed(0,width) & minima_pipe(5 to DEPTH-1);
         end if;
-          minima_pipe(6 to DEPTH) <= filtered_pipe(6) & 
-                                     minima_pipe(6 to DEPTH-1);
+          minima_pipe(5 to DEPTH) <= filtered_pipe(5) & 
+                                     minima_pipe(5 to DEPTH-1);
       else
-        minima_pipe(6 to DEPTH) <= minima_pipe(6) & minima_pipe(6 to DEPTH-1);
+        minima_pipe(5 to DEPTH) <= minima_pipe(5) & minima_pipe(5 to DEPTH-1);
       end if;
      
       -- FIXME 
@@ -363,7 +361,7 @@ port map(
   reset => reset,
   min => minima,
   cf => cf_int,
-  sig => filtered_pipe(6), 
+  sig => filtered_pipe(5), 
   p => p -- constant fraction of the rise above minimum
 );
 
