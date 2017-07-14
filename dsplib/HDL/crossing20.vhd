@@ -19,8 +19,7 @@ use extensions.logic.all;
 --latency = 1
 entity crossing20 is
 generic(
-	WIDTH:natural:=16;
-	AREA_WIDTH:natural:=32
+	WIDTH:natural:=16
 );
 port(
   clk:in std_logic;
@@ -30,7 +29,6 @@ port(
   
   signal_out:out signed(WIDTH-1 downto 0);
   extrema:out signed(WIDTH-1 downto 0);
-  area:out signed(AREA_WIDTH-1 downto 0);
   pos:out boolean;
   neg:out boolean;
   above:out boolean
@@ -41,12 +39,10 @@ architecture RTL of crossing20 is
 
 signal isbelow,isabove,above_int:boolean;
 signal signal_int,extrema_int:signed(WIDTH-1 downto 0);
-signal area_int:signed(AREA_WIDTH-1 downto 0);
 
 begin
 above <= above_int;
 signal_out <= signal_int;
-area <= area_int;
 
 reg:process (clk) is
 begin
@@ -72,9 +68,7 @@ begin
       
       if (isabove and not above_int) or (isbelow and above_int) then
         extrema_int <= signal_in;
-        area_int <= signal_in;
       else
-        area_int <= area_int + signal_in;
         if  (isabove and signal_in > extrema_int) or 
             (isbelow and signal_in < extrema_int) then
           extrema_int <= signal_in;
