@@ -266,10 +266,10 @@ begin
         assert frame_address < framer_free report "BAD write" severity FAILURE;
       end if;
       --counter to track pending MUX starts 
-      if start_int and not (commit_int or dump_int) then
+      if start_int and not (commit_int or dump_int) and state/=HOLD then
         pending <= pending + 1;
       end if;
-      if (commit_int or dump_int) and not start_int then
+      if (commit_int or dump_int) and (not start_int) and state/=HOLD then
         pending <= pending - 1;
       end if;
       

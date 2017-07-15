@@ -511,7 +511,7 @@ chan_reg(0).capture.slope_threshold <= to_unsigned(7*256,DSP_BITS-1); --2300
 chan_reg(0).capture.pulse_threshold <= to_unsigned(800*8+1,DSP_BITS-1); 
 chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
-chan_reg(0).baseline.offset <= to_signed(-500*8,DSP_BITS);
+chan_reg(0).baseline.offset <= to_signed(-500*8-793,DSP_BITS);
 --------------------------------------------------------------------------------
 -- randn samples
 --------------------------------------------------------------------------------
@@ -527,6 +527,8 @@ chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
 chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 wait for 6 us;
 global.channel_enable <= "00000001";
+wait for 1420 us;
+chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
 --wait for 1 ms;
 --chan_reg(0).capture.detection <= AREA_DETECTION_D;
 --wait for 1 ms;
