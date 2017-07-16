@@ -50,7 +50,7 @@ generic(
   -- sim -----------------------------------------------------------------------
 --  FRAMER_ADDRESS_BITS:natural:=7;
 --  ETHERNET_ADDRESS_BITS:natural:=8;
-  ACCUMULATE_N:natural:=7
+  ACCUMULATE_N:natural:=1
 );
 end entity measurement_subsystem_TB;
 
@@ -135,7 +135,7 @@ reset2 <= '0' after 20*IO_CLK_PERIOD;
                     
 bytestream_ready <= TRUE;
 
-UUT:entity work.measurement_subsystem13
+UUT:entity work.measurement_subsystem20
 generic map(
   DSP_CHANNELS => CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
@@ -444,10 +444,9 @@ begin
   chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
   chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
   chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
-  chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+  chan_reg(0).capture.trace_length <= to_unsigned(256,TRACE_LENGTH_BITS);
   chan_reg(0).capture.height <= PEAK_HEIGHT_D;
   chan_reg(0).capture.cfd_rel2min <= FALSE;
-  chan_reg(0).capture.trace_stride <= (others => '0');
   --
   chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
   chan_reg(1).capture.delay <= to_unsigned(10,DELAY_BITS);
@@ -509,9 +508,10 @@ begin
 chan_reg(0).capture.slope_threshold <= to_unsigned(7*256,DSP_BITS-1); --2300
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
 chan_reg(0).capture.pulse_threshold <= to_unsigned(800*8+1,DSP_BITS-1); 
-chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+--chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(-500*8-793,DSP_BITS);
+
 --------------------------------------------------------------------------------
 -- randn samples
 --------------------------------------------------------------------------------
@@ -523,12 +523,16 @@ chan_reg(0).baseline.offset <= to_signed(-500*8-793,DSP_BITS);
 --------------------------------------------------------------------------------
 --
 --chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
+chan_reg(0).capture.trace_stride <= (1 => '0', others => '0');
+chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
 chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 wait for 6 us;
 global.channel_enable <= "00000001";
-wait for 1420 us;
+wait for 60 us;
 chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
+--wait for 1420 us;
+--chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
 --wait for 1 ms;
 --chan_reg(0).capture.detection <= AREA_DETECTION_D;
 --wait for 1 ms;
