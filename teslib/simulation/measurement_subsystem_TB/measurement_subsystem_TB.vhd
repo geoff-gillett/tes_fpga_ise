@@ -523,8 +523,8 @@ chan_reg(0).baseline.offset <= to_signed(-500*8-793,DSP_BITS);
 --------------------------------------------------------------------------------
 --
 --chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
-chan_reg(0).capture.trace_stride <= (1 => '0', others => '0');
-chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_stride <= (0 => '1', 1 => '1', others => '0');
+chan_reg(0).capture.trace_length <= to_unsigned(128,TRACE_LENGTH_BITS);
 chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
 chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 wait for 6 us;

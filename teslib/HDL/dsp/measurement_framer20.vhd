@@ -487,19 +487,21 @@ begin
       case s_state is 
         
       when INIT => 
-        next_stride_count <= tflags.stride-1;
-        stride_count <= tflags.stride;
+--        next_stride_count <= tflags.stride-1;
+--        stride_count <= (others => '0');
         if trace_start then
            s_state <= CAPTURE; 
         end if;
         
       when IDLE =>
-        if trace_start then
+--        if trace_start then
+--          next_stride_count <= tflags.stride-1;
+--          stride_count <= (others => '0');
+--        end if;
+        if stride_count=0 or zero_stride or trace_start then
+          s_state <= CAPTURE;
           next_stride_count <= tflags.stride-1;
           stride_count <= tflags.stride;
-        end if;
-        if next_stride_count=0 or zero_stride or trace_start then
-          s_state <= CAPTURE;
           if wr_chunk_state=WRITE then --FIXME????
             trace_last <= last_trace_count and trace_detection;
           end if;
@@ -509,13 +511,13 @@ begin
         end if;
         
       when CAPTURE =>
-        next_stride_count <= tflags.stride-1;
-        stride_count <= tflags.stride;
         if trace_last then
           s_state <= INIT;
         elsif not zero_stride then
           s_state <= IDLE;
-        elsif wr_chunk_state=STORE2 then
+          next_stride_count <= next_stride_count-1;
+          stride_count <= next_stride_count;
+        elsif wr_chunk_state=STORE2 then --FIXME ???
           trace_last <= last_trace_count and zero_stride and trace_detection;
         end if;
       end case;

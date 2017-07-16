@@ -194,7 +194,7 @@ begin
         if stop then
           state <= IDLE;
         elsif acc_count=0 then
-          stride_count <= (others => '0');
+          stride_count <= trace_stride;
           next_stride_count <= trace_stride-1;
           zero_stride <= trace_stride=0;
           state <= SENDAVERAGE;
