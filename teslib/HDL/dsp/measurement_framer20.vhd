@@ -122,11 +122,11 @@ type accumFSMstate is (IDLE,WAITING,ACCUM,SEND,STOPED);
 signal a_state:accumFSMstate;
 type DPstate is (IDLE,DPWAIT,DONE);
 signal dp_state:DPstate;
---attribute fsm_encoding of wr_chunk_state:signal is "one-hot";
---attribute fsm_encoding of s_state:signal is "one-hot";
---attribute fsm_encoding of t_state:signal is "one-hot";
---attribute fsm_encoding of q_state:signal is "one-hot";
---attribute fsm_encoding of dp_state:signal is "one-hot";
+attribute fsm_encoding of wr_chunk_state:signal is "one-hot";
+attribute fsm_encoding of s_state:signal is "one-hot";
+attribute fsm_encoding of t_state:signal is "one-hot";
+attribute fsm_encoding of q_state:signal is "one-hot";
+attribute fsm_encoding of dp_state:signal is "one-hot";
 
 signal acc_ready:boolean;
 signal wait_valid,wait_ready:boolean;
