@@ -498,6 +498,7 @@ begin
 
           pre_flags.peak_number <= (others => '0');
           peak_number_n <= (0 => '1',others => '0');
+          pre_flags.has_peak <= FALSE;
 
           pre_tflags.trace_signal <= registers.trace_signal;
           pre_tflags.trace_type <= registers.trace_type;
@@ -561,6 +562,7 @@ begin
         if peak_number_n(PEAK_COUNT_BITS)='0' then
           flags.peak_number <= peak_number_n(PEAK_COUNT_BITS-1 downto 0);
           peak_number_n <= peak_number_n + 1;
+          flags.has_peak <= TRUE;
         else
           flags.peak_number <= (others => '1');
         end if;

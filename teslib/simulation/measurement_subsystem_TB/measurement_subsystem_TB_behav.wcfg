@@ -21,9 +21,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="30475000000fs"></ZoomStartTime>
-      <ZoomEndTime time="30614300001fs"></ZoomEndTime>
-      <Cursor1Time time="30512000000fs"></Cursor1Time>
+      <ZoomStartTime time="38444000000fs"></ZoomStartTime>
+      <ZoomEndTime time="38751200001fs"></ZoomEndTime>
+      <Cursor1Time time="38672000000fs"></Cursor1Time>
    </zoom_setting>
    <WVObjectSize size="11" />
    <wave_markers>
@@ -2583,7 +2583,7 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/average_sample" type="array">
          <obj_property name="ElementShortName">average_sample[15:0]</obj_property>
          <obj_property name="ObjectShortName">average_sample[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
@@ -3347,7 +3347,6 @@
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproductDSP/addr_pipe" type="array">
          <obj_property name="ElementShortName">addr_pipe[1:5][11:0]</obj_property>
          <obj_property name="ObjectShortName">addr_pipe[1:5][11:0]</obj_property>
-         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject db_ref_id="1" fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/dotproductDSP/sample_pipe" type="array">
          <obj_property name="ElementShortName">sample_pipe[1:5][15:0]</obj_property>

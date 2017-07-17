@@ -57,6 +57,7 @@ function to_event_type_t(sb:streambus_t) return event_type_t;
 --|peak_count| peak_overflow|channel||timing_d|height_d|event_type_t|new_window|
 type detection_flags_t is record 
 	peak_number:unsigned(PEAK_COUNT_BITS-1 downto 0); 
+	has_peak:boolean;
 	cfd_rel2min:boolean; --FIXME change to cfd_rel2min
 	height:height_d;
 	timing:timing_d;

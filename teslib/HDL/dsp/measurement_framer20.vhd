@@ -122,11 +122,11 @@ type accumFSMstate is (IDLE,WAITING,ACCUM,SEND,STOPED);
 signal a_state:accumFSMstate;
 type DPstate is (IDLE,DPWAIT,DONE);
 signal dp_state:DPstate;
-attribute fsm_encoding of wr_chunk_state:signal is "one-hot";
-attribute fsm_encoding of s_state:signal is "one-hot";
-attribute fsm_encoding of t_state:signal is "one-hot";
-attribute fsm_encoding of q_state:signal is "one-hot";
-attribute fsm_encoding of dp_state:signal is "one-hot";
+--attribute fsm_encoding of wr_chunk_state:signal is "one-hot";
+--attribute fsm_encoding of s_state:signal is "one-hot";
+--attribute fsm_encoding of t_state:signal is "one-hot";
+--attribute fsm_encoding of q_state:signal is "one-hot";
+--attribute fsm_encoding of dp_state:signal is "one-hot";
 
 signal acc_ready:boolean;
 signal wait_valid,wait_ready:boolean;
@@ -304,6 +304,7 @@ eflags.cfd_rel2min <= eflags_reg.cfd_rel2min;
 eflags.channel <= eflags_reg.channel;                             
 eflags.new_window <= eflags_reg.new_window;                             
 eflags.peak_number <= m.eflags.peak_number;                             
+eflags.has_peak <= m.eflags.has_peak;                             
                                       
 pulse.size <= resize(length & "000",CHUNK_DATABITS);
 pulse.flags <= eflags;
@@ -1359,9 +1360,9 @@ begin
       --but a transaction is pending, this can lock it up
       --this framer needs major refactoring, a couple of error conditions could
       --be removed, perhaps separate the peak writing from the queue.
-      if m.peak_stop and enable_reg then 
+      if m.peak_stop then --and enable_reg then 
         if (state=FIRSTPULSE or state=WAITPULSEDONE) and not area_detection then 
-          if m.eflags.peak_number/=0 and average_detection then --FIXME check
+          if m.eflags.has_peak and average_detection then --FIXME check
             average_trace_header.trace_flags.multipeak <= TRUE;
             average_trace_header.multipeaks 
               <= average_trace_header.multipeaks+1;
@@ -1382,7 +1383,7 @@ begin
             dump_reg <= pulse_stamped and mux_wr_en;
             pulse_stamped <= FALSE;
           else
-            tflags.multipeak <= m.eflags.peak_number/=0;
+            tflags.multipeak <= m.eflags.has_peak;
             aux_word_reg <= to_streambus(pulse_peak,FALSE,ENDIAN);--?? last?
             aux_address <= resize(m.peak_address,ADDRESS_BITS);
             q_aux <= not average_detection;
