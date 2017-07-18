@@ -396,7 +396,7 @@ begin
       error_int <= FALSE;
     else
       commit_int <= commit_reg and mux_wr_en;
---      start_int <= start_reg and mux_enable;
+--      start_int <= start_reg and mux_wr_en;
       start_int <= start_reg and mux_wr_en;
       dump_int <= dump_reg and mux_wr_en;
       overflow_int <= overflow_reg and mux_wr_en;
@@ -672,7 +672,7 @@ begin
             commit_reg <= dp_state=DONE;
           else
             commit_frame <= TRUE; 
-            commit_reg <= mux_wr_en; 
+            commit_reg <= mux_enable; 
           end if;
           
           if dp_detection then
@@ -866,6 +866,12 @@ begin
                         pre_detection=TRACE_DETECTION_D and 
                         m.pre_tflags.trace_type/=AVERAGE_TRACE_D
                       )) and enable;
+                      
+        mux_wr_en <= (pre_detection/=TRACE_DETECTION_D or 
+                      (
+                        pre_detection=TRACE_DETECTION_D and 
+                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
+                      )) and enable;
                      
         trace_count_init <= m.pre_tflags.trace_length-1;
         
@@ -910,19 +916,8 @@ begin
       
       if commit_frame or dump_reg or error_reg then
         committing <= FALSE;
---        mux_enable <= pre_detection/=TRACE_DETECTION_D or 
---                      (
---                        pre_detection=TRACE_DETECTION_D and 
---                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
---                      );
       end if;
       
---      if trace_start then
---        trace_started <= TRUE;
---      elsif wr_trace_last or trace_overflow or not enable_reg or state=HOLD then
---        trace_started <= FALSE;
---      end if;
-        
       if a_state=IDLE then
         accum_count <= (ACCUMULATE_N => '0', others => '1');
         next_accum_count <= to_unsigned(2**ACCUMULATE_N-2,ACCUMULATE_N+1);
@@ -1382,14 +1377,14 @@ begin
 --            q_state <= IDLE; --FIXME should the queue be reset?
 --            t_state <= IDLE;
             state <= IDLE;
-            dump_reg <= pulse_stamped and mux_wr_en;
+            dump_reg <= pulse_stamped and mux_enable;
             pulse_stamped <= FALSE;
           else
             tflags.multipeak <= m.eflags.has_peak;
             aux_word_reg <= to_streambus(pulse_peak,FALSE,ENDIAN);--?? last?
             aux_address <= resize(m.peak_address,ADDRESS_BITS);
             q_aux <= not average_detection;
---            pulse_peak_valid <= mux_wr_en;
+--            pulse_peak_valid <= mux_enable;
           end if;
         elsif peak_detection then
           if not space_available then
@@ -1418,7 +1413,6 @@ begin
 --          peak_stamped <= FALSE;
         else
           start_reg <= mux_enable;  
-          mux_wr_en <= mux_enable;  
         end if;
         --FIXME think about this
       elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse and 
@@ -1428,7 +1422,6 @@ begin
           pulse_stamped <= FALSE;
         else
           start_reg <= mux_enable;  
-          mux_wr_en <= mux_enable;  
           pulse_stamped <= mux_enable;
         end if;
       end if; 
