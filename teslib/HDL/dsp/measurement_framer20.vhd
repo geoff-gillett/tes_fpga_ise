@@ -1403,8 +1403,8 @@ begin
 --            q_state <= SINGLE_WORD_EVENT;
             committing <= TRUE;
             free <= framer_free - length;
---            space_available <= size2 <= framer_free;
---            space_available2 <= size2 <= framer_free;
+            space_available <= size2 <= framer_free;
+            space_available2 <= size2 <= framer_free;
           end if;
         end if;
       end if;
@@ -1415,7 +1415,7 @@ begin
           error_reg <= TRUE;
 --          peak_stamped <= FALSE;
         else
-          start_reg <= TRUE;  
+          start_reg <= mux_enable;  
           mux_wr_en <= mux_enable;  
         end if;
         --FIXME think about this
