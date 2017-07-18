@@ -590,9 +590,10 @@ end process arbiterFSMtransition;
 frameFSMtransition:process(frame_state,arbiter_nextstate,arbiter_state,
 													 framer_ready,mca_s_valid,flush_events,
 												   event_s_valid,frame_last,mca_s,event_s,event_head,
-												   header.event_type,header,frame_address,
+												   header,frame_address,
 												   last_frame_address,last_frame_word,lookahead_valid,
-												   size_change,type_change,frame_under,single_word)
+												   size_change,type_change,frame_under,single_word, 
+												   one_per_frame)
 begin
 	frame_nextstate <= frame_state;
   framer_address <= frame_address; 

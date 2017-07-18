@@ -309,7 +309,8 @@ if rising_edge(clk) then
       														 (dumped and started);
     end if;
     handled <= handledv;			
-    --FIXME do started and commited in time_buffer										
+    --FIXME do started and commited in time_buffer	
+    --FIXME this only works for 2 channels??									
     req <= started and commited and not handledv(CHANNELS downto 1);
 --	  gnt <= req and std_logic_vector(unsigned(not req)+1);
     													  

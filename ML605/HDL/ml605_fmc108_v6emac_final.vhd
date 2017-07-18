@@ -194,7 +194,7 @@ end component;
 -- Clock and reset signals
 --------------------------------------------------------------------------------
 signal global_reset_boot_clk,IO_clk,signal_clk,axi_clk,boot_clk:std_logic;
-signal reset0,reset1,reset2:std_logic;
+signal reset0,reset1,reset2:std_logic; --io_clk
 signal reset1_sclk,reset2_sclk:std_logic;
 --signal reset0_refclk:std_logic;
 signal reset1_ioclk:std_logic;

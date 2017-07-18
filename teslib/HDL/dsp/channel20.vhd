@@ -116,7 +116,7 @@ baseline_sign <= baseline_sample(ADC_WIDTH+FRAC);
 sampleoffset:process(clk)
 begin
 if rising_edge(clk)  then
-  if reset2='1' then
+  if reset1='1' then
     --FIXME sample_inv could be a variable
     sample_inv <= (others => '0');
     baseline_sample  <= (others => '0');

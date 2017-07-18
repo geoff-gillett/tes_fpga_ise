@@ -249,6 +249,7 @@ constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
 attribute mark_debug of pending:signal is "FALSE";
 attribute mark_debug of enable_reg:signal is "FALSE";
+attribute mark_debug of framer_free:signal is "FALSE";
 
 begin
 debugGen:if DEBUG="TRUE" generate
@@ -1079,10 +1080,8 @@ begin
             else 
               -- not trace_detection 
               if q_ready then 
-               
-                --FIXME add ready test 
                 if area_detection then
-                  q_single <= TRUE; -- assumption here that q is idle
+                  q_single <= mux_enable; -- assumption here that q is idle
                   queue(0) <= to_streambus(area,ENDIAN);
                 end if;
                 
@@ -1092,7 +1091,7 @@ begin
                   -- write last 
                   queue(2) <= to_streambus(pulse_peak,TRUE,ENDIAN);
                   last_peak_address <= resize(m.last_peak_address,ADDRESS_BITS);
-                  q_pulse <= TRUE;
+                  q_pulse <= mux_enable;
                 end if;
                 
                 q_length <= length;
@@ -1100,7 +1099,11 @@ begin
                 free <= framer_free - length;
                 space_available <= size2 <= framer_free;
                 space_available2 <= size2 <= framer_free;
-                
+              
+              else
+                error_reg <= TRUE;
+                dump_reg <= pulse_stamped;
+                pulse_stamped <= FALSE;
               end if;
             end if;
           end if;
@@ -1395,7 +1398,7 @@ begin
 --            peak_stamped <= FALSE;
           else
             queue(0) <= to_streambus(peak,ENDIAN);
-            q_single <= TRUE;
+            q_single <= mux_enable;
             q_length <= length;
 --            q_state <= SINGLE_WORD_EVENT;
             committing <= TRUE;
