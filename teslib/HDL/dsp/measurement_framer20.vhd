@@ -805,6 +805,8 @@ begin
       q_aux <= FALSE;
       inc_accum <= FALSE;
       commit_average <= FALSE;
+      space_available <= TRUE;
+      space_available2 <= TRUE;
     else
       q_single <= FALSE;
       q_pulse <= FALSE;
