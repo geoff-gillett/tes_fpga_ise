@@ -195,6 +195,7 @@ signal q_aux,q_single,q_header,q_pulse:boolean;
 signal q_length:unsigned(ADDRESS_BITS downto 0);
 signal commit_average:boolean;
 signal started:boolean;
+signal q_mux_wr_en:boolean;
 
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
@@ -398,10 +399,10 @@ begin
     else
       commit_int <= commit_reg and mux_wr_en;
 --      start_int <= start_reg and mux_wr_en;
-      start_int <= start_reg and mux_wr_en;
-      dump_int <= dump_reg and mux_wr_en;
-      overflow_int <= overflow_reg and mux_wr_en;
-      error_int <= error_reg and mux_wr_en;
+      start_int <= start_reg; -- and mux_wr_en;
+      dump_int <= dump_reg;
+      overflow_int <= overflow_reg;
+      error_int <= error_reg;
     end if;
   end if;
 end process muxOutput;
@@ -673,7 +674,8 @@ begin
             commit_reg <= dp_state=DONE;
           else
             commit_frame <= TRUE; 
-            commit_reg <= mux_enable; 
+--            commit_reg <= mux_wr_en; 
+            commit_reg <= q_mux_wr_en; 
           end if;
           
           if dp_detection then
@@ -868,11 +870,11 @@ begin
                         m.pre_tflags.trace_type/=AVERAGE_TRACE_D
                       )) and enable;
                       
-        mux_wr_en <= (pre_detection/=TRACE_DETECTION_D or 
-                      (
-                        pre_detection=TRACE_DETECTION_D and 
-                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
-                      )) and enable;
+--        mux_wr_en <= (pre_detection/=TRACE_DETECTION_D or 
+--                      (
+--                        pre_detection=TRACE_DETECTION_D and 
+--                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
+--                      )) and enable;
                      
         trace_count_init <= m.pre_tflags.trace_length-1;
         
@@ -948,7 +950,7 @@ begin
      
         if trace_overflow or (trace_last and trace_full) then
           overflow_reg <= TRUE;
-          dump_reg <= pulse_stamped or m.stamp_pulse;
+          dump_reg <= pulse_stamped or (m.stamp_pulse and mux_enable);
           pulse_stamped <= FALSE;
           dp_dump <= TRUE;
           state <= IDLE;
@@ -959,7 +961,7 @@ begin
           if not m.above_area_threshold then
             --dump the pulse that is ending
             trace_reset <= TRUE;
-            dump_reg <= pulse_stamped or m.stamp_pulse; 
+            dump_reg <= pulse_stamped or (m.stamp_pulse and mux_enable); 
             pulse_stamped <= FALSE;
             dp_dump <= TRUE;
             -- if pre_pulse_start space will be free as previous pulse was 
@@ -1069,6 +1071,7 @@ begin
                     space_available <= size2 <= framer_free;
                     space_available2 <= size2 <= framer_free;
                     q_header <= TRUE;
+                    q_mux_wr_en <= mux_wr_en;
                   else
                     error_reg <= TRUE;
                     dump_reg <= pulse_stamped;
@@ -1092,6 +1095,7 @@ begin
                   queue(2) <= to_streambus(pulse_peak,TRUE,ENDIAN);
                   last_peak_address <= resize(m.last_peak_address,ADDRESS_BITS);
                   q_pulse <= mux_enable;
+                  q_mux_wr_en <= mux_enable;
                 end if;
                 
                 q_length <= length;
@@ -1211,6 +1215,7 @@ begin
                 space_available2 <= size2 <= framer_free;
 --                q_state <= WORD1;
                 q_header <= TRUE;
+                q_mux_wr_en <= mux_wr_en;
               else  
                 error_reg <= TRUE;
                 dump_reg <= pulse_stamped;
@@ -1316,6 +1321,7 @@ begin
                 space_available2 <= size2 <= framer_free;
 --                q_state <= WORD1;
                 q_header <= TRUE;
+                q_mux_wr_en <= mux_wr_en;
               else
                 error_reg <= TRUE;
                 dump_reg <= pulse_stamped;
@@ -1340,6 +1346,7 @@ begin
           start_reg <= TRUE;
           mux_wr_en <= TRUE;
           q_header <= TRUE;
+          q_mux_wr_en <= TRUE;
 --          q_state <= WORD0; --FIXME
           state <= HOLD;
           average_trace_header.trace_flags.multipeak <= FALSE;
@@ -1380,7 +1387,7 @@ begin
 --            q_state <= IDLE; --FIXME should the queue be reset?
 --            t_state <= IDLE;
             state <= IDLE;
-            dump_reg <= pulse_stamped and mux_enable;
+            dump_reg <= pulse_stamped;
             pulse_stamped <= FALSE;
           else
             tflags.multipeak <= m.eflags.has_peak;
@@ -1416,6 +1423,7 @@ begin
 --          peak_stamped <= FALSE;
         else
           start_reg <= mux_enable;  
+          mux_wr_en <= mux_enable;
         end if;
         --FIXME think about this
       elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse and 
@@ -1425,6 +1433,7 @@ begin
           pulse_stamped <= FALSE;
         else
           start_reg <= mux_enable;  
+          mux_wr_en <= mux_enable;
           pulse_stamped <= mux_enable;
         end if;
       end if; 
