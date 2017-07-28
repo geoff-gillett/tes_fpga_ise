@@ -352,10 +352,10 @@ end process ioClkCount;
 stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
-	     "../bin_traces/july 10/gt1_100khz.bin";
+--	     "../bin_traces/july 10/gt1_100khz.bin";
 --	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/july 10/randn.bin";
---	     "../bin_traces/double_peak.bin";
+	     "../bin_traces/double_peak.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
@@ -505,13 +505,26 @@ begin
 --------------------------------------------------------------------------------
 -- gt1 samples
 --------------------------------------------------------------------------------
-chan_reg(0).capture.slope_threshold <= to_unsigned(7*256,DSP_BITS-1); --2300
+--chan_reg(0).capture.slope_threshold <= to_unsigned(7*256,DSP_BITS-1); --2300
+----chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(800*8+1,DSP_BITS-1); 
+--chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+--chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
+--chan_reg(0).baseline.offset <= to_signed(-500*8-793,DSP_BITS);
+--chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
+
+
+--------------------------------------------------------------------------------
+-- double peak thesis
+--------------------------------------------------------------------------------
+chan_reg(0).capture.slope_threshold <= to_unsigned(4500,DSP_BITS-1); --2300
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
-chan_reg(0).capture.pulse_threshold <= to_unsigned(800*8+1,DSP_BITS-1); 
+chan_reg(0).capture.pulse_threshold <= to_unsigned(2700,DSP_BITS-1); 
 chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
-chan_reg(0).baseline.offset <= to_signed(-500*8-793,DSP_BITS);
+chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
+chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 
 --------------------------------------------------------------------------------
 -- randn samples
@@ -524,15 +537,15 @@ chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
 --chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 --------------------------------------------------------------------------------
 --
-chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
+chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
 --chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
 --chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 --chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
-chan_reg(0).capture.detection <= TRACE_DETECTION_D;
+chan_reg(0).capture.detection <= PULSE_DETECTION_D;
 wait for 6 us;
 global.channel_enable <= "00000001";
 wait for 1410 us;
-chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
+--chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
 --wait for 1420 us;
 --chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
 --wait for 1 ms;

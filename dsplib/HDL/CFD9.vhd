@@ -6,12 +6,15 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
-entity CFD20 is
+--THIS VERSION enqueues only valid peaks (NOT FINISHED)
+
+entity CFD9 is
 generic(
   WIDTH:integer:=16;
   CF_WIDTH:integer:=18;
   CF_FRAC:integer:=17;
-  DELAY:integer:=1023
+  DELAY:integer:=1023;
+  STRICT_CROSSING:boolean:=TRUE
 );
 port (
   clk:in std_logic;
@@ -47,9 +50,9 @@ port (
   cfd_error:out boolean;
   cfd_valid:out boolean
 );
-end entity CFD20;
+end entity CFD9;
 
-architecture RTL of CFD20 is
+architecture RTL of CFD9 is
   
 component cf_queue
 port (
@@ -65,7 +68,6 @@ port (
 end component;
 
 --constant RAW_CFD_DELAY:integer:=256;
-constant XLAT:natural:=1;
 constant DEPTH:integer:=12;
 
 signal started:boolean;
@@ -119,6 +121,7 @@ signal max_d,min_d,above_pulse_threshold_d,pulse_threshold_pos_d:boolean;
 signal pulse_threshold_neg_d,slope_threshold_pos_d:boolean;
 signal q_was_empty:boolean;
 
+signal filtered_0_p:boolean;
 signal first_peak:boolean;
 signal good_write:boolean;
 signal read_d:boolean;
@@ -140,16 +143,17 @@ signal max_slope_d:signed(WIDTH-1 downto 0);
 signal will_go_above_pulse_threshold_d,will_arm_d:boolean;
 signal pulse_t_n:boolean;
 signal pending:integer;
-
+signal cfd_error_int:boolean;
+signal cfd_error_d:boolean;
 
 begin
 --------------------------------------------------------------------------------
 -- Constant fraction calculation
 --------------------------------------------------------------------------------
---FIXME make simpler lower latency crossing detector
-slope0xing:entity work.crossing20
+slope0xing:entity work.crossing
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  STRICT => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -157,25 +161,24 @@ port map(
   signal_in => slope,
   threshold => (others => '0'),
   signal_out => slope_0x,
-  pos => slope_0_p,  --LAT=1
-  neg => slope_0_n,
-  above => open
+  pos => slope_0_p,
+  neg => slope_0_n
 );
 
---filtered0xing:entity work.crossing20
---generic map(
---  WIDTH => WIDTH
---)
---port map(
---  clk => clk,
---  reset => reset,
---  signal_in => filtered,
---  threshold => (others => '0'),
---  signal_out => filtered_0x,
---  pos => filtered_0_p,
---  neg => open,
---  above => open
---);
+filtered0xing:entity work.crossing
+generic map(
+  WIDTH => WIDTH,
+  STRICT => STRICT_CROSSING
+)
+port map(
+  clk => clk,
+  reset => reset,
+  signal_in => filtered,
+  threshold => (others => '0'),
+  signal_out => filtered_0x,
+  pos => filtered_0_p,
+  neg => open
+);
 
 thresholding:process(clk)
 begin
@@ -187,8 +190,7 @@ if rising_edge(clk) then
     cf_int <= (others => '0');
   else
     -- FIXME the thresholds changing could cause issues
-    filtered_0x <= filtered;
-    if slope_0_p then 
+    if slope_0_p then
       started <= TRUE;
       pulse_threshold_int <= pulse_threshold;
       slope_threshold_int <= slope_threshold;
@@ -201,9 +203,10 @@ if rising_edge(clk) then
 end if;
 end process thresholding;
 
-slopeTxing:entity work.crossing20
+slopeTxing:entity work.crossing
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  STRICT => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -212,13 +215,13 @@ port map(
   threshold => slope_threshold_int,
   signal_out => slope_int,
   pos => slope_t_p,
-  neg => open,
-  above => open
+  neg => open
 );
 
-filteredTxing:entity work.crossing20
+filteredTxing:entity work.crossing
 generic map(
-  WIDTH => WIDTH
+  WIDTH => WIDTH,
+  STRICT => STRICT_CROSSING
 )
 port map(
   clk => clk,
@@ -227,8 +230,7 @@ port map(
   threshold => pulse_threshold_int,
   signal_out => filtered_int,
   pos => pulse_t_p,
-  neg => pulse_t_n,
-  above => above_i
+  neg => pulse_t_n
 );
 
 overrun_i <= delay_counter >= DELAY-1;
@@ -250,8 +252,8 @@ begin
       delay_counter <= 0;
       q_wr_en <= '0'; 
       good_write <= FALSE;
+      cfd_error_int <= FALSE;
     else
-      
       --counter to track queue pending  
       if q_wr_en='1' and q_rd_en='0' then
         pending <= pending + 1;
@@ -259,18 +261,16 @@ begin
       if q_rd_en ='1' and q_wr_en='0' then
         pending <= pending - 1;
       end if;
-
       slope_0_n_pipe <= (slope_0_n and started) & slope_0_n_pipe(1 to DEPTH-1);
       slope_0_p_pipe <= slope_0_p & slope_0_p_pipe(1 to DEPTH-1);
       
-      
---      if filtered_0x_reg > pulse_threshold_int then
---        above_i <= TRUE; --LAT 1 ??
---      end if;
---      if filtered_0x_reg < pulse_threshold_int then
---        above_i <= FALSE;
---      end if;
-      above_pipe(2 to DEPTH) <= above_i & above_pipe(2 to DEPTH-1);
+      if filtered_0x_reg > pulse_threshold_int then
+        above_i <= TRUE; --LAT 1 ??
+      end if;
+      if filtered_0x_reg < pulse_threshold_int then
+        above_i <= FALSE;
+      end if;
+      above_pipe(3 to DEPTH) <= above_i & above_pipe(3 to DEPTH-1);
       
       if slope_0_p_pipe(3) and not above_pipe(3) then
         first_peak <= TRUE; -- LAT 4
@@ -326,9 +326,11 @@ begin
       end if;
       
       -- p valid @DEPTH-1
+      cfd_error_int <= TRUE;
       if first_peak_pipe(DEPTH-1) then 
         if minima_pipe(DEPTH-1) > p then
           cfd_low_i <= minima_pipe(DEPTH-1);
+          cfd_error_int <= TRUE;
         else
           cfd_low_i <= p;
         end if; 
@@ -373,7 +375,7 @@ port map(
 --------------------------------------------------------------------------------
 full_i <= q_full = '1';
 --FIXME good_write no longer used
-flags_i <= overrun_i & good_write & slope_0_n_pipe(DEPTH) & 
+flags_i <= overrun_i & cfd_error_int & slope_0_n_pipe(DEPTH) & 
            slope_0_p_pipe(DEPTH) & armed_pipe(DEPTH) & above_pipe(DEPTH) & 
            pulse_t_p_pipe(DEPTH) & pulse_t_n_pipe(DEPTH) & 
            slope_t_p_pipe(DEPTH);
@@ -381,7 +383,8 @@ flags_i <= overrun_i & good_write & slope_0_n_pipe(DEPTH) &
 cf_data(WIDTH-1 downto 0) <= std_logic_vector(cfd_low_i);
 cf_data(2*WIDTH-1 downto WIDTH) <= std_logic_vector(cfd_high_i);
 cf_data(3*WIDTH-1 downto 2*WIDTH) <= std_logic_vector(max_slope_i);
-cf_data(3*WIDTH) <= to_std_logic(overrun_i); 
+--cf_data(3*WIDTH) <= to_std_logic(overrun_i); 
+cf_data(3*WIDTH) <= to_std_logic(cfd_error_int); 
 cf_data(3*WIDTH+1) <= to_std_logic(armed_pipe(DEPTH)); 
 cf_data(3*WIDTH+2) <= to_std_logic(above_pipe(DEPTH)); 
 cf_data(71 downto 3*WIDTH+3) <= (others => '0'); 
@@ -448,6 +451,7 @@ slope_threshold_pos_d <= to_boolean(flags_d(0));
 cfd_low_threshold_d <= signed(q_dout(WIDTH-1 downto 0));
 cfd_high_threshold_d <= signed(q_dout(2*WIDTH-1 downto WIDTH));
 max_slope_d <= signed(q_dout(3*WIDTH-1 downto 2*WIDTH));
+cfd_error_d <= to_boolean(q_dout(3*WIDTH));
 will_arm_d <= to_boolean(q_dout(3*WIDTH+1));
 will_go_above_pulse_threshold_d <= to_boolean(q_dout(3*WIDTH+2));
 --------------------------------------------------------------------------------
@@ -497,8 +501,8 @@ if rising_edge(clk) then
     
     --min_d is slope_0_p
     if min_d then
-      CFD_error <= overrun_d;
-      CFD_valid <= not overrun_d;
+      CFD_error <= overrun_d or cfd_error_d;
+      CFD_valid <= not (overrun_d or cfd_error_d);
     else
       CFD_error <= FALSE;
     end if;

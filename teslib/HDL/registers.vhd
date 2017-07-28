@@ -136,6 +136,7 @@ function to_trace_type_d(i:natural range 0 to NUM_TRACE_TYPE_D-1)
          return trace_type_d;
   
 -- the value sampled into the MCA
+--FIXME 
 type mca_value_d is (
   MCA_ZERO_SIGNAL_D, --FIXME can use this slot?
 	MCA_FILTERED_SIGNAL_D, -- the output of the dsp filter
@@ -145,12 +146,13 @@ type mca_value_d is (
   MCA_SLOPE_AREA_D,
   MCA_SLOPE_EXTREMA_D,
   MCA_RAW_SIGNAL_D,
-  MCA_CFD_HIGH_D,    --this is the threshold
-  MCA_RAW_EXTREMA_D, --FIXME replace with peak time starts at minima
+  MCA_CFD_HIGH_D,    -- high threshold
+  MCA_RAW_EXTREMA_D, --FIXME replace with peak time
   MCA_PULSE_AREA_D, -- the area between threshold crossings
-  MCA_PULSE_LENGTH_D, -- make this start at pulse_pos
-  MCA_RISE_TIME_D -- make this start at timing point
+  MCA_PULSE_LENGTH_D, --FIXME make this pulse time
+  MCA_RISE_TIME_D --  FIXME make this the difference between high and low thresholds
 );
+
 
 constant NUM_MCA_VALUE_D:integer:=mca_value_d'pos(mca_value_d'high)+1;										
 constant MCA_VALUE_D_BITS:integer:=ceilLog2(NUM_MCA_VALUE_D);
@@ -187,6 +189,7 @@ function to_mca_trigger_d(s:std_logic_vector) return mca_trigger_d;
 function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector;
   
 --FIXME could make no select bits use ALL
+--FIXME add valid_pulse?
 type mca_qual_d is (
   MCA_DISABLED_D, -- no select bits
   ALL_MCA_QUAL_D, 
