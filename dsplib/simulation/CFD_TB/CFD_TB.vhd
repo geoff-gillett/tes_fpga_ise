@@ -94,7 +94,7 @@ port map(
   stage2 => slope
 );
 
-UUT:entity work.CFD20
+UUT:entity work.CFD21
 generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
