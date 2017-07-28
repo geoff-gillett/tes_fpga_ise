@@ -16,7 +16,7 @@ use work.registers.all;
 use work.functions.all;
 
 --FIXME mux full errors????
-entity measurement_framer13 is
+entity measurement_framer20 is
 generic(
   WIDTH:natural:=16;
   ADDRESS_BITS:integer:=11;
@@ -44,9 +44,9 @@ port (
   valid:out boolean;
   ready:in boolean
 );
-end entity measurement_framer13;
+end entity measurement_framer20;
 
-architecture RTL of measurement_framer13 is
+architecture RTL of measurement_framer20 is
 
 --  
 constant CHUNKS:integer:=BUS_CHUNKS;
@@ -90,7 +90,7 @@ signal pre_detection:detection_d;
 signal trace_reg:std_logic_vector(BUS_DATABITS-1 downto 16);
 signal trace_chunk,trace_chunk_debug:std_logic_vector(CHUNK_DATABITS-1 downto 0);
 signal acc_chunk:std_logic_vector(CHUNK_DATABITS-1 downto 0);
-signal stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
+signal stride_count,next_stride_count:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 signal trace_address,trace_start_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal trace_count,trace_count_init:unsigned(TRACE_LENGTH_BITS-1 downto 0);
 signal next_trace_count:unsigned(TRACE_LENGTH_BITS-1 downto 0);
@@ -154,7 +154,7 @@ signal dot_product:signed(47 downto 0);
 signal dp_valid:boolean;
 signal accumulate_done:boolean;
 signal multipeak,multipulse:boolean;
-signal dp_sample_valid : boolean;
+--signal dp_sample_valid:boolean;
 signal dp_trace_start:boolean;
 signal start_accumulating:boolean;
 signal dp_detection:boolean;
@@ -195,6 +195,7 @@ signal q_aux,q_single,q_header,q_pulse:boolean;
 signal q_length:unsigned(ADDRESS_BITS downto 0);
 signal commit_average:boolean;
 signal started:boolean;
+signal q_mux_wr_en:boolean;
 
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
@@ -249,6 +250,7 @@ constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
 attribute mark_debug of pending:signal is "FALSE";
 attribute mark_debug of enable_reg:signal is "FALSE";
+attribute mark_debug of framer_free:signal is "FALSE";
 
 begin
 debugGen:if DEBUG="TRUE" generate
@@ -304,6 +306,7 @@ eflags.cfd_rel2min <= eflags_reg.cfd_rel2min;
 eflags.channel <= eflags_reg.channel;                             
 eflags.new_window <= eflags_reg.new_window;                             
 eflags.peak_number <= m.eflags.peak_number;                             
+eflags.has_peak <= m.eflags.has_peak;                             
                                       
 pulse.size <= resize(length & "000",CHUNK_DATABITS);
 pulse.flags <= eflags;
@@ -395,10 +398,11 @@ begin
       error_int <= FALSE;
     else
       commit_int <= commit_reg and mux_wr_en;
-      start_int <= start_reg and mux_enable;
-      dump_int <= dump_reg and mux_wr_en;
-      overflow_int <= overflow_reg and mux_wr_en;
-      error_int <= error_reg and mux_wr_en;
+--      start_int <= start_reg and mux_wr_en;
+      start_int <= start_reg; -- and mux_wr_en;
+      dump_int <= dump_reg;
+      overflow_int <= overflow_reg;
+      error_int <= error_reg;
     end if;
   end if;
 end process muxOutput;
@@ -486,27 +490,37 @@ begin
       case s_state is 
         
       when INIT => 
+--        next_stride_count <= tflags.stride-1;
+--        stride_count <= (others => '0');
         if trace_start then
-           s_state <= CAPTURE; -- 
+           s_state <= CAPTURE; 
         end if;
         
       when IDLE =>
-        if stride_count=0 or trace_start then
+--        if trace_start then
+--          next_stride_count <= tflags.stride-1;
+--          stride_count <= (others => '0');
+--        end if;
+        if stride_count=0 or zero_stride or trace_start then
           s_state <= CAPTURE;
+          next_stride_count <= tflags.stride-1;
+          stride_count <= tflags.stride;
           if wr_chunk_state=WRITE then --FIXME????
             trace_last <= last_trace_count and trace_detection;
           end if;
         else 
-          stride_count <= stride_count-1;
+          next_stride_count <= next_stride_count-1;
+          stride_count <= next_stride_count;
         end if;
         
       when CAPTURE =>
-        stride_count <= tflags.stride;
         if trace_last then
           s_state <= INIT;
         elsif not zero_stride then
           s_state <= IDLE;
-        elsif wr_chunk_state=STORE2 then
+          next_stride_count <= next_stride_count-1;
+          stride_count <= next_stride_count;
+        elsif wr_chunk_state=STORE2 then --FIXME ???
           trace_last <= last_trace_count and zero_stride and trace_detection;
         end if;
       end case;
@@ -660,7 +674,8 @@ begin
             commit_reg <= dp_state=DONE;
           else
             commit_frame <= TRUE; 
-            commit_reg <= mux_wr_en; 
+--            commit_reg <= mux_wr_en; 
+            commit_reg <= q_mux_wr_en; 
           end if;
           
           if dp_detection then
@@ -793,6 +808,8 @@ begin
       q_aux <= FALSE;
       inc_accum <= FALSE;
       commit_average <= FALSE;
+      space_available <= TRUE;
+      space_available2 <= TRUE;
     else
       q_single <= FALSE;
       q_pulse <= FALSE;
@@ -852,6 +869,12 @@ begin
                         pre_detection=TRACE_DETECTION_D and 
                         m.pre_tflags.trace_type/=AVERAGE_TRACE_D
                       )) and enable;
+                      
+--        mux_wr_en <= (pre_detection/=TRACE_DETECTION_D or 
+--                      (
+--                        pre_detection=TRACE_DETECTION_D and 
+--                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
+--                      )) and enable;
                      
         trace_count_init <= m.pre_tflags.trace_length-1;
         
@@ -896,19 +919,8 @@ begin
       
       if commit_frame or dump_reg or error_reg then
         committing <= FALSE;
---        mux_enable <= pre_detection/=TRACE_DETECTION_D or 
---                      (
---                        pre_detection=TRACE_DETECTION_D and 
---                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
---                      );
       end if;
       
---      if trace_start then
---        trace_started <= TRUE;
---      elsif wr_trace_last or trace_overflow or not enable_reg or state=HOLD then
---        trace_started <= FALSE;
---      end if;
-        
       if a_state=IDLE then
         accum_count <= (ACCUMULATE_N => '0', others => '1');
         next_accum_count <= to_unsigned(2**ACCUMULATE_N-2,ACCUMULATE_N+1);
@@ -938,7 +950,7 @@ begin
      
         if trace_overflow or (trace_last and trace_full) then
           overflow_reg <= TRUE;
-          dump_reg <= pulse_stamped or m.stamp_pulse;
+          dump_reg <= pulse_stamped or (m.stamp_pulse and mux_enable);
           pulse_stamped <= FALSE;
           dp_dump <= TRUE;
           state <= IDLE;
@@ -949,7 +961,7 @@ begin
           if not m.above_area_threshold then
             --dump the pulse that is ending
             trace_reset <= TRUE;
-            dump_reg <= pulse_stamped or m.stamp_pulse; 
+            dump_reg <= pulse_stamped or (m.stamp_pulse and mux_enable); 
             pulse_stamped <= FALSE;
             dp_dump <= TRUE;
             -- if pre_pulse_start space will be free as previous pulse was 
@@ -1059,6 +1071,7 @@ begin
                     space_available <= size2 <= framer_free;
                     space_available2 <= size2 <= framer_free;
                     q_header <= TRUE;
+                    q_mux_wr_en <= mux_wr_en;
                   else
                     error_reg <= TRUE;
                     dump_reg <= pulse_stamped;
@@ -1070,10 +1083,8 @@ begin
             else 
               -- not trace_detection 
               if q_ready then 
-               
-                --FIXME add ready test 
                 if area_detection then
-                  q_single <= TRUE; -- assumption here that q is idle
+                  q_single <= mux_enable; -- assumption here that q is idle
                   queue(0) <= to_streambus(area,ENDIAN);
                 end if;
                 
@@ -1083,7 +1094,8 @@ begin
                   -- write last 
                   queue(2) <= to_streambus(pulse_peak,TRUE,ENDIAN);
                   last_peak_address <= resize(m.last_peak_address,ADDRESS_BITS);
-                  q_pulse <= TRUE;
+                  q_pulse <= mux_enable;
+                  q_mux_wr_en <= mux_enable;
                 end if;
                 
                 q_length <= length;
@@ -1091,7 +1103,11 @@ begin
                 free <= framer_free - length;
                 space_available <= size2 <= framer_free;
                 space_available2 <= size2 <= framer_free;
-                
+              
+              else
+                error_reg <= TRUE;
+                dump_reg <= pulse_stamped;
+                pulse_stamped <= FALSE;
               end if;
             end if;
           end if;
@@ -1199,6 +1215,7 @@ begin
                 space_available2 <= size2 <= framer_free;
 --                q_state <= WORD1;
                 q_header <= TRUE;
+                q_mux_wr_en <= mux_wr_en;
               else  
                 error_reg <= TRUE;
                 dump_reg <= pulse_stamped;
@@ -1304,6 +1321,7 @@ begin
                 space_available2 <= size2 <= framer_free;
 --                q_state <= WORD1;
                 q_header <= TRUE;
+                q_mux_wr_en <= mux_wr_en;
               else
                 error_reg <= TRUE;
                 dump_reg <= pulse_stamped;
@@ -1328,6 +1346,7 @@ begin
           start_reg <= TRUE;
           mux_wr_en <= TRUE;
           q_header <= TRUE;
+          q_mux_wr_en <= TRUE;
 --          q_state <= WORD0; --FIXME
           state <= HOLD;
           average_trace_header.trace_flags.multipeak <= FALSE;
@@ -1348,9 +1367,9 @@ begin
       --but a transaction is pending, this can lock it up
       --this framer needs major refactoring, a couple of error conditions could
       --be removed, perhaps separate the peak writing from the queue.
-      if m.peak_stop and enable_reg then 
+      if m.peak_stop then --and enable_reg then 
         if (state=FIRSTPULSE or state=WAITPULSEDONE) and not area_detection then 
-          if m.eflags.peak_number/=0 and average_detection then --FIXME check
+          if m.eflags.has_peak and average_detection then --FIXME check
             average_trace_header.trace_flags.multipeak <= TRUE;
             average_trace_header.multipeaks 
               <= average_trace_header.multipeaks+1;
@@ -1368,14 +1387,14 @@ begin
 --            q_state <= IDLE; --FIXME should the queue be reset?
 --            t_state <= IDLE;
             state <= IDLE;
-            dump_reg <= pulse_stamped and mux_wr_en;
+            dump_reg <= pulse_stamped;
             pulse_stamped <= FALSE;
           else
-            tflags.multipeak <= m.eflags.peak_number/=0;
+            tflags.multipeak <= m.eflags.has_peak;
             aux_word_reg <= to_streambus(pulse_peak,FALSE,ENDIAN);--?? last?
             aux_address <= resize(m.peak_address,ADDRESS_BITS);
             q_aux <= not average_detection;
---            pulse_peak_valid <= mux_wr_en;
+--            pulse_peak_valid <= mux_enable;
           end if;
         elsif peak_detection then
           if not space_available then
@@ -1386,13 +1405,13 @@ begin
 --            peak_stamped <= FALSE;
           else
             queue(0) <= to_streambus(peak,ENDIAN);
-            q_single <= TRUE;
+            q_single <= mux_enable;
             q_length <= length;
 --            q_state <= SINGLE_WORD_EVENT;
             committing <= TRUE;
             free <= framer_free - length;
---            space_available <= size2 <= framer_free;
---            space_available2 <= size2 <= framer_free;
+            space_available <= size2 <= framer_free;
+            space_available2 <= size2 <= framer_free;
           end if;
         end if;
       end if;
@@ -1403,8 +1422,8 @@ begin
           error_reg <= TRUE;
 --          peak_stamped <= FALSE;
         else
-          start_reg <= TRUE;  
-          mux_wr_en <= mux_enable;  
+          start_reg <= mux_enable;  
+          mux_wr_en <= mux_enable;
         end if;
         --FIXME think about this
       elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse and 
@@ -1414,7 +1433,7 @@ begin
           pulse_stamped <= FALSE;
         else
           start_reg <= mux_enable;  
-          mux_wr_en <= mux_enable;  
+          mux_wr_en <= mux_enable;
           pulse_stamped <= mux_enable;
         end if;
       end if; 
@@ -1450,12 +1469,14 @@ begin
   reg_stream <= stream_int;
   if a_state=WAITING then
     dp_sample <= (others => '-');
+--    dp_sample_valid <= FALSE;
     dp_trace_last <= FALSE;
     dp_trace_start <= FALSE;
     ready_int <= wait_ready;
     reg_valid <= wait_valid;
   elsif a_state=ACCUM then
     dp_sample <= signed(acc_chunk);
+--    dp_sample_valid <= TRUE;
     dp_trace_last <= rd_trace_last;
     dp_trace_start <= rd_trace_start;
     ready_int <= acc_ready;
@@ -1463,6 +1484,7 @@ begin
   else
     --calculating dot product or normal operation
     dp_sample <= signed(set_endianness(trace_chunk,ENDIAN));
+--    dp_sample_valid <= s_state=CAPTURE;
     dp_trace_last <= trace_last;
     dp_trace_start <= trace_start;
     ready_int <= reg_ready;
@@ -1570,11 +1592,12 @@ begin
 end process accumFSM;
 
 trace_chunks <= resize(tflags.trace_length,DP_ADDRESS_BITS+1);
-dotproductDSP:entity work.dot_product2
+dotproductDSP:entity work.dot_product20
 generic map(
   ADDRESS_BITS => DP_ADDRESS_BITS,
   WIDTH => WIDTH,
   ACCUMULATOR_WIDTH => ACCUMULATOR_WIDTH,
+  STRIDE_BITS => TRACE_STRIDE_BITS,
   ACCUMULATE_N => ACCUMULATE_N
 )
 port map(
@@ -1582,8 +1605,9 @@ port map(
   reset => reset,
   stop => stop,
   trace_chunks => trace_chunks,
+  trace_stride => tflags.stride,
   sample => dp_sample,
-  sample_valid => dp_sample_valid,
+--  sample_valid => dp_sample_valid,
   trace_start => dp_trace_start,
   trace_last => dp_trace_last,
   accumulate_start => start_accumulating,

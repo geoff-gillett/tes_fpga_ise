@@ -115,6 +115,8 @@ type measurements_t is record
 	filtered:signal_measurement_t;
 	slope:signal_measurement_t;
 	--baseline:signal_t;
+  mux_wr_en:boolean;
+  mux_enable:boolean;
 	
   height:signal_t; 
   height_valid:boolean;

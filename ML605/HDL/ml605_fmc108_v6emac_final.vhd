@@ -39,7 +39,7 @@ use tes.functions.all;
 use tes.registers.all;
 use tes.measurements.all;
 
-entity ml605_fmc108_v6emac_dp_trace is
+entity ml605_fmc108_v6emac_final is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=24;
@@ -122,9 +122,9 @@ port(
   frame_error:out std_logic;
   frame_errorn:out std_logic
 );
-end entity ml605_fmc108_v6emac_dp_trace;
+end entity ml605_fmc108_v6emac_final;
 
-architecture RTL of ml605_fmc108_v6emac_dp_trace is
+architecture RTL of ml605_fmc108_v6emac_final is
 	
 --------------------------------------------------------------------------------
 -- Constants
@@ -194,7 +194,7 @@ end component;
 -- Clock and reset signals
 --------------------------------------------------------------------------------
 signal global_reset_boot_clk,IO_clk,signal_clk,axi_clk,boot_clk:std_logic;
-signal reset0,reset1,reset2:std_logic;
+signal reset0,reset1,reset2:std_logic; --io_clk
 signal reset1_sclk,reset2_sclk:std_logic;
 --signal reset0_refclk:std_logic;
 signal reset1_ioclk:std_logic;
@@ -770,7 +770,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 end generate tesChannel;
 --------------------------------------------------------------------------------
 
-measurementSubsystem:entity tes.measurement_subsystem13
+measurementSubsystem:entity tes.measurement_subsystem20
 generic map(
   DSP_CHANNELS => DSP_CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
