@@ -44,6 +44,9 @@ begin
 above <= above_int;
 signal_out <= signal_int;
 
+isbelow <= signal_in < threshold;
+isabove <= signal_in > threshold;
+
 reg:process (clk) is
 begin
 	if rising_edge(clk) then
@@ -53,9 +56,6 @@ begin
 	  else
 	    signal_int <= signal_in;
 	    extrema <= extrema_int;
-	    
-      isbelow <= signal_in < threshold;
-      isabove <= signal_in > threshold;
       
       if isabove then
         above_int <= TRUE;

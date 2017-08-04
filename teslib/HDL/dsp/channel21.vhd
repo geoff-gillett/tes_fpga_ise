@@ -12,8 +12,8 @@ use extensions.logic.all;
 library dsp;
 use dsp.types.all;
 
-use work.registers.all;
-use work.measurements.all;
+use work.registers21.all;
+use work.measurements21.all;
 use work.types.all;
 
 --FIXME remove internal precision
@@ -167,17 +167,6 @@ if rising_edge(clk) then
 end if;
 end process baselineSubraction;
 
-rawDelay:entity dsp.sdp_bram_delay
-generic map(
-  DELAY => RAW_DELAY,
-  WIDTH => WIDTH
-)
-port map(
-  clk => clk,
-  input => std_logic_vector(sample_in),
-  delayed => sample_d
-);
-raw <= signed(sample_d);
 
 --FIXME make this width 16 with dynamic frac
 FIR:entity dsp.FIR_142SYM_23NSYM_16bit
@@ -197,24 +186,24 @@ port map(
   stage2 => slope
 );
 
-measure:entity work.measure20
+measure:entity work.measure21
 generic map(
-  CHANNEL => CHANNEL,
   CF_WIDTH => CF_WIDTH,
   CF_FRAC => CF_FRAC,
   WIDTH => WIDTH,
   FRAC => FRAC,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  CFD_DELAY => RAW_DELAY-101-72-38,
-  STRICT_CROSSING => STRICT_CROSSING
+  CFD_DELAY => RAW_DELAY-101-72-38
 )
 port map(
   clk => clk,
   reset => reset1,
+  event_enable => event_enable,
   registers => registers.capture,
-  slope => slope,
-  filtered => filtered,
+  raw => sample_in,
+  s => slope,
+  f => filtered,
   measurements => dsp_m
 );
 
@@ -229,52 +218,6 @@ begin
   end if;
 end process pipelines;
 
-raw0xing:entity dsp.crossing
-generic map(
-  WIDTH => WIDTH,
-  STRICT => TRUE
-)
-port map(
-  clk => clk,
-  reset => reset1,
-  signal_in => raw,
-  threshold => (others => '0'),
-  signal_out => raw_x,
-  pos => raw_0_pos_x,
-  neg => raw_0_neg_x
-);
-raw_0xing <= raw_0_pos_x or raw_0_neg_x;
-
-rawArea:entity dsp.area_acc3
-generic map(
-  WIDTH => WIDTH,
-  FRAC => FRAC,
-  AREA_WIDTH => AREA_WIDTH,
-  AREA_FRAC => AREA_FRAC
-)
-port map(
-  clk => clk,
-  reset => reset1,
-  xing => raw_0xing,
-  sig => raw_x,
-  signal_threshold => (others => '0'),
-  area_threshold => (others => '0'),
-  above_area_threshold => open,
-  area => m.raw.area
-);
-
-rawExtrema:entity work.extrema
-generic map(
-  WIDTH => WIDTH
-)
-port map(
-  clk => clk,
-  reset => reset1,
-  sig => raw_pipe(DEPTH-ELAT),
-  pos_0xing => raw_0_pos_pipe(DEPTH-ELAT),
-  neg_0xing => raw_0_neg_pipe(DEPTH-ELAT),
-  extrema => m.raw.extrema
-);
 
 m.raw.sample <= raw_pipe(DEPTH);
 m.raw.pos_0xing <= raw_0_pos_pipe(DEPTH);
@@ -336,16 +279,17 @@ m.pre_stamp_pulse <= dsp_m.pre_stamp_pulse;
 m.peak_stamped <= dsp_m.peak_stamped;
 m.pulse_stamped <= dsp_m.pulse_stamped;
 --m.time_offset <= dsp_m.time_offset;
-m.valid_peak <= dsp_m.valid_peak;
-m.valid_peak0 <= dsp_m.valid_peak0;
+m.rising <= dsp_m.rising;
+m.rising0 <= dsp_m.rising0;
 m.valid_peak1 <= dsp_m.valid_peak1;
 m.valid_peak2 <= dsp_m.valid_peak2;
 --m.height_threshold <= dsp_m.height_threshold;
 m.timing_threshold <= dsp_m.timing_threshold;
 m.filtered_long <= dsp_m.filtered_long;
 
-framer:entity work.measurement_framer20
+framer:entity work.measurement_framer21
 generic map(
+  CHANNEL => CHANNEL,
   WIDTH => WIDTH,
   ACCUMULATOR_WIDTH => ACCUMULATOR_WIDTH,
   ACCUMULATE_N => ACCUMULATE_N,

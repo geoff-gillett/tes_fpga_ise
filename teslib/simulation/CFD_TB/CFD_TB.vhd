@@ -18,16 +18,21 @@ use extensions.debug.all;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
+library dsp;
+use dsp.types.all;
+use dsp.FIR_142SYM_23NSYM_16bit;
+
 use std.textio.all;
 use work.types.all;
+use work.registers21.all;
 
 entity CFD_TB is
 generic(
   WIDTH:integer:=16;
   CF_WIDTH:integer:=18;
   CF_FRAC:integer:=17;
-  DELAY:integer:=200;
-  STRICT_CROSSING:boolean:=TRUE;
+--  DELAY:integer:=112+4;
+  DELAY:integer:=1026;
   SIM_WIDTH:integer:=9
 );
 end entity CFD_TB;
@@ -64,20 +69,23 @@ signal pulse_threshold_neg:boolean;
 signal slope_threshold_pos:boolean;
 signal slope_out:signed(WIDTH-1 downto 0);
 signal filtered_out:signed(WIDTH-1 downto 0);
-signal overrun:boolean;
 signal rel2min : boolean;
 signal will_go_above_pulse_threshold : boolean;
 signal will_arm:boolean;
 signal armed:boolean;
 signal above_pulse_threshold : boolean;
 signal cfd_error:boolean;
-signal cfd_valid:boolean;
 signal sample_in:signed(WIDTH-1 downto 0);
+signal valid_peak,valid_pulse:boolean;
+signal cfd_low_xing:boolean;
+signal cfd_high_xing:boolean;
+signal max_slope_xing:boolean;
+signal timing : timing_d;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-fir:entity work.FIR_142SYM_23NSYM_16bit
+fir:entity FIR_142SYM_23NSYM_16bit
 generic map(
   WIDTH => WIDTH,
   FRAC => 3,
@@ -99,35 +107,38 @@ generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
   CF_FRAC => CF_FRAC,
-  DELAY => DELAY,
-  STRICT_CROSSING => STRICT_CROSSING
+  DELAY => DELAY
 )
 port map(
   clk => clk,
   reset => reset,
-  slope => slope,
-  filtered => filtered,
+  s => slope,
+  f => filtered,
+  timing => timing,
   constant_fraction => constant_fraction,
-  slope_threshold => slope_threshold,
-  pulse_threshold => pulse_threshold,
+  s_threshold => slope_threshold,
+  p_threshold => pulse_threshold,
   rel2min => rel2min,
   cfd_low_threshold => cfd_low_threshold,
   cfd_high_threshold => cfd_high_threshold,
   max => max,
   min => min,
-  max_slope => max_slope,
-  will_go_above_pulse_threshold => will_go_above_pulse_threshold,
+  max_slope_threshold => max_slope,
+  will_cross => will_go_above_pulse_threshold,
   will_arm => will_arm,
-  overrun => overrun,
-  slope_out => slope_out,
-  slope_threshold_pos => slope_threshold_pos,
+  s_out => slope_out,
+  s_t_p => slope_threshold_pos,
   armed => armed,
-  above_pulse_threshold => above_pulse_threshold,
-  filtered_out => filtered_out,
-  pulse_threshold_pos => pulse_threshold_pos,
-  pulse_threshold_neg => pulse_threshold_neg,
-  cfd_error => cfd_error,
-  cfd_valid => cfd_valid
+  above => above_pulse_threshold,
+  f_out => filtered_out,
+  cfd_low_p => cfd_low_xing,
+  cfd_high_p => cfd_high_xing,
+  max_slope_p => max_slope_xing,
+  p_t_p => pulse_threshold_pos,
+  p_t_n => pulse_threshold_neg,
+  rise_start => valid_peak,
+  pulse_start => valid_pulse,
+  cfd_overrun => cfd_error
 );
 
 simsquare:process (clk) is
@@ -146,15 +157,15 @@ stimulusFile:process
 --	     "../input_signals/tes2_250_old.bin";
 --	     "../bin_traces/july 10/gt1_100khz.bin";
 --	     "../bin_traces/july 10/randn2.bin";
-	     "../bin_traces/july 10/randn.bin";
---	     "../bin_traces/double_peak.bin";
+--	     "../bin_traces/july 10/randn.bin";
+	     "../bin_traces/double_peak_signal.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(clk);
---		sample_in <= to_signed(sample, WIDTH);
+		sample_in <= to_signed(sample, WIDTH);
 	end loop;
 	wait;
 end process stimulusFile;
@@ -168,7 +179,7 @@ doublesig <= to_signed(-200,WIDTH)
              else to_signed(1000,WIDTH)
              when sim_count < 300
              else to_signed(-200,WIDTH);
-sample_in <= doublesig;
+--sample_in <= doublesig;
 
 stimulus:process is
 begin
@@ -184,10 +195,13 @@ stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 
+timing <= CFD_LOW_TIMING_D;
 constant_fraction <= to_signed(CF,CF_WIDTH);
 --constant_fraction <= (others => '0');
-slope_threshold <= to_signed(300,WIDTH);
-pulse_threshold <= to_signed(2000,WIDTH);
+--slope_threshold <= to_signed(250,WIDTH);
+--pulse_threshold <= to_signed(62,WIDTH);
+slope_threshold <= to_signed(2700,WIDTH);
+pulse_threshold <= to_signed(4500,WIDTH);
 wait for CLK_PERIOD;
 reset <= '0';
 --sample_in <= to_signed(0,WIDTH);

@@ -10,17 +10,18 @@ library streamlib;
 use streamlib.types.all;
 
 use work.types.all;
-use work.measurements.all;
-use work.events.all;
-use work.registers.all;
+use work.measurements21.all;
+use work.events21.all;
+use work.registers21.all;
 use work.functions.all;
 
 --FIXME mux full errors????
 entity measurement_framer21 is
 generic(
+  CHANNEL:natural:=0;
   WIDTH:natural:=16;
-  ADDRESS_BITS:integer:=11;
-  DP_ADDRESS_BITS:integer:=11; 
+  ADDRESS_BITS:natural:=11;
+  DP_ADDRESS_BITS:natural:=11; 
   ACCUMULATOR_WIDTH:natural:=36;
   ACCUMULATE_N:natural:=18;
   TRACE_FROM_STAMP:boolean:=TRUE;
@@ -31,7 +32,6 @@ port (
   reset:in std_logic;
   
   measurements:in measurements_t;
-  enable:in boolean; 
   mux_full:in boolean; 
   --signals to MUX
   start:out boolean;
@@ -62,7 +62,6 @@ signal pulse,first_pulse:pulse_detection_t;
 signal pulse_peak:pulse_peak_t;
 signal aux_word_reg:streambus_t;
 signal this_pulse_trace_header,first_pulse_trace_header:trace_detection_t;
-signal tflags:trace_flags_t;
 
 attribute equivalent_register_removal:string;
 attribute equivalent_register_removal of mux_full:signal is "no";
@@ -70,7 +69,7 @@ attribute equivalent_register_removal of mux_full:signal is "no";
 signal framer_free:unsigned(ADDRESS_BITS downto 0);
 signal free:unsigned(ADDRESS_BITS downto 0);
 --signal next_free:signed(ADDRESS_BITS+1 downto 0);
-signal frame_length,length:unsigned(ADDRESS_BITS downto 0):=(others => '0');
+signal frame_length:unsigned(ADDRESS_BITS downto 0):=(others => '0');
 --
 signal pulse_valid:boolean;
 signal pulse_overflow:boolean;
@@ -83,9 +82,8 @@ signal commit_int,start_int,dump_int,error_int,overflow_int:boolean;
 signal aux_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal last_peak_address:unsigned(ADDRESS_BITS-1 downto 0);
 signal area_overflow:boolean;
-signal pulse_stamped:boolean:=FALSE;
 
-signal pre_detection:detection_d;
+--signal pre_detection:detection_d;
 -- trace signals
 signal trace_reg:std_logic_vector(BUS_DATABITS-1 downto 16);
 signal trace_chunk,trace_chunk_debug:std_logic_vector(CHUNK_DATABITS-1 downto 0);
@@ -98,7 +96,7 @@ signal last_trace_count:boolean;
 signal trace_start:boolean;
 signal committing:boolean;
 signal overflow_reg,error_reg:boolean;
-signal enable_reg:boolean;
+--signal enable_reg:boolean;
 --signal can_q_trace,can_q_pulse,can_q_single:boolean;
 signal trace_last:boolean;
 
@@ -171,15 +169,15 @@ signal average_detection:boolean;
 signal zero_stride:boolean;
 signal trace_full:boolean;
 signal trace_overflow:boolean;
-signal eflags_reg,eflags:detection_flags_t;
+signal eflags,current_eflags:detection_flags_t;
+-- captures next_register settings
+signal tflags:trace_flags_t;
 signal dp_length:unsigned(ADDRESS_BITS downto 0);
 signal dp_dump:boolean; --,dp_write:boolean;
 
 -- the free space required to start the event
-signal size:unsigned(PEAK_COUNT_BITS downto 0);
 -- the free space required to start a new event while the previous event is 
 -- committing.
-signal size2:unsigned(ADDRESS_BITS downto 0);
 
 -- when true, the current pulse has this detection type.
 signal trace_detection,area_detection,pulse_detection,peak_detection:boolean;
@@ -249,7 +247,7 @@ end function;
 constant DEBUG:string:="TRUE";
 attribute MARK_DEBUG:string;
 attribute mark_debug of pending:signal is "FALSE";
-attribute mark_debug of enable_reg:signal is "FALSE";
+--attribute mark_debug of m.enabled:signal is "FALSE";
 attribute mark_debug of framer_free:signal is "FALSE";
 
 begin
@@ -283,6 +281,7 @@ end process debugPending;
 end generate;
 
 m <= measurements;
+
 commit <= commit_int;
 start <= start_int;
 dump <= dump_int;
@@ -299,21 +298,21 @@ error <= error_int;
 --
 --  | height | low1 |  low2  | time | -- use this for pulse2
                                       -- low2 is @ time
-eflags.event_type <= eflags_reg.event_type;
-eflags.timing <= eflags_reg.timing;                             
-eflags.height <= eflags_reg.height;                             
-eflags.cfd_rel2min <= eflags_reg.cfd_rel2min;                             
-eflags.channel <= eflags_reg.channel;                             
-eflags.new_window <= eflags_reg.new_window;                             
-eflags.peak_number <= m.eflags.peak_number;                             
-eflags.has_peak <= m.eflags.has_peak;                             
+current_eflags.event_type <= eflags.event_type;
+current_eflags.timing <= eflags.timing;                             
+current_eflags.height <= eflags.height;                             
+current_eflags.cfd_rel2min <= eflags.cfd_rel2min;                             
+current_eflags.channel <= eflags.channel;                             
+--eflags.new_window <= eflags_reg.new_window;                             
+current_eflags.rise_number <= m.rise_number;                             
+current_eflags.has_rise <= m.has_rise;                             
                                       
-pulse.size <= resize(length & "000",CHUNK_DATABITS);
-pulse.flags <= eflags;
-pulse.length <= m.pulse_length;
+pulse.size <= resize(m.frame_length(NOW) & "000",CHUNK_DATABITS);
+pulse.flags <= current_eflags;
+pulse.length <= m.pulse_length(NOW);
 pulse.offset <= m.time_offset;
 pulse.area <= m.pulse_area;
-pulse.threshold <= m.timing_threshold; --FIXME 
+--pulse.threshold <= m.timing_threshold; --FIXME 
 
 -----------------  trace event - 16 byte header --------------------------------
 --  | size |   tflags   |   flags  |   time   | *low thresh for pulse2
@@ -327,8 +326,8 @@ pulse.threshold <= m.timing_threshold; --FIXME
 --tflags.trace_type <= trace_type;
 
 
-average_trace_header.size <= resize(length & "000",CHUNK_DATABITS);
-average_trace_header.flags <= eflags_reg;
+average_trace_header.size <= resize(m.frame_length(NOW) & "000",CHUNK_DATABITS);
+average_trace_header.flags <= eflags;
 --average_trace_header.trace_flags <= atflags;
 average_trace_header.trace_flags.offset <= tflags.offset;
 average_trace_header.trace_flags.stride <= tflags.stride;
@@ -337,40 +336,40 @@ average_trace_header.trace_flags.trace_length <= tflags.trace_length;
 --atflags.multipulse <= multipulse;
 average_trace_header.trace_flags.trace_signal <= tflags.trace_signal;
 average_trace_header.trace_flags.trace_type <= AVERAGE_TRACE_D;
-
-
+--FIXME where is length??
 
 --when trace shorter than pulse need to use current pulse data
-this_pulse_trace_header.size <= resize(length & "000",CHUNK_DATABITS);
-this_pulse_trace_header.flags <= eflags; 
+this_pulse_trace_header.size 
+  <= resize(m.frame_length(NOW) & "000",CHUNK_DATABITS);
+this_pulse_trace_header.flags <= current_eflags; 
 this_pulse_trace_header.trace_flags <= tflags;
-this_pulse_trace_header.length <= m.pulse_length;
+--want this to be number of samples above pulse threshold
+this_pulse_trace_header.length <= m.pulse_length(NOW); 
 this_pulse_trace_header.offset <= m.time_offset;
 this_pulse_trace_header.area <= m.pulse_area;
 
 
 --used when trace longer than pulse use stored pulse data
-first_pulse_trace_header.size <= resize(length & "000",CHUNK_DATABITS);
+first_pulse_trace_header.size <= resize(m.frame_length(NOW) & "000",CHUNK_DATABITS);
 first_pulse_trace_header.flags <= first_pulse.flags;
 first_pulse_trace_header.trace_flags <= tflags;
 first_pulse_trace_header.length <= first_pulse.length;
 first_pulse_trace_header.offset <= first_pulse.offset;
 first_pulse_trace_header.area <= first_pulse.area;
 
-pulse_peak.minima <= m.min_value;
-pulse_peak.timestamp <= m.peak_time;
-pulse_peak.rise_time <= m.rise_time;
-pulse_peak.height <= m.height;
+pulse_peak.minima <= m.minima(NOW);
+pulse_peak.timestamp <= m.rise_timestamp;
+pulse_peak.rise_time <= m.rise_time(NOW);
+pulse_peak.height <= m.height(NOW);
 
-peak.height <= m.height;
-peak.minima <= m.min_value;
-peak.flags <= eflags;
+peak.height <= m.height(NOW);
+peak.minima <= m.minima(NOW);
+peak.flags <= current_eflags;
 
-area.flags <= eflags;
+area.flags <= current_eflags;
 area.area <= m.pulse_area;
 
-
-pre_detection <= m.pre_eflags.event_type.detection;
+--pre_detection <= m.pre_eflags.event_type.detection;
   
 --pre_pulse_start <= pre_detection/=PEAK_DETECTION_D and m.pre_pulse_start;  
 
@@ -455,15 +454,15 @@ begin
       if state=AVERAGE then
         trace_chunk <= set_endianness(average_sample,ENDIAN);
       else
-        case tflags.trace_signal is
+        case m.reg(PRE).trace_signal is
         when NO_TRACE_D =>
-          trace_chunk <= set_endianness(m.filtered.sample,ENDIAN);
+          trace_chunk <= set_endianness(m.f,ENDIAN);
         when RAW_TRACE_D =>
-          trace_chunk <= set_endianness(m.raw.sample,ENDIAN);
+          trace_chunk <= set_endianness(m.raw,ENDIAN);
         when FILTERED_TRACE_D =>
-          trace_chunk <= set_endianness(m.filtered.sample,ENDIAN);
+          trace_chunk <= set_endianness(m.f,ENDIAN);
         when SLOPE_TRACE_D =>
-          trace_chunk <= set_endianness(m.slope.sample,ENDIAN);
+          trace_chunk <= set_endianness(m.s,ENDIAN);
         end case;
       end if;
       
@@ -473,13 +472,15 @@ begin
       if state=AVERAGE then
         trace_start <= start_average;
       else
-        --FIXME replace trace_started with t_state=IDLE ???
+        --FIXME replace trace_started with t_state=IDLE 
         if TRACE_FROM_STAMP then
-          trace_start <= m.pre_stamp_pulse and  
-                         (enable_reg or (m.pre_pulse_start and enable)); 
+          trace_start <= m.stamp_pulse(PRE) and  (
+            m.enabled(NOW) or (m.pulse_start(PRE) and m.enabled(PRE))
+          ); 
+                                       --will enable
         end if;
         if not TRACE_FROM_STAMP then
-          trace_start <= m.pre_pulse_start and enable; 
+          trace_start <= m.pulse_start(PRE) and m.enabled(PRE); 
         end if;
       end if;
       
@@ -503,8 +504,8 @@ begin
 --        end if;
         if stride_count=0 or zero_stride or trace_start then
           s_state <= CAPTURE;
-          next_stride_count <= tflags.stride-1;
-          stride_count <= tflags.stride;
+          next_stride_count <= m.reg(NOW).trace_stride-1;
+          stride_count <= m.reg(NOW).trace_stride;
           if wr_chunk_state=WRITE then --FIXME????
             trace_last <= last_trace_count and trace_detection;
           end if;
@@ -727,7 +728,7 @@ begin
 --------------------------------------------------------------------------------
       case dp_state is 
       when IDLE =>
-        dp_length <= length;
+        dp_length <= m.frame_length(NOW);
         --FIXME state/=IDLE ??
         if dp_detection and trace_last and state/=IDLE then 
           dp_state <= DPWAIT;
@@ -766,7 +767,6 @@ begin
   end if;
 end process framerControl;
 
-
 main:process(clk)
 begin
   if rising_edge(clk) then
@@ -780,7 +780,7 @@ begin
       pulse_valid <= FALSE;
       pulse_overflow <= FALSE;
       area_overflow <= FALSE;
-      enable_reg <= FALSE;
+--      enable_reg <= FALSE;
       
 --      q_state <= IDLE;
       state <= IDLE;
@@ -796,11 +796,11 @@ begin
       trace_reset <= FALSE;
       
       average_trace_header.trace_flags.multipulse <= FALSE;
-      average_trace_header.trace_flags.multipeak <= FALSE;
+      average_trace_header.trace_flags.multirise <= FALSE;
       average_trace_header.multipeaks <= (others => '0');
       average_trace_header.multipulses <= (others => '0');
-      tflags.multipulse <= FALSE; -- FIXME need to reset at trace start as well
-      tflags.multipeak <= FALSE;
+      multipulse <= FALSE; 
+      multipeak <= FALSE; 
     
       q_single <= FALSE;
       q_pulse <= FALSE;
@@ -832,81 +832,72 @@ begin
       -- capture register settings when pulse FSM is idle and a new pulse starts
       -- TODO consider if there is an issue when registers change upstream
       -- on a new pulse even when this FSM is not idle
-      if m.pre_pulse_start and (state=IDLE or state=HOLD) then 
-        enable_reg <= enable; 
+      if m.pulse_start(PRE) and (state=IDLE or state=HOLD) then 
                               
-        tflags.trace_length <= m.pre_tflags.trace_length;
-        tflags.stride <= m.pre_tflags.stride;
-        tflags.trace_signal <= m.pre_tflags.trace_signal;
-        tflags.trace_type <= m.pre_tflags.trace_type;
-        zero_stride <= m.pre_tflags.stride=0; 
+        tflags.trace_length <= m.reg(PRE).trace_length;
+        tflags.stride <= m.reg(PRE).trace_stride;
+        tflags.trace_signal <= m.reg(PRE).trace_signal;
+        tflags.trace_type <= m.reg(PRE).trace_type;
+        zero_stride <= m.reg(PRE).trace_stride=0; 
         
-        eflags_reg <= m.pre_eflags;
+        eflags.cfd_rel2min <= m.reg(PRE).cfd_rel2min;
+        eflags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
+        eflags.event_type.detection <= m.reg(PRE).detection;
+        eflags.height <= m.reg(PRE).height;
          
-        trace_detection <= pre_detection=TRACE_DETECTION_D;
-        area_detection <= pre_detection=AREA_DETECTION_D;
-        pulse_detection <= pre_detection=PULSE_DETECTION_D;
-        peak_detection <= pre_detection=PEAK_DETECTION_D;
+        trace_detection <= m.reg(PRE).detection=TRACE_DETECTION_D;
+        area_detection <= m.reg(PRE).detection=AREA_DETECTION_D;
+        pulse_detection <= m.reg(PRE).detection=PULSE_DETECTION_D;
+        peak_detection <= m.reg(PRE).detection=PEAK_DETECTION_D;
 
-        single_trace_detection <= pre_detection=TRACE_DETECTION_D and
-                                  m.pre_tflags.trace_type=SINGLE_TRACE_D;
+        single_trace_detection <= m.reg(PRE).detection=TRACE_DETECTION_D and
+                                  m.reg(PRE).trace_type=SINGLE_TRACE_D;
 
-        average_detection <= m.pre_tflags.trace_type=AVERAGE_TRACE_D and 
-                             pre_detection=TRACE_DETECTION_D;
+        average_detection <= m.reg(PRE).trace_type=AVERAGE_TRACE_D and 
+                             m.reg(PRE).detection=TRACE_DETECTION_D;
                                    
-        dp_detection <= (m.pre_tflags.trace_type=DOT_PRODUCT_D or 
-                         m.pre_tflags.trace_type=DOT_PRODUCT_TRACE_D) and
-                         pre_detection=TRACE_DETECTION_D;
+        dp_detection <= (m.reg(PRE).trace_type=DOT_PRODUCT_D or 
+                         m.reg(PRE).trace_type=DOT_PRODUCT_TRACE_D) and
+                         m.reg(PRE).detection=TRACE_DETECTION_D;
                          
-        dp_only <=  m.pre_tflags.trace_type=DOT_PRODUCT_D and
-                    pre_detection=TRACE_DETECTION_D;
+        dp_only <=  m.reg(PRE).trace_type=DOT_PRODUCT_D and
+                    m.reg(PRE).detection=TRACE_DETECTION_D;
                                                          
-        trace_wr_en <= pre_detection=TRACE_DETECTION_D and
-                       m.pre_tflags.trace_type/=DOT_PRODUCT_D;
+        trace_wr_en <= m.reg(PRE).detection=TRACE_DETECTION_D and
+                       m.reg(PRE).trace_type/=DOT_PRODUCT_D;
                        
-        mux_enable <= (pre_detection/=TRACE_DETECTION_D or 
+        mux_enable <= (m.reg(PRE).detection/=TRACE_DETECTION_D or 
                       (
-                        pre_detection=TRACE_DETECTION_D and 
-                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
-                      )) and enable;
+                        m.reg(PRE).detection=TRACE_DETECTION_D and 
+                        m.reg(PRE).trace_type/=AVERAGE_TRACE_D
+                      )) and m.enabled(PRE);
                       
---        mux_wr_en <= (pre_detection/=TRACE_DETECTION_D or 
---                      (
---                        pre_detection=TRACE_DETECTION_D and 
---                        m.pre_tflags.trace_type/=AVERAGE_TRACE_D
---                      )) and enable;
                      
-        trace_count_init <= m.pre_tflags.trace_length-1;
+        trace_count_init <= m.reg(PRE).trace_length-1;
         
-        dp_address <= resize(m.dp_address, ADDRESS_BITS);
+        dp_address <= resize(m.dp_address(PRE), ADDRESS_BITS);
         
+        trace_start_address <= resize(m.size(PRE),ADDRESS_BITS);
         
         -- length is the frame length to be committed
         -- size is the free space required to *start* a new event
 
-        if m.pre_eflags.event_type.detection=TRACE_DETECTION_D then
-          tflags.offset <= resize(m.pre_size,PEAK_COUNT_BITS);
-          trace_start_address <= resize(m.pre_size,ADDRESS_BITS);
-
-          dp_start <= m.pre_tflags.trace_type=DOT_PRODUCT_D or
-                      m.pre_tflags.trace_type=DOT_PRODUCT_TRACE_D;
-          
+        if m.reg(PRE).detection=TRACE_DETECTION_D then
+          dp_start <= m.reg(PRE).trace_type=DOT_PRODUCT_D or
+                      m.reg(PRE).trace_type=DOT_PRODUCT_TRACE_D;
         end if;
         
-        length <= resize(m.pre_frame_length,ADDRESS_BITS+1);
-        size <= m.pre_size;
-        size2 <= resize(m.pre_size2,ADDRESS_BITS+1);
         
         if not committing then
           free <= framer_free;
         end if;
-        space_available <= m.pre_size <= free;
-        space_available2 <= m.pre_size2 <= free;
+        space_available <= m.size(PRE) <= free;
+        space_available2 <= m.size2(PRE) <= free;
           
       else 
       
-        space_available <= size <= free;
-        space_available2 <= size2 <= free;
+        space_available <= m.size(NOW) <= free;
+        space_available2 <= m.size2(NOW) <= free;
         if not committing then -- FIXME 
           -- free space can only decrease here.
             free <= framer_free;
@@ -935,12 +926,11 @@ begin
       case state is 
       when IDLE =>
         
-        pulse_stamped <= FALSE;
-        if m.pulse_start and not peak_detection and enable_reg then 
+        if m.pulse_start(NOW) and not peak_detection and m.enabled(NOW) then 
           if space_available then
             state <= FIRSTPULSE;
             tflags.multipulse <= FALSE;
-            tflags.multipeak <= FALSE;
+            tflags.multirise <= FALSE;
           else
             overflow_reg <= TRUE;
           end if;
@@ -950,23 +940,23 @@ begin
      
         if trace_overflow or (trace_last and trace_full) then
           overflow_reg <= TRUE;
-          dump_reg <= pulse_stamped or (m.stamp_pulse and mux_enable);
-          pulse_stamped <= FALSE;
+          dump_reg <= m.pulse_stamped(NOW) or (m.stamp_pulse(PRE) and mux_enable);
           dp_dump <= TRUE;
           state <= IDLE;
           
-        elsif m.pulse_threshold_neg then
+        elsif m.p_t_n(NOW) then
           -- pulse ending ok to restart pulse
           
-          if not m.above_area_threshold then
+          if not m.above_area then
             --dump the pulse that is ending
             trace_reset <= TRUE;
-            dump_reg <= pulse_stamped or (m.stamp_pulse and mux_enable); 
-            pulse_stamped <= FALSE;
+            dump_reg 
+              <= m.pulse_stamped(NOW) or (m.stamp_pulse(PRE) and mux_enable); 
+--            pulse_stamped <= FALSE;
             dp_dump <= TRUE;
             -- if pre_pulse_start space will be free as previous pulse was 
             -- dumped.
-            if not m.pulse_start then 
+            if not m.pulse_start(NOW) then 
               state <= IDLE; 
             end if;
             
@@ -982,7 +972,7 @@ begin
             -- next state logic for valid pulse_threshold_neg (FIRSTPULSE)
             -- handles MUX logic except queue errors.
             --------------------------------------------------------------------
-            if m.pulse_start then -- new pulse starting while this one ending. 
+            if m.pulse_start(NOW) then -- new pulse starting while this one ending. 
               if trace_detection then
                 if average_detection then
                   average_trace_header.trace_flags.multipulse <= TRUE;
@@ -1037,7 +1027,7 @@ begin
               else -- not tracing
                 if q_ready then 
                   --if there is a new pulse check for space
-                  if m.pulse_start and not space_available2 then
+                  if m.pulse_start(NOW) and not space_available2 then
                     -- new pulse wont start no need for dump 
                     overflow_reg <= TRUE; 
                   end if;
@@ -1046,8 +1036,8 @@ begin
                   state <= IDLE;  -- queue error dump this pulse 
                   error_reg <= TRUE;
                   -- anyn m.pulse_stamp belongs to the new pulse
-                  dump_reg <= pulse_stamped;
-                  pulse_stamped <= FALSE;
+                  dump_reg <= m.pulse_stamped(NOW);
+--                  pulse_stamped <= FALSE;
                   dp_dump <= TRUE;
                 end if;
               end if;       
@@ -1065,17 +1055,17 @@ begin
                     -- commit the trace
                     queue(0) <= to_streambus(this_pulse_trace_header,0,ENDIAN); 
                     queue(1) <= to_streambus(this_pulse_trace_header,1,ENDIAN);
-                    q_length <= length;
+                    q_length <= m.frame_length(NOW);
                     committing <= TRUE;
-                    free <= framer_free - length;
-                    space_available <= size2 <= framer_free;
-                    space_available2 <= size2 <= framer_free;
+                    free <= framer_free - m.frame_length(NOW);
+                    space_available <= m.size2(NOW) <= framer_free;
+                    space_available2 <= m.size2(NOW) <= framer_free;
                     q_header <= TRUE;
                     q_mux_wr_en <= mux_wr_en;
                   else
                     error_reg <= TRUE;
-                    dump_reg <= pulse_stamped;
-                    pulse_stamped <= FALSE;
+                    dump_reg <= m.pulse_stamped(NOW);
+--                    pulse_stamped <= FALSE;
                   end if;
                 end if;
               end if;
@@ -1098,16 +1088,16 @@ begin
                   q_mux_wr_en <= mux_enable;
                 end if;
                 
-                q_length <= length;
+                q_length <= m.frame_length(NOW);
                 committing <= TRUE;
-                free <= framer_free - length;
-                space_available <= size2 <= framer_free;
-                space_available2 <= size2 <= framer_free;
+                free <= framer_free - m.frame_length(NOW);
+                space_available <= m.size2(NOW) <= framer_free;
+                space_available2 <= m.size2(NOW) <= framer_free;
               
               else
                 error_reg <= TRUE;
-                dump_reg <= pulse_stamped;
-                pulse_stamped <= FALSE;
+                dump_reg <= m.pulse_stamped(NOW);
+--                pulse_stamped <= FALSE;
               end if;
             end if;
           end if;
@@ -1132,14 +1122,14 @@ begin
         if trace_overflow or (trace_last and trace_full) then
           state <= IDLE;
           overflow_reg <= TRUE;
-          dump_reg <= pulse_stamped; 
-          pulse_stamped <= FALSE;
+          dump_reg <= m.pulse_stamped(NOW); 
+--          pulse_stamped <= FALSE;
           dp_dump <= TRUE;
           
         elsif trace_last or trace_done then
           -- end of trace
           if average_detection then 
-            if m.pulse_start then
+            if m.pulse_start(NOW) then
 --              error_int <= TRUE;
               trace_reset <= TRUE;
               average_trace_header.trace_flags.multipulse <= TRUE;
@@ -1155,7 +1145,7 @@ begin
               commit_average <= TRUE;
             end if;
           else -- not averaging
-            if m.pulse_start then 
+            if m.pulse_start(NOW) then 
               -- make sure twice the space is free for new pulse
               if not space_available2 then 
                 --second pulse overflows
@@ -1174,7 +1164,7 @@ begin
           
         else
           --still tracing
-          if m.pulse_start then 
+          if m.pulse_start(NOW) then 
             tflags.multipulse <= TRUE;
             if average_detection then
             -- multipulse dump
@@ -1207,19 +1197,19 @@ begin
 --                dp_write <= TRUE;
                 queue(0) <= to_streambus(first_pulse_trace_header,0,ENDIAN); 
                 queue(1) <= to_streambus(first_pulse_trace_header,1,ENDIAN);
-                q_length <= length;
+                q_length <= m.frame_length(NOW);
 --                commit_pulse <= not dp_detection; --because dp will commit
                 committing <= TRUE;
-                free <= framer_free - length;
-                space_available <= size2 <= framer_free;
-                space_available2 <= size2 <= framer_free;
+                free <= framer_free - m.frame_length(NOW);
+                space_available <= m.size2(NOW) <= framer_free;
+                space_available2 <= m.size2(NOW) <= framer_free;
 --                q_state <= WORD1;
                 q_header <= TRUE;
                 q_mux_wr_en <= mux_wr_en;
               else  
                 error_reg <= TRUE;
-                dump_reg <= pulse_stamped;
-                pulse_stamped <= FALSE;
+                dump_reg <= m.pulse_stamped(NOW);
+--                pulse_stamped <= FALSE;
                 dp_dump <= TRUE;
               end if;
             end if;
@@ -1228,16 +1218,16 @@ begin
         
       when WAITPULSEDONE =>
         -- must have a TRACE_DETECTION_D pulse with completed trace.
-        if m.pulse_threshold_neg then
-          if not m.above_area_threshold then
+        if m.p_t_n(NOW) then
+          if not m.above_area then
             --dump the pulse that is ending
 --            t_state <= IDLE;
             trace_reset <= TRUE;
 --            trace_started <= FALSE;
-            dump_reg <= pulse_stamped; 
-            pulse_stamped <= FALSE;
+            dump_reg <= m.pulse_stamped(NOW); 
+--            pulse_stamped <= FALSE;
             dp_dump <= TRUE;
-            if m.pulse_start then 
+            if m.pulse_start(NOW) then 
               -- space will be free for new pulse as current one was dumped.
               state <= FIRSTPULSE;
             else
@@ -1251,7 +1241,7 @@ begin
             -- next state & mux logic for valid pulse_threshold_neg 
             -- (WAITPULSEDONE)
             --------------------------------------------------------------------
-            if m.pulse_start then -- new pulse starts as this one ends
+            if m.pulse_start(NOW) then -- new pulse starts as this one ends
               if q_ready then
                 if single_trace_detection then
                   if not space_available2 then
@@ -1312,20 +1302,20 @@ begin
 --                dp_write <= TRUE; 
                 queue(0) <= to_streambus(this_pulse_trace_header,0,ENDIAN); 
                 queue(1) <= to_streambus(this_pulse_trace_header,1,ENDIAN);
-                q_length <= length;
+                q_length <= m.frame_length(NOW);
                 -- will commit when dp_valid
 --                commit_pulse <= not dp_detection; -- because dp will commit
                 committing <= TRUE;
-                free <= framer_free - length;
-                space_available <= size2 <= framer_free;
-                space_available2 <= size2 <= framer_free;
+                free <= framer_free - m.frame_length(NOW);
+                space_available <= m.size2(NOW) <= framer_free;
+                space_available2 <= m.size2(NOW) <= framer_free;
 --                q_state <= WORD1;
                 q_header <= TRUE;
                 q_mux_wr_en <= mux_wr_en;
               else
                 error_reg <= TRUE;
-                dump_reg <= pulse_stamped;
-                pulse_stamped <= FALSE;
+                dump_reg <= m.pulse_stamped(NOW);
+--                pulse_stamped <= FALSE;
               end if;
             end if;
             
@@ -1338,25 +1328,25 @@ begin
         if trace_last then --FIXME trace_full?
           queue(0) <= to_streambus(average_trace_header,0,ENDIAN); 
           queue(1) <= to_streambus(average_trace_header,1,ENDIAN); 
-          q_length <= length;
+          q_length <= m.frame_length(NOW);
           committing <= TRUE;
-          free <= framer_free - length;
-          space_available <= size2 <= framer_free;
-          space_available2 <= size2 <= framer_free;
+          free <= framer_free - m.frame_length(NOW);
+          space_available <= m.size2(NOW) <= framer_free;
+          space_available2 <= m.size2(NOW) <= framer_free;
           start_reg <= TRUE;
           mux_wr_en <= TRUE;
           q_header <= TRUE;
           q_mux_wr_en <= TRUE;
 --          q_state <= WORD0; --FIXME
           state <= HOLD;
-          average_trace_header.trace_flags.multipeak <= FALSE;
+          average_trace_header.trace_flags.multirise <= FALSE;
           average_trace_header.trace_flags.multipulse <= FALSE;
           average_trace_header.multipulses <= (others => '0'); 
           average_trace_header.multipeaks <= (others => '0'); 
         end if;
         
       when HOLD =>
-        if m.pre_pulse_start and not average_detection then
+        if m.pulse_start(PRE) and not average_detection then
           state <= IDLE;
         end if;
         
@@ -1367,10 +1357,10 @@ begin
       --but a transaction is pending, this can lock it up
       --this framer needs major refactoring, a couple of error conditions could
       --be removed, perhaps separate the peak writing from the queue.
-      if m.peak_stop then --and enable_reg then 
+      if m.rise_stop(NOW) then --and enable_reg then 
         if (state=FIRSTPULSE or state=WAITPULSEDONE) and not area_detection then 
-          if m.eflags.has_peak and average_detection then --FIXME check
-            average_trace_header.trace_flags.multipeak <= TRUE;
+          if m.has_rise and average_detection then --FIXME check
+            average_trace_header.trace_flags.multirise <= TRUE;
             average_trace_header.multipeaks 
               <= average_trace_header.multipeaks+1;
 --            q_state <= IDLE;
@@ -1378,7 +1368,7 @@ begin
             
             trace_reset <= TRUE;
             state <= IDLE;
-            pulse_stamped <= FALSE;
+--            pulse_stamped <= FALSE;
           elsif not q_ready then 
                 --s_state=CAPTURE)) or q_state/=IDLE then 
             -- queue error 
@@ -1387,12 +1377,12 @@ begin
 --            q_state <= IDLE; --FIXME should the queue be reset?
 --            t_state <= IDLE;
             state <= IDLE;
-            dump_reg <= pulse_stamped;
-            pulse_stamped <= FALSE;
+            dump_reg <= m.pulse_stamped(NOW);
+--            pulse_stamped <= FALSE;
           else
-            tflags.multipeak <= m.eflags.has_peak;
+            tflags.multirise <= m.has_rise;
             aux_word_reg <= to_streambus(pulse_peak,FALSE,ENDIAN);--?? last?
-            aux_address <= resize(m.peak_address,ADDRESS_BITS);
+            aux_address <= resize(m.rise_address,ADDRESS_BITS);
             q_aux <= not average_detection;
 --            pulse_peak_valid <= mux_enable;
           end if;
@@ -1406,18 +1396,18 @@ begin
           else
             queue(0) <= to_streambus(peak,ENDIAN);
             q_single <= mux_enable;
-            q_length <= length;
+            q_length <= m.frame_length(NOW);
 --            q_state <= SINGLE_WORD_EVENT;
             committing <= TRUE;
-            free <= framer_free - length;
-            space_available <= size2 <= framer_free;
-            space_available2 <= size2 <= framer_free;
+            free <= framer_free - m.frame_length(NOW);
+            space_available <= m.size2(NOW) <= framer_free;
+            space_available2 <= m.size2(NOW) <= framer_free;
           end if;
         end if;
       end if;
       
       -- time stamping
-      if peak_detection and m.stamp_peak and enable_reg then
+      if peak_detection and m.stamp_rise(NOW) and m.enabled(NOW) then
         if mux_full then
           error_reg <= TRUE;
 --          peak_stamped <= FALSE;
@@ -1426,15 +1416,15 @@ begin
           mux_wr_en <= mux_enable;
         end if;
         --FIXME think about this
-      elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse and 
-            enable_reg then
+      elsif (state=FIRSTPULSE or state=WAITPULSEDONE) and m.stamp_pulse(NOW) and 
+            m.enabled(NOW) then
         if mux_full then
           error_reg <= TRUE;
-          pulse_stamped <= FALSE;
+--          pulse_stamped <= FALSE;
         else
           start_reg <= mux_enable;  
           mux_wr_en <= mux_enable;
-          pulse_stamped <= mux_enable;
+--          pulse_stamped <= mux_enable;
         end if;
       end if; 
         

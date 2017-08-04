@@ -10,27 +10,27 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
-entity area_acc4 is
+entity area_acc21 is
 generic(
-  WIDTH:integer:=18; -- max 18
+  WIDTH:integer:=16; -- max 18
   FRAC:integer:=3;
   AREA_WIDTH:integer:=32;
-  AREA_FRAC:integer:=1
-  --TOWARDS_INF:boolean:=FALSE
+  AREA_FRAC:integer:=1;
+  AREA_ABOVE:boolean:=TRUE --TRUE calc area above signal_threshold
 ); 
 port (
   clk:in std_logic;
-  reset:in std_logic; --synchronous 
-  xing:in boolean;
+  reset:in std_logic; 
   sig:in signed(WIDTH-1 downto 0);
   signal_threshold:in signed(WIDTH-1 downto 0);
+  xing:in boolean; -- crossing of signal threshold
   area_threshold:in signed(AREA_WIDTH-1 downto 0);
   above_area_threshold:out boolean;
   area:out signed(AREA_WIDTH-1 downto 0)
 ); 
-end entity area_acc4;
+end entity area_acc21;
 
-architecture DSPx1 of area_acc4 is
+architecture DSPx2 of area_acc21 is
 constant MSB:integer:=AREA_WIDTH+(FRAC-AREA_FRAC);
 constant MASK:std_logic_vector(47 downto 0)
              :=(MSB-2 downto 0 => '1', others => '0');  
@@ -51,21 +51,16 @@ signal accum_opmode:std_logic_vector(6 downto 0):="0001100";
 
 begin
 assert WIDTH <= 18 
-report "maximum width is 18" severity ERROR;
+report "maximum width is 18" severity FAILURE;
 
-a <= resize(signal_threshold,30); 
+a <= resize(signal_threshold,30) when AREA_ABOVE else (others => '0'); 
 d <= resize(sig,25);  
-
-
--- inmode 1101 D-A 1 clk latency
---opmode 0001111 1 clk after xing -- reset (D-A)+C C=rounding
-
 
 xingReg:process (clk) is
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      accum_opmode <= "0001111"; 
+      accum_opmode <= "0000101"; 
     else
       accum_opmode <= '0' & not to_std_logic(xing) & "00101"; 
     end if;
@@ -166,6 +161,21 @@ port map (
   RSTP => reset                      -- 1-bit input: Reset input for PREG
 );
 
+rnd:entity work.round2
+generic map(
+  WIDTH_IN => 48,
+  FRAC_IN => FRAC,
+  WIDTH_OUT => AREA_WIDTH,
+  FRAC_OUT => AREA_FRAC
+)
+port map(
+  clk => clk,
+  reset => reset,
+  input => signed(p_int),
+  output_threshold => area_threshold,
+  output => area,
+  above_threshold => above_area_threshold
+); 
 
-end architecture DSPx1;
+end architecture DSPx2;
 
