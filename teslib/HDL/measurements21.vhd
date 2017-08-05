@@ -48,8 +48,9 @@ type signal_pipe is array (natural range <>) of
 type measurements_t is record
   --the filtered signal
 	f:signed(CHUNK_DATABITS-1 downto 0);
-	--filtered signal measurement
-	f_extrema,f_area:signed(CHUNK_DATABITS-1 downto 0);	
+	--extreme value of f between zero crossings.
+	f_extrema:signed(CHUNK_DATABITS-1 downto 0);	
+	f_area:signed(2*CHUNK_DATABITS-1 downto 0);	
 	--filtered signal zero crossing
 	f_0,f_0_p,f_0_n:boolean;
   --pulse threshold crossings PRE2 is 2 clks before crossing
@@ -57,8 +58,10 @@ type measurements_t is record
 	
 	--the slope signal
   s:signed(CHUNK_DATABITS-1 downto 0);
-  --slope signal measurement
-	s_extrema,s_area:signed(CHUNK_DATABITS-1 downto 0);	
+	--extreme value of s between zero crossings.
+	s_extrema:signed(CHUNK_DATABITS-1 downto 0);	
+	--sum of s between zero crossings.
+	s_area:signed(2*CHUNK_DATABITS-1 downto 0);	
 	--slope signal zero crossing
 	s_0:boolean;
   --slope	threshold rising PRE2 is 2 clks before crossing
@@ -71,7 +74,6 @@ type measurements_t is record
 	
   --the raw baseline corrected signal
 	raw:signed(CHUNK_DATABITS-1 downto 0);
-
 		
 	--reg_pipe(PRE) reg settings for the next pulse (valid 2 clks prior to pulse
 	--start)
@@ -104,7 +106,7 @@ type measurements_t is record
   
   last_rise:boolean; --this is the last rise that can be recorded
   rise_overflow:boolean; --more valid rises than could be counted
-  rise_number:unsigned(PEAK_COUNT_BITS downto 0); --first rise is number 0
+  rise_number:unsigned(PEAK_COUNT_BITS-1 downto 0); --first rise is number 0
   
   --rise timing point PRE valid 1 clk before
 	stamp_rise:boolean_vector(1 to MEASUREMENT_DEPTH); --rise timing point
@@ -125,11 +127,16 @@ type measurements_t is record
 	--maxima of at end of a valid rise
   rise_stop:boolean_vector(1 to MEASUREMENT_DEPTH); 
   
---  max_peaks:unsigned(PEAK_COUNT_BITS downto 0);
-  -- flags
+	cfd_high:signed(CHUNK_DATABITS-1 downto 0); --threshold
+	cfd_low:signed(CHUNK_DATABITS-1 downto 0); --threshold
+	cfd_low_p:boolean; --crossing 
+	cfd_high_p:boolean; --crossing
+	cfd_valid:boolean; --thresholds are valid
+  max_slope_p:boolean; --crossing
   
+  armed:boolean; 
+  will_arm:boolean;
 	
-	cfd_high_threshold:signal_t;
 	
 	--baseline:signal_t;
   mux_wr_en:boolean;
@@ -143,12 +150,7 @@ type measurements_t is record
   above_area:boolean;
   
   --slope_threshold_neg:boolean;
-  armed:boolean; 
-  will_arm:boolean;
   
-	cfd_low_p:boolean; 
-	cfd_high_p:boolean;
-  max_slope_p:boolean;
   
   offset:unsigned(PEAK_COUNT_BITS-1 downto 0);
   
@@ -156,21 +158,11 @@ type measurements_t is record
   pre_stamp_pulse:boolean; --peak_start and first peak in a pulse
   time_offset:unsigned(15 downto 0); 
   
-  --pre_detection:detection_d;
---  pre_size2:unsigned(MEASUREMENT_FRAMER_ADDRESS_BITS downto 0);
-  -- frame_length + size
---  pre2_size:unsigned(15 downto 0);
-  
-  -- actually max peaks -1
-  --max_peaks:unsigned(PEAK_COUNT_BITS-1 downto 0);
   rise_address:unsigned(PEAK_COUNT_BITS downto 0);
   last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
   
 	cfd_error:boolean;
 	cfd_overrun:boolean;
-  
---	trace_signal:trace_signal_d;
---	trace_type:trace_type_d;
 	
 end record;
 
@@ -200,7 +192,7 @@ begin
   va(5) := resize(m.s_extrema,MCA_VALUE_BITS);
   va(6) := resize(m.pulse_area,MCA_VALUE_BITS);
   va(7) := resize(m.raw,MCA_VALUE_BITS);
-  va(8) := resize(m.cfd_high_threshold,MCA_VALUE_BITS);
+  va(8) := resize(m.cfd_high,MCA_VALUE_BITS);
   va(9) := resize(signed('0' & m.pulse_time(NOW)),MCA_VALUE_BITS);
   va(10) := resize(signed('0' & m.rise_timestamp),MCA_VALUE_BITS);
 --  va(11) := resize(m.dot_product,MCA_VALUE_BITS);

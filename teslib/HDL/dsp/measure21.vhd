@@ -21,8 +21,7 @@ generic(
   FRAC:natural:=3;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  TIME_WIDTH:natural:=16;
-  CFD_DELAY:natural:=1026;
+  RAW_DELAY:natural:=1026;
   ADDRESS_BITS:natural:=MEASUREMENT_FRAMER_ADDRESS_BITS
 );
 port (
@@ -41,7 +40,6 @@ end entity measure21;
 
 architecture RTL of measure21 is
 
-constant RAW_DELAY:natural:=1026;
 
 -- pipelines to sync signals
 signal cfd_error_cfd:boolean;
@@ -74,8 +72,6 @@ signal rise_start_pipe,first_rise_pipe,pulse_start_pipe:boolean_vector(1 to DEPT
        :=(others => FALSE);
 --------------------------------------------------------------------------------
 
-signal pulse_area:signed(AREA_WIDTH-1 downto 0);
-
 --signal p_threshold:signed(WIDTH-1 downto 0);
 signal valid_rise:boolean;
 signal rise_number_n:unsigned(PEAK_COUNT_BITS downto 0);
@@ -89,36 +85,22 @@ signal s_t_p_cfd:boolean;
 signal above_cfd:boolean;
 signal p_t_p_cfd:boolean;
 signal p_t_n_cfd:boolean;
-signal filtered_area:signed(AREA_WIDTH-1 downto 0);
-signal f_extrema:signed(WIDTH-1 downto 0);
-signal slope_area:signed(AREA_WIDTH-1 downto 0);
-signal s_extrema:signed(WIDTH-1 downto 0);
 signal rise_address_n:unsigned(PEAK_COUNT_BITS downto 0);
 --signal pre_stamp_peak,pre_stamp_pulse:boolean;
 
 type pipe is array(1 to DEPTH) of signed(WIDTH-1 downto 0);
 --signal high_pipe,low_pipe,filtered_long_pipe,slope_long_pipe:long_pipe;
 signal f_pipe,s_pipe,high_pipe,low_pipe:pipe;
-signal rise_timestamped,pulse_timestamped:boolean:=FALSE;
-signal above_area_threshold:boolean;
 signal f_0_x_a:boolean;
 signal f_0_p_pipe,p_t_p_pipe:boolean_vector(1 to DEPTH);
 signal f_0_n_pipe,p_t_n_pipe:boolean_vector(1 to DEPTH);
 -- TRUE during a valid rise
-signal rising_pipe:boolean_vector(1 to DEPTH);
-signal pulse_length:unsigned(TIME_WIDTH-1 downto 0);
-signal height_valid:boolean;
-signal height:signed(WIDTH-1 downto 0);
+signal rise_valid_pipe,cfd_valid_pipe:boolean_vector(1 to DEPTH);
 --signal flags:detection_flags_t;
 --signal tflags:trace_flags_t;
-signal stamp_rise,stamp_pulse:boolean;
-signal peak_address:unsigned(PEAK_COUNT_BITS downto 0);
-signal last_peak:boolean;
-signal pre_size2:unsigned(ADDRESS_BITS downto 0);
 --signal pre2_detection:detection_d;
 --signal pre2_trace_type:trace_type_d;
 
-signal last_peak_address,dp_address:unsigned(PEAK_COUNT_BITS downto 0);
 signal p_t_x_a:boolean;
 
 signal f_0_n_cfd:boolean;
@@ -131,7 +113,8 @@ signal max_slope_p:boolean;
 signal s_0_x_a:boolean;
 signal cfd_overrun_cfd:boolean;
 signal first_rise_cfd:boolean;
-signal rising_cfd:boolean;
+signal rise_valid_cfd:boolean;
+signal cfd_valid_cfd:boolean;
 signal reg:capture_registers_t;
 
 constant DEBUG:string:="FALSE";
@@ -159,7 +142,7 @@ generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
   CF_FRAC => CF_FRAC,
-  DELAY => CFD_DELAY
+  DELAY => RAW_DELAY-212
 )
 port map(
   clk => clk,
@@ -188,7 +171,7 @@ port map(
   above => above_cfd,
   
   rise_start => rise_start_cfd,
-  rising => rising_cfd,
+  rise_valid => rise_valid_cfd,
   pulse_start => pulse_start_cfd,
   
   cfd_low_threshold => cfd_low_threshold,
@@ -201,6 +184,7 @@ port map(
   cfd_high_p => cfd_high_p,
   max_slope_p => max_slope_p,
   
+  cfd_valid => cfd_valid_cfd,
   cfd_error => cfd_error_cfd,
   cfd_overrun => cfd_overrun_cfd
 );
@@ -289,32 +273,47 @@ port map(
 );
 
 -- expose some pipelines for use by down stream entities.
-m.pulse_start <= pulse_start_pipe(DEPTH-MEASUREMENT_DEPTH-1 to DEPTH);
-m.rise_start <= rise_start_pipe(DEPTH-MEASUREMENT_DEPTH-1 to DEPTH);
-m.p_t_p <= p_t_p_pipe(DEPTH-MEASUREMENT_DEPTH-1 to DEPTH);
-m.p_t_n <= p_t_n_pipe(DEPTH-MEASUREMENT_DEPTH-1 to DEPTH);
-m.min <= min_pipe(DEPTH-MEASUREMENT_DEPTH-1 to DEPTH);
-m.max <= max_pipe(DEPTH-MEASUREMENT_DEPTH-1 to DEPTH);
+m.pulse_start <= pulse_start_pipe(DEPTH-MEASUREMENT_DEPTH to DEPTH);
+m.rise_start <= rise_start_pipe(DEPTH-MEASUREMENT_DEPTH+1 to DEPTH);
 
+m.f <= f_pipe(DEPTH);
 m.f_0_p <= f_0_p_pipe(DEPTH);
 m.f_0_n <= f_0_n_pipe(DEPTH);
+m.p_t_p <= p_t_p_pipe(DEPTH-MEASUREMENT_DEPTH to DEPTH);
+m.p_t_n <= p_t_n_pipe(DEPTH-MEASUREMENT_DEPTH to DEPTH);
+
+m.s <= s_pipe(DEPTH);
+m.min <= min_pipe(DEPTH-MEASUREMENT_DEPTH to DEPTH);
+m.max <= max_pipe(DEPTH-MEASUREMENT_DEPTH to DEPTH);
+
+m.valid_rise <= rise_valid_pipe(DEPTH);
+
+m.armed <= armed_pipe(DEPTH);
+m.will_arm <= will_arm_pipe(DEPTH);
+m.above <= above_pipe(DEPTH);
+m.will_cross <= will_cross_pipe(DEPTH);
+
+m.cfd_high <= high_pipe(DEPTH);
+m.cfd_low <= low_pipe(DEPTH);
+m.cfd_high_p <= cfd_high_p_pipe(DEPTH);
+m.cfd_low_p <= cfd_low_p_pipe(DEPTH);
+m.max_slope_p <= max_slope_p_pipe(DEPTH);
+m.cfd_valid <= cfd_valid_pipe(DEPTH);
 
 pulseMeas:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then --FIXME are these resets needed
-      m.valid_rise <= FALSE;
-      m.pulse_stamped <= (others => FALSE);
-      m.rise_stamped <= (others => FALSE);
+      null;
     else
       --f and s zero crossings
       m.f_0 <= f_0_p_pipe(DEPTH-1) or f_0_n_pipe(DEPTH-1);
       m.s_0 <= min_pipe(DEPTH-1) or max_pipe(DEPTH-1);
       
       --crossing signals for area accumulators
-      f_0_x_a <= f_0_p_pipe(DEPTH-ALAT-1) or f_0_n_pipe(DEPTH-ALAT-1);
-      p_t_x_a <= p_t_p_pipe(DEPTH-ALAT-1) or p_t_n_pipe(DEPTH-ALAT-1);
-      s_0_x_a <= min_pipe(DEPTH-ALAT-1) or max_pipe(DEPTH-ALAT-1);
+      f_0_x_a <= f_0_p_cfd or f_0_n_cfd;
+      p_t_x_a <= p_t_p_cfd or p_t_n_cfd;
+      s_0_x_a <= min_cfd or max_cfd;
       
       f_pipe(1 to DEPTH) <= f_cfd & f_pipe(1 to DEPTH-1);
       s_pipe(1 to DEPTH) <= s_cfd & s_pipe(1 to DEPTH-1);
@@ -338,7 +337,7 @@ begin
       rise_start_pipe(1 to DEPTH) 
         <= rise_start_cfd & rise_start_pipe(1 to DEPTH-1);
       
-      rising_pipe(1 to DEPTH) <= rising_cfd & rising_pipe(1 to DEPTH-1);
+      rise_valid_pipe(1 to DEPTH) <= rise_valid_cfd & rise_valid_pipe(1 to DEPTH-1);
         
       pulse_start_pipe(1 to DEPTH) 
         <= pulse_start_cfd & pulse_start_pipe(1 to DEPTH-1);
@@ -348,6 +347,7 @@ begin
       will_arm_pipe 
         <= will_arm_cfd & will_arm_pipe(1 to DEPTH-1);
       
+      cfd_valid_pipe <= cfd_valid_cfd & cfd_valid_pipe(1 to DEPTH-1);
       cfd_error_pipe <= cfd_error_cfd & cfd_error_pipe(1 to DEPTH-1);
       cfd_overrun_pipe <= cfd_overrun_cfd & cfd_overrun_pipe(1 to DEPTH-1);
       first_rise_pipe <= first_rise_cfd & first_rise_pipe(1 to DEPTH-1);
@@ -384,7 +384,7 @@ begin
           
       if (m.pulse_start(PRE2)) then 
         -- size2 is 2*size of event part
-        m.size2(PRE) <= resize(m.size(PRE) & '0',ADDRESS_BITS+1); 
+        m.size2(PRE) <= resize(m.size(PRE) & '0',PEAK_COUNT_BITS+1); 
           
         case reg.detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D => 
@@ -453,12 +453,12 @@ begin
         end if;
       end if;
       
-      if m.rise_start(PRE) then
-        m.valid_rise <= TRUE;
-      end if;
+--      if m.rise_start(PRE) then
+--        m.valid_rise <= TRUE;
+--      end if;
       
       if m.max(NOW) then
-        m.valid_rise <= FALSE;
+--        m.valid_rise <= FALSE;
         m.rise0 <= FALSE;
         m.rise1 <= FALSE;
         m.rise2 <= FALSE;
@@ -487,23 +487,23 @@ begin
       when PULSE_THRESH_TIMING_D =>
         -- no need to check if pulse stamped as dropping below threshold
         -- would be considered another pulse
-        m.stamp_pulse(PRE) <= m.p_t_p(PRE2) and rising_pipe(DEPTH-2); 
+        m.stamp_pulse(PRE) <= m.p_t_p(PRE2) and rise_valid_pipe(DEPTH-2); 
              
         if first_rise_pipe(DEPTH-2) then
           
-          m.stamp_rise(PRE) <= m.p_t_p(PRE2) and rising_pipe(DEPTH-2);
+          m.stamp_rise(PRE) <= m.p_t_p(PRE2) and rise_valid_pipe(DEPTH-2);
 
-          if m.p_t_p(PRE2) and rising_pipe(DEPTH-2) then
+          if m.p_t_p(PRE2) and rise_valid_pipe(DEPTH-2) then
             m.rise_stamped(PRE) <= TRUE;
             m.pulse_stamped(PRE) <= TRUE;
           end if;
 
         else
           m.stamp_rise(PRE) 
-            <= cfd_low_p_pipe(DEPTH-2) and rising_pipe(DEPTH-2) and
+            <= cfd_low_p_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2) and
                not m.rise_stamped(PRE);
 
-          if cfd_low_p_pipe(DEPTH-2) and rising_pipe(DEPTH-2) then
+          if cfd_low_p_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2) then
             m.rise_stamped(PRE) <= TRUE;
           end if;
         end if;
@@ -511,54 +511,54 @@ begin
       when SLOPE_THRESH_TIMING_D =>
         m.stamp_pulse(PRE)
           <= m.s_t_p(PRE2) and first_rise_pipe(DEPTH-2) and 
-             rising_pipe(DEPTH-2) and not m.pulse_stamped(PRE);
+             rise_valid_pipe(DEPTH-2) and not m.pulse_stamped(PRE);
              
         if m.s_t_p(PRE2) and first_rise_pipe(DEPTH-2) and 
-           rising_pipe(DEPTH-2) then
+           rise_valid_pipe(DEPTH-2) then
           m.pulse_stamped(PRE) <= TRUE;
         end if;
                            
         m.pre_stamp_rise 
-          <= m.s_t_p(PRE2) and rising_pipe(DEPTH-2) and not m.rise_stamped(PRE);
+          <= m.s_t_p(PRE2) and rise_valid_pipe(DEPTH-2) and not m.rise_stamped(PRE);
 
-        if m.s_t_p(PRE2) and rising_pipe(DEPTH-2) then
+        if m.s_t_p(PRE2) and rise_valid_pipe(DEPTH-2) then
           m.rise_stamped(PRE) <= TRUE;
         end if;
           
       --this will not fire a pulse start ????
       when CFD_LOW_TIMING_D =>
         m.stamp_rise(PRE) 
-          <= cfd_low_p_pipe(DEPTH-2) and rising_pipe(DEPTH-2) and
+          <= cfd_low_p_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2) and
              not m.rise_stamped(PRE);
 
-        if cfd_low_p_pipe(DEPTH-2) and rising_pipe(DEPTH-2) then
+        if cfd_low_p_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2) then
           m.rise_stamped(PRE) <= TRUE;
         end if;
                           
         m.stamp_pulse(PRE) 
           <= cfd_low_p_pipe(DEPTH-2) and first_rise_pipe(DEPTH-2) and 
-             rising_pipe(DEPTH-2) and not m.pulse_stamped(PRE);
+             rise_valid_pipe(DEPTH-2) and not m.pulse_stamped(PRE);
         
         if cfd_low_p_pipe(DEPTH-2) and first_rise_pipe(DEPTH-2) and 
-           rising_pipe(DEPTH-2) then
+           rise_valid_pipe(DEPTH-2) then
           m.pulse_stamped(PRE) <= TRUE;
         end if;
           
       when MAX_SLOPE_TIMING_D =>
         m.stamp_pulse(PRE)
           <= max_slope_p_pipe(DEPTH-2) and first_rise_pipe(DEPTH-2) and 
-             rising_pipe(DEPTH-2) and not m.pulse_stamped(PRE);
+             rise_valid_pipe(DEPTH-2) and not m.pulse_stamped(PRE);
 
-        if max_slope_p_pipe(DEPTH-2) and rising_pipe(DEPTH-2) and 
+        if max_slope_p_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2) and 
            first_rise_pipe(DEPTH-2) then
           m.pulse_stamped(PRE) <= TRUE;
         end if;
                            
         m.stamp_rise(PRE) 
-          <= max_slope_p_pipe(DEPTH-2) and rising_pipe(DEPTH-2) and
+          <= max_slope_p_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2) and
              not m.rise_stamped(PRE);
 
-        if max_slope_p_pipe(DEPTH-2) and rising_pipe(DEPTH-2) then
+        if max_slope_p_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2) then
           m.rise_stamped(PRE) <= TRUE;
         end if;
       end case;
@@ -617,6 +617,7 @@ begin
         pulse_length_n <= pulse_length_n + 1;
         m.pulse_length(PRE) <= pulse_length_n(15 downto 0);
       end if;
+      m.pulse_length(NOW) <= m.pulse_length(PRE);
     
       m.height_valid(PRE) <= FALSE;
       case m.reg(NOW).height is
@@ -626,7 +627,7 @@ begin
         else
           m.height(PRE) <= f_pipe(DEPTH-2); 
         end if;
-        if max_pipe(DEPTH-2) and rising_pipe(DEPTH-2) then
+        if max_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2) then
           m.height_valid(PRE) <= TRUE;
         end if;
       when CFD_HEIGHT_D =>
@@ -635,97 +636,28 @@ begin
         else
           m.height(PRE) <= high_pipe(DEPTH-2); 
         end if;
-        if cfd_high_p_pipe(DEPTH-2) and rising_pipe(DEPTH-2) then
+        if cfd_high_p_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2) then
           m.height_valid(PRE) <= TRUE;
         end if;
       when SLOPE_INTEGRAL_D =>
-        m.height(PRE) <= resize(slope_area,16); --FIXME scale? and no pre so broken
-        if max_pipe(DEPTH-2) and rising_pipe(DEPTH-2) then
+        m.height(PRE) <= resize(m.s_area,16); --FIXME scale? and no pre so broken
+        if max_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2) then
           m.height_valid(PRE) <= TRUE;
         end if;
       when SLOPE_MAX_D => 
         m.height(PRE) <= s_pipe(DEPTH-2); 
-        if max_slope_p_pipe(DEPTH-1) and rising_pipe(DEPTH-1) then
+        if max_slope_p_pipe(DEPTH-1) and rise_valid_pipe(DEPTH-1) then
           m.height_valid(PRE) <= TRUE;
         end if;
       end case;
+      m.height(NOW) <= m.height(PRE);
       
---      end if;
-      
-      --FIXME is rising needed?
-      m.rise_stop(PRE) <= max_pipe(DEPTH-2) and rising_pipe(DEPTH-2);
+      m.rise_stop(PRE) <= max_pipe(DEPTH-2) and rise_valid_pipe(DEPTH-2);
       m.rise_stop(NOW) <= m.rise_stop(PRE);
       
     end if;
   end if;
 end process pulseMeas;
 
-m.rise_start <= rise_start_pipe(DEPTH-1 to DEPTH);
-m.pulse_start <= pulse_start_pipe(DEPTH-1 to DEPTH);
-
-m.valid_rise <= rising_pipe(DEPTH);
-m.last_rise <= last_peak;
-
-m.rise_address <= peak_address;
-m.last_peak_address <= last_peak_address;
-m.dp_address <= dp_address;
-
-m.pre_pulse_start <= pre_pulse_start;
---m.pulse_time <= pulse_time;
-m.stamp_peak <= stamp_rise;
-m.stamp_pulse <= stamp_pulse;
-m.pre_stamp_rise <= pre_stamp_peak;
-m.pre_stamp_pulse <= pre_stamp_pulse;
---m.time_offset <= time_offset;
-m.peak_stamped <= rise_timestamped;
-m.pulse_stamped <= pulse_timestamped;
-m.pulse_length <= pulse_length;
-
-m.height <= height;
-m.height_valid <= height_valid;
---m.rise_time <= rise_time;
-m.min_value <= minima;
-
-m.pre_eflags <= flags;
-m.pre_eflags <= pre_flags;
-m.size <= size;
-m.pre_size <= pre_size;
-m.pre_frame_length <= pre_frame_length;
-m.pre_size2 <= pre_size2;
-
---m.pre2_size <= pre2_size;
-m.timing_threshold <= resize(timing_thresh_out,16);
---m.height_threshold <= height_thresh_out;
-m.cfd_high <= cfd_high_p_pipe(DEPTH);
-m.cfd_high_threshold <= high_pipe(DEPTH);
-m.cfd_low <= cfd_low_pos_pipe(DEPTH);
-m.max_slope <= max_slope_pipe(DEPTH);
-m.cfd_error <= cfd_error_pipe(DEPTH);
-m.cfd_valid <= cfd_overrun_pipe(DEPTH);
-
-m.filtered.sample <= f_pipe(DEPTH);
-m.filtered.pos_0xing <= f_0_p_pipe(DEPTH);
-m.filtered.neg_0xing <= f_0_n_pipe(DEPTH);
-m.filtered.zero_xing <= filtered_zero_xing;
-m.filtered.area <= filtered_area;
-m.filtered.extrema <= f_extrema;
-m.pulse_threshold_pos <= pulse_t_pos_pipe(DEPTH);
-m.pulse_threshold_neg <= pulse_t_neg_pipe(DEPTH);
-m.pre_pulse_threshold_neg <= pulse_t_neg_pipe(DEPTH-1);
---m.pulse_length <= pulse_length;
-m.above_pulse_threshold <= above_pipe(DEPTH);
-m.pulse_area <= pulse_area;
-m.above_area_threshold <= above_area_threshold;
-m.will_go_above <= will_cross_pipe(DEPTH);
-
-m.slope.sample <= s_pipe(DEPTH);
-m.slope.pos_0xing <= min_pipe(DEPTH);
-m.slope.neg_0xing <= max_pipe(DEPTH);
-m.slope.zero_xing <= slope_zero_xing;
-m.slope_threshold_pos <= s_t_p_pipe(DEPTH);
-m.slope.area <= slope_area;
-m.slope.extrema <= s_extrema;
-m.armed <= armed_pipe(DEPTH);
-m.will_arm <= will_arm_pipe(DEPTH);
 
 end architecture RTL;

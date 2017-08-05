@@ -44,8 +44,6 @@ signal reset:std_logic:='1';
 
 constant CLK_PERIOD:time:=4 ns;
 
-signal constant_fraction:signed(CF_WIDTH-1 downto 0);
-
 signal sim_count:signed(SIM_WIDTH-1 downto 0);
 signal stage1_config:fir_control_in_t;
 signal stage1_events:fir_control_out_t;
@@ -57,8 +55,6 @@ signal slope:signed(WIDTH-1 downto 0);
 signal squaresig,doublesig:signed(WIDTH-1 downto 0);
 
 constant CF:integer:=2**17/5;
-signal slope_threshold:signed(WIDTH-1 downto 0);
-signal pulse_threshold:signed(WIDTH-1 downto 0);
 signal cfd_low_threshold:signed(WIDTH-1 downto 0);
 signal cfd_high_threshold:signed(WIDTH-1 downto 0);
 signal max_slope:signed(WIDTH-1 downto 0);
@@ -69,18 +65,17 @@ signal pulse_threshold_neg:boolean;
 signal slope_threshold_pos:boolean;
 signal slope_out:signed(WIDTH-1 downto 0);
 signal filtered_out:signed(WIDTH-1 downto 0);
-signal rel2min : boolean;
-signal will_go_above_pulse_threshold : boolean;
+signal will_cross:boolean;
 signal will_arm:boolean;
 signal armed:boolean;
-signal above_pulse_threshold : boolean;
 signal cfd_error:boolean;
 signal sample_in:signed(WIDTH-1 downto 0);
-signal valid_peak,valid_pulse:boolean;
+signal rise_start,pulse_start:boolean;
 signal cfd_low_xing:boolean;
 signal cfd_high_xing:boolean;
 signal max_slope_xing:boolean;
-signal timing : timing_d;
+signal reg:capture_registers_t;
+signal above:boolean;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -114,30 +109,26 @@ port map(
   reset => reset,
   s => slope,
   f => filtered,
-  timing => timing,
-  constant_fraction => constant_fraction,
-  s_threshold => slope_threshold,
-  p_threshold => pulse_threshold,
-  rel2min => rel2min,
+  registers => reg,
   cfd_low_threshold => cfd_low_threshold,
   cfd_high_threshold => cfd_high_threshold,
   max => max,
   min => min,
   max_slope_threshold => max_slope,
-  will_cross => will_go_above_pulse_threshold,
+  will_cross => will_cross,
   will_arm => will_arm,
   s_out => slope_out,
   s_t_p => slope_threshold_pos,
   armed => armed,
-  above => above_pulse_threshold,
+  above => above,
   f_out => filtered_out,
   cfd_low_p => cfd_low_xing,
   cfd_high_p => cfd_high_xing,
   max_slope_p => max_slope_xing,
   p_t_p => pulse_threshold_pos,
   p_t_n => pulse_threshold_neg,
-  rise_start => valid_peak,
-  pulse_start => valid_pulse,
+  rise_start => rise_start,
+  pulse_start => pulse_start,
   cfd_overrun => cfd_error
 );
 
@@ -195,13 +186,14 @@ stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 
-timing <= CFD_LOW_TIMING_D;
-constant_fraction <= to_signed(CF,CF_WIDTH);
+reg.timing <= CFD_LOW_TIMING_D;
+reg.constant_fraction <= to_unsigned(CF,CF_WIDTH-1);
+reg.cfd_rel2min <= FALSE;
 --constant_fraction <= (others => '0');
 --slope_threshold <= to_signed(250,WIDTH);
 --pulse_threshold <= to_signed(62,WIDTH);
-slope_threshold <= to_signed(2700,WIDTH);
-pulse_threshold <= to_signed(4500,WIDTH);
+reg.slope_threshold <= to_unsigned(0,WIDTH);
+reg.pulse_threshold <= to_unsigned(0,WIDTH);
 wait for CLK_PERIOD;
 reset <= '0';
 --sample_in <= to_signed(0,WIDTH);

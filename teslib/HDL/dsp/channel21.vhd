@@ -33,8 +33,7 @@ generic(
   ACCUMULATOR_WIDTH:natural:=36;
   ACCUMULATE_N:natural:=18;
   TRACE_FROM_STAMP:boolean:=TRUE;
-  ENDIAN:string:="LITTLE";
-  STRICT_CROSSING:boolean:=TRUE
+  ENDIAN:string:="LITTLE"
 );
 port (
   clk:in std_logic;
@@ -69,9 +68,8 @@ architecture fixed_16_3 of channel21 is
   
 constant RAW_DELAY:natural:=1026;
   
-signal sample_in,raw,filtered,slope:signed(WIDTH-1 downto 0);
-signal sample_d:std_logic_vector(WIDTH-1 downto 0);
-signal m,dsp_m:measurements_t;
+signal sample_in,filtered,slope:signed(WIDTH-1 downto 0);
+signal m:measurements_t;
 signal sample_inv,baseline_sample:signed(ADC_WIDTH+FRAC downto 0);
 signal baseline_estimate,baseline_in:signed(WIDTH-1 downto 0);
 signal sat:boolean;
@@ -88,22 +86,6 @@ attribute keep of baseline_sample:signal is DEBUG;
 attribute mark_debug of baseline_sample:signal is DEBUG;
 attribute keep of sample_in:signal is DEBUG;
 attribute mark_debug of sample_in:signal is DEBUG;
---attribute keep of sample_inv:signal is DEBUG;
---attribute mark_debug of sample_inv:signal is DEBUG;
-
---raw signal measurements
-signal raw_x:signed(WIDTH-1 downto 0);
-signal raw_0_pos_x,raw_0_neg_x,raw_0xing:boolean;
---signal raw_rounded:signed(WIDTH-1 downto 0);
---pipelines
-constant ALAT:natural:=5; --accumulator latency
---constant RLAT:natural:=3; --round latency
-constant XLAT:natural:=1; --crossing latency
-constant ELAT:natural:=1; --extrema latency
-constant DEPTH:integer:=ALAT;--5; --main pipeline depth
-type pipe is array (natural range <>) of signed(WIDTH-1 downto 0);
-signal raw_pipe:pipe(1 to DEPTH);
-signal raw_0_pos_pipe,raw_0_neg_pipe:boolean_vector(1 to DEPTH);
 
 begin
 measurements <= m;
@@ -194,7 +176,7 @@ generic map(
   FRAC => FRAC,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  CFD_DELAY => RAW_DELAY-101-72-38
+  RAW_DELAY => RAW_DELAY-101-72-38
 )
 port map(
   clk => clk,
@@ -204,88 +186,8 @@ port map(
   raw => sample_in,
   s => slope,
   f => filtered,
-  measurements => dsp_m
+  measurements => m
 );
-
-pipelines:process (clk) is
-begin
-  if rising_edge(clk) then
-    raw_pipe(XLAT to DEPTH) 
-      <= raw & raw_pipe(XLAT to DEPTH-1);
-    raw_0_pos_pipe <= raw_0_pos_x & raw_0_pos_pipe(1 to DEPTH-1);
-    raw_0_neg_pipe <= raw_0_neg_x & raw_0_neg_pipe(1 to DEPTH-1);
-    m.raw.zero_xing <= raw_0_neg_pipe(DEPTH-1) or raw_0_pos_pipe(DEPTH-1);
-  end if;
-end process pipelines;
-
-
-m.raw.sample <= raw_pipe(DEPTH);
-m.raw.pos_0xing <= raw_0_pos_pipe(DEPTH);
-m.raw.neg_0xing <= raw_0_neg_pipe(DEPTH);
-
---m.trace_signal <= dsp_m.trace_signal;
---m.trace_type <= dsp_m.trace_type;
-m.pre_tflags <= dsp_m.pre_tflags;
-m.tflags <= dsp_m.tflags;
-
---TODO cleanup this ugly patch
-m.min_value <= dsp_m.min_value;
-m.filtered <= dsp_m.filtered;
-m.slope <= dsp_m.slope;
-m.above_area_threshold <= dsp_m.above_area_threshold;
-m.above_pulse_threshold <= dsp_m.above_pulse_threshold;
-m.will_go_above <= dsp_m.will_go_above;
-m.armed <= dsp_m.armed;
-m.will_arm <= dsp_m.will_arm;
-m.cfd_error <= dsp_m.cfd_error;
-m.cfd_valid <= dsp_m.cfd_valid;
-m.cfd_high <= dsp_m.cfd_high;
-m.cfd_high_threshold <= dsp_m.cfd_high_threshold;
-m.cfd_low <= dsp_m.cfd_low;
-m.eflags <= dsp_m.eflags;
-m.pre_eflags <= dsp_m.pre_eflags;
-m.height <= dsp_m.height;
-m.height_valid <= dsp_m.height_valid;
-m.peak_overflow <= dsp_m.peak_overflow;
-m.last_peak_address <= dsp_m.last_peak_address;
-m.offset <= dsp_m.offset;
-m.last_peak <= dsp_m.last_peak;
-m.max_slope <= dsp_m.max_slope;
-m.peak_address <= dsp_m.peak_address;
-m.dp_address <= dsp_m.dp_address;
-m.peak_start <= dsp_m.peak_start;
-m.peak_stop <= dsp_m.peak_stop;
-m.pre_peak_start <= dsp_m.pre_peak_start;
-m.pulse_area <= dsp_m.pulse_area;
-m.pulse_length <= dsp_m.pulse_length;
-m.pulse_start <= dsp_m.pulse_start;
-m.pre_pulse_start <= dsp_m.pre_pulse_start;
-m.pulse_threshold_neg <= dsp_m.pulse_threshold_neg;
-m.pre_pulse_threshold_neg <= dsp_m.pre_pulse_threshold_neg;
-m.pulse_threshold_pos <= dsp_m.pulse_threshold_pos;
-m.pulse_time <= dsp_m.pulse_time;
-m.rise_time <= dsp_m.rise_time;
-m.time_offset <= dsp_m.time_offset;
-m.peak_time <= dsp_m.peak_time;
-m.size <= dsp_m.size;
-m.pre_size <= dsp_m.pre_size;
-m.pre_size2 <= dsp_m.pre_size2;
-m.pre_frame_length <= dsp_m.pre_frame_length;
-m.slope_threshold_pos <= dsp_m.slope_threshold_pos;
-m.stamp_peak <= dsp_m.stamp_peak;
-m.stamp_pulse <= dsp_m.stamp_pulse;
-m.pre_stamp_peak <= dsp_m.pre_stamp_peak;
-m.pre_stamp_pulse <= dsp_m.pre_stamp_pulse;
-m.peak_stamped <= dsp_m.peak_stamped;
-m.pulse_stamped <= dsp_m.pulse_stamped;
---m.time_offset <= dsp_m.time_offset;
-m.rising <= dsp_m.rising;
-m.rising0 <= dsp_m.rising0;
-m.valid_peak1 <= dsp_m.valid_peak1;
-m.valid_peak2 <= dsp_m.valid_peak2;
---m.height_threshold <= dsp_m.height_threshold;
-m.timing_threshold <= dsp_m.timing_threshold;
-m.filtered_long <= dsp_m.filtered_long;
 
 framer:entity work.measurement_framer21
 generic map(
@@ -301,7 +203,6 @@ generic map(
 port map(
   clk => clk,
   reset => reset2,
-  enable => event_enable,
   mux_full => mux_full,
   start => start,
   commit => commit,
