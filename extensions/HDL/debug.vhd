@@ -18,9 +18,9 @@ function to_0(u:unsigned) return unsigned;
 function to_0(s:signed) return signed;
 
 --write integer to file with given endian form
-procedure writeInt(l:inout integer_file;d:in std_logic_vector;e:in string);
-procedure writeInt(l:inout integer_file;d:in unsigned;e:in string);
-procedure writeInt(l:inout integer_file;d:in signed;e:in string);
+--procedure writeInt(l:inout integer_file;d:in std_logic_vector;e:in string);
+--procedure writeInt(l:inout integer_file;d:in unsigned;e:in string);
+--procedure writeInt(l:inout integer_file;d:in signed;e:in string);
   
 end package debug;
 
@@ -93,19 +93,19 @@ begin
   return unsigned(to_0(std_logic_vector(u)));
 end function;
 
-procedure writeInt(l:inout integer_file;d:in std_logic_vector;e:in string) is
-begin
-  write(l,to_integer(signed(to_0(setEndian(d,e)))));
-end procedure;
-
-procedure writeInt(l:inout integer_file;d:in unsigned;e:in string) is
-begin
-  writeInt(l,resize(d,32),e);
-end procedure;
-
-procedure writeInt(l:inout integer_file;d:in signed;e:in string) is
-begin
-  writeInt(l,resize(d,32),e);
-end procedure;
+--procedure writeInt(l:inout integer_file;d:in std_logic_vector;e:in string) is
+--begin
+--  write(l,to_integer(unsigned(to_0(setEndian(d,e)))));
+--end procedure;
+--
+--procedure writeInt(l:inout integer_file;d:in unsigned;e:in string) is
+--begin
+--  write(l,to_integer(to_0(setEndian(d,e))));
+--end procedure;
+--
+--procedure writeInt(l:inout integer_file;d:in signed;e:in string) is
+--begin
+--  writeInt(l,std_logic_vector(resize(d,32),e));
+--end procedure;
 
 end package body debug;

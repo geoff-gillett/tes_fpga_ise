@@ -29,9 +29,10 @@ use extensions.boolean_vector.all;
 entity dot_product is
 generic(
   ADDRESS_BITS:natural:=11;
-  TRACE_CHUNKS:natural:=512;
+--  TRACE_CHUNKS:natural:=512;
   WIDTH:natural:=16;
   ACCUMULATOR_WIDTH:natural:=36;
+  STRIDE_BITS:natural:=5;
   ACCUMULATE_N:natural:=2
 );
 port(
@@ -39,15 +40,18 @@ port(
   reset:in std_logic;
   
   stop:in boolean;
+  trace_chunks:in unsigned(ADDRESS_BITS downto 0);
+  trace_stride:in unsigned(STRIDE_BITS-1 downto 0);
   
   sample:in signed(WIDTH-1 downto 0);
+--  sample_valid:in boolean; --used for dot product with stride
   trace_start:in boolean;
   trace_last:in boolean;
   
   --FSM controls
-  accumulate:in boolean; --FLAG starts 
+  accumulate_start:in boolean; --FLAG starts 
   accumulate_done:out boolean;
-  dp:in boolean;
+  dp_start:in boolean;
   
   average:out signed(WIDTH-1 downto 0);
   average_start:out boolean;
@@ -80,8 +84,11 @@ constant DEPTH:integer:=RD_LAT+DSP_LAT+1;
 signal address:vector_address;
 signal addr_pipe:address_pipe(1 to DEPTH);
 signal sample_pipe:signal_pipe(1 to DEPTH);
-signal accum_pipe,last_pipe:boolean_vector(1 to DEPTH);
-signal send_pipe,first_pipe:boolean_vector(1 to DEPTH);
+signal accum_pipe,last_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
+signal send_pipe,first_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
+signal valid_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
+signal start_pipe:boolean_vector(0 to DEPTH):=(others => FALSE);
+signal dp_valid_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 
 -- DSP48E input signals
 signal a:std_logic_vector(29 downto 0):=(others => '0');
@@ -90,17 +97,21 @@ signal c,p_out:std_logic_vector(47 downto 0);
 signal opmode:std_logic_vector(6 downto 0):="0000011";
 signal carryin:std_ulogic;
 
+signal stride_count,next_stride_count:unsigned(STRIDE_BITS-1 downto 0);
+
 constant ONES:unsigned(47 downto 0):=(others => '1');
 constant MASK_SHIFT:integer:=48 - ACCUMULATE_N + 1;
 constant ROUND:std_logic_vector(47 downto 0)
          :=std_logic_vector(shift_right(ONES,MASK_SHIFT));
 
-type FSMstate is (IDLE,ACCUM,WAITSAMPLE,SENDAVERAGE,DOTPRODUCT,HOLD);
+type FSMstate is (IDLE,ACCUM,WAITSAMPLE,SENDAVERAGE,DOTPRODUCT);
 signal state:FSMstate;
 signal send_last:boolean;
 signal acc_count:unsigned(ACCUMULATE_N downto 0);
 signal first_trace,write:boolean;
 signal ram_in:std_logic_vector(ACCUMULATOR_WIDTH-1 downto 0);
+signal average_int:signed(WIDTH-1 downto 0);
+signal zero_stride:boolean;
 
 --if dot then accumulate p=sample*RAM (a*b+p)
 --if dot and start then p=sample*RAM (p=a*b)
@@ -112,6 +123,8 @@ signal ram_in:std_logic_vector(ACCUMULATOR_WIDTH-1 downto 0);
 
 begin
 average_last <= last_pipe(DEPTH);
+dot_product <= signed(p_out);
+dot_product_valid <= dp_valid_pipe(DEPTH);
 
 --max ACCUMULATE_N?
 writePort:process(clk)
@@ -124,15 +137,17 @@ if rising_edge(clk) then
 end if;
 end process writePort;
 
+average_int <= signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N));
 writeMux:process(clk)
 begin
   if rising_edge(clk) then
-    average <= signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N));
+    average <= average_int;
     average_start <= send_pipe(DEPTH-2) and not send_pipe(DEPTH-1);
     accumulate_done <= send_pipe(1) and not send_pipe(2);
     if send_pipe(DEPTH-1) then
       ram_in <= resize(
-        signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N)),ACCUMULATOR_WIDTH
+        signed(p_out(WIDTH+ACCUMULATE_N-1 downto ACCUMULATE_N)),
+        ACCUMULATOR_WIDTH
       );
     else
       ram_in <= p_out(ACCUMULATOR_WIDTH-1 downto 0);
@@ -148,34 +163,45 @@ if rising_edge(clk) then
 end if;
 end process readPort;
 
-fsm:process (clk)
+fsm:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
       state <= IDLE;
+      zero_stride <= TRUE;
+      stride_count <= (others => '0');
+      send_last <= FALSE;
     else
       
-      send_last <= FALSE;
       
       case state is 
       when IDLE =>
         acc_count <= (ACCUMULATE_N => '1',others => '0');
-        if accumulate then
-          state <= WAITSAMPLE;
-          first_trace <= TRUE;
+        if not stop then
+          if accumulate_start then
+            state <= WAITSAMPLE;
+            first_trace <= TRUE;
+          elsif dp_start then
+            state <= DOTPRODUCT;
+            stride_count <= (others => '0');
+            next_stride_count <= trace_stride-1;
+            zero_stride <= trace_stride=0;
+            address <= (others => '0');
+          end if;
         end if;
         
       when WAITSAMPLE => --WAITING for framer
---        write <= FALSE;
         if stop then
           state <= IDLE;
         elsif acc_count=0 then
+          stride_count <= trace_stride;
+          next_stride_count <= trace_stride-1;
+          zero_stride <= trace_stride=0;
           state <= SENDAVERAGE;
           address <= (others => '0');
         elsif trace_start then
           acc_count <= acc_count-1;
           address <= (others => '0');
---          write <= TRUE;
           state <= ACCUM;
         end if;
         
@@ -187,30 +213,44 @@ begin
             state <= WAITSAMPLE;
             first_trace <= FALSE;
             address <= (others => '0');
---            write <= FALSE;
           else
             address <= address+1;
           end if;
         end if;
         
       when SENDAVERAGE =>
-        address <= address+1;
-        send_last <= address=(TRACE_CHUNKS*4)-2;
-        if stop then
-          state <= IDLE;
-        elsif send_last then
-          state <= HOLD;
+        if zero_stride or stride_count=0 then
+          next_stride_count <= trace_stride-1;
+          stride_count <= trace_stride;
+          address <= address+1;
+          send_last <= (address=(trace_chunks*4)-2);
+          if send_last then
+            state <= IDLE;
+          end if;
+        else
+          stride_count <= next_stride_count;
+          next_stride_count <= next_stride_count-1;
         end if;
         
       when DOTPRODUCT =>
-        null;
-        
-      when HOLD =>
         if stop then
           state <= IDLE;
-        elsif dp then
-          state <= DOTPRODUCT;
+        elsif accumulate_start then
+          state <= WAITSAMPLE;
+          first_trace <= TRUE;
+        elsif trace_start then
+          address <= (others => '0');
+          next_stride_count <= trace_stride-1;
+          stride_count <= (others => '0');
+        elsif zero_stride or stride_count=0 then
+          address <= address+1;
+          next_stride_count <= trace_stride-1;
+          stride_count <= trace_stride;
+        else
+          next_stride_count <= next_stride_count-1;
+          stride_count <= next_stride_count;
         end if;
+        
       end case;
     end if;
   end if;
@@ -220,39 +260,52 @@ pipeline:process(clk)
 begin
   if rising_edge(clk) then
     addr_pipe <= address & addr_pipe(1 to DEPTH-1);
---    valid_pipe <= send_valid & valid_pipe(1 to DEPTH-1);
+    valid_pipe <= (zero_stride or stride_count=0) & valid_pipe(1 to DEPTH-1);
     last_pipe <= send_last & last_pipe(1 to DEPTH-1);
     accum_pipe <= (state=ACCUM) & accum_pipe(1 to DEPTH-1);
     first_pipe <= first_trace & first_pipe(1 to DEPTH-1);
     send_pipe <= (state=SENDAVERAGE) & send_pipe(1 to DEPTH-1);
     sample_pipe <= sample & sample_pipe(1 to DEPTH-1);
+    start_pipe <= trace_start & start_pipe(0 to DEPTH-1);
+    dp_valid_pipe <= trace_last & dp_valid_pipe(1 to DEPTH-1);
   end if;
 end process pipeline;
 
-c <= resize(dout, 48);
+c <= resize(dout,48);
 inputMux:process(
-  accum_pipe,dout,first_pipe,sample_pipe,send_pipe
+  accum_pipe,dout,first_pipe,sample_pipe,send_pipe,state,start_pipe,valid_pipe
 )
 begin
-  
-  if send_pipe(RD_LAT) then --read average
-    b <= resize(ROUND,18);
-    opmode <= "0001111"; --A:B + C (sample + rounding mask)
-    if ACCUMULATE_N=0 then
-      carryin <= '0';
+  b <= resize(sample_pipe(RD_LAT),18);
+  a <= (others => sample_pipe(RD_LAT)(WIDTH-1));
+  carryin <= '0';
+  opmode <= "0000011"; 
+  if state=DOTPRODUCT then
+    if valid_pipe(RD_LAT) then
+      a <= resize(dout,30);
     else
+      a <= (others => '0');
+    end if; 
+    if start_pipe(RD_LAT) then
+      opmode <= "0000101"; --axb
+    else
+      opmode <= "0100101"; --accumulate axb
+    end if;
+  elsif send_pipe(RD_LAT) then --read average
+    b <= resize(ROUND,18);
+    a <= (others  => '0');
+    opmode <= "0001111"; --A:B + C (rounding mask + dout)
+    if ACCUMULATE_N/=0 then
       carryin <= dout(ACCUMULATOR_WIDTH-1);
     end if;
   elsif accum_pipe(RD_LAT) then --write average
-    b <= resize(sample_pipe(RD_LAT),18);
     if first_pipe(RD_LAT) then
-      opmode <= "0000011"; -- A:B + 0 (sample)
+      opmode <= "0000011"; -- A:B + 0 (sample) 
     else
       opmode <= "0001111"; --A:B + C (sample + dout)
     end if;
-    carryin <= '0';
   end if;
-  --need dot product mux muxstate pipe?
+  --need dot product muxstate pipe?
 end process inputMux;
 
 addRound:DSP48E1
@@ -261,7 +314,7 @@ generic map (
   A_INPUT => "DIRECT",               -- Selects A input source, "DIRECT" (A port) or "CASCADE" (ACIN port)
   B_INPUT => "DIRECT",               -- Selects B input source, "DIRECT" (B port) or "CASCADE" (BCIN port)
   USE_DPORT => FALSE,                 -- Select D port usage (TRUE or FALSE)
-  USE_MULT => "NONE",            -- Select multiplier usage ("MULTIPLY", "DYNAMIC", or "NONE")
+  USE_MULT => "DYNAMIC",            -- Select multiplier usage ("MULTIPLY", "DYNAMIC", or "NONE")
   -- Pattern Detector Attributes: Pattern Detection Configuration
   AUTORESET_PATDET => "NO_RESET",    -- "NO_RESET", "RESET_MATCH", "RESET_NOT_MATCH" 
   MASK => X"000000000000",           -- 48-bit mask value for pattern detect (1=ignore)
@@ -281,7 +334,7 @@ generic map (
   CREG => 1,                         -- Number of pipeline stages for C (0 or 1)
   DREG => 0,                         -- Number of pipeline stages for D (0 or 1)
   INMODEREG => 0,                    -- Number of pipeline stages for INMODE (0 or 1)
-  MREG => 0,                         -- Number of multiplier pipeline stages (0 or 1)
+  MREG => 1,                         -- Number of multiplier pipeline stages (0 or 1)
   OPMODEREG => 1,                    -- Number of pipeline stages for OPMODE (0 or 1)
   PREG => 1,                         -- Number of pipeline stages for P (0 or 1)
   USE_SIMD => "ONE48"                -- SIMD selection ("ONE48", "TWO24", "FOUR12")
@@ -342,7 +395,7 @@ port map (
   RSTCTRL => reset,               -- 1-bit input: Reset input for OPMODEREG and CARRYINSELREG
   RSTD => '0',                     -- 1-bit input: Reset input for DREG and ADREG
   RSTM => reset,                     -- 1-bit input: Reset input for MREG
-  RSTP => reset                      -- 1-bit input: Reset input for PREG
+  RSTP => '0' --to_std_logic(start_pipe(RD_LAT))  -- 1-bit input: Reset input for PREG
 );
 
 end architecture SDP;

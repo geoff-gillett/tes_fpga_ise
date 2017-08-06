@@ -9,11 +9,11 @@ library dsp;
 use dsp.types.all;
 
 use work.types.all;
-use work.registers21.all;
-use work.events21.all;
-use work.measurements21.all;
+use work.registers.all;
+use work.events.all;
+use work.measurements.all;
 
-entity measure21 is
+entity measure is
 generic(
   CF_WIDTH:natural:=18;
   CF_FRAC:natural:=17;
@@ -36,9 +36,9 @@ port (
   
   measurements:out measurements_t
 );
-end entity measure21;
+end entity measure;
 
-architecture RTL of measure21 is
+architecture RTL of measure is
 
 
 -- pipelines to sync signals
@@ -48,7 +48,7 @@ signal raw_d:std_logic_vector(WIDTH-1 downto 0);
 
 signal m:measurements_t;
 
-signal pre_pulse_time_n,pulse_length_n,rise_time_n:unsigned(16 downto 0);
+signal pulse_time_n,pulse_length_n,rise_time_n:unsigned(16 downto 0);
 
 --------------------------------------------------------------------------------
 -- pipeline signals
@@ -137,7 +137,7 @@ port map(
 );
 m.raw <= signed(raw_d);
 
-CFD:entity work.CFD21
+CFD:entity work.CFD
 generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
@@ -155,7 +155,6 @@ port map(
   s => s,
   f => f,
   
-  
   s_out => s_cfd,
   f_out => f_cfd,
   
@@ -171,7 +170,7 @@ port map(
   above => above_cfd,
   
   rise_start => rise_start_cfd,
-  rise_valid => rise_valid_cfd,
+  valid_rise => rise_valid_cfd,
   pulse_start => pulse_start_cfd,
   
   cfd_low_threshold => cfd_low_threshold,
@@ -192,7 +191,7 @@ port map(
 -- register changes at DEPTH-ALAT should not have significant 
 -- effect on functionality, they will lead to a error in a single area 
 -- measurement at the threshold register change.
-pulseArea:entity dsp.area_acc21
+pulseArea:entity dsp.area_acc
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -210,7 +209,7 @@ port map(
   above_area_threshold => m.above_area
 );
 
-filteredArea:entity dsp.area_acc21
+filteredArea:entity dsp.area_acc
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -241,7 +240,7 @@ port map(
   extrema => m.f_extrema
 );
 
-slopeArea:entity dsp.area_acc21
+slopeArea:entity dsp.area_acc
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -273,18 +272,18 @@ port map(
 );
 
 -- expose some pipelines for use by down stream entities.
-m.pulse_start <= pulse_start_pipe(DEPTH-MEASUREMENT_DEPTH to DEPTH);
-m.rise_start <= rise_start_pipe(DEPTH-MEASUREMENT_DEPTH+1 to DEPTH);
+m.pulse_start <= pulse_start_pipe(DEPTH-3 to DEPTH);
+m.rise_start <= rise_start_pipe(DEPTH-1 to DEPTH);
 
 m.f <= f_pipe(DEPTH);
 m.f_0_p <= f_0_p_pipe(DEPTH);
 m.f_0_n <= f_0_n_pipe(DEPTH);
-m.p_t_p <= p_t_p_pipe(DEPTH-MEASUREMENT_DEPTH to DEPTH);
-m.p_t_n <= p_t_n_pipe(DEPTH-MEASUREMENT_DEPTH to DEPTH);
+m.p_t_p <= p_t_p_pipe(DEPTH-1 to DEPTH);
+m.p_t_n <= p_t_n_pipe(DEPTH-1 to DEPTH);
 
 m.s <= s_pipe(DEPTH);
-m.min <= min_pipe(DEPTH-MEASUREMENT_DEPTH to DEPTH);
-m.max <= max_pipe(DEPTH-MEASUREMENT_DEPTH to DEPTH);
+m.min <= min_pipe(DEPTH-1 to DEPTH);
+m.max <= max_pipe(DEPTH-1 to DEPTH);
 
 m.valid_rise <= rise_valid_pipe(DEPTH);
 
@@ -356,73 +355,14 @@ begin
       low_pipe <= cfd_low_threshold & low_pipe(1 to DEPTH-1);
       
       
-      -- pre calculate sizes 
-      if (pulse_start_pipe(DEPTH-3)) then 
+      -- pre calculate sizes FIXME should be in framer
+      if (pulse_start_pipe(DEPTH-4)) then 
         m.reg(PRE) <= reg; 
         m.enabled(PRE) <= event_enable;
-        m.dp_address(PRE) <= (others => '-');
-        
-        -- size is the size of the event part
-        case reg.detection is
-        when PEAK_DETECTION_D | AREA_DETECTION_D => 
-          m.size(PRE) <= (0 => '1', others => '0');
-          
-        when PULSE_DETECTION_D => 
-          m.size(PRE) <= ('0' & reg.max_peaks) + 3; 
-        when TRACE_DETECTION_D => 
-          case reg.trace_type is
-            when SINGLE_TRACE_D =>
-              m.size(PRE) <= ('0' & reg.max_peaks) + 3; 
-            when AVERAGE_TRACE_D =>
-              m.size(PRE) <= to_unsigned(2,PEAK_COUNT_BITS+1); 
-            when DOT_PRODUCT_D | DOT_PRODUCT_TRACE_D =>
-              m.size(PRE) <= ('0' & reg.max_peaks) + 4; 
-              m.dp_address(PRE) <= ('0' & reg.max_peaks) + 3; 
-          end case;
-        end case;
       end if;
           
-      if (m.pulse_start(PRE2)) then 
-        -- size2 is 2*size of event part
-        m.size2(PRE) <= resize(m.size(PRE) & '0',PEAK_COUNT_BITS+1); 
-          
-        case reg.detection is
-        when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D => 
-          m.frame_length(PRE) <= resize(m.size(PRE),ADDRESS_BITS+1); 
-          
-        when TRACE_DETECTION_D => 
-
-          case reg.trace_type is
-            
-            when SINGLE_TRACE_D | AVERAGE_TRACE_D | DOT_PRODUCT_TRACE_D =>
-              m.frame_length(PRE) <= resize(
-                                    reg.trace_length,ADDRESS_BITS+1
-                                  )+m.size(PRE); 
-                                  
-              m.size2(PRE) <= resize(
-                               reg.trace_length,ADDRESS_BITS+1
-                             )+(m.size(PRE) & '0'); 
-                                  
-              
-            when DOT_PRODUCT_D =>
-              m.frame_length(PRE) <= resize(m.size(PRE),ADDRESS_BITS+1);
-              
-          end case;
-        end case;
-          
-        --area_threshold <= signed('0' & registers.area_threshold);
-        --pre_last_peak_address <= ('0' & registers.max_peaks)+2;
-
-        m.rise_number <= (others => '0');
-        rise_number_n <= (0 => '1',others => '0');
-      end if;  
-      
       if m.pulse_start(PRE) then 
         m.reg(NOW) <= m.reg(PRE);
-        m.size(NOW) <= m.size(PRE);
-        m.size2(NOW) <= m.size2(PRE);
-        m.dp_address(NOW) <= m.dp_address(PRE);
-        m.frame_length(NOW) <= m.frame_length(PRE);
         m.enabled(NOW) <= m.enabled(PRE);
         
         m.last_peak_address <= ('0' & reg.max_peaks)+2;
@@ -518,8 +458,8 @@ begin
           m.pulse_stamped(PRE) <= TRUE;
         end if;
                            
-        m.pre_stamp_rise 
-          <= m.s_t_p(PRE2) and rise_valid_pipe(DEPTH-2) and not m.rise_stamped(PRE);
+        m.stamp_rise(PRE) <= m.s_t_p(PRE2) and rise_valid_pipe(DEPTH-2) and 
+                             not m.rise_stamped(PRE);
 
         if m.s_t_p(PRE2) and rise_valid_pipe(DEPTH-2) then
           m.rise_stamped(PRE) <= TRUE;
@@ -588,12 +528,12 @@ begin
       --FIXME the pipelining is overkill
       if first_rise_pipe(DEPTH-2) and min_pipe(DEPTH-2) then 
         m.pulse_time(PRE) <= (others => '0');
-        pre_pulse_time_n <= (0 => '1', others => '0'); 
-      elsif pre_pulse_time_n(16)='1' then
+        pulse_time_n <= (0 => '1', others => '0'); 
+      elsif pulse_time_n(16)='1' then
         m.pulse_time(PRE) <= (others => '1');
       else
-        pre_pulse_time_n <= pre_pulse_time_n + 1;
-        m.pulse_time(PRE) <= pre_pulse_time_n(15 downto 0);
+        pulse_time_n <= pulse_time_n + 1;
+        m.pulse_time(PRE) <= pulse_time_n(15 downto 0);
       end if;
       m.pulse_time(NOW) <= m.pulse_time(PRE);
       

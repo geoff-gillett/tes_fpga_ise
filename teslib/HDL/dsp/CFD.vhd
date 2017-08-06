@@ -8,11 +8,11 @@ use extensions.logic.all;
 
 --TODO can configurations be used here?
 library dsp;
-use dsp.crossing20;
+use dsp.crossing;
 
-use work.registers21.all;
+use work.registers.all;
 
-entity CFD21 is
+entity CFD is
 generic(
   WIDTH:integer:=16;
   CF_WIDTH:integer:=18;
@@ -49,7 +49,7 @@ port (
   first_rise:out boolean; --true min to max when min <= pulse_threshold
   rise_start:out boolean; --minima of a valid rise
   --true min to max of a rise that will_arm and will_cross
-  rise_valid:out boolean; 
+  valid_rise:out boolean; 
   pulse_start:out boolean; --min of valid first rise
   
   cfd_low_threshold:out signed(WIDTH-1 downto 0); --changes at minima
@@ -68,9 +68,9 @@ port (
   cfd_error:out boolean;
   cfd_overrun:out boolean --cfd failure due to long rise time
 );
-end entity CFD21;
+end entity CFD;
 
-architecture RTL of CFD21 is
+architecture RTL of CFD is
 
 component cf_queue
 port (
@@ -166,7 +166,7 @@ begin
 --FIXME check underflow when min-max less than FWFT? 
 
 --LAT 0 is at input
-slope0xing:entity crossing20
+slope0xing:entity crossing
 generic map(
   WIDTH => WIDTH
 )
@@ -203,7 +203,7 @@ slope_threshold_int <= signed('0' & reg.slope_threshold); --input stage only
 cf_int <= signed('0' & reg.constant_fraction); --input stage only
 rel2min_i <= reg.cfd_rel2min; -- used for height in meas
 
-slopeTxing:entity crossing20
+slopeTxing:entity crossing
 generic map(
   WIDTH => WIDTH
 )
@@ -218,7 +218,7 @@ port map(
   above => open
 );
 
-filteredTxing:entity crossing20
+filteredTxing:entity crossing
 generic map(
   WIDTH => WIDTH
 )
@@ -436,7 +436,7 @@ cfd_error_d <= to_boolean(q_dout(4*WIDTH+5));
 --------------------------------------------------------------------------------
 -- cfd and max slope crossings
 --------------------------------------------------------------------------------
-cfdLow:entity crossing20
+cfdLow:entity crossing
 generic map(
   WIDTH => WIDTH
 )
@@ -451,7 +451,7 @@ port map(
   above => open
 );
 
-cfdHigh:entity crossing20
+cfdHigh:entity crossing
 generic map(
   WIDTH => WIDTH
 )
@@ -486,7 +486,7 @@ begin
   end if;
 end process maxSlope;
 
-filtered0xing:entity crossing20
+filtered0xing:entity crossing
 generic map(
   WIDTH => WIDTH
 )
@@ -513,7 +513,7 @@ if rising_edge(clk) then
     cfd_valid <= FALSE;
     cfd_overrun <= FALSE;
     rise_start <= FALSE;
-    rise_valid <= FALSE;
+    valid_rise <= FALSE;
     pulse_start <= FALSE;
     will_arm <= FALSE;
     will_cross <= FALSE;
@@ -523,9 +523,6 @@ if rising_edge(clk) then
     min <= min_d;
     armed <= armed_d;
     above <= above_pulse_threshold_d;
-    first_rise <= first_rise_d;
---    f_0_p <= filtered_0_p_d;
---    f_0_n <= filtered_0_n_d;
     p_t_p <= pulse_threshold_pos_d;
     p_t_n <= pulse_threshold_neg_d;
     s_t_p <= slope_threshold_pos_d;
@@ -541,7 +538,7 @@ if rising_edge(clk) then
       will_arm <= will_arm_d;
       will_cross <= will_cross_d;
       rise_start <= will_arm_d and will_cross_d and not cfd_error_d;
-      rise_valid <= will_arm_d and will_cross_d and not cfd_error_d;
+      valid_rise <= will_arm_d and will_cross_d and not cfd_error_d;
       pulse_start <= will_arm_d and will_cross_d and first_rise_d and 
                      not cfd_error_d;
       cfd_low_threshold <= cfd_low_d;
@@ -549,15 +546,20 @@ if rising_edge(clk) then
       max_slope_threshold <= max_slope_d;
       q_rd_en <= '1';
       cfd_error <= cfd_error_d;
-      cfd_valid <= cfd_error_d;
-      --recapture registers
-      registers_out <= reg;
-      registers_out.pulse_threshold <= unsigned(p_thresh_d(WIDTH-2 downto 0));
-      registers_out.cfd_rel2min <= rel2min_d;
+      cfd_valid <= not cfd_error_d;
+      first_rise <= first_rise_d;
+      --recapture registers if pulse_start
+      if will_arm_d and will_cross_d and first_rise_d and 
+         not cfd_error_d then
+        registers_out <= reg;
+        registers_out.pulse_threshold <= unsigned(p_thresh_d(WIDTH-2 downto 0));
+        registers_out.cfd_rel2min <= rel2min_d;
+      end if;
     elsif max_d then 
       will_arm <= FALSE;
       will_cross <= FALSE;
-      rise_valid <= FALSE;
+      valid_rise <= FALSE;
+      first_rise <= FALSE;
     end if;
     
     cfd_overrun <= FALSE;

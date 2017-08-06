@@ -97,7 +97,7 @@ port map(
   stage2 => slope
 );
 
-UUT:entity work.CFD21
+UUT:entity work.CFD
 generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
@@ -156,7 +156,7 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(clk);
-		sample_in <= to_signed(sample, WIDTH);
+--		sample_in <= to_signed(sample, WIDTH);
 	end loop;
 	wait;
 end process stimulusFile;
@@ -172,9 +172,6 @@ doublesig <= to_signed(-200,WIDTH)
              else to_signed(-200,WIDTH);
 --sample_in <= doublesig;
 
-stimulus:process is
-begin
---adc_sample <= to_signed(0,WIDTH);
 stage1_config.config_data <= (others => '0');
 stage1_config.config_valid <= '0';
 stage1_config.reload_data <= (others => '0');
@@ -186,6 +183,9 @@ stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 
+stimulus:process is
+begin
+
 reg.timing <= CFD_LOW_TIMING_D;
 reg.constant_fraction <= to_unsigned(CF,CF_WIDTH-1);
 reg.cfd_rel2min <= FALSE;
@@ -196,12 +196,16 @@ reg.slope_threshold <= to_unsigned(0,WIDTH);
 reg.pulse_threshold <= to_unsigned(0,WIDTH);
 wait for CLK_PERIOD;
 reset <= '0';
---sample_in <= to_signed(0,WIDTH);
+sample_in <= to_signed(0,WIDTH);
 wait for CLK_PERIOD*256;
 simenable <= TRUE;
---sample_in <= to_signed(10000,WIDTH);
---wait for CLK_PERIOD*1;
---sample_in <= to_signed(0,WIDTH);
+sample_in <= (WIDTH-1 => '0', others => '1');
+wait for CLK_PERIOD;
+sample_in <= (others => '0');
+wait for CLK_PERIOD*256;
+sample_in <= (WIDTH-1 => '0', others => '1');
+wait for CLK_PERIOD;
+sample_in <= (others => '0');
 wait;
 end process stimulus;
 

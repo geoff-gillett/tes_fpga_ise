@@ -146,7 +146,7 @@ port map (
 );
 
 
-stage1Round:entity work.round2
+stage1Round:entity work.round
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 28+FRAC,
@@ -183,7 +183,7 @@ port map(
   event_s_reload_tlast_unexpected => stage2_events.last_unexpected
 );
 
-stage2Round:entity work.round2
+stage2Round:entity work.round
 generic map(
   WIDTH_IN => 48,
   FRAC_IN => 25+FRAC,

@@ -23,7 +23,7 @@ entity frame_ram is
 generic(
   CHUNKS:integer:=4;
   CHUNK_BITS:integer:=18; -- 8,9,16 or 18
-  ADDRESS_BITS:integer:=4
+  ADDRESS_BITS:integer:=10
 );
 port(
   clk:in std_logic;
@@ -45,46 +45,59 @@ port(
 );
 end entity frame_ram;
 
-architecture SDP of frame_ram is
+architecture TDP of frame_ram is
 --
 subtype word is std_logic_vector(CHUNKS*CHUNK_BITS-1 downto 0);
 type frame_buffer is array (0 to 2**ADDRESS_BITS-1) of word;
-signal frame_ram:frame_buffer;
+shared variable frame_ram:frame_buffer;
+attribute ram_style:string;
+attribute ram_style of frame_ram:variable is "BLOCK";
 
-signal input_word,ram_dout,ram_data,reg1,reg2,reg_stream:word;
-signal reg_ready,reg_valid,reg1_w,reg2_w:boolean;
-signal we:boolean_vector(CHUNKS-1 downto 0);
+signal input_word,ram_dout,ram_data:word;
+signal we,clr:boolean_vector(CHUNKS-1 downto 0);
 signal rd_ptr,rd_ptr_next,wr_addr,wr_ptr:unsigned(ADDRESS_BITS downto 0);
 signal free_ram,wr_ptr_next,length_reg:unsigned(ADDRESS_BITS downto 0);
 signal address_reg:unsigned(ADDRESS_BITS-1 downto 0);
-signal read_next,empty,ram_valid,good_commit:boolean;
+signal read_next,empty,good_commit:boolean;
 signal msb_xor,msb_xor_next,ptr_equal,ptr_next_equal,will_empty:boolean;
-signal ram_ready,one_pending,two_pending,none_pending,commit_reg:boolean;
-signal read_pipe:boolean_vector(1 to 2);
-
-type FSMstate is (EMPTY_S,REG1_S,REG2_S);
-signal state,nextstate:FSMstate;
+signal commit_reg:boolean;
+signal emptying:boolean;
+signal empty_commit:boolean;
 
 begin
 free <= free_ram;
 
 --------------------------------------------------------------------------------
--- infer RAM 
+-- infer SDP RAM 
 --------------------------------------------------------------------------------
-frameRAM:process(clk)
+clr <= (others => read_next);
+RAMportA:process(clk)
 begin
 if rising_edge(clk) then
   for i in 0 to CHUNKS-1 loop
     if we(i) then
-      frame_ram(to_integer(to_0IfX(wr_addr(ADDRESS_BITS-1 downto 0)))) 
+      frame_ram(to_integer(wr_addr(ADDRESS_BITS-1 downto 0))) 
       		     ((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS)
-                 <= input_word((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS);
+                 := input_word((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS);
     end if;
   end loop;
-	ram_dout <= frame_ram(to_integer(to_0IfX(rd_ptr(ADDRESS_BITS-1 downto 0))));
-  ram_data <= ram_dout; -- register output
 end if;
-end process frameRAM;
+end process RAMportA;
+
+RAMportB:process(clk)
+begin
+if rising_edge(clk) then
+	ram_dout <= frame_ram(to_integer(rd_ptr(ADDRESS_BITS-1 downto 0)));
+  ram_data <= ram_dout; -- register output
+  for i in 0 to CHUNKS-1 loop
+    if clr(i) then
+      frame_ram(to_integer(rd_ptr(ADDRESS_BITS-1 downto 0))) 
+      		     ((i+1)*CHUNK_BITS-1 downto i*CHUNK_BITS)
+                 := to_std_logic(0,CHUNK_BITS);
+    end if;
+  end loop;
+end if;
+end process RAMportB;
 --removed checks make it responsibility of caller
 --good_commit <= commit and (to_0IfX(length) <= to_0IfX(free_ram)) and 
 --               length /= 0; --this is not meeting timing 
@@ -163,134 +176,30 @@ if rising_edge(clk) then
       rd_ptr_next <= rd_ptr_next + 1;
     end if;
     
---    read_pipe(1) <= (read_next or (commit_reg and empty)) and not will_empty;
-    read_pipe(1) <= (read_next and not will_empty) or (commit_reg and empty);
-    read_pipe(2) <= read_pipe(1);
-
-    if (ram_valid and ram_ready) or not ram_valid then
-      ram_valid <= read_pipe(2);
-    end if;
-    
   end if;
 end if;
 end process ramPointers;
 
-none_pending <= not read_pipe(1) and not read_pipe(2);
-one_pending  <= read_pipe(1) xor read_pipe(2);
-two_pending <= read_pipe(1) and read_pipe(2);
+emptying <= empty or will_empty;
+empty_commit <= commit_reg and empty;
 
-FSMoutput:process(clk)
-begin
-  if rising_edge(clk) then
-    if reset='1' then
-      state <= EMPTY_S;
-    else
-      
-      state <= nextstate;
-      
-      if reg1_w then
-        reg1 <= ram_data;
-      end if;
-      
-      if reg2_w then
-        reg2 <= reg1;
-      end if;
-      
-    end if;
-  end if;
-end process FSMoutput;
-
-outMux:process(state,ram_valid,ram_data,reg1,reg2,two_pending,none_pending,
-  empty,reg_ready
-)
-begin
-  
-  nextstate <= state;
-  reg1_w <= FALSE;
-  reg2_w <= FALSE;
-  
-  case state is 
-  when EMPTY_S =>
-    
-    reg_valid <= ram_valid;
-    reg_stream <= ram_data;
-    ram_ready <= TRUE;
-    
-    if ram_valid then 
-      if reg_ready then
-        read_next <= not empty;
-      else
-        nextstate <= REG1_S;
-        reg1_w <= TRUE;
-        read_next <= not two_pending and not empty; --not will_empty
-      end if;
-    else
-      read_next <= not empty;-- and not empty_commit;
-    end if;
-    
-  when REG1_S =>
-    
-    reg_valid <= TRUE;
-    reg_stream <= reg1;
-    ram_ready <= TRUE;
-    
-    if ram_valid then
-      if reg_ready then
-        read_next <= not two_pending and not empty;
-        reg1_w <= TRUE;
-      else
-        nextstate <= REG2_S;
-        reg1_w <= TRUE;
-        reg2_w <= TRUE;
-        read_next <= none_pending and not empty;
-      end if;
-    else
-      if reg_ready then
-        nextstate <= EMPTY_S;
-        read_next <= not empty;-- and not empty_commit;
-      else
-        read_next <= not two_pending and not empty;-- and not empty_commit;
-      end if;
-    end if;
-    
-  when REG2_S =>
-    
-    reg_valid <= TRUE;
-    reg_stream <= reg2;
-    ram_ready <= reg_ready;
-    
-    if ram_valid then
-      if reg_ready then
-        reg1_w <= TRUE;
-        reg2_w <= TRUE;
-        read_next <= none_pending and not empty;
-      else
-        read_next <= FALSE;
-      end if;
-    else
-      if reg_ready then
-        nextstate <= REG1_S;
-        read_next <= not two_pending and not empty;
-      else
-        read_next <= none_pending and not empty;
-      end if; 
-    end if;
-  end case;
-end process outMux;
-
-streamReg:entity work.stream_register
+streamer:entity work.ram_stream
 generic map(
-  WIDTH => CHUNKS*CHUNK_BITS
+  WIDTH => CHUNKS*CHUNK_BITS,
+  LATENCY => 2
 )
 port map(
   clk => clk,
   reset => reset,
-  stream_in => reg_stream,
-  ready_out => reg_ready,
-  valid_in => reg_valid,
+  empty => emptying,
+  write => empty_commit,
+  last_incr_addr => FALSE,
+  incr_addr => read_next,
+  ram_data => ram_data,
   stream => stream,
+  valid => valid,
   ready => ready,
-  valid => valid
-);
+  last => open
+); 
 
-end architecture SDP;
+end architecture TDP;

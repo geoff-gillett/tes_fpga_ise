@@ -120,7 +120,7 @@ chanGen:for c in CHANNELS-1 downto 0 generate
   m(c).slope.sample <= sim_signal+2+c;
   
   -- latency 1
-  valueMux:entity work.mca_value_selector3
+  valueMux:entity work.mca_value_selector
   generic map(
     VALUE_BITS => MCA_VALUE_BITS,
     NUM_VALUES => NUM_MCA_VALUE_D,

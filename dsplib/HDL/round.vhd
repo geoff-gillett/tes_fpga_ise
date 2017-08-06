@@ -8,12 +8,13 @@ use unisim.vcomponents.DSP48E1;
 library extensions;
 use extensions.logic.all;
 
-entity round2 is
+entity round is
 generic(
   WIDTH_IN:integer:=48; -- max 48
   FRAC_IN:integer:=28;
   WIDTH_OUT:integer:=18;
-  FRAC_OUT:integer:=3
+  FRAC_OUT:integer:=3;
+  TOWARDS_INF:boolean:=TRUE
 ); 
 port(
   clk:in std_logic;
@@ -23,9 +24,9 @@ port(
   output:out signed(WIDTH_OUT-1 downto 0);
   above_threshold:out boolean
 );
-end entity round2;
+end entity round;
 
-architecture dsp48e of round2 is  
+architecture dsp48e of round is  
 
 -- DSP48E1 signals
 signal a:std_logic_vector(29 downto 0);
@@ -60,7 +61,7 @@ constantGen:if NONZERO_MASKS generate
 end generate;
 
 --carryin_sel <= "101" when TOWARDS_INF else "111";
-carryin <= '0' when NO_ROUND else input(WIDTH_IN-1);
+carryin <= '0' when NO_ROUND else not input(WIDTH_IN-1);
 saturate <= not (pat xor patb);
 
 ab <= resize(input,48);

@@ -69,7 +69,7 @@ length <= resize(count1+1,ADDRESS_BITS+1);
 address <= resize(count2,ADDRESS_BITS);
 din <= to_std_logic(streambus_in);
 
-UUT:entity work.frame_ram3
+UUT:entity work.frame_ram
 generic map(
   CHUNKS => CHUNKS,
   CHUNK_BITS => CHUNK_BITS,

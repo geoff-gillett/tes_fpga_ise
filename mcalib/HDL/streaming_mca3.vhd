@@ -115,7 +115,7 @@ data <= std_logic_vector(count);
 --read_bin_valid <= state=STREAMING;
 empty <= not (state=STREAMING);
 start <= state=IDLE and readable_int;
-fwft:entity streamlib.serialiser3
+fwft:entity streamlib.serialiser
 generic map(
   WIDTH => COUNTER_BITS
 )

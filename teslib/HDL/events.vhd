@@ -56,14 +56,15 @@ function to_event_type_t(sb:streambus_t) return event_type_t;
 --|    4     |      1       |   3   ||  2   	|   2    |    3       |     1    |
 --|peak_count| peak_overflow|channel||timing_d|height_d|event_type_t|new_window|
 type detection_flags_t is record 
-	peak_number:unsigned(PEAK_COUNT_BITS-1 downto 0); 
-	has_peak:boolean;
-	cfd_rel2min:boolean; --FIXME change to cfd_rel2min
+  rise_overflow:boolean;
+	rise_number:unsigned(PEAK_COUNT_BITS downto 0); --MSB discarded on write
+	has_rise:boolean;
+	cfd_rel2min:boolean; 
 	height:height_d;
 	timing:timing_d;
 	channel:unsigned(CHANNEL_BITS-1 downto 0); 
 	event_type:event_type_t; 
-	new_window:boolean;
+--	new_window:boolean;
 end record;
 
 function to_std_logic(f:detection_flags_t) return std_logic_vector;
@@ -234,7 +235,7 @@ record
 	trace_type:trace_type_d;
 	offset:unsigned(3 downto 0);
 	multipulse:boolean;
-	multipeak:boolean;
+	multirise:boolean;
 	stride:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 	trace_length:unsigned(TRACE_LENGTH_BITS-1 downto 0);
 end record;
@@ -325,7 +326,7 @@ end function;
 function to_std_logic(f:detection_flags_t) return std_logic_vector is 
 begin    
 				 -- first transmitted byte
-  return to_std_logic(f.peak_number) &
+  return to_std_logic(f.rise_number) &
          to_std_logic(f.cfd_rel2min) &
          to_std_logic(f.channel) &
 				 -- second transmitted byte
@@ -592,7 +593,7 @@ end function;
 function to_std_logic(f:trace_flags_t) return std_logic_vector is
 	variable slv:std_logic_vector(CHUNK_DATABITS-1 downto 0):=(others => '0');
 begin
-	slv(14):=to_std_logic(f.multipeak);
+	slv(14):=to_std_logic(f.multirise);
 	slv(13):=to_std_logic(f.multipulse);
 	slv(12 downto 8):=to_std_logic(f.stride);
 	slv(7 downto 6):=to_std_logic(f.trace_type,2);

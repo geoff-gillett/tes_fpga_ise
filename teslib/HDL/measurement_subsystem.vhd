@@ -43,25 +43,30 @@ entity measurement_subsystem is
 generic(
   DSP_CHANNELS:natural:=2;
   ADC_CHANNELS:natural:=2;
-  VALUE_PIPE_DEPTH:natural:=1;
+  VALUE_PIPE_DEPTH:natural:=2;
 	ENDIAN:string:="LITTLE";
 	PACKET_GEN:boolean:=FALSE;
 	ADC_WIDTH:integer:=14;
-	WIDTH:integer:=18;
+	WIDTH:integer:=16;
 	FRAC:integer:=3;
-	WIDTH_OUT:integer:=16;
-	FRAC_OUT:integer:=3;
+	CF_WIDTH:natural:=18;
+	CF_FRAC:natural:=17;
+	BASELINE_N:natural:=19;
 	SLOPE_FRAC:natural:=8;
-	SLOPE_FRAC_OUT:natural:=8;
 	AREA_WIDTH:natural:=32;
-	AREA_FRAC:natural:=1
+	AREA_FRAC:natural:=1;
+  FRAMER_ADDRESS_BITS:natural:=MEASUREMENT_FRAMER_ADDRESS_BITS;
+  ACCUMULATOR_WIDTH:natural:=36;
+  ACCUMULATE_N:natural:=18;
+  TRACE_FROM_STAMP:boolean:=TRUE;
+  ENET_FRAMER_ADDRESS_BITS:natural:=ETHERNET_FRAMER_ADDRESS_BITS;
+  MIN_TICK_PERIOD:natural:=26500
 );
 port(
   clk:in std_logic;
   reset1:in std_logic;
   reset2:in std_logic;
   
-  mca_initialising:out boolean;
   mca_interrupt:out boolean;
   
   samples:in adc_sample_array(ADC_CHANNELS-1 downto 0);
@@ -73,8 +78,6 @@ port(
   filter_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
   slope_config:in fir_ctl_in_array(DSP_CHANNELS-1 downto 0);
   slope_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
-  baseline_config:in fir_ctl_in_array(DSP_CHANNELS-1 downto 0);
-  baseline_events:out fir_ctl_out_array(DSP_CHANNELS-1 downto 0);
   
   measurements:out measurements_array(DSP_CHANNELS-1 downto 0);
   
@@ -86,18 +89,30 @@ end entity measurement_subsystem;
 
 architecture fixed_16_3 of measurement_subsystem is
 	
+attribute equivalent_register_removal:string;
+
 signal adc_delayed,adc_mux:adc_sample_array(DSP_CHANNELS-1 downto 0);
 
 -- MCA
 --type value_sel_array is array (natural range <>) of 
 --  std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
   
-signal value_select:std_logic_vector(NUM_MCA_VALUE_D-1 downto 0);
-
-signal trigger_select:std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
-signal qualifier_select:std_logic_vector(NUM_MCA_QUAL_D-1 downto 0);
+subtype value_sel is std_logic_vector(NUM_MCA_VALUE_D-2 downto 0);
+subtype trigger_sel is std_logic_vector(NUM_MCA_TRIGGER_D-2 downto 0);
+subtype qualifier_sel is std_logic_vector(NUM_MCA_QUAL_D-2 downto 0);
+type value_sel_reg is array (natural range <>) of value_sel;
+type trigger_sel_reg is array (natural range <>) of trigger_sel;
+type qualifier_sel_reg is array (natural range <>) of qualifier_sel;
+signal value_select:value_sel;
+signal trigger_select:trigger_sel;
+signal qualifier_select:qualifier_sel;
+signal value_select_reg:value_sel_reg(DSP_CHANNELS-1 downto 0);
+signal trigger_select_reg:trigger_sel_reg(DSP_CHANNELS-1 downto 0);
+signal qualifier_select_reg:qualifier_sel_reg(DSP_CHANNELS-1 downto 0);
+--mux pipelining
+signal start_reg,commit_reg,dump_reg,error_reg,overflow_reg
+       :boolean_vector(DSP_CHANNELS-1 downto 0);
 signal mca_values,mca_values_int:mca_value_array(DSP_CHANNELS-1 downto 0);
-
 --constant VALUE_PIPE_DEPTH:natural:=MCA_VALUE_PIPE_DEPTH;
 type value_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
      mca_value_array(DSP_CHANNELS-1 downto 0);
@@ -105,16 +120,23 @@ signal value_pipe:value_pipe_t;
 type value_valid_pipe_t is array (1 to VALUE_PIPE_DEPTH) of
      boolean_vector(DSP_CHANNELS-1 downto 0);
 signal value_valid_pipe:value_valid_pipe_t;
---
+attribute equivalent_register_removal of value_pipe,value_valid_pipe,
+          value_select_reg,trigger_select_reg,qualifier_select_reg,start_reg,
+          commit_reg,dump_reg,error_reg,overflow_reg
+          :signal is "FALSE";
+
+--constant ADCPIPE_DEPTH:natural:=1; --TODO add DEPTH
+type adc_pipeline is array (DSP_CHANNELS-1 downto 0) 
+	   of adc_sample_array(ADC_CHANNELS-1 downto 0);
+signal adc_pipe:adc_pipeline;
+attribute equivalent_register_removal of adc_pipe:signal is "FALSE";
+
 signal mca_value_valids:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal mca_value_valids_int:boolean_vector(DSP_CHANNELS-1 downto 0);
---signal mca_value_valids_reg:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal dumps:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal commits:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal starts:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal baseline_errors:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal cfd_errors:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal time_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal framer_errors:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal framer_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal channel_select:std_logic_vector(DSP_CHANNELS-1 downto 0);
@@ -126,17 +148,17 @@ signal mcastream:streambus_t;
 signal mcastream_valid:boolean;
 signal mcastream_ready:boolean;
 
-signal eventstreams:streambus_array(DSP_CHANNELS-1 downto 0);
+signal eventstreams,eventstreams_int:streambus_array(DSP_CHANNELS-1 downto 0);
 signal eventstream_valids:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal eventstream_valids_int:boolean_vector(DSP_CHANNELS-1 downto 0);
 signal eventstream_readys:boolean_vector(DSP_CHANNELS-1 downto 0);
+signal eventstream_readys_int:boolean_vector(DSP_CHANNELS-1 downto 0);
 
-signal muxstream:streambus_t;
-signal muxstream_valid:boolean;
-signal muxstream_ready:boolean;
+signal muxstream,muxstream_int:streambus_t;
+signal muxstream_valid,muxstream_valid_int:boolean;
+signal muxstream_ready,muxstream_ready_int:boolean;
 
 signal mux_full:boolean;
-signal mux_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
-signal measurement_overflows:boolean_vector(DSP_CHANNELS-1 downto 0);
 
 --signal m,m_reg:measurements_array(DSP_CHANNELS-1 downto 0);
 signal m:measurements_array(DSP_CHANNELS-1 downto 0);
@@ -144,7 +166,6 @@ signal c_reg:channel_register_array(DSP_CHANNELS-1 downto 0);
 signal g_reg:global_registers_t;
 
 signal tick_period_mux,tick_period_mca:unsigned(TICK_PERIOD_BITS-1 downto 0);
-attribute equivalent_register_removal:string;
 attribute equivalent_register_removal of tick_period_mux,tick_period_mca:signal
           is "no";
 
@@ -155,6 +176,7 @@ signal framestream_ready:boolean;
 --------------------------------------------------------------------------------
 -- test signals
 --------------------------------------------------------------------------------
+
 --signal adc_delayed0,adc_mux0:adc_sample_t;
 --signal adc_select:std_logic_vector(ADC_CHANNELS-1 downto 0);
 --signal raw_sample,filtered_sample:signal_t;
@@ -172,8 +194,11 @@ signal framestream_ready:boolean;
 --signal mca_value_debug:signed(MCA_VALUE_BITS-1 downto 0);
 --signal mca_value_valid_debug:boolean;
 
---constant DEBUG:string:="FALSE";
---attribute MARK_DEBUG:string;
+signal valid_peak:boolean;
+constant DEBUG:string:="FALSE";
+attribute MARK_DEBUG:string;
+attribute MARK_DEBUG of valid_peak:signal is DEBUG;
+attribute MARK_DEBUG of mca_value_valid:signal is DEBUG;
 --attribute MARK_DEBUG of mca_value_debug:signal is DEBUG;
 --attribute MARK_DEBUG of mca_value_valid_debug:signal is DEBUG;
 --attribute MARK_DEBUG of framestream:signal is DEBUG;
@@ -239,29 +264,37 @@ begin
 -- processing channels
 --------------------------------------------------------------------------------
 measurements <= m;
---TODO expose the .3 signals to mca 
--- move selectors inside
+--valid_peak <= m(0).valid_peak;
 
 -- helps timing and P&R
 chanReg:process(clk)
 begin
   if rising_edge(clk) then
-    c_reg <= channel_reg;
+--    c_reg <= channel_reg;
     tick_period_mux <= global_reg.tick_period;
     tick_period_mca <= global_reg.tick_period;
-    g_reg <= global_reg;
+--    g_reg <= global_reg;
   end if;
 end process chanReg;
+c_reg <= channel_reg;
+g_reg <= global_reg;
 
 tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
-
+  
+  adcPipe:process(clk)
+  begin
+    if rising_edge(clk) then
+      adc_pipe(c) <= samples;
+    end if;
+  end process adcPipe;
+  
   inputMux:entity work.input_mux
   generic map(
     CHANNELS => ADC_CHANNELS
   )
   port map(
     clk => clk,
-    samples_in => samples,
+    samples_in => adc_pipe(c),
     sel => resize(c_reg(c).capture.adc_select,ADC_CHANNELS),
     sample_out => adc_mux(c)
   );
@@ -282,17 +315,20 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
   generic map(
     CHANNEL => c,
     ENDIAN => ENDIAN,
-    BASELINE_BITS => BASELINE_BITS,
     WIDTH => WIDTH,
     FRAC => FRAC,
-    WIDTH_OUT => WIDTH_OUT,
-    FRAC_OUT => FRAC_OUT,
+    CF_WIDTH => CF_WIDTH,
+    CF_FRAC => CF_FRAC,
+    BASELINE_N => BASELINE_N,
     SLOPE_FRAC => SLOPE_FRAC,
-    SLOPE_FRAC_OUT => SLOPE_FRAC_OUT,
     ADC_WIDTH => ADC_WIDTH,
     AREA_WIDTH => AREA_WIDTH,
     AREA_FRAC => AREA_FRAC,
-    STRICT_CROSSING => TRUE 
+    FRAMER_ADDRESS_BITS => FRAMER_ADDRESS_BITS,
+    ACCUMULATOR_WIDTH => ACCUMULATOR_WIDTH,
+    ACCUMULATE_N => ACCUMULATE_N,
+    TRACE_FROM_STAMP => TRACE_FROM_STAMP --,
+--    STRICT_CROSSING => TRUE
   )
   port map(
     clk => clk,
@@ -305,35 +341,53 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     stage1_events => filter_events(c),
     stage2_config => slope_config(c),
     stage2_events => slope_events(c),
-    baseline_config => baseline_config(c),
-    baseline_events => baseline_events(c),
+    mux_full => mux_full, -- would be nice to register but latency may break it
     start => starts(c),
     commit => commits(c),
     dump => dumps(c),
     framer_overflow => framer_overflows(c),
     framer_error => framer_errors(c),
     measurements => m(c),
-    stream => eventstreams(c),
-    valid => eventstream_valids(c),
-    ready => eventstream_readys(c)
+    stream => eventstreams_int(c),
+    valid => eventstream_valids_int(c),
+    ready => eventstream_readys_int(c)
   );
-  cfd_errors(c) <= m(c).cfd_error;
   
-  valueMux:entity work.mca_value_selector3
-  generic map(
-    VALUE_BITS => MCA_VALUE_BITS,
-    NUM_VALUES => NUM_MCA_VALUE_D,
-    NUM_VALIDS => NUM_MCA_TRIGGER_D-1,
-    NUM_QUALS => NUM_MCA_QUAL_D
-  )
+  eventstreamReg:entity streamlib.streambus_register_slice
   port map(
     clk => clk,
     reset => reset1,
-    --measurements => m_reg(c),
+    stream_in => eventstreams_int(c),
+    ready_out => eventstream_readys_int(c),
+    valid_in => eventstream_valids_int(c),
+    stream => eventstreams(c),
+    ready => eventstream_readys(c),
+    valid => eventstream_valids(c)
+  );
+  
+  cfd_errors(c) <= m(c).cfd_error;
+  pipelines:process (clk) is
+  begin
+    if rising_edge(clk) then
+      value_select_reg(c) <= value_select;
+      trigger_select_reg(c) <= trigger_select;
+      qualifier_select_reg(c) <= qualifier_select;
+      start_reg(c) <= starts(c);
+      dump_reg(c) <= dumps(c);
+      commit_reg(c) <= commits(c);
+      error_reg(c) <= framer_errors(c);
+      overflow_reg(c) <= framer_overflows(c);
+    end if;
+  end process pipelines;
+  
+  valueMux:entity work.mca_value_selector
+  port map(
+    clk => clk,
+    reset => reset1,
     measurements => m(c),
-    value_select => value_select,
-    trigger_select => trigger_select,
-    qualifier_select => qualifier_select,
+    value_select => value_select_reg(c),
+    trigger_select => trigger_select_reg(c),
+    qualifier_select => qualifier_select_reg(c),
     value => mca_values(c),
     valid => mca_value_valids(c)
   );
@@ -343,7 +397,6 @@ valuePipeGen:if VALUE_PIPE_DEPTH/=0 generate
   mcaPipe:process(clk)
   begin
     if rising_edge(clk) then
-      --m_reg <= m;
       value_pipe <= mca_values & value_pipe(1 to VALUE_PIPE_DEPTH-1);
       value_valid_pipe 
         <= mca_value_valids & value_valid_pipe(1 to VALUE_PIPE_DEPTH-1);
@@ -362,7 +415,6 @@ begin
   end if;
 end process mcaValue;
 
-
 mcaChanSel:entity work.mca_channel_selector
 generic map(
   CHANNELS => DSP_CHANNELS,
@@ -372,8 +424,8 @@ port map(
   clk => clk,
   reset => reset1,
   channel_select => channel_select,
-  values => value_pipe(VALUE_PIPE_DEPTH),
-  valids => value_valid_pipe(VALUE_PIPE_DEPTH),
+  values => mca_values_int,
+  valids => mca_value_valids_int,
   value => mca_value,
   valid => mca_value_valid
 );
@@ -381,7 +433,6 @@ port map(
 --------------------------------------------------------------------------------
 -- 
 --------------------------------------------------------------------------------
-
 mux:entity work.eventstream_mux
 generic map(
   --CHANNEL_BITS => CHANNEL_BITS,
@@ -392,9 +443,9 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  start => starts,
-  commit => commits,
-  dump => dumps,
+  start => start_reg,
+  commit => commit_reg,
+  dump => dump_reg,
   instreams => eventstreams,
   instream_valids => eventstream_valids,
   instream_readys => eventstream_readys,
@@ -402,18 +453,26 @@ port map(
   tick_period => g_reg.tick_period,
   window => g_reg.window,
   cfd_errors => cfd_errors,
-  framer_overflows => framer_overflows,
-  mux_overflows => mux_overflows,
-  measurement_overflows => measurement_overflows,
-  framer_errors => framer_errors,
-  time_overflows => time_overflows,
-  baseline_underflows => baseline_errors,
-  muxstream => muxstream,
-  valid => muxstream_valid,
-  ready => muxstream_ready
+  framer_overflows => overflow_reg,
+  framer_errors => error_reg,
+  muxstream => muxstream_int,
+  valid => muxstream_valid_int,
+  ready => muxstream_ready_int
 );
 
-mca:entity work.mca_unit4
+muxStreamReg:entity streamlib.streambus_register_slice
+port map(
+  clk => clk,
+  reset => reset1,
+  stream_in => muxstream_int,
+  ready_out => muxstream_ready_int,
+  valid_in => muxstream_valid_int,
+  stream => muxstream,
+  ready => muxstream_ready,
+  valid => muxstream_valid
+);
+
+mca:entity work.mca
 generic map(
   CHANNELS => DSP_CHANNELS,
   ADDRESS_BITS => MCA_ADDRESS_BITS,
@@ -422,21 +481,15 @@ generic map(
   TOTAL_BITS => MCA_TOTAL_BITS,
   TICKCOUNT_BITS => MCA_TICKCOUNT_BITS,
   TICKPERIOD_BITS => TICK_PERIOD_BITS,
-  MIN_TICK_PERIOD => MIN_TICK_PERIOD,
-  DEPTH => VALUE_PIPE_DEPTH+2,
+  VALUE_PIPE_DEPTH => VALUE_PIPE_DEPTH,
+  MINIMUM_TICK_PERIOD => MIN_TICK_PERIOD,
   ENDIANNESS => ENDIANNESS
 )
 port map(
   clk => clk,
   reset => reset1,
-  initialising => mca_initialising,
-  --TODO remove redundant register port
-  update_asap => g_reg.mca.update_asap,
-  --TODO remove redundant register port
-  update_on_completion => g_reg.mca.update_on_completion,
-  updated => mca_interrupt, --TODO implement CPU interupt
+  updated => mca_interrupt,
   registers => g_reg.mca,
-  --TODO remove redundant register port
   tick_period => g_reg.tick_period,
   channel_select => channel_select,
   value_select => value_select,
@@ -452,7 +505,7 @@ port map(
 enet:entity work.ethernet_framer
 generic map(
   MTU_BITS => MTU_BITS,
-  FRAMER_ADDRESS_BITS => ETHERNET_FRAMER_ADDRESS_BITS,
+  FRAMER_ADDRESS_BITS => ENET_FRAMER_ADDRESS_BITS,
   DEFAULT_MTU => DEFAULT_MTU,
   DEFAULT_TICK_LATENCY => DEFAULT_TICK_LATENCY,
   ENDIANNESS => ENDIANNESS
@@ -460,7 +513,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  mtu => global_reg.mtu_words,
+  mtu => g_reg.mtu_words,
   tick_latency => g_reg.tick_latency,
   eventstream => muxstream,
   eventstream_valid => muxstream_valid,

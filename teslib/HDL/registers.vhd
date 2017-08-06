@@ -23,7 +23,7 @@ use streamlib.types.all;
 --use work.adc.all;
 --use work.dsptypes.all;
 use work.types.all;
-use work.functions.all;
+--use work.functions.all;
 --use work.events.all;
 
 --TODO rationalise all these packages.
@@ -32,7 +32,7 @@ package registers is
 
 -- hardware parameters
 --constant CHANNEL_BITS:integer:=3;
-
+constant MEASURE_PIPE_DEPTH:natural:=2;
 -- field sizes
 constant BASELINE_BITS:integer:=11;
 constant BASELINE_TIMECONSTANT_BITS:integer:=32;
@@ -85,7 +85,7 @@ type timing_d is (
 	PULSE_THRESH_TIMING_D,
 	SLOPE_THRESH_TIMING_D,
 	CFD_LOW_TIMING_D,
-	SLOPE_MAX_TIMING_D -- FIXME change to max_slope?
+	MAX_SLOPE_TIMING_D -- FIXME change to max_slope?
 );
 
 constant NUM_TIMING_D:integer:=timing_d'pos(timing_d'high)+1;
@@ -145,12 +145,12 @@ type mca_value_d is (
   MCA_SLOPE_SIGNAL_D, -- the output of the dsp differentiator
   MCA_SLOPE_AREA_D,
   MCA_SLOPE_EXTREMA_D,
-  MCA_RAW_SIGNAL_D,
-  MCA_CFD_HIGH_D,    -- high threshold
-  MCA_RAW_EXTREMA_D, --FIXME replace with peak time
   MCA_PULSE_AREA_D, -- the area between threshold crossings
-  MCA_PULSE_LENGTH_D, --FIXME make this pulse time
-  MCA_RISE_TIME_D --  FIXME make this the difference between high and low thresholds
+  MCA_RAW_SIGNAL_D, -- FIXME useful? 
+  MCA_CFD_HIGH_D,    -- high threshold 
+  MCA_PULSE_TIME_D, 
+  MCA_PEAK_TIME_D, 
+  MCA_DOT_PRODUCT_D 
 );
 
 
@@ -169,15 +169,15 @@ type mca_trigger_d is (
 	CLOCK_MCA_TRIGGER_D,
   PULSE_THRESHOLD_POS_MCA_TRIGGER_D, 
   PULSE_THRESHOLD_NEG_MCA_TRIGGER_D, 
+  SLOPE_THRESHOLD_MCA_TRIGGER_D,
   FILTERED_0XING_MCA_TRIGGER_D,
   SLOPE_0XING_MCA_TRIGGER_D,
-  RAW_0XING_MCA_TRIGGER_D, -- FIXME replace
-  SLOPE_THRESHOLD_MCA_TRIGGER_D,
-  CFD_HIGH_MCA_TRIGGER_D, 
-  CFD_LOW_MCA_TRIGGER_D,
-  MAX_SLOPE_MCA_TRIGGER_D,
   SLOPE_POS_0XING_MCA_TRIGGER_D, --peak start minima
-  SLOPE_NEG_0XING_MCA_TRIGGER_D
+  SLOPE_NEG_0XING_MCA_TRIGGER_D,
+  CFD_HIGH_MCA_TRIGGER_D, 
+  CFD_LOW_MCA_TRIGGER_D, -- timing trigger?
+  MAX_SLOPE_MCA_TRIGGER_D, -- timing trigger?
+  DOT_PRODUCT_MCA_TRIGGER_D
 );
 
 constant NUM_MCA_TRIGGER_D:integer:=mca_trigger_d'pos(mca_trigger_d'high)+1;
@@ -191,12 +191,12 @@ function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector;
 --FIXME could make no select bits use ALL
 --FIXME add valid_pulse?
 type mca_qual_d is (
-  MCA_DISABLED_D, -- no select bits
+  MCA_DISABLED_D, -- no select bits FIXME needed?
   ALL_MCA_QUAL_D, 
   VALID_PEAK_MCA_QUAL_D,
   ABOVE_AREA_MCA_QUAL_D,
-  ABOVE_PULSE_MCA_QUAL_D,
-  WILL_ABOVE_MCA_QUAL_D,
+  ABOVE_MCA_QUAL_D,
+  WILL_CROSS_MCA_QUAL_D,
   ARMED_MCA_QUAL_D,
   WILL_ARM_MCA_QUAL_D,
   VALID_PEAK0_MCA_QUAL_D,
@@ -243,6 +243,8 @@ type capture_registers_t is record
 	trace_length:unsigned(TRACE_LENGTH_BITS-1 downto 0);
 	--stream_enable:boolean;
 end record;
+
+type cap_reg_pipe is array (natural range <>) of capture_registers_t;
 
 type channel_registers_t is record
 	baseline:baseline_registers_t;

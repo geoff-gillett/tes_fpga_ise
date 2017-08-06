@@ -44,7 +44,7 @@ begin
 
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.serialiser3
+UUT:entity work.serialiser
 generic map(
   WIDTH => WIDTH
 )

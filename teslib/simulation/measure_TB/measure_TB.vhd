@@ -84,7 +84,7 @@ port map(
   stage2 => s
 );
 
-UUT:entity work.measure21
+UUT:entity work.measure
 generic map(
   CF_WIDTH => 18,
   CF_FRAC => 17,
@@ -124,7 +124,7 @@ begin
 	wait;
 end process stimulusFile;
 
-simsquare:process (clk) is
+simsquare:process(clk)
 begin
   if rising_edge(clk) then
     if not simenable then
@@ -157,16 +157,21 @@ reg.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 reg.detection <= PULSE_DETECTION_D;
 reg.timing <= PULSE_THRESH_TIMING_D;
 reg.height <= CFD_HEIGHT_D;
+event_enable <= TRUE;
 
 stimulus:process is
 begin
   raw <= (WIDTH-1  => '0', others => '0');
   wait for CLK_PERIOD;
   reset <= '0';
-  wait for CLK_PERIOD*400;
+  wait for CLK_PERIOD*300;
   simenable <= TRUE;
 
   --impulse
+  raw <= (WIDTH-1  => '0', others => '1');
+  wait for CLK_PERIOD;
+  raw <= (WIDTH-1  => '0', others => '0');
+  wait for CLK_PERIOD*300;
   raw <= (WIDTH-1  => '0', others => '1');
   wait for CLK_PERIOD;
   raw <= (WIDTH-1  => '0', others => '0');

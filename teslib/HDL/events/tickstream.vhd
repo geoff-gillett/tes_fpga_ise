@@ -15,6 +15,7 @@ use ieee.numeric_std.all;
 
 library extensions;
 use extensions.boolean_vector.all;
+use extensions.logic.all;
 
 library streamlib;
 use streamlib.types.all;
@@ -42,18 +43,17 @@ port (
   timestamp:out unsigned(TIMESTAMP_BITS-1 downto 0);
   tick_period:in unsigned(TICKPERIOD_BITS-1 downto 0);
  
-  mux_overflows:in boolean_vector(CHANNELS-1 downto 0);
+  mux_full:in boolean;
   cfd_errors:in boolean_vector(CHANNELS-1 downto 0);
   framer_overflows:in boolean_vector(CHANNELS-1 downto 0);
-  measurement_overflows:in boolean_vector(CHANNELS-1 downto 0);
   framer_errors:in boolean_vector(CHANNELS-1 downto 0);
-  time_overflows:in boolean_vector(CHANNELS-1 downto 0);
-  baseline_underflows:in boolean_vector(CHANNELS-1 downto 0);
  
   tickstream:out streambus_t;
   valid:out boolean;
   ready:in boolean
 );
+--attribute equivalent_register_removal:string;
+--attribute equivalent_register_removal of tickstream2:entity is "no";
 end entity tickstream;
 
 architecture aligned of tickstream is
@@ -61,13 +61,11 @@ architecture aligned of tickstream is
 --constant CHANNELS:integer:=2**CHANNEL_BITS;
 constant ADDRESS_BITS:integer:=9;
 --
-signal events_lost_reg,events_lost:boolean_vector(CHANNELS-1 downto 0);
+signal events_lost_reg:unsigned(31 downto 0);
 signal framer_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
-signal baseline_underflow_reg:boolean_vector(CHANNELS-1 downto 0);
-signal peak_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
-signal time_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
+signal framer_error_reg:boolean_vector(CHANNELS-1 downto 0);
 signal measurement_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
-signal mux_overflow_reg:boolean_vector(CHANNELS-1 downto 0);
+signal mux_overflow_reg:boolean;
 signal cfd_error_reg:boolean_vector(CHANNELS-1 downto 0);
 signal full,tick_int,tick_reg,missed_tick,last_tick_missed,commit:boolean;
 type FSMstate is (IDLE,FIRST,SECOND,THIRD);
@@ -76,13 +74,12 @@ signal data:streambus_t;
 signal address:unsigned(ADDRESS_BITS-1 downto 0);
 signal free:unsigned(ADDRESS_BITS downto 0);
 signal wr_en:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal tick_event:tick_event_t;
+signal tick_event:tick_event2_t;
 signal time_stamp:unsigned(TIMESTAMP_BITS-1 downto 0);
 signal tick_pipe:boolean_vector(0 to TICKPIPE_DEPTH);
 signal current_period:unsigned(TICKPERIOD_BITS-1 downto 0);
+signal events_lost:boolean;
 
---attribute equivalent_register_removal:string;
---attribute equivalent_register_removal of tickCounter:entity is "no";
 
 begin
 tick <= tick_int;
@@ -112,47 +109,47 @@ port map(
   valid => valid,
   ready => ready
 );
+
 full <= free < to_unsigned(TICK_BUSWORDS,ADDRESS_BITS+1);
 
+events_lost  <= unaryOR(framer_overflows) or unaryOR(framer_errors) or 
+                unaryOR(cfd_errors);
 
-events_lost  <= framer_overflows or cfd_errors or measurement_overflows or
-								mux_overflows;
-Reg:process(clk)
+reg:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      events_lost_reg <= (others => FALSE);
+      events_lost_reg <= (others => '0');
       framer_overflow_reg <= (others => FALSE);
       measurement_overflow_reg <= (others => FALSE);
       cfd_error_reg <= (others => FALSE);
     else
+      if events_lost then
+        events_lost_reg <= events_lost_reg+1;
+      end if;
+      framer_overflow_reg <= framer_overflow_reg or framer_overflows;
+      mux_overflow_reg <= mux_overflow_reg or mux_full;
+      framer_error_reg <= framer_error_reg or framer_errors;
+      cfd_error_reg <= cfd_error_reg or cfd_errors;
+      
     	if tick_int then
-    		
-        tick_event.events_lost <= resize(events_lost_reg or events_lost, 8);
-        events_lost_reg <= (others => FALSE);
+    		if events_lost then
+    		  tick_event.events_lost <= events_lost_reg+1;
+    		else
+    		  tick_event.events_lost <= events_lost_reg;
+    		end if;
+        events_lost_reg <= (others => '0');
         
-    		tick_event.mux_overflows <= resize(mux_overflow_reg or mux_overflows,8);
-        mux_overflow_reg <= (others => FALSE);
-    		
-    		tick_event.measurement_overflows 
-    			<= resize(measurement_overflow_reg or measurement_overflows,8);
-        measurement_overflow_reg <= (others => FALSE);
+        tick_event.flags.mux_full <= mux_overflow_reg;
+        mux_overflow_reg <= FALSE;
         
-    		tick_event.baseline_underflows 
-    			<= resize(baseline_underflow_reg or baseline_underflows,8);
-        baseline_underflow_reg <= (others => FALSE);
-
         tick_event.framer_overflows 
         	<= resize(framer_overflow_reg or framer_overflows,8);
         framer_overflow_reg <= (others => FALSE);
         
         tick_event.framer_errors
-        	<= resize(peak_overflow_reg or framer_errors,8);
-        peak_overflow_reg <= (others => FALSE);
-        
-        tick_event.time_overflows
-        	<= resize(time_overflow_reg or time_overflows,8);
-        time_overflow_reg <= (others => FALSE);
+        	<= resize(framer_error_reg or framer_errors,8);
+        framer_error_reg <= (others => FALSE);
         
         tick_event.cfd_errors
         	<= resize(cfd_error_reg or cfd_errors,8);
@@ -161,17 +158,6 @@ begin
         tick_event.period <= current_period;
     		tick_event.full_timestamp <= time_stamp;
     		
-      else 
-      	events_lost_reg <= events_lost_reg or framer_overflows or cfd_errors or 
-      										 measurement_overflows or mux_overflows;
-      	framer_overflow_reg <= framer_overflow_reg or framer_overflows;
-      	mux_overflow_reg <= mux_overflow_reg or mux_overflows;
-      	measurement_overflow_reg 
-      		<= measurement_overflow_reg or measurement_overflows;
-      	peak_overflow_reg <= peak_overflow_reg or framer_errors;
-      	time_overflow_reg <= time_overflow_reg or time_overflows;
-      	baseline_underflow_reg <= baseline_underflow_reg or baseline_underflows;
-      	cfd_error_reg <= cfd_error_reg or cfd_errors;
       end if;
     end if;
   end if;
