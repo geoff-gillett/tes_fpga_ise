@@ -9,9 +9,9 @@ library dsp;
 use dsp.types.all;
 use dsp.FIR_142SYM_23NSYM_16bit;
 
-use work.registers21.all;
+use work.registers.all;
 use work.types.all;
-use work.measurements21.all;
+use work.measurements.all;
 use std.textio.all;
 
 entity measure_TB is
@@ -20,7 +20,6 @@ generic(
   FRAC:integer:=3;
   AREA_WIDTH:integer:=32;
   AREA_FRAC:integer:=1;
-  ADDRESS_BITS:natural:=MEASUREMENT_FRAMER_ADDRESS_BITS;
   RAW_DELAY:integer:=1026 --46
 );
 end entity measure_TB;
@@ -92,8 +91,7 @@ generic map(
   FRAC => FRAC,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  RAW_DELAY => RAW_DELAY,
-  ADDRESS_BITS => ADDRESS_BITS
+  RAW_DELAY => RAW_DELAY
 )
 port map(
   clk => clk,
@@ -151,12 +149,13 @@ stage2_config.reload_valid <= '0';
 
 reg.constant_fraction  <= to_unsigned(CF,17);
 reg.slope_threshold <= to_unsigned(0,WIDTH-1);
-reg.pulse_threshold <= to_unsigned(0,WIDTH-1);
+reg.pulse_threshold <= to_unsigned(1,WIDTH-1);
 reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 reg.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 reg.detection <= PULSE_DETECTION_D;
 reg.timing <= PULSE_THRESH_TIMING_D;
-reg.height <= CFD_HEIGHT_D;
+reg.height <= PEAK_HEIGHT_D;
+reg.cfd_rel2min <= FALSE;
 event_enable <= TRUE;
 
 stimulus:process is

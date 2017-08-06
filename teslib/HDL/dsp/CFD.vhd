@@ -560,6 +560,7 @@ if rising_edge(clk) then
       will_cross <= FALSE;
       valid_rise <= FALSE;
       first_rise <= FALSE;
+      cfd_valid <= FALSE;
     end if;
     
     cfd_overrun <= FALSE;

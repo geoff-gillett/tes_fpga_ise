@@ -21,8 +21,7 @@ generic(
   FRAC:natural:=3;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  RAW_DELAY:natural:=1026;
-  ADDRESS_BITS:natural:=MEASUREMENT_FRAMER_ADDRESS_BITS
+  RAW_DELAY:natural:=1026
 );
 port (
   clk:in std_logic;
@@ -272,14 +271,14 @@ port map(
 );
 
 -- expose some pipelines for use by down stream entities.
-m.pulse_start <= pulse_start_pipe(DEPTH-3 to DEPTH);
+m.pulse_start <= pulse_start_pipe(DEPTH-2 to DEPTH);
 m.rise_start <= rise_start_pipe(DEPTH-1 to DEPTH);
 
 m.f <= f_pipe(DEPTH);
 m.f_0_p <= f_0_p_pipe(DEPTH);
 m.f_0_n <= f_0_n_pipe(DEPTH);
-m.p_t_p <= p_t_p_pipe(DEPTH-1 to DEPTH);
-m.p_t_n <= p_t_n_pipe(DEPTH-1 to DEPTH);
+m.p_t_p <= p_t_p_pipe(DEPTH-2 to DEPTH);
+m.p_t_n <= p_t_n_pipe(DEPTH-2 to DEPTH);
 
 m.s <= s_pipe(DEPTH);
 m.min <= min_pipe(DEPTH-1 to DEPTH);
@@ -367,7 +366,8 @@ begin
         
         m.last_peak_address <= ('0' & reg.max_peaks)+2;
         
-        rise_number_n <= (0 => '1',others => '0');
+        rise_number_n <= (0 => '1', others => '0');
+        m.rise_number <= (others => '0');
         m.last_rise <= reg.max_peaks=0;
         m.has_rise <= FALSE;
         
@@ -381,7 +381,7 @@ begin
       m.minima(PRE) <= m.minima(PRE2);
       m.minima(NOW) <= m.minima(PRE);
       
-      if min_pipe(PRE) then
+      if m.min(PRE) then
         if m.rise_number=1 then
           m.rise1 <= TRUE;  
         end if;
@@ -393,25 +393,16 @@ begin
         end if;
       end if;
       
---      if m.rise_start(PRE) then
---        m.valid_rise <= TRUE;
---      end if;
-      
       if m.max(NOW) then
---        m.valid_rise <= FALSE;
         m.rise0 <= FALSE;
         m.rise1 <= FALSE;
         m.rise2 <= FALSE;
         
         if m.valid_rise then
-          m.last_rise <= rise_number_n=m.reg(NOW).max_peaks; 
+          m.last_rise <= rise_number_n >= m.reg(NOW).max_peaks; 
           if rise_number_n > m.reg(NOW).max_peaks then 
             m.rise_overflow <= TRUE;
-          else
-            m.rise_address <= rise_address_n;
-            rise_address_n <= rise_address_n+1;
           end if;
-          
           if rise_number_n(PEAK_COUNT_BITS)='0' then
             m.rise_number <= rise_number_n(PEAK_COUNT_BITS-1 downto 0);
             rise_number_n <= rise_number_n + 1;
@@ -526,9 +517,9 @@ begin
       --rise_time=0 each stamp_rise NOTE implies rise is valid
      
       --FIXME the pipelining is overkill
-      if first_rise_pipe(DEPTH-2) and min_pipe(DEPTH-2) then 
-        m.pulse_time(PRE) <= (others => '0');
-        pulse_time_n <= (0 => '1', others => '0'); 
+      if first_rise_pipe(DEPTH-1) and m.min(PRE) then 
+        m.pulse_time(PRE) <= (0 => '1', others => '0');
+        pulse_time_n <= (1 => '1', others => '0'); 
       elsif pulse_time_n(16)='1' then
         m.pulse_time(PRE) <= (others => '1');
       else
@@ -537,9 +528,9 @@ begin
       end if;
       m.pulse_time(NOW) <= m.pulse_time(PRE);
       
-      if m.stamp_rise(PRE2) then  
-        m.rise_time(PRE) <= (others => '0');
-        rise_time_n <= (0 => '1', others => '0');
+      if m.stamp_rise(PRE) then  
+        m.rise_time(PRE) <= (0 => '1', others => '0');
+        rise_time_n <= (1 => '1', others => '0');
       elsif rise_time_n(16)='1' then
         m.rise_time(PRE) <= (others => '1');
       else
@@ -548,9 +539,9 @@ begin
       end if;
       m.rise_time(NOW) <= m.rise_time(PRE);
       
-      if m.p_t_p(PRE2) then
-        m.pulse_length(PRE) <= (others => '0');
-        pulse_length_n <= (0 => '1', others => '0');
+      if m.p_t_p(PRE) then
+        m.pulse_length(PRE) <= (0 => '1', others => '0');
+        pulse_length_n <= (1 => '1', others => '0');
       elsif pulse_length_n(16)='1' then
         m.pulse_length(PRE) <= (others => '1');
       else

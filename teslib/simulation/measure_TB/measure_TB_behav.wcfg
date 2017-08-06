@@ -8,13 +8,13 @@
             <top_module name="boolean_vector" />
             <top_module name="debug" />
             <top_module name="dsptypes" />
-            <top_module name="events21" />
+            <top_module name="events" />
             <top_module name="functions" />
             <top_module name="glbl" />
             <top_module name="logic" />
             <top_module name="measure_TB" />
-            <top_module name="measurements21" />
-            <top_module name="registers21" />
+            <top_module name="measurements" />
+            <top_module name="registers" />
             <top_module name="types" />
             <top_module name="types" />
             <top_module name="types" />
@@ -22,13 +22,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="11000000001fs"></ZoomEndTime>
-      <Cursor1Time time="3579508000fs"></Cursor1Time>
+      <ZoomStartTime time="1833333334fs"></ZoomStartTime>
+      <ZoomEndTime time="12833333334fs"></ZoomEndTime>
+      <Cursor1Time time="5312000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="229"></NameColumnWidth>
-      <ValueColumnWidth column_width="148"></ValueColumnWidth>
+      <ValueColumnWidth column_width="144"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="4" />
    <wvobject fp_name="group320" type="group">
@@ -125,10 +125,6 @@
          <obj_property name="ElementShortName">AREA_FRAC</obj_property>
          <obj_property name="ObjectShortName">AREA_FRAC</obj_property>
       </wvobject>
-      <wvobject fp_name="/measure_TB/ADDRESS_BITS" type="other">
-         <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
-         <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
-      </wvobject>
       <wvobject fp_name="/measure_TB/CLK_PERIOD" type="other">
          <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
          <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
@@ -145,7 +141,6 @@
    <wvobject fp_name="group321" type="group">
       <obj_property name="label">UUT</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/measure_TB/UUT/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -215,10 +210,6 @@
       <wvobject fp_name="/measure_TB/UUT/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measure_TB/UUT/pre_pulse_time_n" type="array">
-         <obj_property name="ElementShortName">pre_pulse_time_n[16:0]</obj_property>
-         <obj_property name="ObjectShortName">pre_pulse_time_n[16:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/measure_TB/UUT/pulse_length_n" type="array">
          <obj_property name="ElementShortName">pulse_length_n[16:0]</obj_property>
@@ -464,10 +455,6 @@
          <obj_property name="ElementShortName">AREA_FRAC</obj_property>
          <obj_property name="ObjectShortName">AREA_FRAC</obj_property>
       </wvobject>
-      <wvobject fp_name="/measure_TB/UUT/ADDRESS_BITS" type="other">
-         <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
-         <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
-      </wvobject>
       <wvobject fp_name="/measure_TB/UUT/RAW_DELAY" type="other">
          <obj_property name="ElementShortName">RAW_DELAY</obj_property>
          <obj_property name="ObjectShortName">RAW_DELAY</obj_property>
@@ -496,6 +483,7 @@
    <wvobject fp_name="/measure_TB/m" type="array">
       <obj_property name="ElementShortName">m</obj_property>
       <obj_property name="ObjectShortName">m</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject fp_name="group597" type="group">
       <obj_property name="label">CFD</obj_property>

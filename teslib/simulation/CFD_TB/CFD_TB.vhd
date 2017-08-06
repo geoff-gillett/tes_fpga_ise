@@ -24,7 +24,7 @@ use dsp.FIR_142SYM_23NSYM_16bit;
 
 use std.textio.all;
 use work.types.all;
-use work.registers21.all;
+use work.registers.all;
 
 entity CFD_TB is
 generic(

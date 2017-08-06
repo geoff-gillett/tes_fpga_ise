@@ -36,9 +36,9 @@ constant PRE2:natural:=MEASUREMENT_DEPTH-2; --value 2 clks before
 constant PRE3:natural:=MEASUREMENT_DEPTH-3; --value 2 clks before
 
 type creg_pipe is array (natural range <>) of capture_registers_t;
-type time_pipe is array (natural range <>) of 
+type u_chunk_pipe is array (natural range <>) of 
      unsigned(CHUNK_DATABITS-1 downto 0);
-type signal_pipe is array (natural range <>) of 
+type s_chunk_pipe is array (natural range <>) of 
      signed(CHUNK_DATABITS-1 downto 0);
 	
 type measurements_t is record
@@ -115,13 +115,13 @@ type measurements_t is record
   stamp_pulse:boolean_vector(PRE to MEASUREMENT_DEPTH); 
   pulse_stamped:boolean_vector(PRE to NOW); 
   
-	rise_time:time_pipe(PRE to NOW); 	--0 at rise timing point
-	pulse_time:time_pipe(PRE to NOW); --0 at peak_start
-	pulse_length:time_pipe(PRE to NOW); 	--0 at p_t_p 
+	rise_time:u_chunk_pipe(PRE to NOW); 	--0 at rise timing point
+	pulse_time:u_chunk_pipe(PRE to NOW); --0 at peak_start
+	pulse_length:u_chunk_pipe(PRE to NOW); 	--0 at p_t_p 
 	
 	
-  minima:signal_pipe(PRE to NOW); --value of f at s_0_p
-  height:signal_pipe(PRE to NOW); --height measurement
+  minima:s_chunk_pipe(PRE2 to NOW); --value of f at s_0_p
+  height:s_chunk_pipe(PRE to NOW); --height measurement
   height_valid:boolean_vector(PRE to NOW); --measurement point 
   
 	--maxima at end of a valid rise
