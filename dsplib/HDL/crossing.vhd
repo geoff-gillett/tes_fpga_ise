@@ -41,7 +41,6 @@ signal isbelow,isabove,above_int:boolean;
 signal signal_int,extrema_int:signed(WIDTH-1 downto 0);
 
 begin
-above <= above_int;
 signal_out <= signal_int;
 
 isbelow <= signal_in < threshold;
@@ -53,9 +52,11 @@ begin
 	  if reset='1' then
 	    above_int <= FALSE;
 	    extrema_int <= (others => '0');
+	    above <= FALSE;
 	  else
 	    signal_int <= signal_in;
 	    extrema <= extrema_int;
+      above <= isabove;
       
       if isabove then
         above_int <= TRUE;

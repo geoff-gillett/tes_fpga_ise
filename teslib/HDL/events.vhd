@@ -57,7 +57,7 @@ function to_event_type_t(sb:streambus_t) return event_type_t;
 --|peak_count| peak_overflow|channel||timing_d|height_d|event_type_t|new_window|
 type detection_flags_t is record 
   rise_overflow:boolean;
-	rise_number:unsigned(PEAK_COUNT_BITS downto 0); --MSB discarded on write
+	rise_number:unsigned(PEAK_COUNT_BITS-1 downto 0); 
 	has_rise:boolean;
 	cfd_rel2min:boolean; 
 	height:height_d;

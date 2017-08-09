@@ -930,7 +930,7 @@ begin
                      
         trace_count_init <= m.reg(NOW).trace_length-1;
         
-        dp_address <= ('0' & m.reg(NOW).max_peaks) + 3; 
+        dp_address <= resize( m.reg(NOW).max_peaks,ADDRESS_BITS) + 3; 
         
         trace_start_address <= resize(size(PRE),ADDRESS_BITS);
         

@@ -12,7 +12,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
---use ieee.std_logic_textio.all;
 use std.textio.all;
 
 library extensions;
@@ -30,7 +29,6 @@ use work.types.all;
 use work.registers.all;
 use work.events.all;
 use work.measurements.all;
---use work.debug.all;
 
 entity measurement_subsystem_TB is
 generic(
@@ -135,7 +133,7 @@ reset2 <= '0' after 20*IO_CLK_PERIOD;
                     
 bytestream_ready <= TRUE;
 
-UUT:entity work.measurement_subsystem20
+UUT:entity work.measurement_subsystem
 generic map(
   DSP_CHANNELS => CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
@@ -325,10 +323,9 @@ traceWriter:process
 begin
   while TRUE loop
     wait until rising_edge(sample_clk);
-    write(trace_file, to_integer(m(0).raw.sample));
-    write(trace_file, to_integer(m(0).filtered.sample));
-    write(trace_file, to_integer(m(0).slope.sample));
---    write(trace_file, to_integer(m(0).filtered_long)); 
+    write(trace_file, to_integer(m(0).raw));
+    write(trace_file, to_integer(m(0).f));
+    write(trace_file, to_integer(m(0).s));
   end loop;
 end process traceWriter; 
 
@@ -355,7 +352,7 @@ stimulusFile:process
 --	     "../bin_traces/july 10/gt1_100khz.bin";
 --	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/july 10/randn.bin";
-	     "../bin_traces/double_peak.bin";
+	     "../bin_traces/double_peak_sample.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
@@ -517,24 +514,24 @@ begin
 --------------------------------------------------------------------------------
 -- double peak thesis
 --------------------------------------------------------------------------------
-chan_reg(0).capture.slope_threshold <= to_unsigned(4500,DSP_BITS-1); --2300
---chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
-chan_reg(0).capture.pulse_threshold <= to_unsigned(2700,DSP_BITS-1); 
-chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
-chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
-chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
-chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
-chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
+--chan_reg(0).capture.slope_threshold <= to_unsigned(4500,DSP_BITS-1); --2300
+----chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(2700,DSP_BITS-1); 
+--chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+--chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
+--chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
+--chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
+--chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 
 --------------------------------------------------------------------------------
 -- randn samples
 --------------------------------------------------------------------------------
---chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
---chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
---chan_reg(0).capture.trace_length <= to_unsigned(64,TRACE_LENGTH_BITS);
---chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
---chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
---chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
+chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
+chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
+chan_reg(0).capture.trace_length <= to_unsigned(64,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
+chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
+chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 --------------------------------------------------------------------------------
 --
 chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
