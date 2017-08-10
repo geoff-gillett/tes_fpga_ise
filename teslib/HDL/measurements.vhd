@@ -24,8 +24,6 @@ use work.functions.all;
 use work.events.all;
 use work.registers.all;
 
-
-
 package measurements is
 
 --DEPTH of pipelines in the measurement record
@@ -129,13 +127,14 @@ type measurements_t is record
   
 	cfd_high:signed(CHUNK_DATABITS-1 downto 0); --threshold
 	cfd_low:signed(CHUNK_DATABITS-1 downto 0); --threshold
+	max_slope:signed(CHUNK_DATABITS-1 downto 0); --threshold
 	cfd_low_p:boolean; --crossing 
 	cfd_high_p:boolean; --crossing
   max_slope_p:boolean; --crossing
   
 	cfd_valid:boolean; --thresholds are valid
 	cfd_error:boolean; --true @ min if not cfd_valid 
-	cfd_overrun:boolean; --rise to long for correct CFD operation.
+	cfd_overrun:boolean; --rise too long for correct CFD operation.
 	
 	--true from s_t_p to min inclusive
   armed:boolean;

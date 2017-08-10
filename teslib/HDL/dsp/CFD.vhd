@@ -154,6 +154,7 @@ signal cf_error_i:boolean;
 signal cfd_error_d:boolean;
 signal cfd_low_armed,cfd_high_armed:boolean;
 signal cf_error_d:boolean;
+signal max_int:boolean;
 
 --DEBUGING
 --constant DEBUG:boolean:=FALSE;
@@ -286,11 +287,8 @@ begin
         else
           minima <= (others => '0');
         end if;
---        minima_pipe(4 to DEPTH) <= filtered_pipe(3) & minima_pipe(4 to DEPTH-1);
-      else
---        minima_pipe(4 to DEPTH) <= minima_pipe(4) & minima_pipe(4 to DEPTH-1);
       end if;
-      minima_pipe(4 to DEPTH) <= minima & minima_pipe(4 to DEPTH-1);
+      minima_pipe(5 to DEPTH) <= minima & minima_pipe(5 to DEPTH-1);
       
       if s_0_p_pipe(DEPTH-1) then 
         delay_counter <= 0;
@@ -318,7 +316,7 @@ begin
       cfd_low_i <= p + minima_pipe(DEPTH-1);
       cfd_high_i <= filtered_pipe(DEPTH-1) - p; 
 --      cfd_error_i <= first_rise_pipe(DEPTH-1) and p <= minima_pipe(DEPTH-1);
-      cf_error_i <= p <= minima_pipe(DEPTH-1);
+      cf_error_i <= p < minima_pipe(DEPTH-1);
     end if;
   end if;
 end process pipeline;
@@ -513,6 +511,7 @@ port map(
 --------------------------------------------------------------------------------
 -- output registers
 --------------------------------------------------------------------------------
+max <= max_int;
 outputReg:process(clk)
 begin
 if rising_edge(clk) then
@@ -527,7 +526,7 @@ if rising_edge(clk) then
     will_cross <= FALSE;
     q_rd_en <= '0';
   else
-    max <= max_d;
+    max_int <= max_d;
     min <= min_d;
     armed <= armed_d;
     above <= above_pulse_threshold_d;
@@ -561,7 +560,7 @@ if rising_edge(clk) then
         registers_out.pulse_threshold <= unsigned(p_thresh_d(WIDTH-2 downto 0));
         registers_out.cfd_rel2min <= rel2min_d;
       end if;
-    elsif max_d then 
+    elsif max_int then 
       will_arm <= FALSE;
       will_cross <= FALSE;
       valid_rise <= FALSE;

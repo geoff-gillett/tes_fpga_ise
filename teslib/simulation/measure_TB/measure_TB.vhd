@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library extensions;
+use extensions.boolean_vector.all;
 use extensions.debug.all;
 
 library dsp;
@@ -16,11 +17,11 @@ use std.textio.all;
 
 entity measure_TB is
 generic(
-  WIDTH:integer:=16;
-  FRAC:integer:=3;
-  AREA_WIDTH:integer:=32;
-  AREA_FRAC:integer:=1;
-  RAW_DELAY:integer:=1026 --46
+  WIDTH:natural:=16;
+  FRAC:natural:=3;
+  AREA_WIDTH:natural:=32;
+  AREA_FRAC:natural:=1;
+  RAW_DELAY:natural:=1026 --46
 );
 end entity measure_TB;
 
@@ -28,8 +29,6 @@ architecture testbench of measure_TB is
 
 signal clk:std_logic:='1';
 signal reset:std_logic:='1';
-
-file trace_file:extensions.debug.integer_file;
 
 constant CLK_PERIOD:time:=4 ns;
 
@@ -45,12 +44,15 @@ constant CF:integer:=2**17/2;
 signal m:measurements_t;
 signal event_enable:boolean;
 signal raw,f,s:signed(WIDTH-1 downto 0);
-signal clk_c:integer:=0; --clk index for data files
+signal clk_i:integer:=2; --clk index for data files
 
+file trace_file,min_file,max_file:extensions.debug.integer_file;
+file low_file,high_file,maxslope_file:extensions.debug.integer_file;
+signal flags:boolean_vector(8 downto 0);
 
 begin
 clk <= not clk after CLK_PERIOD/2;
-clk_c <= clk_c+1 after CLK_PERIOD;
+clk_i <= clk_i+1 after CLK_PERIOD;
 --------------------------------------------------------------------------------
 -- data recording
 --------------------------------------------------------------------------------
@@ -65,6 +67,74 @@ begin
     write(trace_file, to_integer(m.s));
   end loop;
 end process traceWriter; 
+
+flags <= m.valid_rise & m.rise0 & m.rise_start(NOW) & m.pulse_start(NOW) & m.will_cross & 
+         m.will_arm & m.cfd_error & m.cfd_overrun & m.cfd_valid;
+         
+file_open(min_file, "../min_data",WRITE_MODE);
+minWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.min(NOW) then
+      write(min_file, clk_i);
+      write(min_file, to_integer(m.f));
+      write(min_file, to_integer(m.s));
+      write(min_file, to_integer(m.cfd_low));
+      write(min_file, to_integer(m.cfd_high));
+      write(min_file, to_integer(to_unsigned(flags)));
+      write(min_file, to_integer(m.max_slope));
+      write(min_file, to_integer(m.minima(NOW)));
+    end if;
+  end loop;
+end process minWriter; 
+
+file_open(max_file, "../max_data",WRITE_MODE);
+maxWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.max(NOW) then
+      write(max_file, clk_i);
+      write(max_file, to_integer(m.f));
+      write(max_file, to_integer(m.s));
+      write(max_file, to_integer(to_unsigned(flags)));
+    end if;
+  end loop;
+end process maxWriter; 
+
+file_open(low_file, "../low_xings",WRITE_MODE);
+lowWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.cfd_low_p then
+      write(low_file, clk_i);
+    end if;
+  end loop;
+end process lowWriter; 
+
+file_open(high_file, "../high_xings",WRITE_MODE);
+highWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.cfd_high_p then
+      write(high_file, clk_i);
+    end if;
+  end loop;
+end process highWriter; 
+
+file_open(maxslope_file, "../maxslope_xings",WRITE_MODE);
+maxslopeWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.max_slope_p then
+      write(maxslope_file, clk_i);
+    end if;
+  end loop;
+end process maxslopeWriter; 
 
 fir:entity FIR_142SYM_23NSYM_16bit
 generic map(
@@ -109,15 +179,15 @@ stimulusFile:process
 --	     "../input_signals/tes2_250_old.bin";
 --	     "../bin_traces/july 10/gt1_100khz.bin";
 --	     "../bin_traces/july 10/randn2.bin";
---	     "../bin_traces/july 10/randn.bin";
-	     "../bin_traces/double_peak_signal.bin";
+	     "../bin_traces/july 10/randn.bin";
+--	     "../bin_traces/double_peak_signal.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(clk);
---		raw <= to_signed(sample, WIDTH);
+		raw <= to_signed(sample, WIDTH);
 	end loop;
 	wait;
 end process stimulusFile;
@@ -149,9 +219,9 @@ stage2_config.reload_valid <= '0';
 
 reg.constant_fraction  <= to_unsigned(CF,17);
 reg.slope_threshold <= to_unsigned(0,WIDTH-1);
-reg.pulse_threshold <= to_unsigned(1,WIDTH-1);
+reg.pulse_threshold <= to_unsigned(0,WIDTH-1);
 reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
-reg.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
+reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 reg.detection <= PULSE_DETECTION_D;
 reg.timing <= PULSE_THRESH_TIMING_D;
 reg.height <= PEAK_HEIGHT_D;
@@ -160,20 +230,20 @@ event_enable <= TRUE;
 
 stimulus:process is
 begin
-  raw <= (WIDTH-1  => '0', others => '0');
+--  raw <= (WIDTH-1  => '0', others => '0');
   wait for CLK_PERIOD;
   reset <= '0';
   wait for CLK_PERIOD*300;
   simenable <= TRUE;
 
-  --impulse
-  raw <= (WIDTH-1  => '0', others => '1');
-  wait for CLK_PERIOD;
-  raw <= (WIDTH-1  => '0', others => '0');
-  wait for CLK_PERIOD*300;
-  raw <= (WIDTH-1  => '0', others => '1');
-  wait for CLK_PERIOD;
-  raw <= (WIDTH-1  => '0', others => '0');
+--  --impulse
+--  raw <= (WIDTH-1  => '0', others => '1');
+--  wait for CLK_PERIOD;
+--  raw <= (WIDTH-1  => '0', others => '0');
+--  wait for CLK_PERIOD*300;
+--  raw <= (WIDTH-1  => '0', others => '1');
+--  wait for CLK_PERIOD;
+--  raw <= (WIDTH-1  => '0', others => '0');
   wait;
 end process;
 

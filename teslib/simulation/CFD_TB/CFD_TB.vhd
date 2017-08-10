@@ -189,7 +189,7 @@ begin
   end loop;
 end process maxWriter; 
 
-file_open(low_file, "../low_data",WRITE_MODE);
+file_open(low_file, "../low_xings",WRITE_MODE);
 lowWriter:process
 begin
   while TRUE loop
@@ -200,7 +200,7 @@ begin
   end loop;
 end process lowWriter; 
 
-file_open(high_file, "../high_data",WRITE_MODE);
+file_open(high_file, "../high_xings",WRITE_MODE);
 highWriter:process
 begin
   while TRUE loop
@@ -211,7 +211,7 @@ begin
   end loop;
 end process highWriter; 
 
-file_open(maxslope_file, "../high_data",WRITE_MODE);
+file_open(maxslope_file, "../maxslope_xings",WRITE_MODE);
 maxslopeWriter:process
 begin
   while TRUE loop

@@ -19,23 +19,23 @@ use extensions.logic.all;
 --TODO add adapter that outputs a chunk stream and removes chunks with keep_n
 
 package types is
-constant CHUNK_BITS:integer:=18;
+constant CHUNK_BITS:natural:=18;
 --! Number of bits in a chunk that contain data
-constant CHUNK_DATABITS:integer:=16;
+constant CHUNK_DATABITS:natural:=16;
 --! The bit in the chunk that indicates that the chunk should be kept
 --! NOTE this is assuming downto indexing -control bits are always leftmost
-constant CHUNK_KEEPBIT:integer:=CHUNK_DATABITS;
+constant CHUNK_KEEPBIT:natural:=CHUNK_DATABITS;
 --! The bit in the chunk that indicates the last chunk in the stream
 --! NOTE this is assuming downto indexing -control bits are always leftmost
-constant CHUNK_LASTBIT:integer:=CHUNK_DATABITS+1;
-constant CHUNK_CONTROLBITS:integer:=CHUNK_BITS-CHUNK_DATABITS;
+constant CHUNK_LASTBIT:natural:=CHUNK_DATABITS+1;
+constant CHUNK_CONTROLBITS:natural:=CHUNK_BITS-CHUNK_DATABITS;
 
 --TODO generalise -- remove BUS_CHUNKS and add parameter to functions.
-constant BUS_CHUNKS:integer:=4;
+constant BUS_CHUNKS:natural:=4;
 -- total bits in the bus (including control bits)
-constant BUS_BITS:integer:=CHUNK_BITS*BUS_CHUNKS;
+constant BUS_BITS:natural:=CHUNK_BITS*BUS_CHUNKS;
 -- data only bits of the bus
-constant BUS_DATABITS:integer:=CHUNK_DATABITS*BUS_CHUNKS;
+constant BUS_DATABITS:natural:=CHUNK_DATABITS*BUS_CHUNKS;
 
 --TODO remove these discard a last subtypes
 subtype streambus_discard_t is boolean_vector(BUS_CHUNKS-1 downto 0);

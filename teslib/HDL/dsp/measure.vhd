@@ -89,7 +89,7 @@ signal rise_address_n:unsigned(PEAK_COUNT_BITS downto 0);
 
 type pipe is array(1 to DEPTH) of signed(WIDTH-1 downto 0);
 --signal high_pipe,low_pipe,filtered_long_pipe,slope_long_pipe:long_pipe;
-signal f_pipe,s_pipe,high_pipe,low_pipe:pipe;
+signal f_pipe,s_pipe,high_pipe,low_pipe,max_slope_pipe:pipe;
 signal f_0_x_a:boolean;
 signal f_0_p_pipe,p_t_p_pipe:boolean_vector(1 to DEPTH);
 signal f_0_n_pipe,p_t_n_pipe:boolean_vector(1 to DEPTH);
@@ -293,6 +293,7 @@ m.will_cross <= will_cross_pipe(DEPTH);
 
 m.cfd_high <= high_pipe(DEPTH);
 m.cfd_low <= low_pipe(DEPTH);
+m.max_slope <= max_slope_pipe(DEPTH);
 m.cfd_high_p <= cfd_high_p_pipe(DEPTH);
 m.cfd_low_p <= cfd_low_p_pipe(DEPTH);
 m.max_slope_p <= max_slope_p_pipe(DEPTH);
@@ -352,6 +353,7 @@ begin
       
       high_pipe <= cfd_high_threshold & high_pipe(1 to DEPTH-1);
       low_pipe <= cfd_low_threshold & low_pipe(1 to DEPTH-1);
+      max_slope_pipe <= max_slope_threshold & max_slope_pipe(1 to DEPTH-1);
       
       
       -- pre calculate sizes FIXME should be in framer
