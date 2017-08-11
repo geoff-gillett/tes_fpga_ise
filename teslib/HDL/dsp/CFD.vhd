@@ -52,17 +52,17 @@ port (
   rise_start:out boolean; --minima of a valid rise
   pulse_start:out boolean; --min of valid first rise
   
-  cfd_low_threshold:out signed(WIDTH-1 downto 0); --changes at minima
-  cfd_high_threshold:out signed(WIDTH-1 downto 0); --changes at minima
-  max_slope_threshold:out signed(WIDTH-1 downto 0); -- changes at minima
+  cfd_low:out signed(WIDTH-1 downto 0); --changes at minima
+  cfd_high:out signed(WIDTH-1 downto 0); --changes at minima
+  max_slope:out signed(WIDTH-1 downto 0); -- changes at minima
   
   will_cross:out boolean; --changes at minima
   will_arm:out boolean; --changes at minima
   
-  -- crossings of calculated thresholds by output signals
-  cfd_low_p:out boolean; --f crossing cfd_low_threshold
-  cfd_high_p:out boolean; --f crossing cfd_high_threshold
-  max_slope_p:out boolean; --s = cfd_high_threshold (first occurrence after min)
+--  -- crossings of calculated thresholds by output signals
+--  cfd_low_p:out boolean; --f crossing cfd_low_threshold
+--  cfd_high_p:out boolean; --f crossing cfd_high_threshold
+--  max_slope_p:out boolean; --s = cfd_high_threshold (first occurrence after min)
   
   cfd_valid:out boolean; -- max to min -- no error or overrun
   cfd_error:out boolean; -- flag at min
@@ -142,7 +142,7 @@ signal slope_int,slope_0x_reg:signed(WIDTH-1 downto 0);
 
 signal s_t_p_i,p_t_p_i:boolean;
 signal rel2min_i,rel2min_d:boolean;
-signal minima:signed(WIDTH-1 downto 0);
+signal minima,cf_min:signed(WIDTH-1 downto 0);
 
 signal cfd_low_d,cfd_high_d:signed(WIDTH-1 downto 0);
 signal will_cross_d,will_arm_d:boolean;
@@ -282,10 +282,11 @@ begin
       
       -- need first peak
       if s_0_p_pipe(3) then
+        minima <= filtered_pipe(3); --lat 4
         if rel2min_i or not first_rise_i then -- or not first peak
-          minima <= filtered_pipe(3); --lat 4
+          cf_min <= filtered_pipe(3); --lat 4
         else
-          minima <= (others => '0');
+          cf_min <= (others => '0');
         end if;
       end if;
       minima_pipe(5 to DEPTH) <= minima & minima_pipe(5 to DEPTH-1);
@@ -313,10 +314,13 @@ begin
       --truncation=rounding for the thresholds in valid rises as they are always 
       --positive
       cf_error_i <= FALSE;
-      cfd_low_i <= p + minima_pipe(DEPTH-1);
+      if first_rise_pipe(DEPTH-1) then
+        cfd_low_i <= p;
+        cf_error_i <= p < minima_pipe(DEPTH-1);
+      else
+        cfd_low_i <= p + minima_pipe(DEPTH-1);
+      end if;
       cfd_high_i <= filtered_pipe(DEPTH-1) - p; 
---      cfd_error_i <= first_rise_pipe(DEPTH-1) and p <= minima_pipe(DEPTH-1);
-      cf_error_i <= p < minima_pipe(DEPTH-1);
     end if;
   end if;
 end process pipeline;
@@ -333,7 +337,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset,
-  min => minima,
+  min => cf_min,
   cf => cf_int,
   sig => filtered_pipe(4), 
   p => p -- constant fraction of the rise above minimum
@@ -431,66 +435,6 @@ first_rise_d <= to_boolean(q_dout(4*WIDTH+3));
 rel2min_d <= to_boolean(q_dout(4*WIDTH+4));
 cfd_error_d <= to_boolean(q_dout(4*WIDTH+5));
 
---------------------------------------------------------------------------------
--- cfd and max slope crossings
---------------------------------------------------------------------------------
-cfdLowp:process(clk)
-begin
-  if rising_edge(clk) then
-    if reset = '1' then
-      cfd_low_p <= FALSE;
-      cfd_low_armed <= FALSE;
-      f_out <= (others => '0');
-    else
-      f_out <= signed(filtered_d);
-      if min_d then
-        cfd_low_armed <= TRUE;
-      end if;
-      if signed(filtered_d) >= cfd_high_d then
-        cfd_low_p <= (cfd_low_armed or min_d) and not cf_error_d;
-        cfd_low_armed <= FALSE;
-      end if;
-    end if;
-  end if;
-end process cfdLowp;
-
-cfdHighp:process(clk)
-begin
-  if rising_edge(clk) then
-    if reset = '1' then
-      cfd_high_p <= FALSE;
-      cfd_high_armed <= FALSE;
-    else
-      if min_d then
-        cfd_high_armed <= TRUE;
-      end if;
-      if signed(filtered_d) >= cfd_high_d then
-        cfd_high_p <= (cfd_high_armed or min_d) and not cf_error_d;
-        cfd_high_armed <= FALSE;
-      end if;
-    end if;
-  end if;
-end process cfdHighp;
-
-maxSlope:process(clk)
-begin
-  if rising_edge(clk) then
-    if reset = '1' then
-      max_slope_p <= FALSE;
-      max_slope_armed <= FALSE;
-      s_out <= (others => '0');
-    else
-      s_out <= signed(slope_d);
-      if min_d then
-        max_slope_armed <= TRUE;
-      end if;
-      if signed(slope_d) >= max_slope_d then
-        max_slope_p <= max_slope_armed or min_d;
-        max_slope_armed <= FALSE;
-      end if;
-    end if;
-  end if;
-end process maxSlope;
 
 filtered0xing:entity crossing
 generic map(
@@ -546,9 +490,9 @@ if rising_edge(clk) then
       will_cross <= will_cross_d;
       rise_start <= will_arm_d and will_cross_d;
       valid_rise <= will_arm_d and will_cross_d;
-      cfd_low_threshold <= cfd_low_d;
-      cfd_high_threshold <= cfd_high_d;
-      max_slope_threshold <= max_slope_d;
+      cfd_low <= cfd_low_d;
+      cfd_high <= cfd_high_d;
+      max_slope <= max_slope_d;
       q_rd_en <= '1';
       cfd_error <= cfd_error_d;
       cfd_valid <= not cfd_error_d;

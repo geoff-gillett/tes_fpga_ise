@@ -119,6 +119,7 @@ signal reg:capture_registers_t;
 constant DEBUG:string:="FALSE";
 attribute mark_debug:string;
 attribute mark_debug of valid_rise:signal is DEBUG;
+signal cfd_low_armed,cfd_high_armed,max_slope_armed:boolean;
 
 begin
 measurements <= m;
@@ -172,15 +173,15 @@ port map(
   valid_rise => rise_valid_cfd,
   pulse_start => pulse_start_cfd,
   
-  cfd_low_threshold => cfd_low_threshold,
-  cfd_high_threshold => cfd_high_threshold,
-  max_slope_threshold => max_slope_threshold,
+  cfd_low => cfd_low_threshold,
+  cfd_high => cfd_high_threshold,
+  max_slope => max_slope_threshold,
   will_cross => will_cross_cfd,
   will_arm => will_arm_cfd,
   
-  cfd_low_p => cfd_low_p,
-  cfd_high_p => cfd_high_p,
-  max_slope_p => max_slope_p,
+--  cfd_low_p => cfd_low_p,
+--  cfd_high_p => cfd_high_p,
+--  max_slope_p => max_slope_p,
   
   cfd_valid => cfd_valid_cfd,
   cfd_error => cfd_error_cfd,
@@ -270,6 +271,67 @@ port map(
   extrema => m.s_extrema
 );
 
+--------------------------------------------------------------------------------
+--level detectors for calculated thresholds 
+--true first time in rise that sig >= thresh 
+--------------------------------------------------------------------------------
+cfdLowp:process(clk)
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      cfd_low_p <= FALSE;
+      cfd_low_armed <= FALSE;
+    else
+      if min_pipe(DEPTH-3) then
+        cfd_low_armed <= TRUE;
+      end if;
+      if f_pipe(DEPTH-3) >= low_pipe(DEPTH-3) then
+        cfd_low_p <= (cfd_low_armed or min_pipe(DEPTH-3)) and 
+                     cfd_valid_pipe(DEPTH-3);
+        cfd_low_armed <= FALSE;
+      end if;
+    end if;
+  end if;
+end process cfdLowp;
+
+cfdHighp:process(clk)
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      cfd_high_p <= FALSE;
+      cfd_high_armed <= FALSE;
+    else
+      if min_pipe(DEPTH-3) then
+        cfd_high_armed <= TRUE;
+      end if;
+      if f_pipe(DEPTH-3) >= high_pipe(DEPTH-3) then
+        cfd_high_p <= (cfd_high_armed or min_pipe(DEPTH-3)) and 
+                     cfd_valid_pipe(DEPTH-3);
+        cfd_high_armed <= FALSE;
+      end if;
+    end if;
+  end if;
+end process cfdHighp;
+
+maxSlope:process(clk)
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      max_slope_p <= FALSE;
+      max_slope_armed <= FALSE;
+    else
+      if min_pipe(DEPTH-3) then
+        max_slope_armed <= TRUE;
+      end if;
+      if f_pipe(DEPTH-3) >= max_slope_pipe(DEPTH-3) then
+        max_slope_p <= (max_slope_armed or min_pipe(DEPTH-3)) and 
+                     cfd_valid_pipe(DEPTH-3);
+        max_slope_armed <= FALSE;
+      end if;
+    end if;
+  end if;
+end process maxSlope;
+
 -- expose some pipelines for use by down stream entities.
 m.pulse_start <= pulse_start_pipe(DEPTH-2 to DEPTH);
 m.rise_start <= rise_start_pipe(DEPTH-1 to DEPTH);
@@ -324,11 +386,13 @@ begin
       p_t_n_pipe(1 to DEPTH) <= p_t_n_cfd & p_t_n_pipe(1 to DEPTH-1);
       s_t_p_pipe(1 to DEPTH) <= s_t_p_cfd & s_t_p_pipe(1 to DEPTH-1);
       
-      max_slope_p_pipe(1 to DEPTH) 
-        <= max_slope_p & max_slope_p_pipe(1 to DEPTH-1);
+      max_slope_p_pipe(DEPTH-2 to DEPTH) 
+        <= max_slope_p & max_slope_p_pipe(DEPTH-2 to DEPTH-1);
       
-      cfd_high_p_pipe(1 to DEPTH) <= cfd_high_p & cfd_high_p_pipe(1 to DEPTH-1);
-      cfd_low_p_pipe(1 to DEPTH) <= cfd_low_p & cfd_low_p_pipe(1 to DEPTH-1);
+      cfd_high_p_pipe(DEPTH-2 to DEPTH) 
+        <= cfd_high_p & cfd_high_p_pipe(DEPTH-2 to DEPTH-1);
+      cfd_low_p_pipe(DEPTH-2 to DEPTH) 
+        <= cfd_low_p & cfd_low_p_pipe(DEPTH-2 to DEPTH-1);
         
       above_pipe <= above_cfd & above_pipe(1 to DEPTH-1);
       armed_pipe <= armed_cfd & armed_pipe(1 to DEPTH-1);

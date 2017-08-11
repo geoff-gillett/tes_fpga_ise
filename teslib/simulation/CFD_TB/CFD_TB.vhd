@@ -71,15 +71,11 @@ signal armed:boolean;
 signal cfd_error:boolean;
 signal sample_in:signed(WIDTH-1 downto 0);
 signal rise_start,pulse_start:boolean;
-signal cfd_low_p:boolean;
-signal cfd_high_p:boolean;
-signal max_slope_p:boolean;
 signal reg:capture_registers_t;
 signal above:boolean;
 signal clk_i:integer:=-1; -- to align with python indices
 
 file trace_file,min_file,max_file:extensions.debug.integer_file;
-file low_file,high_file,maxslope_file:extensions.debug.integer_file;
 signal cfd_overrun,cfd_valid:boolean;
 signal flags:boolean_vector(8 downto 0);
 signal first_rise:boolean;
@@ -119,13 +115,13 @@ port map(
   s => slope,
   f => filtered,
   registers => reg,
-  cfd_low_threshold => cfd_low_threshold,
-  cfd_high_threshold => cfd_high_threshold,
+  cfd_low => cfd_low_threshold,
+  cfd_high => cfd_high_threshold,
   first_rise => first_rise,
   valid_rise => valid_rise,
   max => max,
   min => min,
-  max_slope_threshold => max_slope,
+  max_slope => max_slope,
   will_cross => will_cross,
   will_arm => will_arm,
   s_out => s_out,
@@ -133,9 +129,6 @@ port map(
   armed => armed,
   above => above,
   f_out => f_out,
-  cfd_low_p => cfd_low_p,
-  cfd_high_p => cfd_high_p,
-  max_slope_p => max_slope_p,
   p_t_p => p_t_p,
   p_t_n => p_t_n,
   rise_start => rise_start,
@@ -189,38 +182,38 @@ begin
   end loop;
 end process maxWriter; 
 
-file_open(low_file, "../low_xings",WRITE_MODE);
-lowWriter:process
-begin
-  while TRUE loop
-    wait until rising_edge(clk);
-    if cfd_low_p then
-      write(low_file, clk_i);
-    end if;
-  end loop;
-end process lowWriter; 
-
-file_open(high_file, "../high_xings",WRITE_MODE);
-highWriter:process
-begin
-  while TRUE loop
-    wait until rising_edge(clk);
-    if cfd_high_p then
-      write(high_file, clk_i);
-    end if;
-  end loop;
-end process highWriter; 
-
-file_open(maxslope_file, "../maxslope_xings",WRITE_MODE);
-maxslopeWriter:process
-begin
-  while TRUE loop
-    wait until rising_edge(clk);
-    if max_slope_p then
-      write(maxslope_file, clk_i);
-    end if;
-  end loop;
-end process maxslopeWriter; 
+--file_open(low_file, "../low_xings",WRITE_MODE);
+--lowWriter:process
+--begin
+--  while TRUE loop
+--    wait until rising_edge(clk);
+--    if cfd_low_p then
+--      write(low_file, clk_i);
+--    end if;
+--  end loop;
+--end process lowWriter; 
+--
+--file_open(high_file, "../high_xings",WRITE_MODE);
+--highWriter:process
+--begin
+--  while TRUE loop
+--    wait until rising_edge(clk);
+--    if cfd_high_p then
+--      write(high_file, clk_i);
+--    end if;
+--  end loop;
+--end process highWriter; 
+--
+--file_open(maxslope_file, "../maxslope_xings",WRITE_MODE);
+--maxslopeWriter:process
+--begin
+--  while TRUE loop
+--    wait until rising_edge(clk);
+--    if max_slope_p then
+--      write(maxslope_file, clk_i);
+--    end if;
+--  end loop;
+--end process maxslopeWriter; 
 
 simsquare:process (clk) is
 begin

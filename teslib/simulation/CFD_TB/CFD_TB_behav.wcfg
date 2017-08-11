@@ -18,16 +18,17 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="4467227676fs"></ZoomEndTime>
-      <Cursor1Time time="24000000fs"></Cursor1Time>
+      <ZoomStartTime time="2766000000fs"></ZoomStartTime>
+      <ZoomEndTime time="5898000001fs"></ZoomEndTime>
+      <Cursor1Time time="4968000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="229"></NameColumnWidth>
-      <ValueColumnWidth column_width="144"></ValueColumnWidth>
+      <ValueColumnWidth column_width="140"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="4" />
    <wave_markers>
+      <marker time="5540000000" label="" />
       <marker time="4684000000" label="" />
    </wave_markers>
    <wvobject fp_name="group29" type="group">
@@ -180,142 +181,11 @@
       <wvobject fp_name="/CFD_TB/UUT/reg" type="array">
          <obj_property name="ElementShortName">reg</obj_property>
          <obj_property name="ObjectShortName">reg</obj_property>
-         <wvobject fp_name="/CFD_TB/UUT/reg.max_peaks" type="array">
-            <obj_property name="ElementShortName">.max_peaks[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.max_peaks[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.constant_fraction" type="array">
-            <obj_property name="ElementShortName">.constant_fraction[16:0]</obj_property>
-            <obj_property name="ObjectShortName">.constant_fraction[16:0]</obj_property>
-            <obj_property name="Radix">REALRADIX</obj_property>
-            <obj_property name="radix_realType">UNSIGNEDFIXEDPOINTRADIX</obj_property>
-            <obj_property name="radix_fractionWidth">17</obj_property>
-            <obj_property name="radix_otherWidth">0</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.cfd_rel2min" type="other">
-            <obj_property name="ElementShortName">.cfd_rel2min</obj_property>
-            <obj_property name="ObjectShortName">.cfd_rel2min</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.pulse_threshold" type="array">
-            <obj_property name="ElementShortName">.pulse_threshold[14:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_threshold[14:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.slope_threshold" type="array">
-            <obj_property name="ElementShortName">.slope_threshold[14:0]</obj_property>
-            <obj_property name="ObjectShortName">.slope_threshold[14:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.area_threshold" type="array">
-            <obj_property name="ElementShortName">.area_threshold[30:0]</obj_property>
-            <obj_property name="ObjectShortName">.area_threshold[30:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.height" type="other">
-            <obj_property name="ElementShortName">.height</obj_property>
-            <obj_property name="ObjectShortName">.height</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.timing" type="other">
-            <obj_property name="ElementShortName">.timing</obj_property>
-            <obj_property name="ObjectShortName">.timing</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.detection" type="other">
-            <obj_property name="ElementShortName">.detection</obj_property>
-            <obj_property name="ObjectShortName">.detection</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.delay" type="array">
-            <obj_property name="ElementShortName">.delay[9:0]</obj_property>
-            <obj_property name="ObjectShortName">.delay[9:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.adc_select" type="array">
-            <obj_property name="ElementShortName">.adc_select[7:0]</obj_property>
-            <obj_property name="ObjectShortName">.adc_select[7:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.invert" type="other">
-            <obj_property name="ElementShortName">.invert</obj_property>
-            <obj_property name="ObjectShortName">.invert</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.trace_signal" type="other">
-            <obj_property name="ElementShortName">.trace_signal</obj_property>
-            <obj_property name="ObjectShortName">.trace_signal</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.trace_type" type="other">
-            <obj_property name="ElementShortName">.trace_type</obj_property>
-            <obj_property name="ObjectShortName">.trace_type</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.trace_stride" type="array">
-            <obj_property name="ElementShortName">.trace_stride[4:0]</obj_property>
-            <obj_property name="ObjectShortName">.trace_stride[4:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.trace_length" type="array">
-            <obj_property name="ElementShortName">.trace_length[9:0]</obj_property>
-            <obj_property name="ObjectShortName">.trace_length[9:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.max_peaks" type="array">
-            <obj_property name="ElementShortName">.max_peaks[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.max_peaks[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.constant_fraction" type="array">
-            <obj_property name="ElementShortName">.constant_fraction[16:0]</obj_property>
-            <obj_property name="ObjectShortName">.constant_fraction[16:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.cfd_rel2min" type="other">
-            <obj_property name="ElementShortName">.cfd_rel2min</obj_property>
-            <obj_property name="ObjectShortName">.cfd_rel2min</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.pulse_threshold" type="array">
-            <obj_property name="ElementShortName">.pulse_threshold[14:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_threshold[14:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.slope_threshold" type="array">
-            <obj_property name="ElementShortName">.slope_threshold[14:0]</obj_property>
-            <obj_property name="ObjectShortName">.slope_threshold[14:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.area_threshold" type="array">
-            <obj_property name="ElementShortName">.area_threshold[30:0]</obj_property>
-            <obj_property name="ObjectShortName">.area_threshold[30:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.height" type="other">
-            <obj_property name="ElementShortName">.height</obj_property>
-            <obj_property name="ObjectShortName">.height</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.timing" type="other">
-            <obj_property name="ElementShortName">.timing</obj_property>
-            <obj_property name="ObjectShortName">.timing</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.detection" type="other">
-            <obj_property name="ElementShortName">.detection</obj_property>
-            <obj_property name="ObjectShortName">.detection</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.delay" type="array">
-            <obj_property name="ElementShortName">.delay[9:0]</obj_property>
-            <obj_property name="ObjectShortName">.delay[9:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.adc_select" type="array">
-            <obj_property name="ElementShortName">.adc_select[7:0]</obj_property>
-            <obj_property name="ObjectShortName">.adc_select[7:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.invert" type="other">
-            <obj_property name="ElementShortName">.invert</obj_property>
-            <obj_property name="ObjectShortName">.invert</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.trace_signal" type="other">
-            <obj_property name="ElementShortName">.trace_signal</obj_property>
-            <obj_property name="ObjectShortName">.trace_signal</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.trace_type" type="other">
-            <obj_property name="ElementShortName">.trace_type</obj_property>
-            <obj_property name="ObjectShortName">.trace_type</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.trace_stride" type="array">
-            <obj_property name="ElementShortName">.trace_stride[4:0]</obj_property>
-            <obj_property name="ObjectShortName">.trace_stride[4:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/reg.trace_length" type="array">
-            <obj_property name="ElementShortName">.trace_length[9:0]</obj_property>
-            <obj_property name="ObjectShortName">.trace_length[9:0]</obj_property>
-         </wvobject>
       </wvobject>
       <wvobject fp_name="group294" type="group">
          <obj_property name="label">output</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/CFD_TB/UUT/max" type="other">
             <obj_property name="ElementShortName">max</obj_property>
             <obj_property name="ObjectShortName">max</obj_property>
@@ -365,6 +235,8 @@
          <wvobject fp_name="/CFD_TB/UUT/max_slope_p" type="other">
             <obj_property name="ElementShortName">max_slope_p</obj_property>
             <obj_property name="ObjectShortName">max_slope_p</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject fp_name="/CFD_TB/UUT/cfd_low_p" type="other">
             <obj_property name="ElementShortName">cfd_low_p</obj_property>
@@ -408,6 +280,12 @@
             <obj_property name="ObjectShortName">cfd_high_threshold[15:0]</obj_property>
             <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          </wvobject>
+         <wvobject fp_name="/CFD_TB/UUT/max_slope_threshold" type="array">
+            <obj_property name="ElementShortName">max_slope_threshold[15:0]</obj_property>
+            <obj_property name="ObjectShortName">max_slope_threshold[15:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
          <wvobject fp_name="/CFD_TB/UUT/s_t_p" type="other">
             <obj_property name="ElementShortName">s_t_p</obj_property>
             <obj_property name="ObjectShortName">s_t_p</obj_property>
@@ -432,6 +310,7 @@
       <wvobject fp_name="group299" type="group">
          <obj_property name="label">Delayed stage</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject type="divider" fp_name="divider324">
             <obj_property name="label">d</obj_property>
             <obj_property name="DisplayName">label</obj_property>
@@ -756,6 +635,12 @@
             <obj_property name="ObjectShortName">p[15:0]</obj_property>
             <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          </wvobject>
+         <wvobject fp_name="/CFD_TB/UUT/s_0_p_pipe[8]" type="other">
+            <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="ElementShortName">[8]</obj_property>
+            <obj_property name="ObjectShortName">[8]</obj_property>
+            <obj_property name="label">min[8]</obj_property>
+         </wvobject>
          <wvobject fp_name="/CFD_TB/UUT/first_rise_pipe[8]" type="other">
             <obj_property name="DisplayName">label</obj_property>
             <obj_property name="ElementShortName">[8]</obj_property>
@@ -874,7 +759,6 @@
       <wvobject fp_name="/CFD_TB/UUT/first_rise_pipe" type="array">
          <obj_property name="ElementShortName">first_rise_pipe[1:9]</obj_property>
          <obj_property name="ObjectShortName">first_rise_pipe[1:9]</obj_property>
-         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject fp_name="/CFD_TB/UUT/p_t_n_pipe" type="array">
          <obj_property name="ElementShortName">p_t_n_pipe[1:9]</obj_property>
