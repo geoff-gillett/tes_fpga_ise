@@ -36,13 +36,16 @@ port (
   f_out:out signed(WIDTH-1 downto 0);
   
   -- crossings for output signals
-  max:out boolean; --s zero falling crossing
+  max:out boolean; --s falling zero crossing
   min:out boolean; --s zero rising crossing  
-  s_t_p:out boolean; --s threshold rising crossing
-  f_0_n:out boolean; --f zero falling crossing
-  f_0_p:out boolean; --f 0 rising crossing
-  p_t_p:out boolean; --f threshold rising crossing
-  p_t_n:out boolean; --f threshold falling crossing
+  s_0_x:out boolean; --s zero crossing
+  s_t_p:out boolean; --s rising slope_threshold crossing
+  f_0_n:out boolean; --f falling zero crossing
+  f_0_p:out boolean; --f rising zero crossing
+  f_0_x:out boolean; --f zero crossing
+  p_t_p:out boolean; --f rising pulse_threshold crossing
+  p_t_n:out boolean; --f falling pulse_threshold crossing
+  p_t_x:out boolean; --f pulse_threshold crossing
   
   armed:out boolean; --s has crossed slope_threshold resets at max
   above:out boolean; --f is above pulse_threshold
@@ -88,7 +91,7 @@ end component;
 --constant RAW_CFD_DELAY:integer:=256;
 constant DEPTH:integer:=9;
 
-signal reg:capture_registers_t;
+signal reg,reg_d:capture_registers_t;
 
 signal started:boolean;
 signal slope_0_p,slope_0_n:boolean;
@@ -116,7 +119,7 @@ signal slope_0x,filtered_0x:signed(WIDTH-1 downto 0);
 signal delay_counter:natural range 0 to DELAY;
 signal overrun_i,armed_i,above_i:boolean;
 signal overrun_d,armed_d:boolean;
-signal cfd_low_i,cfd_high_i:signed(WIDTH-1 downto 0);
+signal cf_low_i,cf_high_i:signed(WIDTH-1 downto 0);
 
 --------------------------------------------------------------------------------
 -- Delay line and queue signals
@@ -144,15 +147,13 @@ signal s_t_p_i,p_t_p_i:boolean;
 signal rel2min_i,rel2min_d:boolean;
 signal minima,cf_min:signed(WIDTH-1 downto 0);
 
-signal cfd_low_d,cfd_high_d:signed(WIDTH-1 downto 0);
+signal cfd_low_t_d,cfd_high_t_d:signed(WIDTH-1 downto 0);
 signal will_cross_d,will_arm_d:boolean;
 signal p_t_n_i:boolean;
 signal pending:integer;
 signal first_rise_d:boolean;
-signal max_slope_armed:boolean;
 signal cf_error_i:boolean;
 signal cfd_error_d:boolean;
-signal cfd_low_armed,cfd_high_armed:boolean;
 signal cf_error_d:boolean;
 signal max_int:boolean;
 
@@ -315,12 +316,12 @@ begin
       --positive
       cf_error_i <= FALSE;
       if first_rise_pipe(DEPTH-1) then
-        cfd_low_i <= p;
+        cf_low_i <= p;
         cf_error_i <= p < minima_pipe(DEPTH-1);
       else
-        cfd_low_i <= p + minima_pipe(DEPTH-1);
+        cf_low_i <= p + minima_pipe(DEPTH-1);
       end if;
-      cfd_high_i <= filtered_pipe(DEPTH-1) - p; 
+      cf_high_i <= filtered_pipe(DEPTH-1) - p; 
     end if;
   end if;
 end process pipeline;
@@ -352,8 +353,8 @@ flags_i <= FALSE & cf_error_i &
            above_pipe(DEPTH) & p_t_p_pipe(DEPTH) & p_t_n_pipe(DEPTH) & 
            s_t_p_pipe(DEPTH);
            
-cf_data(WIDTH-1 downto 0) <= std_logic_vector(cfd_low_i);
-cf_data(2*WIDTH-1 downto WIDTH) <= std_logic_vector(cfd_high_i);
+cf_data(WIDTH-1 downto 0) <= std_logic_vector(cf_low_i);
+cf_data(2*WIDTH-1 downto WIDTH) <= std_logic_vector(cf_high_i);
 cf_data(3*WIDTH-1 downto 2*WIDTH) <= std_logic_vector(max_slope_i);
 cf_data(4*WIDTH-1 downto 3*WIDTH) <= std_logic_vector(p_thresh_i);
 cf_data(4*WIDTH) <= to_std_logic(overrun_i); 
@@ -424,8 +425,8 @@ pulse_threshold_pos_d <= to_boolean(flags_d(2));
 pulse_threshold_neg_d <= to_boolean(flags_d(1));
 slope_threshold_pos_d <= to_boolean(flags_d(0));
 
-cfd_low_d <= signed(q_dout(WIDTH-1 downto 0));
-cfd_high_d <= signed(q_dout(2*WIDTH-1 downto WIDTH));
+cfd_low_t_d <= signed(q_dout(WIDTH-1 downto 0));
+cfd_high_t_d <= signed(q_dout(2*WIDTH-1 downto WIDTH));
 max_slope_d <= signed(q_dout(3*WIDTH-1 downto 2*WIDTH));
 p_thresh_d <= q_dout(4*WIDTH-1 downto 3*WIDTH);
 overrun_d <= to_boolean(q_dout(4*WIDTH));
@@ -445,10 +446,11 @@ port map(
   reset => reset,
   signal_in => signed(filtered_d),
   threshold => (others => '0'),
-  signal_out => open,
+  signal_out => f_out,
   extrema => open,
   pos => f_0_p,
   neg => f_0_n,
+  xing => f_0_x,
   above => open
 );
 
@@ -456,6 +458,7 @@ port map(
 -- output registers
 --------------------------------------------------------------------------------
 max <= max_int;
+registers_out <= reg_d;
 outputReg:process(clk)
 begin
 if rising_edge(clk) then
@@ -470,39 +473,52 @@ if rising_edge(clk) then
     will_cross <= FALSE;
     q_rd_en <= '0';
   else
+    s_out <= signed(slope_d);
     max_int <= max_d;
     min <= min_d;
+    s_0_x <= min_d or max_d;
     armed <= armed_d;
     above <= above_pulse_threshold_d;
     p_t_p <= pulse_threshold_pos_d;
     p_t_n <= pulse_threshold_neg_d;
+    p_t_x <= pulse_threshold_neg_d or pulse_threshold_pos_d;
     s_t_p <= slope_threshold_pos_d;
     
     rise_start <= FALSE;
     pulse_start <= FALSE;
     cfd_error <= FALSE;
     if not started then
-      registers_out <= registers;
+      reg_d <= registers;
     end if;
     q_rd_en <= '0';
     if min_d and q_empty='0' and not overrun_d then
       will_arm <= will_arm_d;
       will_cross <= will_cross_d;
       rise_start <= will_arm_d and will_cross_d;
-      valid_rise <= will_arm_d and will_cross_d;
-      cfd_low <= cfd_low_d;
-      cfd_high <= cfd_high_d;
+      cfd_low <= cfd_low_t_d;
+      cfd_high <= cfd_high_t_d;
       max_slope <= max_slope_d;
       q_rd_en <= '1';
       cfd_error <= cfd_error_d;
       cfd_valid <= not cfd_error_d;
       first_rise <= first_rise_d;
       --recapture registers if pulse_start
-      if will_arm_d and will_cross_d and first_rise_d then
-        pulse_start <= TRUE;
-        registers_out <= reg;
-        registers_out.pulse_threshold <= unsigned(p_thresh_d(WIDTH-2 downto 0));
-        registers_out.cfd_rel2min <= rel2min_d;
+      if will_arm_d and will_cross_d then
+        if first_rise_d then
+          if reg_d.timing=CFD_LOW_TIMING_D or reg_d.height=CFD_HIGH_D or 
+             reg_d.height=CFD_HEIGHT_D then
+            pulse_start <= not cfd_error_d;
+            valid_rise <= not cfd_error_d;
+          else
+            pulse_start <= TRUE;
+            valid_rise <= TRUE;
+          end if;
+          reg_d <= reg;
+          reg_d.pulse_threshold <= unsigned(p_thresh_d(WIDTH-2 downto 0));
+          reg_d.cfd_rel2min <= rel2min_d;
+        else
+          valid_rise <= TRUE;
+        end if;
       end if;
     elsif max_int then 
       will_arm <= FALSE;
@@ -513,11 +529,9 @@ if rising_edge(clk) then
     end if;
     
     cfd_overrun <= FALSE;
-    if min_d then
-      cfd_overrun <= q_empty='1';
-    end if;
     if q_empty='0' and overrun_d and q_rd_en='0' then
       q_rd_en <= '1';
+      cfd_overrun <= TRUE;
     end if;
       
   end if;

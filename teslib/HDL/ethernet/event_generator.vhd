@@ -37,7 +37,7 @@ flags.event_type.detection <= PEAK_DETECTION_D;
 flags.event_type.tick <= FALSE;
 flags.peak_number <= (others => '0');
 flags.cfd_rel2min <= FALSE;
-flags.height <= CFD_HEIGHT_D;
+flags.height <= CFD_HIGH_D;
 flags.timing <= CFD_LOW_TIMING_D;
 flags.channel <= (others => '0');
 flags.new_window <= FALSE;

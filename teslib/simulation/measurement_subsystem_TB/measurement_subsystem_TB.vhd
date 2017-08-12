@@ -454,7 +454,7 @@ begin
   chan_reg(1).capture.trace_type <= SINGLE_TRACE_D;
   chan_reg(1).capture.trace_signal <= FILTERED_TRACE_D;
   chan_reg(1).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
-  chan_reg(1).capture.height <= CFD_HEIGHT_D;
+  chan_reg(1).capture.height <= CFD_HIGH_D;
   chan_reg(1).capture.cfd_rel2min <= FALSE;
   chan_reg(1).capture.trace_stride <= (others => '0');
   

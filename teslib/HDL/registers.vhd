@@ -96,8 +96,8 @@ function to_timing_d(s:std_logic_vector) return timing_d;
 
 type height_d is (
 	PEAK_HEIGHT_D,
+	CFD_HIGH_D,
 	CFD_HEIGHT_D,
-	SLOPE_INTEGRAL_D,
 	SLOPE_MAX_D
 );
 

@@ -31,6 +31,7 @@ port(
   extrema:out signed(WIDTH-1 downto 0);
   pos:out boolean;
   neg:out boolean;
+  xing:out boolean;
   above:out boolean
 );
 end entity crossing;
@@ -66,6 +67,7 @@ begin
       end if;
       pos <= isabove and not above_int;
       neg <= isbelow and above_int;
+      xing <= (isbelow and above_int) or (isabove and not above_int);
       
       if (isabove and not above_int) or (isbelow and above_int) then
         extrema_int <= signal_in;

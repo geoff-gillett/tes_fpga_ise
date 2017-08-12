@@ -48,6 +48,7 @@ signal clk_i:integer:=2; --clk index for data files
 
 file trace_file,min_file,max_file:extensions.debug.integer_file;
 file low_file,high_file,maxslope_file:extensions.debug.integer_file;
+file f0p_file,f0n_file,ptn_file:extensions.debug.integer_file;
 signal flags:boolean_vector(8 downto 0);
 
 begin
@@ -85,6 +86,8 @@ begin
       write(min_file, to_integer(to_unsigned(flags)));
       write(min_file, to_integer(m.max_slope));
       write(min_file, to_integer(m.minima(NOW)));
+      write(min_file, to_integer(m.s_area));
+      write(min_file, to_integer(m.s_extrema));
     end if;
   end loop;
 end process minWriter; 
@@ -99,6 +102,8 @@ begin
       write(max_file, to_integer(m.f));
       write(max_file, to_integer(m.s));
       write(max_file, to_integer(to_unsigned(flags)));
+      write(max_file, to_integer(m.s_area));
+      write(max_file, to_integer(m.s_extrema));
     end if;
   end loop;
 end process maxWriter; 
@@ -135,6 +140,44 @@ begin
     end if;
   end loop;
 end process maxslopeWriter; 
+
+file_open(f0p_file, "../f0p_xings",WRITE_MODE);
+f0pWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.f_0_p then
+        write(f0p_file, clk_i);
+        write(f0p_file, to_integer(m.f_area));
+        write(f0p_file, to_integer(m.f_extrema));
+    end if;
+  end loop;
+end process f0pWriter; 
+
+file_open(f0n_file, "../f0n_xings",WRITE_MODE);
+f0nWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.f_0_n then
+        write(f0n_file, clk_i);
+        write(f0n_file, to_integer(m.f_area));
+        write(f0n_file, to_integer(m.f_extrema));
+    end if;
+  end loop;
+end process f0nWriter; 
+
+file_open(ptn_file, "../ptn_xings",WRITE_MODE);
+ptnWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.f_0_n then
+      write(ptn_file, clk_i);
+      write(ptn_file, to_integer(m.pulse_area));
+    end if;
+  end loop;
+end process ptnWriter; 
 
 fir:entity FIR_142SYM_23NSYM_16bit
 generic map(

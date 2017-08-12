@@ -38,6 +38,8 @@ type u_chunk_pipe is array (natural range <>) of
      unsigned(CHUNK_DATABITS-1 downto 0);
 type s_chunk_pipe is array (natural range <>) of 
      signed(CHUNK_DATABITS-1 downto 0);
+
+
 	
 type measurements_t is record
 	--register settings from CFD captured 4 clks prior to each pulse_start.
@@ -67,60 +69,55 @@ type measurements_t is record
   s_t_p:boolean_vector(PRE to NOW);
   
   --minima in f or s_0_p crossing, PRE is one clk before.
-  min:boolean_vector(PRE to NOW);
+  min:boolean_vector(PRE2 to NOW);
   --max in f or s_0_n crossing, PRE is one clk before
-  max:boolean_vector(PRE to NOW);
+  max:boolean_vector(PRE2 to NOW);
 	
   --the raw baseline corrected signal
 	raw:signed(CHUNK_DATABITS-1 downto 0);
 		
-  
-  --size of event part size(PRE) is valid 1 clk before pulse start
---  size:size_pipe(2 to MEASUREMENT_DEPTH);
-  --size of full event + event part, used when commit and new event simultaneous
-  --size2(PRE) is valid one clk before pulse start
---  size2:size_pipe(2 to MEASUREMENT_DEPTH);
-  --frame_length(PRE) is valid one clk before pulse start.
---  frame_length:frame_length_pipe(2 to MEASUREMENT_DEPTH);
-  
---  dp_address:size_pipe(1 to MEASUREMENT_DEPTH);
-  
-  
   --valid rise with minima below pulse threshold PRE2 is 2 clks before
   pulse_start:boolean_vector(PRE2 to NOW); --min of valid first rise
-  has_rise:boolean; --rise_number > 0 for this pulse
+  has_rise:boolean; --rise_number is > 0 for this pulse
+  --sum(f-pulse_threshold) while above
+  pulse_area:signed(2*CHUNK_DATABITS-1 downto 0); 
+  above_area:boolean; --pulse_area is above area_threshold
+  pulse_length:unsigned(CHUNK_DATABITS-1 downto 0); --pulse_length_timer @ p_t_n
+  --pulse timing point NOTE PRE2 may occur even if the rise if not valid;
+  stamp_pulse:boolean_vector(PRE2 to NOW); 
+  pulse_stamped:boolean_vector(PRE to NOW); --valid till p_t_n 
+  time_offset:unsigned(CHUNK_DATABITS-1 downto 0); --pulse_timer @ stamp_pulse
   
   --minima at start of a valid rise.
   rise_start:boolean_vector(PRE to NOW); 
   valid_rise:boolean; --rise_start to max; 
+  --first rise is number 0 updates 1 clk after max
+  rise_number:unsigned(PEAK_COUNT_BITS-1 downto 0); 
   rise0:boolean; --true (min and first_peak) to max
   rise1:boolean; --true (min and rise_number=1) to max
   rise2:boolean; --true (min and rise_number=2) to max
   --changes 1 clk after max
-  rise_address:unsigned(PEAK_COUNT_BITS downto 0);
-  last_peak_address:unsigned(PEAK_COUNT_BITS downto 0);
-  
-  last_rise:boolean; --this is the last rise that can be recorded
-  rise_overflow:boolean; --more valid rises than could be counted
-  --first rise is number 0 updates 1 clk after max
-  rise_number:unsigned(PEAK_COUNT_BITS-1 downto 0); 
-  
   --rise timing point PRE valid 1 clk before
 	stamp_rise:boolean_vector(PRE to NOW); --rise timing point
 	--this rise has been stamped PRE 
 	rise_stamped:boolean_vector(PRE to NOW); 
-  --pulse timing point
-  stamp_pulse:boolean_vector(PRE to MEASUREMENT_DEPTH); 
-  pulse_stamped:boolean_vector(PRE to NOW); 
+  rise_timestamp:unsigned(15 downto 0); --pulse_timer @ stamp_rise
+  rise_address:unsigned(PEAK_COUNT_BITS-1 downto 0);
+  last_peak_address:unsigned(PEAK_COUNT_BITS-1 downto 0);
+  last_rise:boolean; --this is the last rise that can be recorded
+  rise_overflow:boolean; --more valid rises than could be counted
   
-	rise_time:u_chunk_pipe(PRE to NOW); 	--0 at rise timing point
-	pulse_time:u_chunk_pipe(PRE to NOW); --0 at peak_start
-	pulse_length:u_chunk_pipe(PRE to NOW); 	--0 at p_t_p 
+  
+	rise_timer:u_chunk_pipe(PRE to NOW); 	--0 at rise timing point
+	pulse_timer:u_chunk_pipe(PRE to NOW); --0 at peak_start
+	pulse_length_timer:u_chunk_pipe(PRE to NOW); 	--0 at p_t_p 
 	
-	
-  minima:s_chunk_pipe(PRE2 to NOW); --value of f at s_0_p
+  minima:s_chunk_pipe(PRE2 to NOW); --value of f at last s_0_p
   height:s_chunk_pipe(PRE to NOW); --height measurement
-  height_valid:boolean_vector(PRE to NOW); --measurement point 
+  --measurement point used for rise time 
+  height_valid:boolean_vector(PRE to NOW); 
+  --captured height measurement @ height_valid
+  peak_height:signed(CHUNK_DATABITS-1 downto 0); 
   
 	--maxima at end of a valid rise
   rise_stop:boolean_vector(PRE to NOW); 
@@ -132,7 +129,7 @@ type measurements_t is record
 	cfd_high_p:boolean; --crossing
   max_slope_p:boolean; --crossing
   
-	cfd_valid:boolean; --thresholds are valid
+	cfd_valid:boolean; --cfd thresholds are valid for this rise
 	cfd_error:boolean; --true @ min if not cfd_valid 
 	cfd_overrun:boolean; --rise too long for correct CFD operation.
 	
@@ -149,12 +146,6 @@ type measurements_t is record
 	--baseline:signal_t;
   mux_wr_en:boolean;
 	
-  rise_timestamp:unsigned(15 downto 0);
-	
-  
-  pulse_area:area_t;
-  
-  above_area:boolean;
   
   --slope_threshold_neg:boolean;
   
@@ -194,7 +185,7 @@ begin
   va(6) := resize(m.pulse_area,MCA_VALUE_BITS);
   va(7) := resize(m.raw,MCA_VALUE_BITS);
   va(8) := resize(m.cfd_high,MCA_VALUE_BITS);
-  va(9) := resize(signed('0' & m.pulse_time(NOW)),MCA_VALUE_BITS);
+  va(9) := resize(signed('0' & m.pulse_timer(NOW)),MCA_VALUE_BITS);
   va(10) := resize(signed('0' & m.rise_timestamp),MCA_VALUE_BITS);
 --  va(11) := resize(m.dot_product,MCA_VALUE_BITS);
   return va;

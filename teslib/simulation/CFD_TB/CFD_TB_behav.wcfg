@@ -18,9 +18,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="2766000000fs"></ZoomStartTime>
-      <ZoomEndTime time="5898000001fs"></ZoomEndTime>
-      <Cursor1Time time="4968000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="3132000001fs"></ZoomEndTime>
+      <Cursor1Time time="1000000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="229"></NameColumnWidth>
@@ -228,20 +228,6 @@
             <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
             <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/cfd_high_p" type="other">
-            <obj_property name="ElementShortName">cfd_high_p</obj_property>
-            <obj_property name="ObjectShortName">cfd_high_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/max_slope_p" type="other">
-            <obj_property name="ElementShortName">max_slope_p</obj_property>
-            <obj_property name="ObjectShortName">max_slope_p</obj_property>
-            <obj_property name="CustomSignalColor">#FF0000</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/cfd_low_p" type="other">
-            <obj_property name="ElementShortName">cfd_low_p</obj_property>
-            <obj_property name="ObjectShortName">cfd_low_p</obj_property>
-         </wvobject>
          <wvobject fp_name="/CFD_TB/UUT/max" type="other">
             <obj_property name="ElementShortName">max</obj_property>
             <obj_property name="ObjectShortName">max</obj_property>
@@ -269,22 +255,6 @@
          <wvobject fp_name="/CFD_TB/UUT/rise_start" type="other">
             <obj_property name="ElementShortName">rise_start</obj_property>
             <obj_property name="ObjectShortName">rise_start</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/cfd_low_threshold" type="array">
-            <obj_property name="ElementShortName">cfd_low_threshold[15:0]</obj_property>
-            <obj_property name="ObjectShortName">cfd_low_threshold[15:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/cfd_high_threshold" type="array">
-            <obj_property name="ElementShortName">cfd_high_threshold[15:0]</obj_property>
-            <obj_property name="ObjectShortName">cfd_high_threshold[15:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         </wvobject>
-         <wvobject fp_name="/CFD_TB/UUT/max_slope_threshold" type="array">
-            <obj_property name="ElementShortName">max_slope_threshold[15:0]</obj_property>
-            <obj_property name="ObjectShortName">max_slope_threshold[15:0]</obj_property>
-            <obj_property name="CustomSignalColor">#FF0000</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject fp_name="/CFD_TB/UUT/s_t_p" type="other">
             <obj_property name="ElementShortName">s_t_p</obj_property>
@@ -785,14 +755,6 @@
          <obj_property name="ObjectShortName">above_pipe[1:9]</obj_property>
       </wvobject>
       <wvobject type="divider" fp_name="divider257">
-      </wvobject>
-      <wvobject fp_name="/CFD_TB/UUT/cfd_low_threshold" type="array">
-         <obj_property name="ElementShortName">cfd_low_threshold[15:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_low_threshold[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/CFD_TB/UUT/cfd_high_threshold" type="array">
-         <obj_property name="ElementShortName">cfd_high_threshold[15:0]</obj_property>
-         <obj_property name="ObjectShortName">cfd_high_threshold[15:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/CFD_TB/UUT/will_arm" type="other">
          <obj_property name="ElementShortName">will_arm</obj_property>

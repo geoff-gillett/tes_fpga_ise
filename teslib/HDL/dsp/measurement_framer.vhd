@@ -318,7 +318,7 @@ current_eflags.has_rise <= m.has_rise;
                                       
 pulse.size <= resize(framer_length(NOW) & "000",CHUNK_DATABITS);
 pulse.flags <= current_eflags;
-pulse.length <= m.pulse_length(NOW);
+pulse.length <= m.pulse_length_timer(NOW);
 --pulse.offset <= m.time_offset;
 pulse.area <= m.pulse_area;
 --pulse.threshold <= m.timing_threshold; --FIXME 
@@ -353,7 +353,7 @@ this_pulse_trace_header.size
 this_pulse_trace_header.flags <= current_eflags; 
 this_pulse_trace_header.trace_flags <= tflags;
 --want this to be number of samples above pulse threshold
-this_pulse_trace_header.length <= m.pulse_length(NOW); 
+this_pulse_trace_header.length <= m.pulse_length_timer(NOW); 
 --this_pulse_trace_header.offset <= m.time_offset;
 this_pulse_trace_header.area <= m.pulse_area;
 
@@ -368,7 +368,7 @@ first_pulse_trace_header.area <= first_pulse.area;
 
 pulse_peak.minima <= m.minima(NOW);
 pulse_peak.timestamp <= m.rise_timestamp;
-pulse_peak.rise_time <= m.rise_time(NOW);
+pulse_peak.rise_time <= m.rise_timer(NOW);
 pulse_peak.height <= m.height(NOW);
 
 peak.height <= m.height(NOW);
