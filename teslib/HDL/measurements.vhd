@@ -31,7 +31,7 @@ constant MEASUREMENT_DEPTH:natural:=3;
 constant NOW:natural:=MEASUREMENT_DEPTH; --value now
 constant PRE:natural:=MEASUREMENT_DEPTH-1; --value 1 clk before
 constant PRE2:natural:=MEASUREMENT_DEPTH-2; --value 2 clks before
-constant PRE3:natural:=MEASUREMENT_DEPTH-3; --value 2 clks before
+constant PRE3:natural:=MEASUREMENT_DEPTH-3; --value 3 clks before
 
 type creg_pipe is array (natural range <>) of capture_registers_t;
 type u_chunk_pipe is array (natural range <>) of 
@@ -77,7 +77,7 @@ type measurements_t is record
 	raw:signed(CHUNK_DATABITS-1 downto 0);
 		
   --valid rise with minima below pulse threshold PRE2 is 2 clks before
-  pulse_start:boolean_vector(PRE2 to NOW); --min of valid first rise
+  pulse_start:boolean_vector(PRE3 to NOW); --min of valid first rise
   has_rise:boolean; --rise_number is > 0 for this pulse
   --sum(f-pulse_threshold) while above
   pulse_area:signed(2*CHUNK_DATABITS-1 downto 0); 

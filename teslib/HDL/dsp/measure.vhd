@@ -329,7 +329,7 @@ begin
 end process maxSlope;
 
 -- expose some pipelines for use by down stream entities.
-m.pulse_start <= pulse_start_pipe(DEPTH-2 to DEPTH);
+m.pulse_start <= pulse_start_pipe(DEPTH-3 to DEPTH);
 m.rise_start <= rise_start_pipe(DEPTH-1 to DEPTH);
 
 m.f <= f_pipe(DEPTH);
