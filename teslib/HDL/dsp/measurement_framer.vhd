@@ -57,7 +57,7 @@ signal queue:write_buffer;
 
 signal m:measurements_t;
 --registers captured 1 clks prior to a pulse start when state=IDLE
-signal reg:capture_registers_t;
+--signal reg:capture_registers_t;
 signal peak:peak_detection_t;
 signal area:area_detection_t;
 signal pulse,first_pulse:pulse_detection_t;
@@ -316,7 +316,7 @@ current_eflags.channel <= eflags.channel;
 current_eflags.rise_number <= m.rise_number;                             
 current_eflags.has_rise <= m.has_rise;                             
                                       
-pulse.size <= resize(framer_length(NOW) & "000",CHUNK_DATABITS);
+pulse.size <= resize(frame_length(NOW) & "000",CHUNK_DATABITS);
 pulse.flags <= current_eflags;
 pulse.length <= m.pulse_length_timer(NOW);
 --pulse.offset <= m.time_offset;
@@ -335,7 +335,7 @@ pulse.area <= m.pulse_area;
 --tflags.trace_type <= trace_type;
 
 
-average_trace_header.size <= resize(framer_length(NOW) & "000",CHUNK_DATABITS);
+average_trace_header.size <= resize(frame_length(NOW) & "000",CHUNK_DATABITS);
 average_trace_header.flags <= eflags;
 --average_trace_header.trace_flags <= atflags;
 average_trace_header.trace_flags.offset <= tflags.offset;
@@ -349,7 +349,7 @@ average_trace_header.trace_flags.trace_type <= AVERAGE_TRACE_D;
 
 --when trace shorter than pulse need to use current pulse data
 this_pulse_trace_header.size 
-  <= resize(framer_length(NOW) & "000",CHUNK_DATABITS);
+  <= resize(frame_length(NOW) & "000",CHUNK_DATABITS);
 this_pulse_trace_header.flags <= current_eflags; 
 this_pulse_trace_header.trace_flags <= tflags;
 --want this to be number of samples above pulse threshold
@@ -359,7 +359,7 @@ this_pulse_trace_header.area <= m.pulse_area;
 
 
 --used when trace longer than pulse use stored pulse data
-first_pulse_trace_header.size <= resize(framer_length(NOW) & "000",CHUNK_DATABITS);
+first_pulse_trace_header.size <= resize(frame_length(NOW) & "000",CHUNK_DATABITS);
 first_pulse_trace_header.flags <= first_pulse.flags;
 first_pulse_trace_header.trace_flags <= tflags;
 first_pulse_trace_header.length <= first_pulse.length;
@@ -513,8 +513,8 @@ begin
 --        end if;
         if stride_count=0 or zero_stride or trace_start then
           s_state <= CAPTURE;
-          next_stride_count <= reg.trace_stride-1;
-          stride_count <= reg.trace_stride;
+          next_stride_count <= m.reg(NOW).trace_stride-1;
+          stride_count <= m.reg(NOW).trace_stride;
           if wr_chunk_state=WRITE then --FIXME????
             trace_last <= last_trace_count and trace_detection;
           end if;
@@ -878,6 +878,9 @@ begin
           end case;
         end case;
       end if;
+      frame_length(NOW) <= frame_length(PRE);
+      size(NOW) <= size(PRE);
+      size2(NOW) <= size2(PRE);
           
 
 --        m.rise_number <= (others => '0');
@@ -1005,9 +1008,7 @@ begin
           if not m.above_area then
             --dump the pulse that is ending
             trace_reset <= TRUE;
-            dump_reg 
-              <= m.pulse_stamped(NOW) or (m.stamp_pulse(PRE) and mux_enable); 
---            pulse_stamped <= FALSE;
+            dump_reg <= m.pulse_stamped(NOW); 
             dp_dump <= TRUE;
             -- if pre_pulse_start space will be free as previous pulse was 
             -- dumped.

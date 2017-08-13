@@ -39,17 +39,21 @@ signal stage2_config:fir_control_in_t;
 constant SIM_WIDTH:natural:=7;
 signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
 signal simenable:boolean:=FALSE;
+signal store_reg:boolean;
 
 constant CF:integer:=2**17/2;
 signal m:measurements_t;
 signal event_enable:boolean;
 signal raw,f,s:signed(WIDTH-1 downto 0);
-signal clk_i:integer:=2; --clk index for data files
+signal clk_i:integer:=-1; --clk index for data files
 
 file trace_file,min_file,max_file:extensions.debug.integer_file;
-file low_file,high_file,maxslope_file:extensions.debug.integer_file;
-file f0p_file,f0n_file,ptn_file:extensions.debug.integer_file;
-signal flags:boolean_vector(8 downto 0);
+file f0p_file,f0n_file:extensions.debug.integer_file;
+file ptn_file,init_reg_file:extensions.debug.integer_file;
+file rise_stamp_file,pulse_stamp_file:extensions.debug.integer_file;
+file rise_start_file,pulse_start_file:extensions.debug.integer_file;
+file height_valid_file,rise_stop_file:extensions.debug.integer_file;
+signal flags:boolean_vector(10 downto 0);
 
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -69,7 +73,13 @@ begin
   end loop;
 end process traceWriter; 
 
-flags <= m.valid_rise & m.rise0 & m.rise_start(NOW) & m.pulse_start(NOW) & m.will_cross & 
+flags <= -- byte 1
+         --  5         6         7                        
+         m.rise2 & m.rise1 & m.valid_rise & 
+         --byte 0
+         -- 0            1                  2                   3
+         m.rise0 & m.rise_start(NOW) & m.pulse_start(NOW) & m.will_cross & 
+         --  4             5              6             7
          m.will_arm & m.cfd_error & m.cfd_overrun & m.cfd_valid;
          
 file_open(min_file, "../min_data",WRITE_MODE);
@@ -104,42 +114,10 @@ begin
       write(max_file, to_integer(to_unsigned(flags)));
       write(max_file, to_integer(m.s_area));
       write(max_file, to_integer(m.s_extrema));
+      write(max_file, to_integer(m.peak_height));
     end if;
   end loop;
 end process maxWriter; 
-
-file_open(low_file, "../low_xings",WRITE_MODE);
-lowWriter:process
-begin
-  while TRUE loop
-    wait until rising_edge(clk);
-    if m.cfd_low_p then
-      write(low_file, clk_i);
-    end if;
-  end loop;
-end process lowWriter; 
-
-file_open(high_file, "../high_xings",WRITE_MODE);
-highWriter:process
-begin
-  while TRUE loop
-    wait until rising_edge(clk);
-    if m.cfd_high_p then
-      write(high_file, clk_i);
-    end if;
-  end loop;
-end process highWriter; 
-
-file_open(maxslope_file, "../maxslope_xings",WRITE_MODE);
-maxslopeWriter:process
-begin
-  while TRUE loop
-    wait until rising_edge(clk);
-    if m.max_slope_p then
-      write(maxslope_file, clk_i);
-    end if;
-  end loop;
-end process maxslopeWriter; 
 
 file_open(f0p_file, "../f0p_xings",WRITE_MODE);
 f0pWriter:process
@@ -172,12 +150,106 @@ ptnWriter:process
 begin
   while TRUE loop
     wait until rising_edge(clk);
-    if m.f_0_n then
+    if m.p_t_n(NOW) then
       write(ptn_file, clk_i);
       write(ptn_file, to_integer(m.pulse_area));
+      write(ptn_file, to_integer(m.pulse_length));
+      write(ptn_file, to_integer(m.pulse_timer(NOW)));
     end if;
   end loop;
 end process ptnWriter; 
+
+file_open(rise_start_file, "../rise_start",WRITE_MODE);
+riseStartWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.rise_start(NOW) then
+      write(rise_start_file, clk_i);
+      write(rise_start_file, to_integer(m.pulse_timer(NOW)));
+      write(rise_start_file, to_integer(m.rise_number));
+      write(rise_start_file, to_integer(m.rise_address));
+    end if;
+  end loop;
+end process riseStartWriter; 
+
+file_open(rise_stop_file, "../rise_stop",WRITE_MODE);
+riseStopWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.rise_stop(NOW) then
+      write(rise_stop_file, clk_i);
+      write(rise_stop_file, to_integer(m.pulse_timer(NOW)));
+      write(rise_stop_file, to_integer(m.rise_number));
+      write(rise_stop_file, to_integer(m.rise_address));
+      write(rise_stop_file, to_integer(m.rise_timer(NOW)));
+      write(rise_stop_file, to_integer(m.peak_height));
+    end if;
+  end loop;
+end process riseStopWriter; 
+
+file_open(height_valid_file, "../height_valid",WRITE_MODE);
+heightvalidWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.rise_stop(NOW) then
+      write(rise_stop_file, clk_i);
+      write(rise_stop_file, to_integer(m.pulse_timer(NOW)));
+      write(rise_stop_file, to_integer(m.rise_number));
+      write(rise_stop_file, to_integer(m.rise_address));
+      write(rise_stop_file, to_integer(m.rise_timer(NOW)));
+      write(rise_stop_file, to_integer(m.peak_height));
+    end if;
+  end loop;
+end process heightvalidWriter; 
+
+file_open(pulse_start_file, "../pulse_start",WRITE_MODE);
+pulseStartWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.pulse_start(NOW) then
+      write(pulse_start_file, clk_i);
+      write(pulse_start_file, to_integer(m.enabled(NOW)));
+      write(pulse_start_file, to_integer(m.reg(NOW).area_threshold));
+      write(pulse_start_file, to_integer(m.reg(NOW).cfd_rel2min));
+      write(pulse_start_file, to_integer(m.reg(NOW).constant_fraction));
+      write(pulse_start_file, to_integer(m.reg(NOW).detection));
+      write(pulse_start_file, to_integer(m.reg(NOW).height));
+      write(pulse_start_file, to_integer(m.reg(NOW).max_peaks));
+      write(pulse_start_file, to_integer(m.reg(NOW).pulse_threshold));
+      write(pulse_start_file, to_integer(m.reg(NOW).slope_threshold));
+      write(pulse_start_file, to_integer(m.reg(NOW).timing));
+    end if;
+  end loop;
+end process pulseStartWriter; 
+
+
+file_open(rise_stamp_file, "../stamp_rise",WRITE_MODE);
+riseStampWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.stamp_rise(NOW) then
+      write(rise_stamp_file, clk_i);
+      write(rise_stamp_file, to_integer(m.pulse_timer(NOW)));
+    end if;
+  end loop;
+end process riseStampWriter; 
+
+file_open(pulse_stamp_file, "../stamp_pulse",WRITE_MODE);
+pulseStampWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if m.stamp_pulse(NOW) then
+      write(pulse_stamp_file, clk_i);
+      write(pulse_stamp_file, to_integer(m.pulse_timer(NOW)));
+    end if;
+  end loop;
+end process pulseStampWriter; 
 
 fir:entity FIR_142SYM_23NSYM_16bit
 generic map(
@@ -271,11 +343,32 @@ reg.height <= PEAK_HEIGHT_D;
 reg.cfd_rel2min <= FALSE;
 event_enable <= TRUE;
 
+file_open(init_reg_file, "../init_reg",WRITE_MODE);
+initRegWriter:process
+begin
+    wait until store_reg;
+    write(init_reg_file, clk_i);
+    write(init_reg_file, to_integer(event_enable));
+    write(init_reg_file, to_integer(reg.area_threshold));
+    write(init_reg_file, to_integer(reg.cfd_rel2min));
+    write(init_reg_file, to_integer(reg.constant_fraction));
+    write(init_reg_file, to_integer(reg.detection));
+    write(init_reg_file, to_integer(reg.height));
+    write(init_reg_file, to_integer(reg.max_peaks));
+    write(init_reg_file, to_integer(reg.pulse_threshold));
+    write(init_reg_file, to_integer(reg.slope_threshold));
+    write(init_reg_file, to_integer(reg.timing));
+    wait;
+end process initRegWriter; 
+
 stimulus:process is
 begin
 --  raw <= (WIDTH-1  => '0', others => '0');
   wait for CLK_PERIOD;
   reset <= '0';
+  store_reg <= TRUE;
+  wait for CLK_PERIOD;
+  store_reg <= FALSE;
   wait for CLK_PERIOD*300;
   simenable <= TRUE;
 

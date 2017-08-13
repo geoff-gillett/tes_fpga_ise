@@ -193,6 +193,9 @@ if rising_edge(clk) then
     started <= FALSE; 
   else
     filtered_0x <= f;
+    if not started then
+      reg <= registers; --capture the register settings each minima
+    end if;
     if slope_0_p then
       started <= TRUE;
       reg <= registers; --capture the register settings each minima

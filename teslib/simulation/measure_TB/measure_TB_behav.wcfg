@@ -22,9 +22,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="7360166666fs"></ZoomStartTime>
-      <ZoomEndTime time="14675166667fs"></ZoomEndTime>
-      <Cursor1Time time="13456000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="29260000001fs"></ZoomEndTime>
+      <Cursor1Time time="191088000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="229"></NameColumnWidth>
@@ -462,7 +462,6 @@
    <wvobject fp_name="/measure_TB/m" type="array">
       <obj_property name="ElementShortName">m</obj_property>
       <obj_property name="ObjectShortName">m</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/measure_TB/m.reg" type="array">
          <obj_property name="ElementShortName">.reg[2:3]</obj_property>
          <obj_property name="ObjectShortName">.reg[2:3]</obj_property>
@@ -474,7 +473,6 @@
          <wvobject fp_name="/measure_TB/m.reg[3]" type="array">
             <obj_property name="ElementShortName">[3]</obj_property>
             <obj_property name="ObjectShortName">[3]</obj_property>
-            <obj_property name="isExpanded"></obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="/measure_TB/m.enabled" type="array">
@@ -484,14 +482,13 @@
       <wvobject fp_name="/measure_TB/m.f" type="array">
          <obj_property name="ElementShortName">.f[15:0]</obj_property>
          <obj_property name="ObjectShortName">.f[15:0]</obj_property>
-         <obj_property name="CellHeight">100</obj_property>
          <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
-         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRangeMin">116665510.000000</obj_property>
          <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
          <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
          <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
          <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/measure_TB/m.f_extrema" type="array">

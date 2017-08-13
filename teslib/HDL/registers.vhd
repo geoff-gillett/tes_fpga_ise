@@ -75,6 +75,7 @@ type detection_d is (
 constant NUM_DETECTION_D:integer:=detection_d'pos(detection_d'high)+1;
 constant DETECTION_D_BITS:integer:=ceilLog2(NUM_DETECTION_D);
 function to_std_logic(d:detection_d;w:integer) return std_logic_vector;
+function to_integer(d:detection_d) return integer;
 function to_detection_d(s:std_logic_vector) return detection_d;
 function to_detection_d(i:natural range 0 to NUM_DETECTION_D-1) 
 return detection_d;
@@ -91,6 +92,7 @@ type timing_d is (
 constant NUM_TIMING_D:integer:=timing_d'pos(timing_d'high)+1;
 constant TIMING_D_BITS:integer:=ceilLog2(NUM_TIMING_D);
 function to_std_logic(t:timing_d;w:integer) return std_logic_vector;
+function to_integer(t:timing_d) return integer;
 function to_timing_d(i:natural range 0 to NUM_TIMING_D-1) return timing_d;
 function to_timing_d(s:std_logic_vector) return timing_d;
 
@@ -104,6 +106,7 @@ type height_d is (
 constant NUM_HEIGHT_D:integer:=height_d'pos(height_d'high)+1;
 constant HEIGHT_D_BITS:integer:=ceilLog2(NUM_HEIGHT_D);
 function to_std_logic(h:height_d;w:integer) return std_logic_vector;
+function to_integer(h:height_d) return integer;
 function to_height_d(s:std_logic_vector) return height_d;
 function to_height_d(i:natural range 0 to NUM_HEIGHT_D-1) return height_d;
 
@@ -131,6 +134,7 @@ type trace_type_d is(
 constant NUM_TRACE_TYPE_D:integer:=trace_type_d'pos(trace_type_d'high)+1;
 constant TRACE_TYPE_D_BITS:integer:=ceilLog2(NUM_TRACE_TYPE_D);
 function to_std_logic(t:trace_type_d;w:integer) return std_logic_vector;
+function to_integer(t:trace_type_d) return integer;
 function to_trace_type_d(s:std_logic_vector) return trace_type_d;
 function to_trace_type_d(i:natural range 0 to NUM_TRACE_TYPE_D-1) 
          return trace_type_d;
@@ -493,6 +497,11 @@ begin
 	return to_std_logic(height_d'pos(h),w);
 end function;
 
+function to_integer(h:height_d) return integer is
+begin
+	return height_d'pos(h);
+end function;
+
 function to_height_d(i:natural range 0 to NUM_HEIGHT_D-1) return height_d is
 begin
 	return height_d'val(i);
@@ -510,6 +519,11 @@ begin
 		assert FALSE report "w to small to represent timing_d" severity ERROR;
 	end if;
 	return to_std_logic(timing_d'pos(t),w);
+end function;
+
+function to_integer(t:timing_d) return integer is
+begin
+	return timing_d'pos(t);
 end function;
 
 function to_timing_d(i:natural range 0 to NUM_TIMING_D-1) 
@@ -532,6 +546,11 @@ begin
 	return to_std_logic(detection_d'pos(d),w);
 end function;
 
+function to_integer(d:detection_d) return integer is
+begin
+	return detection_d'pos(d);
+end function;
+
 function to_detection_d(i:natural range 0 to NUM_DETECTION_D-1) 
 return detection_d is
 begin
@@ -552,7 +571,8 @@ begin
 	return to_std_logic(trace_signal_d'pos(t),w);
 end function;
 
-function to_trace_signal_d(i:natural range 0 to NUM_TRACE_D-1) return trace_signal_d is
+function to_trace_signal_d(i:natural range 0 to NUM_TRACE_D-1) 
+         return trace_signal_d is
 begin
 	return trace_signal_d'val(i);
 end function;
@@ -569,6 +589,11 @@ begin
 		assert FALSE report "w to small to represent trace_d" severity ERROR;
 	end if;
 	return to_std_logic(trace_type_d'pos(t),w);
+end function;
+
+function to_integer(t:trace_type_d) return integer is
+begin
+	return trace_type_d'pos(t);
 end function;
 
 function to_trace_type_d(i:natural range 0 to NUM_TRACE_TYPE_D-1) 
