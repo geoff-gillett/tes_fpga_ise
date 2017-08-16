@@ -491,6 +491,8 @@ begin
     wait;
 end process initRegWriter; 
 
+ready <= ((clk_i mod 32) = 0);
+
 stimulus:process is
 begin
   store_reg <= FALSE;
@@ -502,7 +504,6 @@ begin
   wait for CLK_PERIOD;
   store_reg <= FALSE;
   wait for CLK_PERIOD*300;
-  ready <= TRUE;
   simenable <= TRUE;
 --  --impulse
 --  raw <= (WIDTH-1  => '0', others => '1');
