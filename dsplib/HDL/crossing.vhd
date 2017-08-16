@@ -32,7 +32,8 @@ port(
   pos:out boolean;
   neg:out boolean;
   xing:out boolean;
-  above:out boolean
+  above:out boolean;
+  below:out boolean
 );
 end entity crossing;
 
@@ -54,10 +55,12 @@ begin
 	    above_int <= FALSE;
 	    extrema_int <= (others => '0');
 	    above <= FALSE;
+	    below <= FALSE;
 	  else
 	    signal_int <= signal_in;
 	    extrema <= extrema_int;
       above <= isabove;
+      below <= isbelow;
       
       if isabove then
         above_int <= TRUE;

@@ -117,7 +117,7 @@ signal armed_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 signal above_pipe:boolean_vector(1 to DEPTH):=(others => FALSE);
 signal slope_0x,filtered_0x:signed(WIDTH-1 downto 0);
 signal delay_counter:natural range 0 to DELAY;
-signal overrun_i,armed_i,above_i:boolean;
+signal overrun_i,armed_i,above_i,below_i:boolean;
 signal overrun_d,armed_d:boolean;
 signal cf_low_i,cf_high_i:signed(WIDTH-1 downto 0);
 
@@ -237,7 +237,8 @@ port map(
   signal_out => filtered_int, --lat 2
   pos => p_t_p_i,
   neg => p_t_n_i,
-  above => above_i --lat 2
+  above => above_i, --lat 2
+  below => below_i
 );
 
 pipeline:process(clk)
@@ -262,7 +263,7 @@ begin
       s_0_p_pipe <= slope_0_p & s_0_p_pipe(1 to DEPTH-1);
       above_pipe(3 to DEPTH) <= above_i & above_pipe(3 to DEPTH-1);
       
-      if s_0_p_pipe(2) and not above_i then
+      if s_0_p_pipe(2) and below_i then
         first_rise_i <= TRUE; --lat 3
       elsif s_0_n_pipe(3) then
         first_rise_i <= FALSE;

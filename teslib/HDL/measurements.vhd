@@ -76,6 +76,10 @@ type measurements_t is record
   --the raw baseline corrected signal
 	raw:signed(CHUNK_DATABITS-1 downto 0);
 		
+		
+	has_pulse:boolean; --packet type contains a pulse	
+		
+		
   --valid rise with minima below pulse threshold PRE2 is 2 clks before
   pulse_start:boolean_vector(PRE3 to NOW); --min of valid first rise
   has_rise:boolean; --rise_number is > 0 for this pulse

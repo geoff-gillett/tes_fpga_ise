@@ -132,7 +132,7 @@ registers.lowest_value <= to_signed(1,VALUE_BITS);
 registers.channel <= (others => '0');
 registers.qualifier <= ALL_MCA_QUAL_D;
 registers.trigger <= MCA_DISABLED_D;
-registers.value <= MCA_FILTERED_SIGNAL_D;
+registers.value <= MCAVAL_F_D;
 registers.update_asap <= FALSE;
 registers.update_on_completion <= FALSE;
 registers.ticks <= (0 => '0', others => '0');

@@ -245,6 +245,10 @@ begin
       write(pulse_start_file, to_integer(m.reg(NOW).pulse_threshold));
       write(pulse_start_file, to_integer(m.reg(NOW).slope_threshold));
       write(pulse_start_file, to_integer(m.reg(NOW).timing));
+      write(pulse_start_file, to_integer(m.reg(NOW).trace_type));
+      write(pulse_start_file, to_integer(m.reg(NOW).trace_signal));
+      write(pulse_start_file, to_integer(m.reg(NOW).trace_length));
+      write(pulse_start_file, to_integer(m.reg(NOW).trace_stride));
     end if;
   end loop;
 end process pulseStartWriter; 
@@ -340,9 +344,9 @@ begin
       else
         write(stream_file, clk_i);
       end if;
+      write(stream_file,to_integer(signed(to_0(stream.data(31 downto 0)))));
+      write(stream_file,to_integer(signed(to_0(stream.data(63 downto 32)))));
     end if;
-    write(stream_file,to_integer(signed(stream.data(31 downto 0))));
-    write(stream_file,to_integer(signed(stream.data(63 downto 32))));
   end loop;
 end process streamWriter; 
 
@@ -467,7 +471,7 @@ event_enable <= TRUE;
 file_open(init_reg_file, "../init_reg",WRITE_MODE);
 initRegWriter:process
 begin
-    wait until store_reg;
+    wait until rising_edge(clk) and store_reg;
     write(init_reg_file, clk_i);
     write(init_reg_file, to_integer(event_enable));
     write(init_reg_file, to_integer(reg.area_threshold));
@@ -479,18 +483,26 @@ begin
     write(init_reg_file, to_integer(reg.pulse_threshold));
     write(init_reg_file, to_integer(reg.slope_threshold));
     write(init_reg_file, to_integer(reg.timing));
+    write(init_reg_file, to_integer(reg.trace_type));
+    write(init_reg_file, to_integer(reg.trace_signal));
+    write(init_reg_file, to_integer(reg.trace_length));
+    write(init_reg_file, to_integer(reg.trace_stride));
+    file_close(init_reg_file);
     wait;
 end process initRegWriter; 
 
 stimulus:process is
 begin
+  store_reg <= FALSE;
 --  raw <= (WIDTH-1  => '0', others => '0');
-  wait for CLK_PERIOD;
+  wait for CLK_PERIOD*10;
   reset <= '0';
+  wait for CLK_PERIOD;
   store_reg <= TRUE;
   wait for CLK_PERIOD;
   store_reg <= FALSE;
   wait for CLK_PERIOD*300;
+  ready <= TRUE;
   simenable <= TRUE;
 --  --impulse
 --  raw <= (WIDTH-1  => '0', others => '1');

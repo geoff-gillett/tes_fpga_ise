@@ -367,7 +367,6 @@ begin
       m.f_0 <= f_0_p_pipe(DEPTH-1) or f_0_n_pipe(DEPTH-1);
       m.s_0 <= min_pipe(DEPTH-1) or max_pipe(DEPTH-1);
       
-      
       f_pipe <= f_cfd & f_pipe(1 to DEPTH-1);
       s_pipe <= s_cfd & s_pipe(1 to DEPTH-1);
       f_0_p_pipe <= f_0_p_cfd & f_0_p_pipe(1 to DEPTH-1);
@@ -425,6 +424,13 @@ begin
         
         m.rise_address <= (1 => '1', others => '0'); -- start at 2
         rise_address_n <= (1 downto 0 => '1', others => '0');
+        
+        m.has_pulse <= m.reg(PRE).detection=PULSE_DETECTION_D or (
+                         m.reg(PRE).detection=TRACE_DETECTION_D and (
+                           m.reg(PRE).trace_type=SINGLE_TRACE_D or 
+                           m.reg(PRE).trace_type=DOT_PRODUCT_TRACE_D
+                         )
+                       );
       end if;  
       
       if min_pipe(DEPTH-3) then
@@ -461,7 +467,7 @@ begin
         if m.valid_rise then
           m.last_rise <= rise_number_n >= m.reg(NOW).max_peaks; 
           if rise_number_n > m.reg(NOW).max_peaks then 
-            m.rise_overflow <= TRUE;
+            m.rise_overflow <= m.has_pulse;
           end if;
           if not m.last_rise then
             m.rise_address <= rise_address_n(PEAK_COUNT_BITS-1 downto 0);
@@ -598,7 +604,7 @@ begin
         m.height(PRE) <= high_pipe(DEPTH-2)-low_pipe(DEPTH-2); 
         m.height_valid(PRE) 
           <= cfd_high_p_pipe(DEPTH-2) and valid_rise_pipe(DEPTH-2);
-      when SLOPE_MAX_D => 
+      when MAX_SLOPE_D => 
         m.height(PRE) <= max_slope_pipe(DEPTH-2); 
         m.height_valid(PRE) 
           <= max_slope_p_pipe(DEPTH-2) and valid_rise_pipe(DEPTH-2);

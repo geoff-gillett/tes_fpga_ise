@@ -287,7 +287,7 @@ update_asap <= TRUE;
 wait for CLK_PERIOD;
 update_asap <= FALSE;
 wait until updated;
-registers.value <= MCA_FILTERED_AREA_D;
+registers.value <= MCAVAL_F_AREA_D;
 update_asap <= TRUE;
 wait for CLK_PERIOD;
 wait until updated;

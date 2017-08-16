@@ -307,11 +307,12 @@ error <= error_int;
 --
 --  | height | low1 |  low2  | time | -- use this for pulse2
                                       -- low2 is @ time
-current_eflags.event_type <= eflags.event_type;
-current_eflags.timing <= eflags.timing;                             
-current_eflags.height <= eflags.height;                             
-current_eflags.cfd_rel2min <= eflags.cfd_rel2min;                             
-current_eflags.channel <= eflags.channel;                             
+current_eflags.event_type.detection <= m.reg(NOW).detection;
+current_eflags.event_type.tick <= FALSE;
+current_eflags.timing <= m.reg(NOW).timing;                             
+current_eflags.height <= m.reg(NOW).height;                             
+current_eflags.cfd_rel2min <= m.reg(NOW).cfd_rel2min;                             
+current_eflags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);                             
 --eflags.new_window <= eflags_reg.new_window;                             
 current_eflags.rise_number <= m.rise_number;                             
 current_eflags.has_rise <= m.has_rise;                             
@@ -319,7 +320,8 @@ current_eflags.has_rise <= m.has_rise;
 pulse.size <= resize(frame_length(NOW) & "000",CHUNK_DATABITS);
 pulse.flags <= current_eflags;
 pulse.length <= m.pulse_length_timer(NOW);
---pulse.offset <= m.time_offset;
+pulse.threshold <= (others => '0');
+pulse.offset <= m.time_offset;
 pulse.area <= m.pulse_area;
 --pulse.threshold <= m.timing_threshold; --FIXME 
 
@@ -892,48 +894,48 @@ begin
       -- on a new pulse even when this FSM is not idle
       if m.pulse_start(PRE) and (state=IDLE or state=HOLD) then 
                               
-        tflags.trace_length <= m.reg(NOW).trace_length;
-        tflags.stride <= m.reg(NOW).trace_stride;
-        tflags.trace_signal <= m.reg(NOW).trace_signal;
-        tflags.trace_type <= m.reg(NOW).trace_type;
-        zero_stride <= m.reg(NOW).trace_stride=0; 
+        tflags.trace_length <= m.reg(PRE).trace_length;
+        tflags.stride <= m.reg(PRE).trace_stride;
+        tflags.trace_signal <= m.reg(PRE).trace_signal;
+        tflags.trace_type <= m.reg(PRE).trace_type;
+        zero_stride <= m.reg(PRE).trace_stride=0; 
         
-        eflags.cfd_rel2min <= m.reg(NOW).cfd_rel2min;
+        eflags.cfd_rel2min <= m.reg(PRE).cfd_rel2min;
         eflags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
-        eflags.event_type.detection <= m.reg(NOW).detection;
-        eflags.height <= m.reg(NOW).height;
+        eflags.event_type.detection <= m.reg(PRE).detection;
+        eflags.height <= m.reg(PRE).height;
          
-        trace_detection <= m.reg(NOW).detection=TRACE_DETECTION_D;
-        area_detection <= m.reg(NOW).detection=AREA_DETECTION_D;
-        pulse_detection <= m.reg(NOW).detection=PULSE_DETECTION_D;
-        peak_detection <= m.reg(NOW).detection=PEAK_DETECTION_D;
+        trace_detection <= m.reg(PRE).detection=TRACE_DETECTION_D;
+        area_detection <= m.reg(PRE).detection=AREA_DETECTION_D;
+        pulse_detection <= m.reg(PRE).detection=PULSE_DETECTION_D;
+        peak_detection <= m.reg(PRE).detection=PEAK_DETECTION_D;
 
-        single_trace_detection <= m.reg(NOW).detection=TRACE_DETECTION_D and
-                                  m.reg(NOW).trace_type=SINGLE_TRACE_D;
+        single_trace_detection <= m.reg(PRE).detection=TRACE_DETECTION_D and
+                                  m.reg(PRE).trace_type=SINGLE_TRACE_D;
 
-        average_detection <= m.reg(NOW).trace_type=AVERAGE_TRACE_D and 
-                             m.reg(NOW).detection=TRACE_DETECTION_D;
+        average_detection <= m.reg(PRE).trace_type=AVERAGE_TRACE_D and 
+                             m.reg(PRE).detection=TRACE_DETECTION_D;
                                    
-        dp_detection <= (m.reg(NOW).trace_type=DOT_PRODUCT_D or 
-                         m.reg(NOW).trace_type=DOT_PRODUCT_TRACE_D) and
-                         m.reg(NOW).detection=TRACE_DETECTION_D;
+        dp_detection <= (m.reg(PRE).trace_type=DOT_PRODUCT_D or 
+                         m.reg(PRE).trace_type=DOT_PRODUCT_TRACE_D) and
+                         m.reg(PRE).detection=TRACE_DETECTION_D;
                          
-        dp_only <=  m.reg(NOW).trace_type=DOT_PRODUCT_D and
-                    m.reg(NOW).detection=TRACE_DETECTION_D;
+        dp_only <=  m.reg(PRE).trace_type=DOT_PRODUCT_D and
+                    m.reg(PRE).detection=TRACE_DETECTION_D;
                                                          
-        trace_wr_en <= m.reg(NOW).detection=TRACE_DETECTION_D and
-                       m.reg(NOW).trace_type/=DOT_PRODUCT_D;
+        trace_wr_en <= m.reg(PRE).detection=TRACE_DETECTION_D and
+                       m.reg(PRE).trace_type/=DOT_PRODUCT_D;
                        
-        mux_enable <= (m.reg(NOW).detection/=TRACE_DETECTION_D or 
+        mux_enable <= (m.reg(PRE).detection/=TRACE_DETECTION_D or 
                       (
-                        m.reg(NOW).detection=TRACE_DETECTION_D and 
-                        m.reg(NOW).trace_type/=AVERAGE_TRACE_D
+                        m.reg(PRE).detection=TRACE_DETECTION_D and 
+                        m.reg(PRE).trace_type/=AVERAGE_TRACE_D
                       )) and m.enabled(PRE);
                       
                      
-        trace_count_init <= m.reg(NOW).trace_length-1;
+        trace_count_init <= m.reg(PRE).trace_length-1;
         
-        dp_address <= resize( m.reg(NOW).max_peaks,ADDRESS_BITS) + 3; 
+        dp_address <= resize( m.reg(PRE).max_peaks,ADDRESS_BITS) + 3; 
         
         trace_start_address <= resize(size(PRE),ADDRESS_BITS);
         
@@ -941,8 +943,8 @@ begin
         -- size is the free space required to *start* a new event
 
         if m.reg(NOW).detection=TRACE_DETECTION_D then
-          dp_start <= m.reg(NOW).trace_type=DOT_PRODUCT_D or
-                      m.reg(NOW).trace_type=DOT_PRODUCT_TRACE_D;
+          dp_start <= m.reg(PRE).trace_type=DOT_PRODUCT_D or
+                      m.reg(PRE).trace_type=DOT_PRODUCT_TRACE_D;
         end if;
         
         
@@ -1439,7 +1441,7 @@ begin
             tflags.multirise <= m.has_rise;
             aux_word_reg <= to_streambus(pulse_peak,FALSE,ENDIAN);--?? last?
             aux_address <= resize(m.rise_address,ADDRESS_BITS);
-            q_aux <= not average_detection;
+            q_aux <= not average_detection and not m.rise_overflow;
 --            pulse_peak_valid <= mux_enable;
           end if;
         elsif peak_detection then

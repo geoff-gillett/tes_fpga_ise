@@ -100,7 +100,7 @@ type height_d is (
 	PEAK_HEIGHT_D,
 	CFD_HIGH_D,
 	CFD_HEIGHT_D,
-	SLOPE_MAX_D
+	MAX_SLOPE_D
 );
 
 constant NUM_HEIGHT_D:integer:=height_d'pos(height_d'high)+1;
@@ -120,6 +120,7 @@ type trace_signal_d is(
 constant NUM_TRACE_D:integer:=trace_signal_d'pos(trace_signal_d'high)+1;
 constant TRACE_D_BITS:integer:=ceilLog2(NUM_TRACE_D);
 function to_std_logic(t:trace_signal_d;w:integer) return std_logic_vector;
+function to_integer(t:trace_signal_d) return integer;
 function to_trace_signal_d(s:std_logic_vector) return trace_signal_d;
 function to_trace_signal_d(i:natural range 0 to NUM_TRACE_D-1) 
          return trace_signal_d;
@@ -142,9 +143,9 @@ function to_trace_type_d(i:natural range 0 to NUM_TRACE_TYPE_D-1)
 -- the value sampled into the MCA
 --FIXME 
 type mca_value_d is (
-  MCA_ZERO_SIGNAL_D, --FIXME can use this slot?
-	MCA_FILTERED_SIGNAL_D, -- the output of the dsp filter
-  MCA_FILTERED_AREA_D, -- the area between zero crossings
+  MCAVAL_ZERO_D, --FIXME can use this slot?
+	MCAVAL_F_D, -- the output of the dsp filter
+  MCAVAL_F_AREA_D, -- the area between zero crossings
   MCA_FILTERED_EXTREMA_D, -- max or min between zero crossings
   MCA_SLOPE_SIGNAL_D, -- the output of the dsp differentiator
   MCA_SLOPE_AREA_D,
@@ -152,8 +153,8 @@ type mca_value_d is (
   MCA_PULSE_AREA_D, -- the area between threshold crossings
   MCA_RAW_SIGNAL_D, -- FIXME useful? 
   MCA_CFD_HIGH_D,    -- high threshold 
-  MCA_PULSE_TIME_D, 
-  MCA_PEAK_TIME_D, 
+  MCA_PULSE_TIMER_D, 
+  MCA_RISE_TIMER_D, 
   MCA_DOT_PRODUCT_D 
 );
 
@@ -178,8 +179,8 @@ type mca_trigger_d is (
   SLOPE_0XING_MCA_TRIGGER_D,
   SLOPE_POS_0XING_MCA_TRIGGER_D, --peak start minima
   SLOPE_NEG_0XING_MCA_TRIGGER_D,
-  CFD_HIGH_MCA_TRIGGER_D, 
-  CFD_LOW_MCA_TRIGGER_D, -- timing trigger?
+  CFD_HIGH_MCA_TRIGGER_D, --height valid? 
+  CFD_LOW_MCA_TRIGGER_D, -- rise stamp?
   MAX_SLOPE_MCA_TRIGGER_D, -- timing trigger?
   DOT_PRODUCT_MCA_TRIGGER_D
 );
@@ -255,18 +256,6 @@ type channel_registers_t is record
 	capture:capture_registers_t;
 end record;
 
--- TODO implement
--- idea is to be able to filter output based on the upper and lower values
-type event_filter is record
-	area_u:area_t; 
-	area_l:area_t;
-	peak_count_u:unsigned(PEAK_COUNT_BITS-1 downto 0);
-	peak_count_l:unsigned(PEAK_COUNT_BITS-1 downto 0);
-	height_peak:unsigned(PEAK_COUNT_BITS-1 downto 0);
-	use_height_peak:boolean;
-	height_u:signal_t;
-	height_l:signal_t;
-end record;
 
 type channel_register_array is array (natural range <>) 
 		 of channel_registers_t;
@@ -475,7 +464,7 @@ constant DEFAULT_MCA_BIN_N:unsigned(MCA_BIN_N_BITS-1 downto 0)
 constant DEFAULT_MCA_LAST_BIN:unsigned(MCA_ADDRESS_BITS-1 downto 0)
 				 :=to_unsigned(2**MCA_ADDRESS_BITS-1,MCA_ADDRESS_BITS);
 constant DEFAULT_MCA_TRIGGER:mca_trigger_d:=MCA_DISABLED_D;
-constant DEFAULT_MCA_VALUE:mca_value_d:=MCA_FILTERED_SIGNAL_D;
+constant DEFAULT_MCA_VALUE:mca_value_d:=MCAVAL_F_D;
 constant DEFAULT_MCA_LOWEST_VALUE:signed(MCA_VALUE_BITS-1 downto 0)
 				 :=to_signed(-1000,MCA_VALUE_BITS);
 constant DEFAULT_MCA_QUALIFIER:mca_qual_d:=ALL_MCA_QUAL_D;
@@ -569,6 +558,11 @@ begin
 		assert FALSE report "w to small to represent trace_d" severity ERROR;
 	end if;
 	return to_std_logic(trace_signal_d'pos(t),w);
+end function;
+
+function to_integer(t:trace_signal_d) return integer is
+begin
+	return trace_signal_d'pos(t);
 end function;
 
 function to_trace_signal_d(i:natural range 0 to NUM_TRACE_D-1) 
