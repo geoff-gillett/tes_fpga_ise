@@ -10,7 +10,7 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
-entity area_acc is
+entity area_acc2 is
 generic(
   WIDTH:integer:=16; -- max 18
   FRAC:integer:=3;
@@ -28,44 +28,50 @@ port (
   above_area_threshold:out boolean;
   area:out signed(AREA_WIDTH-1 downto 0)
 ); 
-end entity area_acc;
+end entity area_acc2;
 
-architecture DSPx2 of area_acc is
+architecture DSP of area_acc2 is
 constant MSB:integer:=AREA_WIDTH+(FRAC-AREA_FRAC);
 constant MASK:std_logic_vector(47 downto 0)
              :=(MSB-2 downto 0 => '1', others => '0');  
---constant ROUND:std_logic_vector(47 downto 0)
---              :=(FRAC-AREA_FRAC-2 downto 0 => '1', others => '0');             
+constant ROUND:std_logic_vector(47 downto 0)
+              :=(FRAC-AREA_FRAC-2 downto 0 => '1', others => '0');             
 
+signal area_int:signed(AREA_WIDTH-1 downto 0);
 -- DSP48E1 signals
 --signal c:std_logic_vector(47 downto 0);
 signal a:std_logic_vector(29 downto 0);
 signal d:std_logic_vector(24 downto 0);
---signal c:std_logic_vector(47 downto 0);
 
 
-signal p_int:std_logic_vector(47 downto 0);
+signal p_int,c:std_logic_vector(47 downto 0);
 signal accum_opmode:std_logic_vector(6 downto 0):="0001100";
-
---signal cround:std_logic_vector(47 downto 0);
+signal carry_in:std_ulogic;
+signal patb,pat,saturate:std_ulogic;
 
 begin
-assert WIDTH <= 18 
-report "maximum width is 18" severity FAILURE;
+  
+assert WIDTH <= 18 report "maximum width is 18" severity FAILURE;
 
+-- want (d-a)x1+c + carry_in at xing, op mode 0110101
+--      (d-a)x1+p otherwise           op mode 0000101
 a <= resize(signal_threshold,30) when AREA_ABOVE else (others => '0'); 
 d <= resize(sig,25);  
+c <= ROUND;
 
-xingReg:process (clk) is
-begin
-  if rising_edge(clk) then
-    if reset = '1' then
-      accum_opmode <= "0000101"; 
-    else
-      accum_opmode <= '0' & not to_std_logic(xing) & "00101"; 
-    end if;
-  end if;
-end process xingReg;
+carry_in <= not sig(WIDTH-1) when xing else '0';
+accum_opmode <= "0110101" when xing else "0000101";
+
+--xingReg:process (clk) is
+--begin
+--  if rising_edge(clk) then
+--    if reset = '1' then
+--      accum_opmode <= "0000101"; 
+--    else
+--      accum_opmode <= '0' & not to_std_logic(xing) & "00101"; 
+--    end if;
+--  end if;
+--end process xingReg;
 
 ---z 
 --accum_opmode <= '0' & not to_std_logic(xing) & "00101"; 
@@ -87,14 +93,14 @@ generic map (
   USE_PATTERN_DETECT => "NO_PATDET", -- Enable pattern detect ("PATDET" or "NO_PATDET")
   -- Register Control Attributes: Pipeline Register Configuration
   ACASCREG => 1,                     -- Number of pipeline stages between A/ACIN and ACOUT (0, 1 or 2)
-  ADREG => 0,                        -- Number of pipeline stages for pre-adder (0 or 1)
+  ADREG => 1,                        -- Number of pipeline stages for pre-adder (0 or 1)
   ALUMODEREG => 0,                   -- Number of pipeline stages for ALUMODE (0 or 1)
   AREG => 1,                         -- Number of pipeline stages for A (0, 1 or 2)
   BCASCREG => 0,                     -- Number of pipeline stages between B/BCIN and BCOUT (0, 1 or 2)
   BREG => 0,                         -- Number of pipeline stages for B (0, 1 or 2)
-  CARRYINREG => 0,                   -- Number of pipeline stages for CARRYIN (0 or 1)
+  CARRYINREG => 1,                   -- Number of pipeline stages for CARRYIN (0 or 1)
   CARRYINSELREG => 0,                -- Number of pipeline stages for CARRYINSEL (0 or 1)
-  CREG => 0,                         -- Number of pipeline stages for C (0 or 1)
+  CREG => 1,                         -- Number of pipeline stages for C (0 or 1)
   DREG => 1,                         -- Number of pipeline stages for D (0 or 1)
   INMODEREG => 0,                    -- Number of pipeline stages for INMODE (0 or 1)
   MREG => 1,                         -- Number of multiplier pipeline stages (0 or 1)
@@ -111,8 +117,8 @@ port map (
   PCOUT => open,                   -- 48-bit output: Cascade output
   -- Control: 1-bit (each) output: Control Inputs/Status Bits
   OVERFLOW => open,             -- 1-bit output: Overflow in add/acc output
-  PATTERNBDETECT => open, -- 1-bit output: Pattern bar detect output
-  PATTERNDETECT => open,   -- 1-bit output: Pattern detect output
+  PATTERNBDETECT => patb, -- 1-bit output: Pattern bar detect output
+  PATTERNDETECT => pat,   -- 1-bit output: Pattern detect output
   UNDERFLOW => open,           -- 1-bit output: Underflow in add/acc output
   -- Data: 4-bit (each) output: Data Ports
   CARRYOUT => open,             -- 4-bit output: Carry output
@@ -135,7 +141,7 @@ port map (
   A => a,                           -- 30-bit input: A data input
   B => (0 => '1', others => '0'),           -- 18-bit input: B data input
   C => (others => '0'), --cround,                           -- 48-bit input: C data input
-  CARRYIN => '0',               -- 1-bit input: Carry input signal
+  CARRYIN => carry_in,               -- 1-bit input: Carry input signal
   D => d,                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs
   CEA1 => '1',                     -- 1-bit input: Clock enable input for 1st stage AREG
@@ -161,21 +167,25 @@ port map (
   RSTP => reset                      -- 1-bit input: Reset input for PREG
 );
 
-rnd:entity work.round
-generic map(
-  WIDTH_IN => 48,
-  FRAC_IN => FRAC,
-  WIDTH_OUT => AREA_WIDTH,
-  FRAC_OUT => AREA_FRAC
-)
-port map(
-  clk => clk,
-  reset => reset,
-  input => signed(p_int),
-  output_threshold => area_threshold,
-  output => area,
-  above_threshold => above_area_threshold
-); 
+saturate <= not (pat xor patb);
+area_int <= signed(p_int(AREA_WIDTH+FRAC-AREA_FRAC-1 downto FRAC-AREA_FRAC));
+saturation:process (clk) is
+begin
+  if rising_edge(clk) then
+    if saturate='1' then  
+      if area_int(AREA_WIDTH-1)='1' then
+        area <= (WIDTH-1 => '1', others => '0');
+        above_area_threshold <= FALSE;
+      else
+        area <= (WIDTH-1 => '1', others => '0');
+        above_area_threshold <= TRUE;
+      end if;
+    else
+      area <= area_int;
+      above_area_threshold <= area_int > area_threshold;
+    end if;
+  end if;
+end process saturation;
 
-end architecture DSPx2;
+end architecture DSP;
 

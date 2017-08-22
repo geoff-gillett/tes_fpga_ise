@@ -10,7 +10,7 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
-entity area_acc2 is
+entity area_acc is
 generic(
   WIDTH:integer:=16; -- max 18
   FRAC:integer:=3;
@@ -28,14 +28,14 @@ port (
   above_area_threshold:out boolean;
   area:out signed(AREA_WIDTH-1 downto 0)
 ); 
-end entity area_acc2;
+end entity area_acc;
 
-architecture DSP of area_acc2 is
+architecture DSPx2 of area_acc is
 constant MSB:integer:=AREA_WIDTH+(FRAC-AREA_FRAC);
 constant MASK:std_logic_vector(47 downto 0)
              :=(MSB-2 downto 0 => '1', others => '0');  
-constant ROUND:std_logic_vector(47 downto 0)
-              :=(FRAC-AREA_FRAC-2 downto 0 => '1', others => '0');             
+--constant ROUND:std_logic_vector(47 downto 0)
+--              :=(FRAC-AREA_FRAC-2 downto 0 => '1', others => '0');             
 
 -- DSP48E1 signals
 --signal c:std_logic_vector(47 downto 0);
@@ -44,9 +44,8 @@ signal d:std_logic_vector(24 downto 0);
 --signal c:std_logic_vector(47 downto 0);
 
 
-signal p_int,c:std_logic_vector(47 downto 0);
+signal p_int:std_logic_vector(47 downto 0);
 signal accum_opmode:std_logic_vector(6 downto 0):="0001100";
-signal carry_in:std_ulogic;
 
 --signal cround:std_logic_vector(47 downto 0);
 
@@ -54,14 +53,8 @@ begin
 assert WIDTH <= 18 
 report "maximum width is 18" severity FAILURE;
 
--- want (d-a)x1+c + carry_in at xing, op mode 0110101
---      (d-a)x1+p otherwise           op mode 0000101
 a <= resize(signal_threshold,30) when AREA_ABOVE else (others => '0'); 
 d <= resize(sig,25);  
-c <= ROUND;
-
-carry_in <= not sig(WIDTH-1) when xing else '0';
-accum_opmode <= "0110101" when xing else "0000101";
 
 xingReg:process (clk) is
 begin
@@ -94,14 +87,14 @@ generic map (
   USE_PATTERN_DETECT => "NO_PATDET", -- Enable pattern detect ("PATDET" or "NO_PATDET")
   -- Register Control Attributes: Pipeline Register Configuration
   ACASCREG => 1,                     -- Number of pipeline stages between A/ACIN and ACOUT (0, 1 or 2)
-  ADREG => 1,                        -- Number of pipeline stages for pre-adder (0 or 1)
+  ADREG => 0,                        -- Number of pipeline stages for pre-adder (0 or 1)
   ALUMODEREG => 0,                   -- Number of pipeline stages for ALUMODE (0 or 1)
   AREG => 1,                         -- Number of pipeline stages for A (0, 1 or 2)
   BCASCREG => 0,                     -- Number of pipeline stages between B/BCIN and BCOUT (0, 1 or 2)
   BREG => 0,                         -- Number of pipeline stages for B (0, 1 or 2)
-  CARRYINREG => 1,                   -- Number of pipeline stages for CARRYIN (0 or 1)
+  CARRYINREG => 0,                   -- Number of pipeline stages for CARRYIN (0 or 1)
   CARRYINSELREG => 0,                -- Number of pipeline stages for CARRYINSEL (0 or 1)
-  CREG => 1,                         -- Number of pipeline stages for C (0 or 1)
+  CREG => 0,                         -- Number of pipeline stages for C (0 or 1)
   DREG => 1,                         -- Number of pipeline stages for D (0 or 1)
   INMODEREG => 0,                    -- Number of pipeline stages for INMODE (0 or 1)
   MREG => 1,                         -- Number of multiplier pipeline stages (0 or 1)
@@ -142,7 +135,7 @@ port map (
   A => a,                           -- 30-bit input: A data input
   B => (0 => '1', others => '0'),           -- 18-bit input: B data input
   C => (others => '0'), --cround,                           -- 48-bit input: C data input
-  CARRYIN => carry_in,               -- 1-bit input: Carry input signal
+  CARRYIN => '0',               -- 1-bit input: Carry input signal
   D => d,                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs
   CEA1 => '1',                     -- 1-bit input: Clock enable input for 1st stage AREG
@@ -184,5 +177,5 @@ port map(
   above_threshold => above_area_threshold
 ); 
 
-end architecture DSP;
+end architecture DSPx2;
 

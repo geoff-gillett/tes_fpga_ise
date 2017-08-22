@@ -22,9 +22,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="4779416666fs"></ZoomStartTime>
-      <ZoomEndTime time="4904916667fs"></ZoomEndTime>
-      <Cursor1Time time="4884000000fs"></Cursor1Time>
+      <ZoomStartTime time="4794416666fs"></ZoomStartTime>
+      <ZoomEndTime time="4919916667fs"></ZoomEndTime>
+      <Cursor1Time time="4876100000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="229"></NameColumnWidth>
@@ -76,520 +76,6 @@
       <wvobject fp_name="/measurement_framer_TB/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
-         <wvobject fp_name="/measurement_framer_TB/m.reg" type="array">
-            <obj_property name="ElementShortName">.reg[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.reg[2:3]</obj_property>
-            <obj_property name="isExpanded"></obj_property>
-            <wvobject fp_name="/measurement_framer_TB/m.reg[2]" type="array">
-               <obj_property name="ElementShortName">[2]</obj_property>
-               <obj_property name="ObjectShortName">[2]</obj_property>
-            </wvobject>
-            <wvobject fp_name="/measurement_framer_TB/m.reg[3]" type="array">
-               <obj_property name="ElementShortName">[3]</obj_property>
-               <obj_property name="ObjectShortName">[3]</obj_property>
-               <obj_property name="isExpanded"></obj_property>
-            </wvobject>
-            <wvobject fp_name="/measurement_framer_TB/m.reg[2]" type="array">
-               <obj_property name="ElementShortName">[2]</obj_property>
-               <obj_property name="ObjectShortName">[2]</obj_property>
-            </wvobject>
-            <wvobject fp_name="/measurement_framer_TB/m.reg[3]" type="array">
-               <obj_property name="ElementShortName">[3]</obj_property>
-               <obj_property name="ObjectShortName">[3]</obj_property>
-            </wvobject>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.enabled" type="array">
-            <obj_property name="ElementShortName">.enabled[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.enabled[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f" type="array">
-            <obj_property name="ElementShortName">.f[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.f[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f_extrema" type="array">
-            <obj_property name="ElementShortName">.f_extrema[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.f_extrema[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f_area" type="array">
-            <obj_property name="ElementShortName">.f_area[31:0]</obj_property>
-            <obj_property name="ObjectShortName">.f_area[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f_0" type="other">
-            <obj_property name="ElementShortName">.f_0</obj_property>
-            <obj_property name="ObjectShortName">.f_0</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f_0_p" type="other">
-            <obj_property name="ElementShortName">.f_0_p</obj_property>
-            <obj_property name="ObjectShortName">.f_0_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f_0_n" type="other">
-            <obj_property name="ElementShortName">.f_0_n</obj_property>
-            <obj_property name="ObjectShortName">.f_0_n</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.p_t_p" type="array">
-            <obj_property name="ElementShortName">.p_t_p[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.p_t_p[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.p_t_n" type="array">
-            <obj_property name="ElementShortName">.p_t_n[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.p_t_n[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.s" type="array">
-            <obj_property name="ElementShortName">.s[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.s[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.s_extrema" type="array">
-            <obj_property name="ElementShortName">.s_extrema[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.s_extrema[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.s_area" type="array">
-            <obj_property name="ElementShortName">.s_area[31:0]</obj_property>
-            <obj_property name="ObjectShortName">.s_area[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.s_0" type="other">
-            <obj_property name="ElementShortName">.s_0</obj_property>
-            <obj_property name="ObjectShortName">.s_0</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.s_t_p" type="array">
-            <obj_property name="ElementShortName">.s_t_p[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.s_t_p[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.min" type="array">
-            <obj_property name="ElementShortName">.min[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.min[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.max" type="array">
-            <obj_property name="ElementShortName">.max[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.max[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.raw" type="array">
-            <obj_property name="ElementShortName">.raw[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.raw[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.has_pulse" type="other">
-            <obj_property name="ElementShortName">.has_pulse</obj_property>
-            <obj_property name="ObjectShortName">.has_pulse</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_start" type="array">
-            <obj_property name="ElementShortName">.pulse_start[0:3]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_start[0:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.has_rise" type="other">
-            <obj_property name="ElementShortName">.has_rise</obj_property>
-            <obj_property name="ObjectShortName">.has_rise</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_area" type="array">
-            <obj_property name="ElementShortName">.pulse_area[31:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_area[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.above_area" type="other">
-            <obj_property name="ElementShortName">.above_area</obj_property>
-            <obj_property name="ObjectShortName">.above_area</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_length" type="array">
-            <obj_property name="ElementShortName">.pulse_length[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_length[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.stamp_pulse" type="array">
-            <obj_property name="ElementShortName">.stamp_pulse[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.stamp_pulse[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_stamped" type="array">
-            <obj_property name="ElementShortName">.pulse_stamped[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_stamped[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.time_offset" type="array">
-            <obj_property name="ElementShortName">.time_offset[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.time_offset[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_start" type="array">
-            <obj_property name="ElementShortName">.rise_start[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.rise_start[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.valid_rise" type="other">
-            <obj_property name="ElementShortName">.valid_rise</obj_property>
-            <obj_property name="ObjectShortName">.valid_rise</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_number" type="array">
-            <obj_property name="ElementShortName">.rise_number[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_number[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise0" type="other">
-            <obj_property name="ElementShortName">.rise0</obj_property>
-            <obj_property name="ObjectShortName">.rise0</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise1" type="other">
-            <obj_property name="ElementShortName">.rise1</obj_property>
-            <obj_property name="ObjectShortName">.rise1</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise2" type="other">
-            <obj_property name="ElementShortName">.rise2</obj_property>
-            <obj_property name="ObjectShortName">.rise2</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.stamp_rise" type="array">
-            <obj_property name="ElementShortName">.stamp_rise[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.stamp_rise[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_stamped" type="array">
-            <obj_property name="ElementShortName">.rise_stamped[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.rise_stamped[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_timestamp" type="array">
-            <obj_property name="ElementShortName">.rise_timestamp[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_timestamp[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_address" type="array">
-            <obj_property name="ElementShortName">.rise_address[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_address[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.last_peak_address" type="array">
-            <obj_property name="ElementShortName">.last_peak_address[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.last_peak_address[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.last_rise" type="other">
-            <obj_property name="ElementShortName">.last_rise</obj_property>
-            <obj_property name="ObjectShortName">.last_rise</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_overflow" type="other">
-            <obj_property name="ElementShortName">.rise_overflow</obj_property>
-            <obj_property name="ObjectShortName">.rise_overflow</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_timer" type="array">
-            <obj_property name="ElementShortName">.rise_timer[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_timer[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_timer" type="array">
-            <obj_property name="ElementShortName">.pulse_timer[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_timer[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_length_timer" type="array">
-            <obj_property name="ElementShortName">.pulse_length_timer[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_length_timer[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.minima" type="array">
-            <obj_property name="ElementShortName">.minima[1:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.minima[1:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.height" type="array">
-            <obj_property name="ElementShortName">.height[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.height[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.height_valid" type="array">
-            <obj_property name="ElementShortName">.height_valid[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.height_valid[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.peak_height" type="array">
-            <obj_property name="ElementShortName">.peak_height[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.peak_height[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_stop" type="array">
-            <obj_property name="ElementShortName">.rise_stop[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.rise_stop[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_high" type="array">
-            <obj_property name="ElementShortName">.cfd_high[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.cfd_high[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_low" type="array">
-            <obj_property name="ElementShortName">.cfd_low[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.cfd_low[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.max_slope" type="array">
-            <obj_property name="ElementShortName">.max_slope[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.max_slope[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_low_p" type="other">
-            <obj_property name="ElementShortName">.cfd_low_p</obj_property>
-            <obj_property name="ObjectShortName">.cfd_low_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_high_p" type="other">
-            <obj_property name="ElementShortName">.cfd_high_p</obj_property>
-            <obj_property name="ObjectShortName">.cfd_high_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.max_slope_p" type="other">
-            <obj_property name="ElementShortName">.max_slope_p</obj_property>
-            <obj_property name="ObjectShortName">.max_slope_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_valid" type="other">
-            <obj_property name="ElementShortName">.cfd_valid</obj_property>
-            <obj_property name="ObjectShortName">.cfd_valid</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_error" type="other">
-            <obj_property name="ElementShortName">.cfd_error</obj_property>
-            <obj_property name="ObjectShortName">.cfd_error</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_overrun" type="other">
-            <obj_property name="ElementShortName">.cfd_overrun</obj_property>
-            <obj_property name="ObjectShortName">.cfd_overrun</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.armed" type="other">
-            <obj_property name="ElementShortName">.armed</obj_property>
-            <obj_property name="ObjectShortName">.armed</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.will_arm" type="other">
-            <obj_property name="ElementShortName">.will_arm</obj_property>
-            <obj_property name="ObjectShortName">.will_arm</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.above" type="other">
-            <obj_property name="ElementShortName">.above</obj_property>
-            <obj_property name="ObjectShortName">.above</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.will_cross" type="other">
-            <obj_property name="ElementShortName">.will_cross</obj_property>
-            <obj_property name="ObjectShortName">.will_cross</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.mux_wr_en" type="other">
-            <obj_property name="ElementShortName">.mux_wr_en</obj_property>
-            <obj_property name="ObjectShortName">.mux_wr_en</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.reg" type="array">
-            <obj_property name="ElementShortName">.reg[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.reg[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.enabled" type="array">
-            <obj_property name="ElementShortName">.enabled[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.enabled[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f" type="array">
-            <obj_property name="ElementShortName">.f[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.f[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f_extrema" type="array">
-            <obj_property name="ElementShortName">.f_extrema[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.f_extrema[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f_area" type="array">
-            <obj_property name="ElementShortName">.f_area[31:0]</obj_property>
-            <obj_property name="ObjectShortName">.f_area[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f_0" type="other">
-            <obj_property name="ElementShortName">.f_0</obj_property>
-            <obj_property name="ObjectShortName">.f_0</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f_0_p" type="other">
-            <obj_property name="ElementShortName">.f_0_p</obj_property>
-            <obj_property name="ObjectShortName">.f_0_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.f_0_n" type="other">
-            <obj_property name="ElementShortName">.f_0_n</obj_property>
-            <obj_property name="ObjectShortName">.f_0_n</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.p_t_p" type="array">
-            <obj_property name="ElementShortName">.p_t_p[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.p_t_p[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.p_t_n" type="array">
-            <obj_property name="ElementShortName">.p_t_n[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.p_t_n[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.s" type="array">
-            <obj_property name="ElementShortName">.s[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.s[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.s_extrema" type="array">
-            <obj_property name="ElementShortName">.s_extrema[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.s_extrema[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.s_area" type="array">
-            <obj_property name="ElementShortName">.s_area[31:0]</obj_property>
-            <obj_property name="ObjectShortName">.s_area[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.s_0" type="other">
-            <obj_property name="ElementShortName">.s_0</obj_property>
-            <obj_property name="ObjectShortName">.s_0</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.s_t_p" type="array">
-            <obj_property name="ElementShortName">.s_t_p[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.s_t_p[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.min" type="array">
-            <obj_property name="ElementShortName">.min[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.min[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.max" type="array">
-            <obj_property name="ElementShortName">.max[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.max[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.raw" type="array">
-            <obj_property name="ElementShortName">.raw[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.raw[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.has_pulse" type="other">
-            <obj_property name="ElementShortName">.has_pulse</obj_property>
-            <obj_property name="ObjectShortName">.has_pulse</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_start" type="array">
-            <obj_property name="ElementShortName">.pulse_start[0:3]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_start[0:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.has_rise" type="other">
-            <obj_property name="ElementShortName">.has_rise</obj_property>
-            <obj_property name="ObjectShortName">.has_rise</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_area" type="array">
-            <obj_property name="ElementShortName">.pulse_area[31:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_area[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.above_area" type="other">
-            <obj_property name="ElementShortName">.above_area</obj_property>
-            <obj_property name="ObjectShortName">.above_area</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_length" type="array">
-            <obj_property name="ElementShortName">.pulse_length[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_length[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.stamp_pulse" type="array">
-            <obj_property name="ElementShortName">.stamp_pulse[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.stamp_pulse[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_stamped" type="array">
-            <obj_property name="ElementShortName">.pulse_stamped[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_stamped[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.time_offset" type="array">
-            <obj_property name="ElementShortName">.time_offset[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.time_offset[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_start" type="array">
-            <obj_property name="ElementShortName">.rise_start[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.rise_start[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.valid_rise" type="other">
-            <obj_property name="ElementShortName">.valid_rise</obj_property>
-            <obj_property name="ObjectShortName">.valid_rise</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_number" type="array">
-            <obj_property name="ElementShortName">.rise_number[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_number[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise0" type="other">
-            <obj_property name="ElementShortName">.rise0</obj_property>
-            <obj_property name="ObjectShortName">.rise0</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise1" type="other">
-            <obj_property name="ElementShortName">.rise1</obj_property>
-            <obj_property name="ObjectShortName">.rise1</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise2" type="other">
-            <obj_property name="ElementShortName">.rise2</obj_property>
-            <obj_property name="ObjectShortName">.rise2</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.stamp_rise" type="array">
-            <obj_property name="ElementShortName">.stamp_rise[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.stamp_rise[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_stamped" type="array">
-            <obj_property name="ElementShortName">.rise_stamped[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.rise_stamped[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_timestamp" type="array">
-            <obj_property name="ElementShortName">.rise_timestamp[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_timestamp[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_address" type="array">
-            <obj_property name="ElementShortName">.rise_address[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_address[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.last_peak_address" type="array">
-            <obj_property name="ElementShortName">.last_peak_address[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.last_peak_address[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.last_rise" type="other">
-            <obj_property name="ElementShortName">.last_rise</obj_property>
-            <obj_property name="ObjectShortName">.last_rise</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_overflow" type="other">
-            <obj_property name="ElementShortName">.rise_overflow</obj_property>
-            <obj_property name="ObjectShortName">.rise_overflow</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_timer" type="array">
-            <obj_property name="ElementShortName">.rise_timer[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_timer[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_timer" type="array">
-            <obj_property name="ElementShortName">.pulse_timer[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_timer[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.pulse_length_timer" type="array">
-            <obj_property name="ElementShortName">.pulse_length_timer[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_length_timer[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.minima" type="array">
-            <obj_property name="ElementShortName">.minima[1:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.minima[1:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.height" type="array">
-            <obj_property name="ElementShortName">.height[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.height[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.height_valid" type="array">
-            <obj_property name="ElementShortName">.height_valid[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.height_valid[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.peak_height" type="array">
-            <obj_property name="ElementShortName">.peak_height[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.peak_height[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.rise_stop" type="array">
-            <obj_property name="ElementShortName">.rise_stop[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.rise_stop[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_high" type="array">
-            <obj_property name="ElementShortName">.cfd_high[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.cfd_high[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_low" type="array">
-            <obj_property name="ElementShortName">.cfd_low[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.cfd_low[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.max_slope" type="array">
-            <obj_property name="ElementShortName">.max_slope[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.max_slope[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_low_p" type="other">
-            <obj_property name="ElementShortName">.cfd_low_p</obj_property>
-            <obj_property name="ObjectShortName">.cfd_low_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_high_p" type="other">
-            <obj_property name="ElementShortName">.cfd_high_p</obj_property>
-            <obj_property name="ObjectShortName">.cfd_high_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.max_slope_p" type="other">
-            <obj_property name="ElementShortName">.max_slope_p</obj_property>
-            <obj_property name="ObjectShortName">.max_slope_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_valid" type="other">
-            <obj_property name="ElementShortName">.cfd_valid</obj_property>
-            <obj_property name="ObjectShortName">.cfd_valid</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_error" type="other">
-            <obj_property name="ElementShortName">.cfd_error</obj_property>
-            <obj_property name="ObjectShortName">.cfd_error</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.cfd_overrun" type="other">
-            <obj_property name="ElementShortName">.cfd_overrun</obj_property>
-            <obj_property name="ObjectShortName">.cfd_overrun</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.armed" type="other">
-            <obj_property name="ElementShortName">.armed</obj_property>
-            <obj_property name="ObjectShortName">.armed</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.will_arm" type="other">
-            <obj_property name="ElementShortName">.will_arm</obj_property>
-            <obj_property name="ObjectShortName">.will_arm</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.above" type="other">
-            <obj_property name="ElementShortName">.above</obj_property>
-            <obj_property name="ObjectShortName">.above</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.will_cross" type="other">
-            <obj_property name="ElementShortName">.will_cross</obj_property>
-            <obj_property name="ObjectShortName">.will_cross</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/m.mux_wr_en" type="other">
-            <obj_property name="ElementShortName">.mux_wr_en</obj_property>
-            <obj_property name="ObjectShortName">.mux_wr_en</obj_property>
-         </wvobject>
       </wvobject>
       <wvobject fp_name="/measurement_framer_TB/event_enable" type="other">
          <obj_property name="ElementShortName">event_enable</obj_property>
@@ -1278,7 +764,6 @@
       <wvobject fp_name="/measurement_framer_TB/measurment/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/measurement_framer_TB/measurment/m.reg" type="array">
             <obj_property name="ElementShortName">.reg[2:3]</obj_property>
             <obj_property name="ObjectShortName">.reg[2:3]</obj_property>
@@ -1344,12 +829,10 @@
          <wvobject fp_name="/measurement_framer_TB/measurment/m.min" type="array">
             <obj_property name="ElementShortName">.min[1:3]</obj_property>
             <obj_property name="ObjectShortName">.min[1:3]</obj_property>
-            <obj_property name="isExpanded"></obj_property>
          </wvobject>
          <wvobject fp_name="/measurement_framer_TB/measurment/m.max" type="array">
             <obj_property name="ElementShortName">.max[1:3]</obj_property>
             <obj_property name="ObjectShortName">.max[1:3]</obj_property>
-            <obj_property name="isExpanded"></obj_property>
          </wvobject>
          <wvobject fp_name="/measurement_framer_TB/measurment/m.raw" type="array">
             <obj_property name="ElementShortName">.raw[15:0]</obj_property>
@@ -2585,6 +2068,7 @@
    <wvobject fp_name="group791" type="group">
       <obj_property name="label">slope_area</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -2632,6 +2116,7 @@
       <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/accum_opmode" type="array">
          <obj_property name="ElementShortName">accum_opmode[6:0]</obj_property>
          <obj_property name="ObjectShortName">accum_opmode[6:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/WIDTH" type="other">
          <obj_property name="ElementShortName">WIDTH</obj_property>
@@ -2660,6 +2145,102 @@
       <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/MASK" type="array">
          <obj_property name="ElementShortName">MASK[47:0]</obj_property>
          <obj_property name="ObjectShortName">MASK[47:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="group835" type="group">
+         <obj_property name="label">round</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/clk" type="logic">
+            <obj_property name="ElementShortName">clk</obj_property>
+            <obj_property name="ObjectShortName">clk</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/reset" type="logic">
+            <obj_property name="ElementShortName">reset</obj_property>
+            <obj_property name="ObjectShortName">reset</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/input" type="array">
+            <obj_property name="ElementShortName">input[47:0]</obj_property>
+            <obj_property name="ObjectShortName">input[47:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/output_threshold" type="array">
+            <obj_property name="ElementShortName">output_threshold[31:0]</obj_property>
+            <obj_property name="ObjectShortName">output_threshold[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/output" type="array">
+            <obj_property name="ElementShortName">output[31:0]</obj_property>
+            <obj_property name="ObjectShortName">output[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/above_threshold" type="other">
+            <obj_property name="ElementShortName">above_threshold</obj_property>
+            <obj_property name="ObjectShortName">above_threshold</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/a" type="array">
+            <obj_property name="ElementShortName">a[29:0]</obj_property>
+            <obj_property name="ObjectShortName">a[29:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/b" type="array">
+            <obj_property name="ElementShortName">b[17:0]</obj_property>
+            <obj_property name="ObjectShortName">b[17:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/p_out" type="array">
+            <obj_property name="ElementShortName">p_out[47:0]</obj_property>
+            <obj_property name="ObjectShortName">p_out[47:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/ab" type="array">
+            <obj_property name="ElementShortName">ab[47:0]</obj_property>
+            <obj_property name="ObjectShortName">ab[47:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/carryin" type="logic">
+            <obj_property name="ElementShortName">carryin</obj_property>
+            <obj_property name="ObjectShortName">carryin</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/pat" type="logic">
+            <obj_property name="ElementShortName">pat</obj_property>
+            <obj_property name="ObjectShortName">pat</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/patb" type="logic">
+            <obj_property name="ElementShortName">patb</obj_property>
+            <obj_property name="ObjectShortName">patb</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/saturate" type="logic">
+            <obj_property name="ElementShortName">saturate</obj_property>
+            <obj_property name="ObjectShortName">saturate</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/rounding" type="array">
+            <obj_property name="ElementShortName">rounding[47:0]</obj_property>
+            <obj_property name="ObjectShortName">rounding[47:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/WIDTH_IN" type="other">
+            <obj_property name="ElementShortName">WIDTH_IN</obj_property>
+            <obj_property name="ObjectShortName">WIDTH_IN</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/FRAC_IN" type="other">
+            <obj_property name="ElementShortName">FRAC_IN</obj_property>
+            <obj_property name="ObjectShortName">FRAC_IN</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/WIDTH_OUT" type="other">
+            <obj_property name="ElementShortName">WIDTH_OUT</obj_property>
+            <obj_property name="ObjectShortName">WIDTH_OUT</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/FRAC_OUT" type="other">
+            <obj_property name="ElementShortName">FRAC_OUT</obj_property>
+            <obj_property name="ObjectShortName">FRAC_OUT</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/TOWARDS_INF" type="other">
+            <obj_property name="ElementShortName">TOWARDS_INF</obj_property>
+            <obj_property name="ObjectShortName">TOWARDS_INF</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/NONZERO_MASKS" type="other">
+            <obj_property name="ElementShortName">NONZERO_MASKS</obj_property>
+            <obj_property name="ObjectShortName">NONZERO_MASKS</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/OVERFLOW_MASK" type="array">
+            <obj_property name="ElementShortName">OVERFLOW_MASK[47:0]</obj_property>
+            <obj_property name="ObjectShortName">OVERFLOW_MASK[47:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_framer_TB/measurment/slopeArea/rnd/NO_ROUND" type="other">
+            <obj_property name="ElementShortName">NO_ROUND</obj_property>
+            <obj_property name="ObjectShortName">NO_ROUND</obj_property>
+         </wvobject>
       </wvobject>
    </wvobject>
 </wave_config>

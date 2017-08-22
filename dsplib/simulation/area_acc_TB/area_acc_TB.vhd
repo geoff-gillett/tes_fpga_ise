@@ -22,7 +22,7 @@ generic(
   FRAC:integer:=3;
   AREA_WIDTH:integer:=32;
   AREA_FRAC:integer:=1;
-  TOWARDS_INF:boolean:=FALSE
+  AREA_ABOVE:boolean:=TRUE
 );
 end entity area_acc_TB;
 
@@ -44,24 +44,28 @@ constant DEPTH:natural:=5;
 type pipe is array (natural range <>) of unsigned(SIM_WIDTH-1 downto 0);
 signal sim_pipe:pipe(1 to DEPTH);
 signal xing_pipe:boolean_vector(1 to DEPTH);
+signal area_threshold:signed(AREA_WIDTH-1 downto 0);
+signal above_area_threshold:boolean;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.area_acc3
+UUT:entity work.area_acc2
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
   AREA_WIDTH => AREA_WIDTH,
-  AREA_FRAC => AREA_FRAC
+  AREA_FRAC => AREA_FRAC,
+  AREA_ABOVE => AREA_ABOVE
 )
 port map(
   clk => clk,
   reset => reset,
-  xing => xing,
   sig => sig,
-  area_threshold => threshold,
-  above_threshold => above_threshold,
+  signal_threshold => threshold,
+  xing => xing,
+  area_threshold => area_threshold,
+  above_area_threshold => above_area_threshold,
   area => area
 );
 
