@@ -10,13 +10,22 @@ library extensions;
 use extensions.boolean_vector.all;
 use extensions.logic.all;
 
-entity area_acc2 is
+-- Saturating Area above between xings.
+-- if AREA_ABOVE=TRUE returns area above threshold else area above 0.
+-- TOWARDS_INF=TRUE symmetric round towards infinity else towards 0.
+-- Uses one DSP48E latency 5 
+-- NOTE: assumes signal has the same sign between crossings. 
+--       rounding can be incorrect if this is not the case.
+entity area_acc is
 generic(
   WIDTH:integer:=16; -- max 18
   FRAC:integer:=3;
   AREA_WIDTH:integer:=32;
   AREA_FRAC:integer:=1;
-  AREA_ABOVE:boolean:=TRUE --TRUE calc area above signal_threshold
+  --TRUE calculates area above signal_threshold else area above 0
+  AREA_ABOVE:boolean:=TRUE;
+  -- symetricaly round towards infinity else 0
+  TOWARDS_INF:boolean:=TRUE
 ); 
 port (
   clk:in std_logic;
@@ -28,14 +37,15 @@ port (
   above_area_threshold:out boolean;
   area:out signed(AREA_WIDTH-1 downto 0)
 ); 
-end entity area_acc2;
+end entity area_acc;
 
-architecture DSP of area_acc2 is
+architecture DSP48E1x1 of area_acc is
 constant MSB:integer:=AREA_WIDTH+(FRAC-AREA_FRAC);
 constant MASK:std_logic_vector(47 downto 0)
              :=(MSB-2 downto 0 => '1', others => '0');  
 constant ROUND:std_logic_vector(47 downto 0)
               :=(FRAC-AREA_FRAC-2 downto 0 => '1', others => '0');             
+constant DEPTH:natural:=3;
 
 signal area_int:signed(AREA_WIDTH-1 downto 0);
 -- DSP48E1 signals
@@ -43,38 +53,46 @@ signal area_int:signed(AREA_WIDTH-1 downto 0);
 signal a:std_logic_vector(29 downto 0);
 signal d:std_logic_vector(24 downto 0);
 
-
 signal p_int,c:std_logic_vector(47 downto 0);
 signal accum_opmode:std_logic_vector(6 downto 0):="0001100";
-signal carry_in:std_ulogic;
+signal carry_in_pipe:std_logic_vector(0 to DEPTH);
+signal carry_in,carry_sign:std_logic;
 signal patb,pat,saturate:std_ulogic;
+signal x_pipe:boolean_vector(0 to DEPTH);
+signal b:std_logic_vector(17 downto 0);
 
 begin
   
 assert WIDTH <= 18 report "maximum width is 18" severity FAILURE;
 
--- want (d-a)x1+c + carry_in at xing, op mode 0110101
---      (d-a)x1+p otherwise           op mode 0000101
+x_pipe(0) <= xing;
+
+carry_sign <= not sig(WIDTH-1) when TOWARDS_INF else sig(WIDTH-1);
+carry_in_pipe(0) <= carry_sign when xing else '0';
+pipe:process (clk) is
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      x_pipe(1 to DEPTH) <= (others => FALSE);
+      carry_in_pipe(1 to DEPTH) <= (others => '0');
+    else
+      x_pipe(1 to DEPTH) <= x_pipe(0) & x_pipe(1 to DEPTH-1);
+      carry_in_pipe(1 to DEPTH) 
+        <= carry_in_pipe(0) & carry_in_pipe(1 to DEPTH-1);
+    end if;
+  end if;
+end process pipe;
+
+-- want ((d-a) x 1) + c + carry_in at xing, op mode 0110101 (init)
+--      ((d-a) x 1)+ p otherwise           op mode 0000101 (accumulate)
+b <= (0 => '1', others => '0');
 a <= resize(signal_threshold,30) when AREA_ABOVE else (others => '0'); 
 d <= resize(sig,25);  
 c <= ROUND;
 
-carry_in <= not sig(WIDTH-1) when xing else '0';
-accum_opmode <= "0110101" when xing else "0000101";
-
---xingReg:process (clk) is
---begin
---  if rising_edge(clk) then
---    if reset = '1' then
---      accum_opmode <= "0000101"; 
---    else
---      accum_opmode <= '0' & not to_std_logic(xing) & "00101"; 
---    end if;
---  end if;
---end process xingReg;
-
----z 
---accum_opmode <= '0' & not to_std_logic(xing) & "00101"; 
+accum_opmode <= "0110101" when x_pipe(2) else "0100101";
+--accum_opmode <= "0110101";-- when x_pipe(2) else "0000101";
+carry_in <= carry_in_pipe(2);
 
 --FIXME try to bypass multiply?
 accum:DSP48E1
@@ -90,14 +108,14 @@ generic map (
   PATTERN => X"000000000000",        -- 48-bit pattern match for pattern detect
   SEL_MASK => "MASK",                -- "C", "MASK", "ROUNDING_MODE1", "ROUNDING_MODE2" 
   SEL_PATTERN => "PATTERN",          -- Select pattern value ("PATTERN" or "C")
-  USE_PATTERN_DETECT => "NO_PATDET", -- Enable pattern detect ("PATDET" or "NO_PATDET")
+  USE_PATTERN_DETECT => "PATDET", -- Enable pattern detect ("PATDET" or "NO_PATDET")
   -- Register Control Attributes: Pipeline Register Configuration
   ACASCREG => 1,                     -- Number of pipeline stages between A/ACIN and ACOUT (0, 1 or 2)
   ADREG => 1,                        -- Number of pipeline stages for pre-adder (0 or 1)
   ALUMODEREG => 0,                   -- Number of pipeline stages for ALUMODE (0 or 1)
   AREG => 1,                         -- Number of pipeline stages for A (0, 1 or 2)
-  BCASCREG => 0,                     -- Number of pipeline stages between B/BCIN and BCOUT (0, 1 or 2)
-  BREG => 0,                         -- Number of pipeline stages for B (0, 1 or 2)
+  BCASCREG => 1,                     -- Number of pipeline stages between B/BCIN and BCOUT (0, 1 or 2)
+  BREG => 1,                         -- Number of pipeline stages for B (0, 1 or 2)
   CARRYINREG => 1,                   -- Number of pipeline stages for CARRYIN (0 or 1)
   CARRYINSELREG => 0,                -- Number of pipeline stages for CARRYINSEL (0 or 1)
   CREG => 1,                         -- Number of pipeline stages for C (0 or 1)
@@ -139,31 +157,31 @@ port map (
   RSTINMODE => reset,           -- 1-bit input: Reset input for INMODEREG
   -- Data: 30-bit (each) input: Data Ports
   A => a,                           -- 30-bit input: A data input
-  B => (0 => '1', others => '0'),           -- 18-bit input: B data input
-  C => (others => '0'), --cround,                           -- 48-bit input: C data input
+  B => b, --(0 => '0', others => '0'),           -- 18-bit input: B data input
+  C => c, --cround,                           -- 48-bit input: C data input
   CARRYIN => carry_in,               -- 1-bit input: Carry input signal
   D => d,                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs
   CEA1 => '1',                     -- 1-bit input: Clock enable input for 1st stage AREG
   CEA2 => '1',                     -- 1-bit input: Clock enable input for 2nd stage AREG
-  CEAD => '0',                     -- 1-bit input: Clock enable input for ADREG
+  CEAD => '1',                     -- 1-bit input: Clock enable input for ADREG
   CEALUMODE => '0',           -- 1-bit input: Clock enable input for ALUMODERE
-  CEB1 => '0',                     -- 1-bit input: Clock enable input for 1st stage BREG
-  CEB2 => '0',                     -- 1-bit input: Clock enable input for 2nd stage BREG
-  CEC => '0',                       -- 1-bit input: Clock enable input for CREG
-  CECARRYIN => '0',           -- 1-bit input: Clock enable input for CARRYINREG
+  CEB1 => '1',                     -- 1-bit input: Clock enable input for 1st stage BREG
+  CEB2 => '1',                     -- 1-bit input: Clock enable input for 2nd stage BREG
+  CEC => '1',                       -- 1-bit input: Clock enable input for CREG
+  CECARRYIN => '1',           -- 1-bit input: Clock enable input for CARRYINREG
   CECTRL => '1',                 -- 1-bit input: Clock enable input for OPMODEREG and CARRYINSELREG
   CED => '1',                       -- 1-bit input: Clock enable input for DREG
   CEM => '1',                       -- 1-bit input: Clock enable input for MREG
   CEP => '1',                       -- 1-bit input: Clock enable input for PREG
   RSTA => reset,                     -- 1-bit input: Reset input for AREG
-  RSTALLCARRYIN => '0',   -- 1-bit input: Reset input for CARRYINREG
-  RSTALUMODE => '0',         -- 1-bit input: Reset input for ALUMODEREG
-  RSTB => '0',                     -- 1-bit input: Reset input for BREG
+  RSTALLCARRYIN => reset,   -- 1-bit input: Reset input for CARRYINREG
+  RSTALUMODE => reset,         -- 1-bit input: Reset input for ALUMODEREG
+  RSTB => reset,                     -- 1-bit input: Reset input for BREG
   RSTC => reset,                     -- 1-bit input: Reset input for CREG
   RSTCTRL => reset,               -- 1-bit input: Reset input for OPMODEREG and CARRYINSELREG
   RSTD => reset,                     -- 1-bit input: Reset input for DREG and ADREG
-  RSTM => '0',                     -- 1-bit input: Reset input for MREG
+  RSTM => reset,                     -- 1-bit input: Reset input for MREG
   RSTP => reset                      -- 1-bit input: Reset input for PREG
 );
 
@@ -173,11 +191,11 @@ saturation:process (clk) is
 begin
   if rising_edge(clk) then
     if saturate='1' then  
-      if area_int(AREA_WIDTH-1)='1' then
-        area <= (WIDTH-1 => '1', others => '0');
+      if p_int(47)='1' then
+        area <= (AREA_WIDTH-1 => '1', others => '0');
         above_area_threshold <= FALSE;
       else
-        area <= (WIDTH-1 => '1', others => '0');
+        area <= (AREA_WIDTH-1 => '0', others => '1');
         above_area_threshold <= TRUE;
       end if;
     else
@@ -187,5 +205,5 @@ begin
   end if;
 end process saturation;
 
-end architecture DSP;
+end architecture DSP48E1x1;
 

@@ -21,7 +21,9 @@ generic(
   FRAC:natural:=3;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  RAW_DELAY:natural:=1026
+  RAW_DELAY:natural:=1026;
+  TOWARDS_INF:boolean:=TRUE;
+  AREA_ABOVE:boolean:=TRUE
 );
 port (
   clk:in std_logic;
@@ -51,10 +53,11 @@ signal pulse_time_n,pulse_length_n,rise_time_n:unsigned(16 downto 0);
 --------------------------------------------------------------------------------
 -- pipeline signals
 --------------------------------------------------------------------------------
---constant XLAT:natural:=1; -- crossing latency
-constant ALAT:natural:=5; --accumulate and round latency
+--accumulate and round latency the true latency of area_acc is 5
+--but want area since the previous crossing which value is 1 clk before xing
+constant ALAT:natural:=4; 
 constant ELAT:natural:=1; --extrema latency
-constant DEPTH:integer:=ALAT;--5; --main pipeline depth
+constant DEPTH:integer:=ALAT; --main pipeline depth
 
 --type pipe is array (1 to DEPTH) of signed(WIDTH-1 downto 0);
 signal cfd_low_p_pipe,cfd_high_p_pipe:boolean_vector(1 to DEPTH);
@@ -195,7 +198,9 @@ generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
   AREA_WIDTH => AREA_WIDTH,
-  AREA_FRAC => AREA_FRAC
+  AREA_FRAC => AREA_FRAC,
+  AREA_ABOVE => AREA_ABOVE,
+  TOWARDS_INF => TOWARDS_INF
 )
 port map(
   clk => clk,
@@ -204,8 +209,8 @@ port map(
   sig => f_cfd,  
   signal_threshold => signed('0' & reg.pulse_threshold),
   area_threshold => signed('0' & reg.area_threshold),
-  area => m.pulse_area,
-  above_area_threshold => m.above_area
+  area => m.pulse_area, -- effectively lat 4
+  above_area_threshold => m.above_area 
 );
 
 filteredArea:entity dsp.area_acc
@@ -213,7 +218,9 @@ generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
   AREA_WIDTH => AREA_WIDTH,
-  AREA_FRAC => AREA_FRAC
+  AREA_FRAC => AREA_FRAC,
+  AREA_ABOVE => AREA_ABOVE,
+  TOWARDS_INF => TOWARDS_INF
 )
 port map(
   clk => clk,
@@ -223,7 +230,7 @@ port map(
   signal_threshold => (others => '0'),
   area_threshold => (others => '0'),
   above_area_threshold => open,
-  area => m.f_area
+  area => m.f_area --effectively lat 4
 );
 
 filteredExtrema:entity work.extrema
@@ -244,7 +251,9 @@ generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
   AREA_WIDTH => AREA_WIDTH,
-  AREA_FRAC => AREA_FRAC
+  AREA_FRAC => AREA_FRAC,
+  AREA_ABOVE => AREA_ABOVE,
+  TOWARDS_INF => TOWARDS_INF
 )
 port map(
   clk => clk,
@@ -367,6 +376,7 @@ begin
       m.f_0 <= f_0_p_pipe(DEPTH-1) or f_0_n_pipe(DEPTH-1);
       m.s_0 <= min_pipe(DEPTH-1) or max_pipe(DEPTH-1);
       
+      
       f_pipe <= f_cfd & f_pipe(1 to DEPTH-1);
       s_pipe <= s_cfd & s_pipe(1 to DEPTH-1);
       f_0_p_pipe <= f_0_p_cfd & f_0_p_pipe(1 to DEPTH-1);
@@ -402,7 +412,7 @@ begin
       cfd_overrun_pipe <= cfd_overrun_cfd & cfd_overrun_pipe(1 to DEPTH-1);
       first_rise_pipe <= first_rise_cfd & first_rise_pipe(1 to DEPTH-1);
       
-      if (pulse_start_pipe(DEPTH-4)) then 
+      if pulse_start_cfd then 
         m.reg(PRE) <= reg; 
         m.enabled(PRE) <= event_enable;
       end if;
