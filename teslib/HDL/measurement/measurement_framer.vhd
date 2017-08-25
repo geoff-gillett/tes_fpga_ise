@@ -483,7 +483,7 @@ begin
       if state=AVERAGE then
         trace_start <= start_average;
       else
-        --FIXME replace trace_started with t_state=IDLE 
+        --FIXME move trace_start to m and add trace stamped  
         if TRACE_FROM_STAMP then
           trace_start <= m.stamp_pulse(PRE) and  (
             m.enabled(NOW) or (m.pulse_start(PRE) and m.enabled(PRE))

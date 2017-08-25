@@ -172,9 +172,9 @@ function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector;
 type mca_trigger_d is (
 	MCA_DISABLED_D, -- no select bits set
 	CLOCK_MCA_TRIGGER_D,
-  PULSE_THRESHOLD_POS_MCA_TRIGGER_D, 
+  PULSE_THRESHOLD_POS_MCA_TRIGGER_D, --FIXME order reversed
   PULSE_THRESHOLD_NEG_MCA_TRIGGER_D, 
-  SLOPE_THRESHOLD_MCA_TRIGGER_D,
+  SLOPE_THRESHOLD_MCA_TRIGGER_D, --FIXME does not work?
   FILTERED_0XING_MCA_TRIGGER_D,
   SLOPE_0XING_MCA_TRIGGER_D,
   SLOPE_POS_0XING_MCA_TRIGGER_D, --peak start minima

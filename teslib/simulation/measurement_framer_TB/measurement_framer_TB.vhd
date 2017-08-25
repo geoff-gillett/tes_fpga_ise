@@ -27,9 +27,9 @@ generic(
   AREA_FRAC:natural:=1;
   RAW_DELAY:natural:=1026;
   ADDRESS_BITS:natural:=10;
-  DP_ADDRESS_BITS:natural:=10;
+  DP_ADDRESS_BITS:natural:=11;
   ACCUMULATOR_WIDTH:natural:=48;
-  ACCUMULATE_N:natural:=2;
+  ACCUMULATE_N:natural:=8;
   TRACE_FROM_STAMP:boolean:=TRUE;
   ENDIAN:string:="LITTLE"
 );
@@ -51,7 +51,7 @@ signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
 signal simenable:boolean:=FALSE;
 signal store_reg:boolean;
 
-constant CF:integer:=2**17/2;
+constant CF:integer:=2**17/5;
 signal m:measurements_t;
 signal event_enable:boolean;
 signal raw,f,s:signed(WIDTH-1 downto 0);
@@ -76,7 +76,7 @@ signal framer_overflow:boolean;
 signal framer_error:boolean;
 signal stream:streambus_t;
 signal valid:boolean;
-signal ready:boolean;
+signal ready,ready_clk:boolean;
 
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -417,9 +417,9 @@ port map(
 stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
---	     "../bin_traces/july 10/gt1_100khz.bin";
+	     "../bin_traces/gt1_100khz_signal.bin";
 --	     "../bin_traces/july 10/randn2.bin";
-	     "../bin_traces/july 10/randn.bin";
+--	     "../bin_traces/july 10/randn.bin";
 --	     "../bin_traces/double_peak_signal.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
@@ -458,15 +458,27 @@ stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 
 reg.constant_fraction  <= to_unsigned(CF,17);
-reg.slope_threshold <= to_unsigned(0,WIDTH-1);
-reg.pulse_threshold <= to_unsigned(0,WIDTH-1);
-reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
-reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
+--reg.slope_threshold <= to_unsigned(0,WIDTH-1);
+--reg.pulse_threshold <= to_unsigned(0,WIDTH-1);
+--reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
+--reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 reg.detection <= PULSE_DETECTION_D;
+reg.trace_signal <= FILTERED_TRACE_D;
 reg.timing <= PULSE_THRESH_TIMING_D;
 reg.height <= PEAK_HEIGHT_D;
 reg.cfd_rel2min <= FALSE;
 event_enable <= TRUE;
+--------------------------------------------------------------------------------
+-- gt1 samples
+--------------------------------------------------------------------------------
+reg.slope_threshold <= to_unsigned(1000,DSP_BITS-1); --2300
+--reg.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
+reg.pulse_threshold <= to_unsigned(2000,DSP_BITS-1); 
+reg.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
+--chan_reg(0).baseline.offset <= to_signed(-500*8-793,DSP_BITS);
+reg.trace_stride <= (0 => '0', others => '0');
+reg.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 
 file_open(init_reg_file, "../init_reg",WRITE_MODE);
 initRegWriter:process
@@ -491,11 +503,13 @@ begin
     wait;
 end process initRegWriter; 
 
-ready <= ((clk_i mod 32) = 0);
+ready_clk <= (clk_i mod (5*256)) = 0;
 
 stimulus:process is
 begin
   store_reg <= FALSE;
+  reg.trace_type <= AVERAGE_TRACE_D;
+  ready <= FALSE;
 --  raw <= (WIDTH-1  => '0', others => '0');
   wait for CLK_PERIOD*10;
   reset <= '0';
@@ -505,6 +519,11 @@ begin
   store_reg <= FALSE;
   wait for CLK_PERIOD*300;
   simenable <= TRUE;
+--  wait for 2730 us;
+--  reg.trace_type <= DOT_PRODUCT_TRACE_D;
+  wait for 3580 us;
+  ready <= ready_clk;
+  
 --  --impulse
 --  raw <= (WIDTH-1  => '0', others => '1');
 --  wait for CLK_PERIOD;

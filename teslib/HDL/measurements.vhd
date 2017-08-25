@@ -89,7 +89,8 @@ type measurements_t is record
   pulse_length:unsigned(CHUNK_DATABITS-1 downto 0); --pulse_length_timer @ p_t_n
   --pulse timing point NOTE PRE2 may occur even if the rise if not valid;
   stamp_pulse:boolean_vector(PRE2 to NOW); 
-  pulse_stamped:boolean_vector(PRE to NOW); --valid till p_t_n 
+  pulse_stamped:boolean_vector(PRE to NOW); --cleared at p_t_n 
+  trace_stamped:boolean; -- cleared at trace start
   time_offset:unsigned(CHUNK_DATABITS-1 downto 0); --pulse_timer @ stamp_pulse
   
   --minima at start of a valid rise.
