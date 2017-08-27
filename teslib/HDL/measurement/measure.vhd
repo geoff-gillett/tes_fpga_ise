@@ -69,8 +69,8 @@ signal will_cross_pipe,will_arm_pipe:boolean_vector(1 to DEPTH);
 signal above_pipe,armed_pipe:boolean_vector(1 to DEPTH);
 signal cfd_error_pipe,cfd_overrun_pipe:boolean_vector(1 to DEPTH)
        :=(others => FALSE);
-signal rise_start_pipe,first_rise_pipe,pulse_start_pipe:boolean_vector(1 to DEPTH)
-       :=(others => FALSE);
+signal rise_start_pipe,first_rise_pipe,pulse_start_pipe:
+       boolean_vector(1 to DEPTH):=(others => FALSE);
 --------------------------------------------------------------------------------
 
 --signal p_threshold:signed(WIDTH-1 downto 0);
@@ -141,7 +141,7 @@ generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
   CF_FRAC => CF_FRAC,
-  DELAY => RAW_DELAY-212
+  DELAY => RAW_DELAY-210
 )
 port map(
   clk => clk,
@@ -523,7 +523,7 @@ begin
       m.stamp_pulse(NOW) <= m.stamp_pulse(PRE);
       m.stamp_rise(NOW) <= m.stamp_rise(PRE);
       
-      if m.max(PRE) then --FIXME what if threshold crossing @ max
+      if m.max(PRE) then 
         m.rise_stamped(PRE) <= FALSE;
         m.rise_stamped(NOW) <= m.rise_stamped(PRE);
       end if;
@@ -532,8 +532,9 @@ begin
         m.rise_stamped(NOW) <= m.stamp_rise(PRE);
       end if;
       
-      if m.p_t_n(PRE) then
-        m.pulse_stamped(PRE) <= FALSE;
+      if m.stamp_pulse(PRE) then
+        m.pulse_stamped(PRE) <= stamp_rise_pre2 and first_rise_pipe(DEPTH-1) and
+                                valid_rise_pipe(DEPTH-1);
         m.pulse_stamped(NOW) <= m.pulse_stamped(PRE);
       end if;
       

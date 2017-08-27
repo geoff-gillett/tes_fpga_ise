@@ -62,11 +62,6 @@ port (
   will_cross:out boolean; --changes at minima
   will_arm:out boolean; --changes at minima
   
---  -- crossings of calculated thresholds by output signals
---  cfd_low_p:out boolean; --f crossing cfd_low_threshold
---  cfd_high_p:out boolean; --f crossing cfd_high_threshold
---  max_slope_p:out boolean; --s = cfd_high_threshold (first occurrence after min)
-  
   cfd_valid:out boolean; -- max to min -- no error or overrun
   cfd_error:out boolean; -- flag at min
   cfd_overrun:out boolean --cfd failure due to long rise time true max to min

@@ -67,7 +67,7 @@ end entity channel;
 architecture fixed_16_3 of channel is
   
 constant RAW_DELAY:natural:=1026;
-  
+signal resetn:std_logic:='0';  
 signal sample_in,filtered,slope:signed(WIDTH-1 downto 0);
 signal m:measurements_t;
 signal sample_inv,baseline_sample:signed(ADC_WIDTH+FRAC downto 0);
@@ -102,7 +102,9 @@ if rising_edge(clk)  then
     --FIXME sample_inv could be a variable
     sample_inv <= (others => '0');
     baseline_sample  <= (others => '0');
+    resetn <= '0';
   else
+    resetn <= '1';
     if registers.capture.invert then
       sample_inv <= shift_left(-resize(adc_sample,ADC_WIDTH+FRAC+1),FRAC); 
     else
@@ -149,9 +151,7 @@ if rising_edge(clk) then
 end if;
 end process baselineSubraction;
 
-
---FIXME make this width 16 with dynamic frac
-FIR:entity dsp.FIR_142SYM_23NSYM_16bit
+FIR:entity dsp.FIR_SYM145_ASYM23_OUT16_3
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
@@ -159,6 +159,7 @@ generic map(
 )
 port map(
   clk => clk,
+  resetn => resetn,
   sample_in => sample_in,
   stage1_config => stage1_config,
   stage1_events => stage1_events,
@@ -176,7 +177,7 @@ generic map(
   FRAC => FRAC,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  RAW_DELAY => RAW_DELAY-101-72-38
+  RAW_DELAY => RAW_DELAY --101-72-38-2
 )
 port map(
   clk => clk,

@@ -202,6 +202,7 @@ signal q_length:unsigned(ADDRESS_BITS downto 0);
 signal commit_average:boolean;
 signal started:boolean;
 signal q_mux_wr_en:boolean;
+signal trace_stamped:boolean;
 
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
@@ -462,6 +463,7 @@ begin
       --------------------------------------------------------------------------
       --MUX for trace chunk
       --------------------------------------------------------------------------
+      --FIXME add delay here
       if state=AVERAGE then
         trace_chunk <= set_endianness(average_sample,ENDIAN);
       else
@@ -469,7 +471,7 @@ begin
         when NO_TRACE_D =>
           trace_chunk <= set_endianness(m.f,ENDIAN);
         when RAW_TRACE_D =>
-          trace_chunk <= set_endianness(m.raw,ENDIAN);
+          trace_chunk <= set_endianness(m.raw,ENDIAN); -- delay raw
         when FILTERED_TRACE_D =>
           trace_chunk <= set_endianness(m.f,ENDIAN);
         when SLOPE_TRACE_D =>
@@ -480,18 +482,24 @@ begin
       --------------------------------------------------------------------------
       --trace start
       --------------------------------------------------------------------------
+      trace_start <= FALSE;
       if state=AVERAGE then
         trace_start <= start_average;
       else
         --FIXME move trace_start to m and add trace stamped  
         if TRACE_FROM_STAMP then
-          trace_start <= m.stamp_pulse(PRE) and  (
-            m.enabled(NOW) or (m.pulse_start(PRE) and m.enabled(PRE))
-          ); 
-                                       --will enable
+          if m.stamp_pulse(PRE) and  (
+              m.enabled(NOW) or (m.pulse_start(PRE) and m.enabled(PRE))
+            ) then
+              trace_stamped <= FALSE;
+              trace_start <= TRUE;
+           end if;
+        elsif m.pulse_start(PRE) and m.enabled(PRE) then 
+          trace_start <= TRUE;
+          trace_stamped <= FALSE;
         end if;
-        if not TRACE_FROM_STAMP then
-          trace_start <= m.pulse_start(PRE) and m.enabled(PRE); 
+        if m.stamp_pulse(PRE) and (state=FIRSTPULSE or state=WAITPULSEDONE) then
+          trace_stamped <= TRUE;
         end if;
       end if;
       
@@ -1000,7 +1008,8 @@ begin
      
         if trace_overflow or (trace_last and trace_full) then
           overflow_reg <= TRUE;
-          dump_reg <= m.pulse_stamped(NOW) or (m.stamp_pulse(PRE) and mux_enable);
+          dump_reg <= m.pulse_stamped(NOW); --or 
+                      --(m.stamp_pulse(PRE) and mux_enable); --FIXME check
           dp_dump <= TRUE;
           state <= IDLE;
           
@@ -1180,8 +1189,7 @@ begin
         if trace_overflow or (trace_last and trace_full) then
           state <= IDLE;
           overflow_reg <= TRUE;
-          dump_reg <= m.pulse_stamped(NOW); 
---          pulse_stamped <= FALSE;
+          dump_reg <= trace_stamped; 
           dp_dump <= TRUE;
           
         elsif trace_last or trace_done then
@@ -1266,7 +1274,8 @@ begin
                 q_mux_wr_en <= mux_wr_en;
               else  
                 error_reg <= TRUE;
-                dump_reg <= m.pulse_stamped(NOW);
+--                dump_reg <= m.pulse_stamped(NOW);
+                dump_reg <= trace_stamped;
 --                pulse_stamped <= FALSE;
                 dp_dump <= TRUE;
               end if;
@@ -1355,6 +1364,8 @@ begin
 --              inc_accum <= TRUE;
 ----              free <= next_free;
 ----              free <= framer_free - length;
+
+            --trace is over no need to worry about overflow
             if not average_detection then
               if q_ready then
 --                dp_write <= TRUE; 
@@ -1464,6 +1475,7 @@ begin
       end if;
       
       -- time stamping
+      
       if peak_detection and m.stamp_rise(NOW) and m.enabled(NOW) then
         if mux_full then
           error_reg <= TRUE;

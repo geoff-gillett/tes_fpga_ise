@@ -7,6 +7,7 @@ library streamlib;
 use streamlib.types.all;
 
 library extensions;
+use extensions.boolean_vector.all;
 use extensions.logic.all;
 use extensions.debug.all;
 
@@ -34,8 +35,18 @@ generic(
 end entity channel_TB;
 
 architecture testbench of channel_TB is
+file trace_file,min_file,max_file:integer_file;
+file f0p_file,f0n_file:integer_file;
+file ptn_file,init_reg_file:integer_file;
+file rise_stamp_file,pulse_stamp_file:integer_file;
+file rise_start_file,pulse_start_file:integer_file;
+file height_valid_file,rise_stop_file:integer_file;
+file dump_file,commit_file,start_file:integer_file;
+file framer_error_file,framer_overflow_file:integer_file;
+file stream_file:integer_file;
 
 signal clk:std_logic:='1';
+signal clk_i:integer:=-1; --clk index for data files
 signal reset1:std_logic:='1';
 signal reset2:std_logic:='1';
 constant CLK_PERIOD:time:=4 ns;
@@ -53,8 +64,6 @@ signal valid:boolean;
 signal ready:boolean;
 
 signal clk_count:integer:=0;
-file stream_file:integer_file;
-file trace_file:integer_file;
 signal event_enable:boolean;
 
 constant SIM_WIDTH:natural:=9;
@@ -69,12 +78,15 @@ signal stage2_events:fir_control_out_t;
 signal simenable:boolean:=FALSE;
 signal long:boolean:=TRUE;
 
+signal flags:boolean_vector(10 downto 0);
+
 constant CF:integer:=2**17/20; --20%
 
 begin
 clk <= not clk after CLK_PERIOD/2;
+clk_i <= clk_i+1 after CLK_PERIOD;
   
-UUT:entity work.channel8
+UUT:entity work.channel
 generic map(
   CHANNEL => CHANNEL,
   CF_WIDTH => CF_WIDTH,
@@ -85,8 +97,7 @@ generic map(
   ADC_WIDTH => ADC_WIDTH,
   AREA_WIDTH => AREA_WIDTH,
   AREA_FRAC => AREA_FRAC,
-  ENDIAN  => ENDIAN,
-  STRICT_CROSSING => STRICT_CROSSING
+  ENDIAN  => ENDIAN
 )
 port map(
   clk => clk,
@@ -111,32 +122,45 @@ port map(
   ready => ready
 );
 
-file_open(stream_file,"../stream",WRITE_MODE);
-StreamWriter:process
+--------------------------------------------------------------------------------
+-- data recording
+--------------------------------------------------------------------------------
+flags <= -- byte 1
+         --  5         6         7                        
+         m.rise2 & m.rise1 & m.valid_rise & 
+         --byte 0
+         -- 0            1                  2                   3
+         m.rise0 & m.rise_start(NOW) & m.pulse_start(NOW) & m.will_cross & 
+         --  4             5              6             7
+         m.will_arm & m.cfd_error & m.cfd_overrun & m.cfd_valid;
+
+file_open(stream_file, "../stream",WRITE_MODE);
+streamWriter:process
 begin
-	while TRUE loop
+  while TRUE loop
     wait until rising_edge(clk);
-    if valid and ready then
-    	writeInt(stream_file,stream.data(31 downto 0),"BIG");
-    	writeInt(stream_file,stream.data(63 downto 32),"BIG");
+    if ready and valid then
       if stream.last(0) then
-    		write(stream_file, -clk_count); 
-    	else
-    		write(stream_file, clk_count);
-    	end if;
+        write(stream_file, -clk_i);
+      else
+        write(stream_file, clk_i);
+      end if;
+      write(stream_file,to_integer(signed(to_0(stream.data(31 downto 0)))));
+      write(stream_file,to_integer(signed(to_0(stream.data(63 downto 32)))));
     end if;
-	end loop;
-end process StreamWriter;
+  end loop;
+end process streamWriter; 
+file_open(stream_file,"../stream",WRITE_MODE);
 
 file_open(trace_file, "../traces",WRITE_MODE);
 traceWriter:process
 begin
-	while TRUE loop
+  while TRUE loop
     wait until rising_edge(clk);
-	  writeInt(trace_file,m.raw.sample,"BIG");
-	  writeInt(trace_file,m.filtered.sample,"BIG");
-	  writeInt(trace_file,m.slope.sample,"BIG");
-	end loop;
+    write(trace_file, to_integer(m.raw));
+    write(trace_file, to_integer(m.f));
+    write(trace_file, to_integer(m.s));
+  end loop;
 end process traceWriter; 
 
 clkCount:process is
@@ -147,20 +171,18 @@ end process clkCount;
 
 stimulusFile:process
 	file sample_file:integer_file is in 
-	     "../input_signals/50mvCh1on_amp_100khzdiode_250_1.bin";
+--	     "../input_signals/tes2_250_old.bin";
+	     "../bin_traces/gt1_100khz.bin";
+--	     "../bin_traces/july 10/randn2.bin";
+--	     "../bin_traces/july 10/randn.bin";
+--	     "../bin_traces/double_peak_signal.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
 begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(clk);
---		adc_sample <= to_signed(sample, 14);
-		--sample_reg <= resize(sample_in, 14);
-		--adc_samples(1) <= (others => '0'); -- adc_samples(0);
-		if clk_count mod 10000 = 0 then
-			report "sample " & integer'image(clk_count);
-		end if;
-		--assert false report str_sample severity note;
+--		adc_sample <= to_signed(sample, WIDTH);
 	end loop;
 	wait;
 end process stimulusFile;
@@ -198,11 +220,10 @@ doublesig <= to_signed(-200,ADC_WIDTH)
 --adc_sample <= signed(squaresig);
 --adc_sample <= signed(doublesig);
 --adc_sample <= resize(adc_count,ADC_WIDTH);
-adc_sample <= doublesig;
+--adc_sample <= doublesig;
 
 stimulus:process
 begin
---adc_sample <= to_signed(0,ADC_WIDTH);
 stage1_config.config_data <= (others => '0');
 stage1_config.config_valid <= '0';
 stage1_config.reload_data <= (others => '0');
@@ -231,18 +252,19 @@ registers.capture.height <= PEAK_HEIGHT_D;
 registers.capture.cfd_rel2min <= FALSE;
 event_enable <= TRUE;
 
-wait for CLK_PERIOD;
+adc_sample <= to_signed(0,ADC_WIDTH);
+wait for CLK_PERIOD*20;
 reset1 <= '0';
+wait for CLK_PERIOD*40;
 reset2 <= '0';
 wait for CLK_PERIOD;
 ready <= TRUE;
 wait for CLK_PERIOD*1500;
 simenable <= TRUE;
---adc_sample <= to_signed(0,ADC_WIDTH);
---wait for CLK_PERIOD;
---adc_sample <= to_signed(8000,ADC_WIDTH);
---wait for CLK_PERIOD;
---adc_sample <= to_signed(0,ADC_WIDTH);
+wait for CLK_PERIOD;
+adc_sample <= to_signed(8000,ADC_WIDTH);
+wait for CLK_PERIOD;
+adc_sample <= to_signed(0,ADC_WIDTH);
 wait; 
 end process stimulus;
 

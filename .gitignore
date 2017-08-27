@@ -127,3 +127,5 @@ dsplib/Vivado_IP/stage2_FIR_23_NSYM_25_25/
 dsplib/Vivado_IP/FIR_142SYM_24_28/
 *.hdf5
 *untitled.ipynb
+dsplib/Vivado_IP/FIR_ASYM23_C25_28_O23_8_RCE/
+dsplib/Vivado_IP/FIR_SYM145_C24_23_O25_3_RCE/

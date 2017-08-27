@@ -8,7 +8,7 @@ use extensions.debug.all;
 
 library dsp;
 use dsp.types.all;
-use dsp.FIR_142SYM_23NSYM_16bit;
+use dsp.FIR_SYM145_ASYM23_OUT16_3;
 
 library streamlib;
 use streamlib.types.all;
@@ -76,7 +76,8 @@ signal framer_overflow:boolean;
 signal framer_error:boolean;
 signal stream:streambus_t;
 signal valid:boolean;
-signal ready,ready_clk:boolean;
+signal ready,ready_clk,ready_hold:boolean;
+signal resetn:std_logic:='0';
 
 begin
 clk <= not clk after CLK_PERIOD/2;
@@ -350,7 +351,7 @@ begin
   end loop;
 end process streamWriter; 
 
-fir:entity FIR_142SYM_23NSYM_16bit
+fir:entity FIR_SYM145_ASYM23_OUT16_3
 generic map(
   WIDTH => WIDTH,
   FRAC => 3,
@@ -358,6 +359,7 @@ generic map(
 )
 port map(
   clk => clk,
+  resetn => resetn,
   sample_in => raw,
   stage1_config => stage1_config,
   stage1_events => open,
@@ -462,7 +464,7 @@ reg.constant_fraction  <= to_unsigned(CF,17);
 --reg.pulse_threshold <= to_unsigned(0,WIDTH-1);
 --reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-reg.detection <= PULSE_DETECTION_D;
+reg.detection <= TRACE_DETECTION_D;
 reg.trace_signal <= FILTERED_TRACE_D;
 reg.timing <= PULSE_THRESH_TIMING_D;
 reg.height <= PEAK_HEIGHT_D;
@@ -473,7 +475,7 @@ event_enable <= TRUE;
 --------------------------------------------------------------------------------
 reg.slope_threshold <= to_unsigned(1000,DSP_BITS-1); --2300
 --reg.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
-reg.pulse_threshold <= to_unsigned(2000,DSP_BITS-1); 
+reg.pulse_threshold <= to_unsigned(1000,DSP_BITS-1); 
 reg.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --chan_reg(0).baseline.offset <= to_signed(-500*8-793,DSP_BITS);
@@ -504,15 +506,19 @@ begin
 end process initRegWriter; 
 
 ready_clk <= (clk_i mod (5*256)) = 0;
+ready <= (clk_i mod 16) = 0;
+--ready <= FALSE when ready_hold else ready_clk;
+--ready <= TRUE;
 
 stimulus:process is
 begin
   store_reg <= FALSE;
-  reg.trace_type <= AVERAGE_TRACE_D;
-  ready <= FALSE;
+  reg.trace_type <= SINGLE_TRACE_D;
+  ready_hold <= TRUE;
 --  raw <= (WIDTH-1  => '0', others => '0');
-  wait for CLK_PERIOD*10;
+  wait for CLK_PERIOD*100;
   reset <= '0';
+  resetn <= '1';
   wait for CLK_PERIOD;
   store_reg <= TRUE;
   wait for CLK_PERIOD;
@@ -521,8 +527,9 @@ begin
   simenable <= TRUE;
 --  wait for 2730 us;
 --  reg.trace_type <= DOT_PRODUCT_TRACE_D;
-  wait for 3580 us;
-  ready <= ready_clk;
+--  wait for 100 us;
+--  wait for 3580 us;
+--  ready_hold <= FALSE;
   
 --  --impulse
 --  raw <= (WIDTH-1  => '0', others => '1');

@@ -8,11 +8,12 @@ use unisim.vcomponents.DSP48E1;
 library extensions;
 use extensions.logic.all;
 
+--NOT this is currently broken
 entity round is
 generic(
   WIDTH_IN:integer:=48; -- max 48
   FRAC_IN:integer:=28;
-  WIDTH_OUT:integer:=18;
+  WIDTH_OUT:integer:=16;
   FRAC_OUT:integer:=3;
   TOWARDS_INF:boolean:=TRUE
 ); 
@@ -33,22 +34,20 @@ signal a:std_logic_vector(29 downto 0);
 signal b:std_logic_vector(17 downto 0);
 signal p_out,ab:std_logic_vector(47 downto 0);
 
-constant NONZERO_MASKS:boolean:=FRAC_IN-FRAC_OUT > 2;
-
+constant MSB:integer:=WIDTH_OUT+FRAC_OUT-FRAC_IN-1;
+constant NO_ROUND:boolean:=FRAC_IN=FRAC_OUT;
 constant OVERFLOW_MASK:bit_vector(47 downto 0)
-         :=(WIDTH_OUT-FRAC_OUT+FRAC_IN-2 downto 0 => '1', others => '0');
+                      :=(MSB-1 downto 0 => '1', others => '0');
+constant ROUNDING:std_logic_vector(47 downto 0)
+                 :=(FRAC_IN-FRAC_OUT-2 downto 0 => '1', others => '0');
 
---constant ROUNDING_CONSTANT:std_logic_vector(47 downto 0)
-         --:=(FRAC_IN-FRAC_OUT-2 downto 0 => '1', others => '0');
          
 signal carryin:std_logic;
 signal pat:std_ulogic;
 signal patb:std_ulogic;
 signal saturate:std_logic;
-signal rounding:std_logic_vector(47 downto 0):=(others => '0');
 --signal overflow_mask:bit_vector(47 downto 0):=(others => '0');
 
-constant NO_ROUND:boolean:=FRAC_IN=FRAC_OUT;
 begin
   
 assert WIDTH_IN <= 48 report "maximum WIDTH_IN is 48" severity ERROR;
@@ -56,12 +55,9 @@ assert WIDTH_OUT <= 48 report "maximum WIDTH_OUT is 48" severity ERROR;
 assert FRAC_OUT <= FRAC_IN 
 report "FRAC_OUT must be less than or equal to FRAC_in" severity ERROR;
 
-constantGen:if NONZERO_MASKS generate
-  rounding <= (FRAC_IN-FRAC_OUT-2 downto 0 => '1', others => '0');
-end generate;
-
 --carryin_sel <= "101" when TOWARDS_INF else "111";
-carryin <= '0' when NO_ROUND else not input(WIDTH_IN-1);
+carryin <= '0' when NO_ROUND else not input(WIDTH_IN-1) when TOWARDS_INF 
+               else input(WIDTH_IN-1);
 saturate <= not (pat xor patb);
 
 ab <= resize(input,48);
@@ -88,7 +84,7 @@ begin
         );
         above_threshold <= signed(
           p_out(WIDTH_OUT+FRAC_IN-FRAC_OUT-1 downto FRAC_IN-FRAC_OUT)
-        ) >= output_threshold;
+        ) > output_threshold;
       end if;
     end if;
   end if;
@@ -157,7 +153,7 @@ port map (
   -- Data: 30-bit (each) input: Data Ports
   A => a,                           -- 30-bit input: A data input
   B => b,                           -- 18-bit input: B data input
-  C => ROUNDING,--OVERFLOW_VALUE,                           -- 48-bit input: C data input
+  C => ROUNDING,                           -- 48-bit input: C data input
   CARRYIN => carryin,               -- 1-bit input: Carry input signal
   D => (others => '1'),                           -- 25-bit input: D data input
   -- Reset/Clock Enable: 1-bit (each) input: Reset/Clock Enable Inputs

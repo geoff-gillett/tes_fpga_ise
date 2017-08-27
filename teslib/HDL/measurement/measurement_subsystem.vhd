@@ -299,6 +299,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     sample_out => adc_mux(c)
   );
 
+  --FIXME move into channel
   delay:entity work.dynamic_RAM_delay
   generic map(
     DEPTH => 2**DELAY_BITS,
