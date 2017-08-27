@@ -906,6 +906,7 @@ begin
         tflags.stride <= m.reg(PRE).trace_stride;
         tflags.trace_signal <= m.reg(PRE).trace_signal;
         tflags.trace_type <= m.reg(PRE).trace_type;
+        tflags.offset <= size(PRE);
         zero_stride <= m.reg(PRE).trace_stride=0; 
         
         eflags.cfd_rel2min <= m.reg(PRE).cfd_rel2min;
