@@ -250,6 +250,7 @@ registers.capture.detection <= PULSE_DETECTION_D;
 registers.capture.timing <= PULSE_THRESH_TIMING_D;
 registers.capture.height <= PEAK_HEIGHT_D;
 registers.capture.cfd_rel2min <= FALSE;
+registers.capture.trace_pre <= (others => '0');
 event_enable <= TRUE;
 
 adc_sample <= to_signed(0,ADC_WIDTH);

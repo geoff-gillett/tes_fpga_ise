@@ -156,7 +156,7 @@ generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
   CF_FRAC => CF_FRAC,
-  DELAY => RAW_DELAY-207 --210
+  DELAY => RAW_DELAY-203 --210
 )
 port map(
   clk => clk,

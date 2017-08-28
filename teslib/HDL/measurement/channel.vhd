@@ -151,7 +151,7 @@ if rising_edge(clk) then
 end if;
 end process baselineSubraction;
 
-FIR:entity dsp.FIR_SYM145_ASYM23_OUT16_3
+FIR:entity dsp.FIR_SYM141_ASYM23_OUT16_3
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,

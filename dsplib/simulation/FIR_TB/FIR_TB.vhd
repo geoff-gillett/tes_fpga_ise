@@ -48,7 +48,7 @@ stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 
-UUT:entity work.FIR_SYM145_ASYM23_OUT16_3
+UUT:entity work.FIR_SYM141_ASYM23_OUT16_3
 generic map(
   WIDTH => WIDTH,
   FRAC => FRAC,
