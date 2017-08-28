@@ -115,6 +115,8 @@ signal rise_valid_cfd:boolean;
 signal cfd_valid_cfd:boolean;
 signal reg:capture_registers_t;
 
+signal f_trace,s_trace,raw_trace,raw_sig:std_logic_vector(WIDTH-1 downto 0);
+
 constant DEBUG:string:="FALSE";
 attribute mark_debug:string;
 attribute mark_debug of valid_rise:signal is DEBUG;
@@ -134,14 +136,27 @@ port map(
   input => std_logic_vector(raw),
   delayed => raw_d
 );
-m.raw <= signed(raw_d);
+rawTrace:entity work.dynamic_RAM_delay2
+generic map(
+  DEPTH     => 2**10,
+  DATA_BITS => WIDTH
+)
+port map(
+  clk => clk,
+  data_in => raw_d,
+  data_out => raw_sig,
+  delay => to_integer(m.reg(PRE).trace_pre),
+  delayed => raw_trace
+);
+m.raw <= signed(raw_sig);
+m.raw_trace <= signed(raw_trace);
 
 CFD:entity work.CFD
 generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
   CF_FRAC => CF_FRAC,
-  DELAY => RAW_DELAY-210
+  DELAY => RAW_DELAY-207 --210
 )
 port map(
   clk => clk,
@@ -633,5 +648,31 @@ begin
   end if;
 end process pulseMeas;
 
+fTrace:entity work.dynamic_RAM_delay2
+generic map(
+  DEPTH     => 2**10,
+  DATA_BITS => WIDTH
+)
+port map(
+  clk => clk,
+  data_in => std_logic_vector(f_pipe(DEPTH-3)),
+  data_out => open,
+  delay => to_integer(m.reg(PRE).trace_pre),
+  delayed => f_trace
+);
+m.f_trace <= signed(f_trace);
+sTrace:entity work.dynamic_RAM_delay2
+generic map(
+  DEPTH     => 2**10,
+  DATA_BITS => WIDTH
+)
+port map(
+  clk => clk,
+  data_in => std_logic_vector(s_pipe(DEPTH-3)),
+  data_out => open,
+  delay => to_integer(m.reg(PRE).trace_pre),
+  delayed => s_trace
+);
+m.s_trace <= signed(s_trace);
 
 end architecture RTL;

@@ -469,13 +469,13 @@ begin
       else
         case m.reg(NOW).trace_signal is
         when NO_TRACE_D =>
-          trace_chunk <= set_endianness(m.f,ENDIAN);
+          trace_chunk <= set_endianness(m.f_trace,ENDIAN);
         when RAW_TRACE_D =>
-          trace_chunk <= set_endianness(m.raw,ENDIAN); -- delay raw
+          trace_chunk <= set_endianness(m.raw_trace,ENDIAN); -- delay raw
         when FILTERED_TRACE_D =>
-          trace_chunk <= set_endianness(m.f,ENDIAN);
+          trace_chunk <= set_endianness(m.f_trace,ENDIAN);
         when SLOPE_TRACE_D =>
-          trace_chunk <= set_endianness(m.s,ENDIAN);
+          trace_chunk <= set_endianness(m.s_trace,ENDIAN);
         end case;
       end if;
       

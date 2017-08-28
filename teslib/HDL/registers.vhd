@@ -44,6 +44,7 @@ constant DELAY_BITS:integer:=10;
 constant PEAK_COUNT_BITS:integer:=4;
 constant TRACE_STRIDE_BITS:integer:=5;
 constant TRACE_LENGTH_BITS:integer:=10;
+constant TRACE_PRE_BITS:natural:=10;
 
 constant MCA_BIN_N_BITS:integer:=5;
 constant MCA_CHANNEL_WIDTH:integer:=3;
@@ -246,6 +247,7 @@ type capture_registers_t is record
 	trace_type:trace_type_d;
 	trace_stride:unsigned(TRACE_STRIDE_BITS-1 downto 0);
 	trace_length:unsigned(TRACE_LENGTH_BITS-1 downto 0);
+	trace_pre:unsigned(TRACE_PRE_BITS-1 downto 0);
 	--stream_enable:boolean;
 end record;
 

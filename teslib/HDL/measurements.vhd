@@ -49,6 +49,7 @@ type measurements_t is record
   enabled:boolean_vector(PRE to NOW);
   --the filtered signal
 	f:signed(CHUNK_DATABITS-1 downto 0);
+	f_trace:signed(CHUNK_DATABITS-1 downto 0);
 	--extreme value of f between zero crossings.
 	f_extrema:signed(CHUNK_DATABITS-1 downto 0);	
 	f_area:signed(2*CHUNK_DATABITS-1 downto 0);	
@@ -59,6 +60,7 @@ type measurements_t is record
 	
 	--the slope signal
   s:signed(CHUNK_DATABITS-1 downto 0);
+	s_trace:signed(CHUNK_DATABITS-1 downto 0);
 	--extreme value of s between zero crossings.
 	s_extrema:signed(CHUNK_DATABITS-1 downto 0);	
 	--sum of s between zero crossings.
@@ -75,6 +77,7 @@ type measurements_t is record
 	
   --the raw baseline corrected signal
 	raw:signed(CHUNK_DATABITS-1 downto 0);
+	raw_trace:signed(CHUNK_DATABITS-1 downto 0);
 		
 		
 	has_pulse:boolean; --packet type contains a pulse	
