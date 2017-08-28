@@ -33,8 +33,9 @@
 -- baseline.threshold		  		address bit 8
 -- baseline.count_threshold		address bit 9
 -- baseline flags							address bit 10
--- 	2  downto 0  baseline.average_order
+-- 	2  downto 0   baseline.average_order
 -- 	4 						baseline.subtraction 
+--  24 downto 16  trace pre trigger  10 bits
 -- input select								address bit 11
 
 -- address bit 23 filter config
