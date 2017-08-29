@@ -49,7 +49,6 @@ signal cfd_error_cfd:boolean;
 signal s_cfd,f_cfd:signed(WIDTH-1 downto 0);
 signal raw_d:std_logic_vector(WIDTH-1 downto 0);
 
-signal m:measurements_t;
 
 signal pulse_time_n,pulse_length_n,rise_time_n:unsigned(16 downto 0);
 
@@ -119,6 +118,20 @@ signal cfd_valid_cfd:boolean;
 signal reg:capture_registers_t;
 signal trace_timer_n_init_pre:unsigned(CHUNK_DATABITS downto 0);
 
+--duplication to help close timing
+attribute equivalent_register_removal:string;
+--number of samples before the trigger 
+signal trace_pre2,raw_trace_pre2:unsigned(TRACE_PRE_BITS-1 downto 0);
+--number of samples before the trigger 
+signal f_trace_pre2,s_trace_pre2:unsigned(TRACE_PRE_BITS-1 downto 0);
+attribute equivalent_register_removal of f_trace_pre2:signal is "no";
+attribute equivalent_register_removal of s_trace_pre2:signal is "no";
+attribute equivalent_register_removal of raw_trace_pre2:signal is "no";
+attribute equivalent_register_removal of trace_pre2:signal is "no";
+
+signal m:measurements_t;
+attribute equivalent_register_removal of m:signal is "yes";
+
 signal f_trace,s_trace,raw_trace,raw_sig:std_logic_vector(WIDTH-1 downto 0);
 
 constant DEBUG:string:="FALSE";
@@ -149,7 +162,7 @@ port map(
   clk => clk,
   data_in => raw_d,
   data_out => raw_sig,
-  delay => to_integer(m.reg(PRE).trace_pre),
+  delay => to_integer(raw_trace_pre2),
   delayed => raw_trace
 );
 m.raw <= signed(raw_sig);
@@ -431,16 +444,26 @@ begin
       cfd_overrun_pipe <= cfd_overrun_cfd & cfd_overrun_pipe(1 to DEPTH-1);
       first_rise_pipe <= first_rise_cfd & first_rise_pipe(1 to DEPTH-1);
       
+      --FIXME check the reg pipe setup has only PRE3 and NOW
+      f_trace_pre2 <= m.reg(PRE3).trace_pre;
+      s_trace_pre2 <= m.reg(PRE3).trace_pre;
+      raw_trace_pre2 <= m.reg(PRE3).trace_pre;
+      trace_pre2 <= m.reg(PRE3).trace_pre;
+      m.enabled <= m.enabled(PRE3) & m.enabled(PRE3 to PRE);
+      m.has_pulse <= m.has_pulse(PRE3) & m.has_pulse(PRE3 to PRE);
+      m.has_trace <= m.has_trace(PRE3) & m.has_trace(PRE3 to PRE);
       if pulse_start_cfd then 
+        m.reg(PRE3) <= reg; 
+        m.reg(PRE2) <= reg; 
         m.reg(PRE) <= reg; 
-        m.enabled(PRE) <= event_enable;
-        m.has_pulse(PRE) <= reg.detection=PULSE_DETECTION_D or (
+        m.enabled(PRE3) <= event_enable;
+        m.has_pulse(PRE3) <= reg.detection=PULSE_DETECTION_D or (
                               reg.detection=TRACE_DETECTION_D and (
                                 reg.trace_type=SINGLE_TRACE_D or 
                                 reg.trace_type=DOT_PRODUCT_TRACE_D
                               )
                             );
-        m.has_trace(PRE) <= reg.detection=TRACE_DETECTION_D and (
+        m.has_trace(PRE3) <= reg.detection=TRACE_DETECTION_D and (
                               reg.trace_type=SINGLE_TRACE_D or 
                               reg.trace_type=DOT_PRODUCT_TRACE_D
                             );
@@ -450,14 +473,14 @@ begin
         rise_number_n2 <= (1 => '1', others => '0');
         rise_number_n <= (0 => '1', others => '0');
         m.rise_number <= (others => '0');
-        trace_timer_n_init_pre <= resize(reg.trace_pre+1,CHUNK_DATABITS+1);
+        trace_timer_n_init_pre <= resize(trace_pre2+1,CHUNK_DATABITS+1);
       end if;
           
       if m.pulse_start(PRE) then 
-        m.reg(NOW) <= m.reg(PRE); --FIXME is this an issue? when start max start
-        m.enabled(NOW) <= m.enabled(PRE);
-        m.has_pulse(NOW) <= m.has_pulse(PRE);
-        m.has_trace(NOW) <= m.has_trace(PRE);
+        m.reg(NOW) <= m.reg(PRE3); --FIXME is this an issue? when start max start
+--        m.enabled(NOW) <= m.enabled(PRE);
+--        m.has_pulse(NOW) <= m.has_pulse(PRE);
+--        m.has_trace(NOW) <= m.has_trace(PRE);
         
         
         m.last_peak_address <= reg.max_peaks+2;
@@ -551,7 +574,7 @@ begin
         m.stamp_pulse(PRE) <= not m.pulse_stamped(PRE);
         m.pulse_stamped(PRE) <= TRUE;
         if m.has_trace(PRE) then --NOTE:has_trace changes @ PRE3
-          m.pulse_timer(PRE) <= resize(m.reg(PRE).trace_pre,CHUNK_DATABITS);
+          m.pulse_timer(PRE) <= resize(trace_pre2,CHUNK_DATABITS);
           pulse_time_n <= trace_timer_n_init_pre;
         end if;
       elsif first_rise_pipe(DEPTH-2) and m.min(PRE2) and 
@@ -671,7 +694,7 @@ port map(
   clk => clk,
   data_in => std_logic_vector(f_cfd),
   data_out => open,
-  delay => to_integer(m.reg(PRE).trace_pre),
+  delay => to_integer(f_trace_pre2),
   delayed => f_trace
 );
 m.f_trace <= signed(f_trace);
@@ -684,7 +707,7 @@ port map(
   clk => clk,
   data_in => std_logic_vector(s_cfd),
   data_out => open,
-  delay => to_integer(m.reg(PRE).trace_pre),
+  delay => to_integer(s_trace_pre2),
   delayed => s_trace
 );
 m.s_trace <= signed(s_trace);

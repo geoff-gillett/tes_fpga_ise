@@ -43,10 +43,10 @@ type s_chunk_pipe is array (natural range <>) of
 	
 type measurements_t is record
 	--register settings used in CFD process.
-	--NOTE:reg(PRE) valid @ PRE3, reg(NOW) VALID @ DEPTH
-	reg:creg_pipe(PRE to NOW); 
+	--NOTE:PRE2 and PRE=PRE3 and reg(NOW) VALID @ DEPTH
+	reg:creg_pipe(PRE3 to NOW); 
 	--event_enabled captured 4 clks (PRE) and 1 clk (NOW) prior to pulse_start.
-  enabled:boolean_vector(PRE to NOW);
+  enabled:boolean_vector(PRE3 to NOW);
   --the filtered signal
 	f:signed(CHUNK_DATABITS-1 downto 0);
 	f_trace:signed(CHUNK_DATABITS-1 downto 0);
@@ -81,11 +81,9 @@ type measurements_t is record
 	
 		
   --packet type contains a pulse	
-	--NOTE:has_pulse(PRE) valid @ PRE3 has_pulse(NOW) VALID @ DEPTH
-	has_pulse:boolean_vector(PRE2 to NOW); 
+	has_pulse:boolean_vector(PRE3 to NOW); 
   --packet type contains a trace	
-	--NOTE:has_trace(PRE) valid @ PRE3 has_trace(NOW) VALID @ DEPTH
-	has_trace:boolean_vector(PRE2 to NOW); 
+	has_trace:boolean_vector(PRE3 to NOW); 
 		
   --valid rise with minima below pulse threshold PRE2 is 2 clks before
   pulse_start:boolean_vector(PRE3 to NOW); --min of valid first rise
