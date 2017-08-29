@@ -48,18 +48,20 @@ signal ring:ram:=(others => (others => '0'));
 signal delay_addr:unsigned(ceilLog2(DEPTH)-1 downto 0);
 signal ring_addr:unsigned(ceilLog2(DEPTH)-1 downto 0):=(others => '0');
 signal ring_prev:unsigned(ceilLog2(DEPTH)-1 downto 0):=(others => '1');
-signal data_int,delay_int,data_reg:std_logic_vector(DATA_BITS-1 downto 0);
+signal data_int,delay_int:std_logic_vector(DATA_BITS-1 downto 0);
+signal data_reg,data_reg2:std_logic_vector(DATA_BITS-1 downto 0);
 
 begin
 -- infer SDP RAM
 ramInstance:process(clk)
 begin
 if rising_edge(clk) then
-  data_reg <= data_in;
-  
-  ring(to_integer(ring_addr)) <= data_reg;
-  data_int <= ring(to_integer(ring_prev));
-  data_out <= data_int; --absorbed into RAM
+--  data_reg <= data_in;
+  ring(to_integer(ring_addr)) <= data_in;
+--  data_reg2 <= data_in;
+  data_reg2 <= data_in;
+  data_int <= data_reg2;
+  data_out <= data_int;
   
   delay_int <= ring(to_integer(delay_addr));
   delayed <= delay_int;

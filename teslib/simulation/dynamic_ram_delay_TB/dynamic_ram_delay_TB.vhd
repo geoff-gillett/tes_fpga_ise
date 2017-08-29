@@ -65,7 +65,7 @@ stimulus:process is
 begin
 wait for CLK_PERIOD;
 reset <= '0';
-delay <= 3;
+delay <= 1;
 wait;
 end process stimulus;
 

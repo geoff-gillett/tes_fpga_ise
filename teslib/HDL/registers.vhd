@@ -217,6 +217,25 @@ function to_mca_qual_d(i:natural range 0 to NUM_MCA_QUAL_D-1) return mca_qual_d;
 function to_mca_qual_d(s:std_logic_vector) return mca_qual_d;
 function to_std_logic(t:mca_qual_d;w:natural) return std_logic_vector;
 
+type mca_qual1_d is (
+  DISABLED_D, -- no select bits FIXME needed?
+  ALL_D, 
+  VALID_RISE_D,
+  ABOVE_AREA_D,
+  ABOVE_PULSE_D,
+  WILL_CROSS_D,
+  ARMED_D,
+  WILL_ARM_D
+);
+
+type mca_qual2_d is (
+  DISABLED_D, -- no select bits FIXME needed?
+  ALL_D, 
+  RISE0_D,
+  RISE1_D,
+  RISE2_D
+);
+
 --------------------------------------------------------------------------------
 -- Channel Registers
 --------------------------------------------------------------------------------
@@ -378,7 +397,7 @@ end record;
 
 type global_registers_t is record
 	-- MTU must be a multiple of 8
-	mtu_chunks:unsigned(MTU_BITS-1 downto 0); --FIXME make this chunks
+	mtu_chunks:unsigned(MTU_BITS-1 downto 0); 
 	tick_period:unsigned(TICK_PERIOD_BITS-1 downto 0);
 	tick_latency:unsigned(TICK_LATENCY_BITS-1 downto 0);
 	adc_enable:std_logic_vector(ADC_CHANNELS-1 downto 0);
