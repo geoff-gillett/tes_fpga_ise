@@ -117,6 +117,7 @@ signal first_rise_cfd:boolean;
 signal rise_valid_cfd:boolean;
 signal cfd_valid_cfd:boolean;
 signal reg:capture_registers_t;
+signal trace_timer_n_init_pre:unsigned(CHUNK_DATABITS downto 0);
 
 signal f_trace,s_trace,raw_trace,raw_sig:std_logic_vector(WIDTH-1 downto 0);
 
@@ -439,9 +440,9 @@ begin
                                 reg.trace_type=DOT_PRODUCT_TRACE_D
                               )
                             );
-        m.has_trace(PRE) <= m.reg(PRE).detection=TRACE_DETECTION_D and (
-                              m.reg(PRE).trace_type=SINGLE_TRACE_D or 
-                              m.reg(PRE).trace_type=DOT_PRODUCT_TRACE_D
+        m.has_trace(PRE) <= reg.detection=TRACE_DETECTION_D and (
+                              reg.trace_type=SINGLE_TRACE_D or 
+                              reg.trace_type=DOT_PRODUCT_TRACE_D
                             );
       end if;
           
@@ -449,10 +450,11 @@ begin
         rise_number_n2 <= (1 => '1', others => '0');
         rise_number_n <= (0 => '1', others => '0');
         m.rise_number <= (others => '0');
+        trace_timer_n_init_pre <= resize(reg.trace_pre+1,CHUNK_DATABITS+1);
       end if;
           
       if m.pulse_start(PRE) then 
-        m.reg(NOW) <= m.reg(PRE);
+        m.reg(NOW) <= m.reg(PRE); --FIXME is this an issue? when start max start
         m.enabled(NOW) <= m.enabled(PRE);
         m.has_pulse(NOW) <= m.has_pulse(PRE);
         m.has_trace(NOW) <= m.has_trace(PRE);
@@ -529,24 +531,56 @@ begin
       when MAX_SLOPE_TIMING_D =>
         stamp_rise_pre2 <= max_slope_p_pipe(DEPTH-3);
         
+        
       end case;
+      -------------------------------------------------------------------------- 
+      --time counters
+      -------------------------------------------------------------------------- 
+      --pulse_time=0 minima below pulse_threshold when not has_trace
+      --pulse_time=trace_pre @ stamp_pulse when has_trace
+      
+      --pulse_length=0 each positive pulse_threshold crossing 
+      
+      --rise_time=0 each valid stamp_rise
       
       -- rise and pulse stamping
       m.stamp_rise(PRE) <= FALSE;
       m.stamp_pulse(PRE) <= FALSE;
-      if stamp_rise_pre2 then
-        if first_rise_pipe(DEPTH-2) and valid_rise_pipe(DEPTH-2) then
-          m.stamp_pulse(PRE) <= not m.pulse_stamped(PRE);
-          m.pulse_stamped(PRE) <= TRUE;
+      if stamp_rise_pre2 and first_rise_pipe(DEPTH-2) and 
+         valid_rise_pipe(DEPTH-2)then
+        m.stamp_pulse(PRE) <= not m.pulse_stamped(PRE);
+        m.pulse_stamped(PRE) <= TRUE;
+        if m.has_trace(PRE) then --NOTE:has_trace changes @ PRE3
+          m.pulse_timer(PRE) <= resize(m.reg(PRE).trace_pre,CHUNK_DATABITS);
+          pulse_time_n <= trace_timer_n_init_pre;
         end if;
-        
-        if valid_rise_pipe(DEPTH-2) then
-          m.stamp_rise(PRE) <= not m.rise_stamped(PRE);
-          m.rise_stamped(PRE) <= TRUE;
-        end if;
+      elsif first_rise_pipe(DEPTH-2) and m.min(PRE2) and 
+            not m.has_trace(PRE) then
+          m.pulse_timer(PRE) <= (0 => '0', others => '0');
+          pulse_time_n <= (0 => '1', others => '0'); 
+      elsif pulse_time_n(16)='1' then
+        m.pulse_timer(PRE) <= (others => '1');
+      else
+        pulse_time_n <= pulse_time_n + 1;
+        m.pulse_timer(PRE) <= pulse_time_n(15 downto 0);
       end if;
+      m.pulse_timer(NOW) <= m.pulse_timer(PRE);
       m.stamp_pulse(NOW) <= m.stamp_pulse(PRE);
+          
+      if stamp_rise_pre2  then
+        m.stamp_rise(PRE) 
+          <= not m.rise_stamped(PRE) and valid_rise_pipe(DEPTH-2);
+        m.rise_stamped(PRE) <= valid_rise_pipe(DEPTH-2);
+        m.rise_timer(PRE) <= (0 => '0', others => '0');
+        rise_time_n <= (0 => '1', others => '0');
+      elsif rise_time_n(16)='1' then
+        m.rise_timer(PRE) <= (others => '1');
+      else
+        rise_time_n <= rise_time_n + 1;
+        m.rise_timer(PRE) <= rise_time_n(15 downto 0);
+      end if;
       m.stamp_rise(NOW) <= m.stamp_rise(PRE);
+      m.rise_timer(NOW) <= m.rise_timer(PRE);
       
       if m.max(PRE) then 
         m.rise_stamped(PRE) <= FALSE;
@@ -558,8 +592,8 @@ begin
       end if;
       
       if m.stamp_pulse(PRE) then
-        m.pulse_stamped(PRE) <= stamp_rise_pre2 and first_rise_pipe(DEPTH-1) and
-                                valid_rise_pipe(DEPTH-1);
+        m.pulse_stamped(PRE) <= stamp_rise_pre2 and first_rise_pipe(DEPTH-2) and
+                                valid_rise_pipe(DEPTH-2);
         m.pulse_stamped(NOW) <= m.pulse_stamped(PRE);
       end if;
       
@@ -567,52 +601,12 @@ begin
         m.pulse_stamped(NOW) <= FALSE;
       end if;
       
-      --time counters
-      --pulse_time=0 or trace_pre @ each minima below pulse_threshold
-      --  initialised to trace_pre if has_trace
-      --pulse_length=0 each positive pulse_threshold crossing 
-      --rise_time=0 each stamp_rise NOTE implies rise is valid
-     
-      m.pulse_timer(NOW) <= m.pulse_timer(PRE);
       if m.stamp_rise(PRE) then
         m.rise_timestamp <= m.pulse_timer(PRE);
       end if;
       if m.stamp_pulse(PRE) then
-        if m.has_trace(PRE) then
-          m.time_offset <= resize(m.reg(PRE).trace_pre,CHUNK_DATABITS);
-          m.pulse_timer(NOW) <= resize(m.reg(PRE).trace_pre,CHUNK_DATABITS);
-          pulse_time_n <= resize(m.reg(PRE).trace_pre-1,CHUNK_DATABITS+1);
-        else
-          m.time_offset <= m.pulse_timer(PRE);
-        end if;
+        m.time_offset <= m.pulse_timer(PRE);
       end if;
-      
-      m.stamp_pulse(NOW) <= m.stamp_pulse(PRE);
-      m.stamp_rise(NOW) <= m.stamp_rise(PRE);
-      
-      if first_rise_pipe(DEPTH-2) and m.min(PRE2) then 
-        -- NOTE has_trace(PRE) is at same latency as reg(PRE)
-        if not m.has_trace(PRE) then  
-          m.pulse_timer(PRE) <= (0 => '0', others => '0');
-          pulse_time_n <= (0 => '1', others => '0'); 
-        end if;
-      elsif pulse_time_n(16)='1' then
-        m.pulse_timer(PRE) <= (others => '1');
-      else
-        pulse_time_n <= pulse_time_n + 1;
-        m.pulse_timer(PRE) <= pulse_time_n(15 downto 0);
-      end if;
-      
-      if stamp_rise_pre2 then  
-        m.rise_timer(PRE) <= (0 => '0', others => '0');
-        rise_time_n <= (0 => '1', others => '0');
-      elsif rise_time_n(16)='1' then
-        m.rise_timer(PRE) <= (others => '1');
-      else
-        rise_time_n <= rise_time_n + 1;
-        m.rise_timer(PRE) <= rise_time_n(15 downto 0);
-      end if;
-      m.rise_timer(NOW) <= m.rise_timer(PRE);
       
       if m.p_t_p(PRE2) then
         m.pulse_length_timer(PRE) <= (0 => '0', others => '0');

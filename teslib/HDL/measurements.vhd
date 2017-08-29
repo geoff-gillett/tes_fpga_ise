@@ -42,8 +42,8 @@ type s_chunk_pipe is array (natural range <>) of
 
 	
 type measurements_t is record
-	--register settings from CFD captured 4 clks prior to each pulse_start.
-	--valid at pulse_start(PRE3)
+	--register settings used in CFD process.
+	--NOTE:reg(PRE) valid @ PRE3, reg(NOW) VALID @ DEPTH
 	reg:creg_pipe(PRE to NOW); 
 	--event_enabled captured 4 clks (PRE) and 1 clk (NOW) prior to pulse_start.
   enabled:boolean_vector(PRE to NOW);
@@ -78,9 +78,14 @@ type measurements_t is record
   --the raw baseline corrected signal
 	raw:signed(CHUNK_DATABITS-1 downto 0);
 	raw_trace:signed(CHUNK_DATABITS-1 downto 0);
+	
 		
-	has_pulse:boolean_vector(PRE to NOW); --packet type contains a pulse	
-	has_trace:boolean_vector(PRE to NOW); --packet type contains a trace	
+  --packet type contains a pulse	
+	--NOTE:has_pulse(PRE) valid @ PRE3 has_pulse(NOW) VALID @ DEPTH
+	has_pulse:boolean_vector(PRE2 to NOW); 
+  --packet type contains a trace	
+	--NOTE:has_trace(PRE) valid @ PRE3 has_trace(NOW) VALID @ DEPTH
+	has_trace:boolean_vector(PRE2 to NOW); 
 		
   --valid rise with minima below pulse threshold PRE2 is 2 clks before
   pulse_start:boolean_vector(PRE3 to NOW); --min of valid first rise
@@ -90,12 +95,10 @@ type measurements_t is record
   above_area:boolean; --pulse_area is above area_threshold
   pulse_length:unsigned(CHUNK_DATABITS-1 downto 0); --pulse_length_timer @ p_t_n
   --pulse timing point NOTE PRE2 may occur even if the rise if not valid;
-  stamp_pulse:boolean_vector(PRE2 to NOW); 
+  stamp_pulse:boolean_vector(PRE to NOW); 
   pulse_stamped:boolean_vector(PRE to NOW); --cleared at p_t_n 
   trace_stamped:boolean; -- cleared at trace start
   time_offset:unsigned(CHUNK_DATABITS-1 downto 0); --pulse_timer @ stamp_pulse
-  --pulse_timer @ stamp_pulse + trace_pre
-  
   --minima at start of a valid rise.
   rise_start:boolean_vector(PRE to NOW); 
   valid_rise:boolean; --rise_start to max; 
