@@ -156,7 +156,7 @@ generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
   CF_FRAC => CF_FRAC,
-  DELAY => RAW_DELAY-203 --210
+  DELAY => RAW_DELAY-202 --203 --210
 )
 port map(
   clk => clk,
@@ -562,6 +562,7 @@ begin
       end if;
       if m.stamp_pulse(PRE) then
         m.time_offset <= m.pulse_timer(PRE);
+--        m.trace_time_offset <= m.pulse_timer(PRE) + m.reg(PRE).trace_pre;
       end if;
       
       m.stamp_pulse(NOW) <= m.stamp_pulse(PRE);
@@ -655,7 +656,7 @@ generic map(
 )
 port map(
   clk => clk,
-  data_in => std_logic_vector(f_pipe(DEPTH-3)),
+  data_in => std_logic_vector(f_cfd),
   data_out => open,
   delay => to_integer(m.reg(PRE).trace_pre),
   delayed => f_trace
@@ -668,7 +669,7 @@ generic map(
 )
 port map(
   clk => clk,
-  data_in => std_logic_vector(s_pipe(DEPTH-3)),
+  data_in => std_logic_vector(s_cfd),
   data_out => open,
   delay => to_integer(m.reg(PRE).trace_pre),
   delayed => s_trace

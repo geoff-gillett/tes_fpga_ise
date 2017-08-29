@@ -95,6 +95,8 @@ type measurements_t is record
   pulse_stamped:boolean_vector(PRE to NOW); --cleared at p_t_n 
   trace_stamped:boolean; -- cleared at trace start
   time_offset:unsigned(CHUNK_DATABITS-1 downto 0); --pulse_timer @ stamp_pulse
+  --pulse_timer @ stamp_pulse + trace_pre
+  trace_time_offset:unsigned(CHUNK_DATABITS-1 downto 0); 
   
   --minima at start of a valid rise.
   rise_start:boolean_vector(PRE to NOW); 

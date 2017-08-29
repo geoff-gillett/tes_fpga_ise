@@ -544,7 +544,7 @@ chan_reg(0).capture.detection <= TRACE_DETECTION_D;
 wait for 6 us;
 global.channel_enable <= "00000001";
 wait for 20 us;
-chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
+--chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
 --wait for 1420 us;
 --chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
 --wait for 1 ms;

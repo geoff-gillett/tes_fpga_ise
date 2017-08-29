@@ -21,7 +21,7 @@ use work.functions.all;
 --------------------------------------------------------------------------------
 -- ring buffer single clock domain 
 -- implemented as SDP BRAM
--- delay is relative to data_out which has 3 clock latency from data_in
+-- delay is relative to data_out which has 4 clock latency from data_in
 --------------------------------------------------------------------------------
 entity dynamic_RAM_delay2 is
 generic(
@@ -48,14 +48,16 @@ signal ring:ram:=(others => (others => '0'));
 signal delay_addr:unsigned(ceilLog2(DEPTH)-1 downto 0);
 signal ring_addr:unsigned(ceilLog2(DEPTH)-1 downto 0):=(others => '0');
 signal ring_prev:unsigned(ceilLog2(DEPTH)-1 downto 0):=(others => '1');
-signal data_int,delay_int:std_logic_vector(DATA_BITS-1 downto 0);
+signal data_int,delay_int,data_reg:std_logic_vector(DATA_BITS-1 downto 0);
 
 begin
 -- infer SDP RAM
 ramInstance:process(clk)
 begin
 if rising_edge(clk) then
-  ring(to_integer(ring_addr)) <= data_in;
+  data_reg <= data_in;
+  
+  ring(to_integer(ring_addr)) <= data_reg;
   data_int <= ring(to_integer(ring_prev));
   data_out <= data_int; --absorbed into RAM
   

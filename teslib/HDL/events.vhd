@@ -201,7 +201,7 @@ function to_streambus(
 ) return streambus_t;
 
 --  |   16   |   16   |   16   |  16  |
---  | height |  rise  | minima | time |
+--  | height | minima |  rise  | time |
 type pulse_peak_t is
 record
 	height:signal_t;

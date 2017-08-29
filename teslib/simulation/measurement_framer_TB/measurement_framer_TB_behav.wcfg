@@ -22,13 +22,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="46907000000fs"></ZoomStartTime>
-      <ZoomEndTime time="80207000001fs"></ZoomEndTime>
-      <Cursor1Time time="78608000000fs"></Cursor1Time>
+      <ZoomStartTime time="45812833333fs"></ZoomStartTime>
+      <ZoomEndTime time="52267833334fs"></ZoomEndTime>
+      <Cursor1Time time="51188000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="229"></NameColumnWidth>
-      <ValueColumnWidth column_width="80"></ValueColumnWidth>
+      <ValueColumnWidth column_width="76"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="7" />
    <wave_markers>
@@ -918,6 +918,7 @@
       <wvobject fp_name="/measurement_framer_TB/measurment/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
+         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_framer_TB/measurment/pulse_time_n" type="array">
          <obj_property name="ElementShortName">pulse_time_n[16:0]</obj_property>
@@ -1287,290 +1288,10 @@
       <wvobject fp_name="/measurement_framer_TB/UUT/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.reg" type="array">
-            <obj_property name="ElementShortName">.reg[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.reg[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.enabled" type="array">
-            <obj_property name="ElementShortName">.enabled[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.enabled[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.f" type="array">
-            <obj_property name="ElementShortName">.f[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.f[15:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-            <obj_property name="CellHeight">100</obj_property>
-            <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
-            <obj_property name="AnalogYRangeMin">0.000000</obj_property>
-            <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
-            <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-            <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-            <obj_property name="AnalogHorizLine">0.000000</obj_property>
-            <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.f_extrema" type="array">
-            <obj_property name="ElementShortName">.f_extrema[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.f_extrema[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.f_area" type="array">
-            <obj_property name="ElementShortName">.f_area[31:0]</obj_property>
-            <obj_property name="ObjectShortName">.f_area[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.f_0" type="other">
-            <obj_property name="ElementShortName">.f_0</obj_property>
-            <obj_property name="ObjectShortName">.f_0</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.f_0_p" type="other">
-            <obj_property name="ElementShortName">.f_0_p</obj_property>
-            <obj_property name="ObjectShortName">.f_0_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.f_0_n" type="other">
-            <obj_property name="ElementShortName">.f_0_n</obj_property>
-            <obj_property name="ObjectShortName">.f_0_n</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.p_t_p" type="array">
-            <obj_property name="ElementShortName">.p_t_p[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.p_t_p[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.p_t_n" type="array">
-            <obj_property name="ElementShortName">.p_t_n[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.p_t_n[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.s" type="array">
-            <obj_property name="ElementShortName">.s[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.s[15:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-            <obj_property name="CellHeight">100</obj_property>
-            <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
-            <obj_property name="AnalogYRangeMin">0.000000</obj_property>
-            <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
-            <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-            <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-            <obj_property name="AnalogHorizLine">0.000000</obj_property>
-            <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.s_extrema" type="array">
-            <obj_property name="ElementShortName">.s_extrema[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.s_extrema[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.s_area" type="array">
-            <obj_property name="ElementShortName">.s_area[31:0]</obj_property>
-            <obj_property name="ObjectShortName">.s_area[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.s_0" type="other">
-            <obj_property name="ElementShortName">.s_0</obj_property>
-            <obj_property name="ObjectShortName">.s_0</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.s_t_p" type="array">
-            <obj_property name="ElementShortName">.s_t_p[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.s_t_p[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.min" type="array">
-            <obj_property name="ElementShortName">.min[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.min[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.max" type="array">
-            <obj_property name="ElementShortName">.max[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.max[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.raw" type="array">
-            <obj_property name="ElementShortName">.raw[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.raw[15:0]</obj_property>
-            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-            <obj_property name="CellHeight">100</obj_property>
-            <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
-            <obj_property name="AnalogYRangeMin">0.000000</obj_property>
-            <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
-            <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-            <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-            <obj_property name="AnalogHorizLine">0.000000</obj_property>
-            <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.has_pulse" type="other">
-            <obj_property name="ElementShortName">.has_pulse</obj_property>
-            <obj_property name="ObjectShortName">.has_pulse</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.pulse_start" type="array">
-            <obj_property name="ElementShortName">.pulse_start[0:3]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_start[0:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.has_rise" type="other">
-            <obj_property name="ElementShortName">.has_rise</obj_property>
-            <obj_property name="ObjectShortName">.has_rise</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.pulse_area" type="array">
-            <obj_property name="ElementShortName">.pulse_area[31:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_area[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.above_area" type="other">
-            <obj_property name="ElementShortName">.above_area</obj_property>
-            <obj_property name="ObjectShortName">.above_area</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.pulse_length" type="array">
-            <obj_property name="ElementShortName">.pulse_length[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_length[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.stamp_pulse" type="array">
-            <obj_property name="ElementShortName">.stamp_pulse[1:3]</obj_property>
-            <obj_property name="ObjectShortName">.stamp_pulse[1:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.pulse_stamped" type="array">
-            <obj_property name="ElementShortName">.pulse_stamped[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_stamped[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.trace_stamped" type="other">
-            <obj_property name="ElementShortName">.trace_stamped</obj_property>
-            <obj_property name="ObjectShortName">.trace_stamped</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.time_offset" type="array">
-            <obj_property name="ElementShortName">.time_offset[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.time_offset[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise_start" type="array">
-            <obj_property name="ElementShortName">.rise_start[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.rise_start[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.valid_rise" type="other">
-            <obj_property name="ElementShortName">.valid_rise</obj_property>
-            <obj_property name="ObjectShortName">.valid_rise</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise_number" type="array">
-            <obj_property name="ElementShortName">.rise_number[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_number[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise0" type="other">
-            <obj_property name="ElementShortName">.rise0</obj_property>
-            <obj_property name="ObjectShortName">.rise0</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise1" type="other">
-            <obj_property name="ElementShortName">.rise1</obj_property>
-            <obj_property name="ObjectShortName">.rise1</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise2" type="other">
-            <obj_property name="ElementShortName">.rise2</obj_property>
-            <obj_property name="ObjectShortName">.rise2</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.stamp_rise" type="array">
-            <obj_property name="ElementShortName">.stamp_rise[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.stamp_rise[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise_stamped" type="array">
-            <obj_property name="ElementShortName">.rise_stamped[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.rise_stamped[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise_timestamp" type="array">
-            <obj_property name="ElementShortName">.rise_timestamp[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_timestamp[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise_address" type="array">
-            <obj_property name="ElementShortName">.rise_address[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_address[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.last_peak_address" type="array">
-            <obj_property name="ElementShortName">.last_peak_address[3:0]</obj_property>
-            <obj_property name="ObjectShortName">.last_peak_address[3:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.last_rise" type="other">
-            <obj_property name="ElementShortName">.last_rise</obj_property>
-            <obj_property name="ObjectShortName">.last_rise</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise_overflow" type="other">
-            <obj_property name="ElementShortName">.rise_overflow</obj_property>
-            <obj_property name="ObjectShortName">.rise_overflow</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise_timer" type="array">
-            <obj_property name="ElementShortName">.rise_timer[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.rise_timer[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.pulse_timer" type="array">
-            <obj_property name="ElementShortName">.pulse_timer[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_timer[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.pulse_length_timer" type="array">
-            <obj_property name="ElementShortName">.pulse_length_timer[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_length_timer[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.minima" type="array">
-            <obj_property name="ElementShortName">.minima[1:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.minima[1:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.height" type="array">
-            <obj_property name="ElementShortName">.height[2:3][15:0]</obj_property>
-            <obj_property name="ObjectShortName">.height[2:3][15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.height_valid" type="array">
-            <obj_property name="ElementShortName">.height_valid[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.height_valid[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.peak_height" type="array">
-            <obj_property name="ElementShortName">.peak_height[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.peak_height[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.rise_stop" type="array">
-            <obj_property name="ElementShortName">.rise_stop[2:3]</obj_property>
-            <obj_property name="ObjectShortName">.rise_stop[2:3]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.cfd_high" type="array">
-            <obj_property name="ElementShortName">.cfd_high[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.cfd_high[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.cfd_low" type="array">
-            <obj_property name="ElementShortName">.cfd_low[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.cfd_low[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.max_slope" type="array">
-            <obj_property name="ElementShortName">.max_slope[15:0]</obj_property>
-            <obj_property name="ObjectShortName">.max_slope[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.cfd_low_p" type="other">
-            <obj_property name="ElementShortName">.cfd_low_p</obj_property>
-            <obj_property name="ObjectShortName">.cfd_low_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.cfd_high_p" type="other">
-            <obj_property name="ElementShortName">.cfd_high_p</obj_property>
-            <obj_property name="ObjectShortName">.cfd_high_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.max_slope_p" type="other">
-            <obj_property name="ElementShortName">.max_slope_p</obj_property>
-            <obj_property name="ObjectShortName">.max_slope_p</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.cfd_valid" type="other">
-            <obj_property name="ElementShortName">.cfd_valid</obj_property>
-            <obj_property name="ObjectShortName">.cfd_valid</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.cfd_error" type="other">
-            <obj_property name="ElementShortName">.cfd_error</obj_property>
-            <obj_property name="ObjectShortName">.cfd_error</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.cfd_overrun" type="other">
-            <obj_property name="ElementShortName">.cfd_overrun</obj_property>
-            <obj_property name="ObjectShortName">.cfd_overrun</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.armed" type="other">
-            <obj_property name="ElementShortName">.armed</obj_property>
-            <obj_property name="ObjectShortName">.armed</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.will_arm" type="other">
-            <obj_property name="ElementShortName">.will_arm</obj_property>
-            <obj_property name="ObjectShortName">.will_arm</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.above" type="other">
-            <obj_property name="ElementShortName">.above</obj_property>
-            <obj_property name="ObjectShortName">.above</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.will_cross" type="other">
-            <obj_property name="ElementShortName">.will_cross</obj_property>
-            <obj_property name="ObjectShortName">.will_cross</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_framer_TB/UUT/m.mux_wr_en" type="other">
-            <obj_property name="ElementShortName">.mux_wr_en</obj_property>
-            <obj_property name="ObjectShortName">.mux_wr_en</obj_property>
-         </wvobject>
       </wvobject>
       <wvobject fp_name="group2023" type="group">
          <obj_property name="label">mux</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/measurement_framer_TB/UUT/pending" type="array">
             <obj_property name="ElementShortName">pending[3:0]</obj_property>
             <obj_property name="ObjectShortName">pending[3:0]</obj_property>
@@ -1633,7 +1354,6 @@
       <wvobject fp_name="group504" type="group">
          <obj_property name="label">FSMs</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/measurement_framer_TB/UUT/m.enabled[3]" type="other">
             <obj_property name="DisplayName">label</obj_property>
             <obj_property name="ElementShortName">[3]</obj_property>
@@ -1872,6 +1592,10 @@
       <wvobject fp_name="/measurement_framer_TB/UUT/first_pulse" type="array">
          <obj_property name="ElementShortName">first_pulse</obj_property>
          <obj_property name="ObjectShortName">first_pulse</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_framer_TB/measurment/m.height_valid" type="array">
+         <obj_property name="ElementShortName">.height_valid[2:3]</obj_property>
+         <obj_property name="ObjectShortName">.height_valid[2:3]</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_framer_TB/UUT/pulse_peak" type="array">
          <obj_property name="ElementShortName">pulse_peak</obj_property>
