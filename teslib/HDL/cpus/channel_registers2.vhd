@@ -89,7 +89,35 @@ end entity channel_registers2;
 --
 architecture RTL of channel_registers2 is
 
-signal reg:channel_registers_t;
+signal reg:channel_registers_t:=(
+  baseline  => (
+    offset => (others => '0'),
+    subtraction => FALSE,
+    timeconstant => (others => '0'),
+    threshold => (others => '0'),
+    count_threshold => (others => '0'),
+    new_only => FALSE
+  ),
+  capture => (
+    max_peaks => (others => '0'),
+    constant_fraction => DEFAULT_CONSTANT_FRACTION,
+    cfd_rel2min => FALSE,
+    pulse_threshold => (others => '0'),
+    slope_threshold => (others => '0'),
+    area_threshold => (others => '0'),
+    height => PEAK_HEIGHT_D,
+    timing => PULSE_THRESH_TIMING_D,
+    detection => PEAK_DETECTION_D,
+    delay => (others => '0'),
+    adc_select => (CHANNEL => '1', others => '0'),
+    invert => FALSE,
+    trace_signal => FILTERED_TRACE_D,
+    trace_type => SINGLE_TRACE_D,
+    trace_stride => (others => '0'),
+    trace_length => to_unsigned(512,TRACE_LENGTH_BITS),
+    trace_pre => (others => '0')
+  )
+);
 
 signal reg_data:AXI_data_array(11 downto 0);
 type bit_array is array (natural range <>) of std_logic_vector(11 downto 0);
@@ -113,27 +141,27 @@ begin
 if rising_edge(clk) then
   --FIXME these resets needed? use assignment at definition
 	if reset='1' then
-		reg.baseline.offset <= DEFAULT_BL_OFFSET;
-		reg.baseline.subtraction <= DEFAULT_BL_SUBTRACTION;
-		reg.baseline.timeconstant <= DEFAULT_BL_TIMECONSTANT;
-		reg.baseline.threshold <= DEFAULT_BL_THRESHOLD;
-		reg.baseline.count_threshold <= DEFAULT_BL_COUNT_THRESHOLD;
-		reg.capture.max_peaks <= DEFAULT_MAX_PEAKS;
-		reg.capture.constant_fraction <= DEFAULT_CONSTANT_FRACTION;
-		reg.capture.pulse_threshold <= DEFAULT_PULSE_THRESHOLD;
-		reg.capture.slope_threshold <= DEFAULT_SLOPE_THRESHOLD;
-		reg.capture.slope_threshold <= DEFAULT_SLOPE_THRESHOLD;
-		reg.capture.area_threshold <= DEFAULT_AREA_THRESHOLD;
-		reg.capture.height <= DEFAULT_HEIGHT;
-		reg.capture.timing <= DEFAULT_TIMING;
-		reg.capture.detection <= DEFAULT_DETECTION;
-		reg.capture.delay <= DEFAULT_DELAY;
-		reg.capture.adc_select <= (CHANNEL => '1',others => '0');
-		reg.capture.trace_signal <= FILTERED_TRACE_D;
-		reg.capture.trace_type <= SINGLE_TRACE_D;
-		reg.capture.trace_stride <= (others => '0');
-		reg.capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
-		reg.capture.trace_pre <= DEFAULT_TRACE_PRE;
+--		reg.baseline.offset <= DEFAULT_BL_OFFSET;
+--		reg.baseline.subtraction <= DEFAULT_BL_SUBTRACTION;
+--		reg.baseline.timeconstant <= DEFAULT_BL_TIMECONSTANT;
+--		reg.baseline.threshold <= DEFAULT_BL_THRESHOLD;
+--		reg.baseline.count_threshold <= DEFAULT_BL_COUNT_THRESHOLD;
+--		reg.capture.max_peaks <= DEFAULT_MAX_PEAKS;
+--		reg.capture.constant_fraction <= DEFAULT_CONSTANT_FRACTION;
+--		reg.capture.pulse_threshold <= DEFAULT_PULSE_THRESHOLD;
+--		reg.capture.slope_threshold <= DEFAULT_SLOPE_THRESHOLD;
+--		reg.capture.slope_threshold <= DEFAULT_SLOPE_THRESHOLD;
+--		reg.capture.area_threshold <= DEFAULT_AREA_THRESHOLD;
+--		reg.capture.height <= DEFAULT_HEIGHT;
+--		reg.capture.timing <= DEFAULT_TIMING;
+--		reg.capture.detection <= DEFAULT_DETECTION;
+--		reg.capture.delay <= DEFAULT_DELAY;
+--		reg.capture.adc_select <= (CHANNEL => '1',others => '0');
+--		reg.capture.trace_signal <= FILTERED_TRACE_D;
+--		reg.capture.trace_type <= SINGLE_TRACE_D;
+--		reg.capture.trace_stride <= (others => '0');
+--		reg.capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+--		reg.capture.trace_pre <= DEFAULT_TRACE_PRE;
   else
     if write='1' then
       if address(DELAY_ADDR_BIT)='1' then

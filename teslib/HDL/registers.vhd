@@ -378,7 +378,7 @@ end record;
 
 type global_registers_t is record
 	-- MTU must be a multiple of 8
-	mtu_words:unsigned(MTU_BITS-1 downto 0); --FIXME make this chunks
+	mtu_chunks:unsigned(MTU_BITS-1 downto 0); --FIXME make this chunks
 	tick_period:unsigned(TICK_PERIOD_BITS-1 downto 0);
 	tick_latency:unsigned(TICK_LATENCY_BITS-1 downto 0);
 	adc_enable:std_logic_vector(ADC_CHANNELS-1 downto 0);

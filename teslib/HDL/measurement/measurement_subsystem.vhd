@@ -514,7 +514,7 @@ generic map(
 port map(
   clk => clk,
   reset => reset1,
-  mtu => g_reg.mtu_words,
+  mtu => g_reg.mtu_chunks,
   tick_latency => g_reg.tick_latency,
   eventstream => muxstream,
   eventstream_valid => muxstream_valid,

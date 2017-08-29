@@ -220,7 +220,7 @@ bytestream_last <= bytestream_int(8)='1';
 -- sample file -----------------------------------------------------------------
 --global.mtu_words <= to_unsigned(187,MTU_BITS);
 -- sim -------------------------------------------------------------------------
-global.mtu_words <= to_unsigned(187,MTU_BITS);
+global.mtu_chunks <= to_unsigned(187,MTU_BITS);
 global.tick_latency <= to_unsigned(120000,TICK_LATENCY_BITS);
 global.tick_period <= to_unsigned(62500,TICK_PERIOD_BITS);
 --global.mca.lowest_value <= to_signed(-2500,MCA_VALUE_BITS);

@@ -50,10 +50,33 @@ architecture RTL of global_registers is
 
 signal address_reg:register_address_t;
 signal data_reg,value_int:register_data_t;
-signal reg:global_registers_t;
 signal reg_data:AXI_data_array(11 downto 0);
 type bit_array is array (natural range <>) of std_logic_vector(11 downto 0);
 signal reg_bits:bit_array(AXI_DATA_BITS-1 downto 0);
+
+signal reg:global_registers_t:=(
+  mtu_chunks => DEFAULT_MTU,
+  tick_period => DEFAULT_TICK_PERIOD,
+  tick_latency => DEFAULT_TICK_LATENCY,
+  adc_enable => (others => '0'),
+  channel_enable => (others => '0'),
+  mca => (
+    bin_n => (0 => '1', others => '0'),
+    lowest_value => (others => '0'),
+    last_bin => (others => '1'),
+    ticks => to_unsigned(10,MCA_TICKCOUNT_BITS),
+    channel => (others => '0'),
+    value => MCAVAL_F_D,
+    trigger => CLOCK_MCA_TRIGGER_D,
+    qualifier => ALL_MCA_QUAL_D,
+    update_asap => FALSE,
+    update_on_completion => FALSE
+  ),
+  iodelay_control => (others => '0'),
+  window => to_unsigned(25,TIME_BITS),
+  FMC108_internal_clk => TRUE,
+  VCO_power => TRUE
+);
 
 begin 
 registers <= reg;
@@ -63,25 +86,25 @@ begin
 	if rising_edge(clk) then
 		--FIXME replace reset with init values
 		if reset = '1' then
-			value <= (others => '-');
-			address_reg <= (others => '0');
-			data_reg <= (others => '0');
-			reg.adc_enable <= (others => '0');
-			reg.channel_enable <= (others => '0');
-			reg.iodelay_control <= (others => '0');
-			reg.mtu_words <= DEFAULT_MTU;
-			reg.tick_period <= DEFAULT_TICK_PERIOD;
-			reg.tick_latency <= DEFAULT_TICK_LATENCY;
-			reg.mca.bin_n <= DEFAULT_MCA_BIN_N;
-			reg.mca.channel <= (others => '0');
-			reg.mca.last_bin <= DEFAULT_MCA_LAST_BIN;
-			reg.mca.ticks <= DEFAULT_MCA_TICKS;
-			reg.mca.trigger <= DEFAULT_MCA_TRIGGER;
-			reg.mca.value <= DEFAULT_MCA_VALUE;
-			reg.mca.lowest_value <= DEFAULT_MCA_LOWEST_VALUE;
-			reg.mca.qualifier <= DEFAULT_MCA_QUALIFIER;
-			reg.FMC108_internal_clk <= TRUE;
-			reg.VCO_power <= TRUE;
+--			value <= (others => '-');
+--			address_reg <= (others => '0');
+--			data_reg <= (others => '0');
+--			reg.adc_enable <= (others => '0');
+--			reg.channel_enable <= (others => '0');
+--			reg.iodelay_control <= (others => '0');
+--			reg.mtu_chunks <= DEFAULT_MTU;
+--			reg.tick_period <= DEFAULT_TICK_PERIOD;
+--			reg.tick_latency <= DEFAULT_TICK_LATENCY;
+--			reg.mca.bin_n <= DEFAULT_MCA_BIN_N;
+--			reg.mca.channel <= (others => '0');
+--			reg.mca.last_bin <= DEFAULT_MCA_LAST_BIN;
+--			reg.mca.ticks <= DEFAULT_MCA_TICKS;
+--			reg.mca.trigger <= DEFAULT_MCA_TRIGGER;
+--			reg.mca.value <= DEFAULT_MCA_VALUE;
+--			reg.mca.lowest_value <= DEFAULT_MCA_LOWEST_VALUE;
+--			reg.mca.qualifier <= DEFAULT_MCA_QUALIFIER;
+--			reg.FMC108_internal_clk <= TRUE;
+--			reg.VCO_power <= TRUE;
 		else
 			address_reg <= address;
 			data_reg <= data;
@@ -102,9 +125,9 @@ begin
 				end if;
 				if address_reg(MTU_ADDR_BIT)='1' then
 					if unsigned(data_reg(MTU_BITS-1 downto 0)) < MIN_MTU then
-						reg.mtu_words <= to_unsigned(MIN_MTU,MTU_BITS);
+						reg.mtu_chunks <= to_unsigned(MIN_MTU,MTU_BITS);
 					else
-						reg.mtu_words <= unsigned(data_reg(MTU_BITS-1 downto 0));
+						reg.mtu_chunks <= unsigned(data_reg(MTU_BITS-1 downto 0));
 					end if;
 				end if;
 				if address_reg(TICK_PERIOD_ADDR_BIT)='1' then
@@ -162,7 +185,7 @@ reg_data(MCA_LOWEST_VALUE_ADDR_BIT)
    <= to_std_logic(resize(reg.mca.lowest_value,AXI_DATA_BITS));
 reg_data(MCA_TICKS_ADDR_BIT)
    <= to_std_logic(resize(reg.mca.ticks,AXI_DATA_BITS));
-reg_data(MTU_ADDR_BIT) <= to_std_logic(resize(reg.mtu_words,AXI_DATA_BITS));
+reg_data(MTU_ADDR_BIT) <= to_std_logic(resize(reg.mtu_chunks,AXI_DATA_BITS));
 reg_data(TICK_PERIOD_ADDR_BIT)
    <= to_std_logic(resize(reg.tick_period,AXI_DATA_BITS));
 reg_data(TICK_LATENCY_ADDR_BIT)
