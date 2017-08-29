@@ -286,6 +286,7 @@ type channel_register_array is array (natural range <>)
 -- baseline.flags							address bit 10
 -- 2  downto 0  baseline.average_order
 -- 4 						baseline.subtraction 
+-- 25 downto 16 trace_pre (TRACE_PRE_BITS+16-1 downto 16)
 --
 -- input select								address bit 11  
 
@@ -336,9 +337,10 @@ constant DEFAULT_BL_THRESHOLD:signed(DSP_BITS-1 downto 0)
 constant DEFAULT_BL_COUNT_THRESHOLD:unsigned(BASELINE_COUNTER_BITS-1 downto 0)
 				 :=to_unsigned(40,BASELINE_COUNTER_BITS);
 constant DEFAULT_BL_AVERAGE_ORDER:integer:=4;
+constant DEFAULT_TRACE_PRE:unsigned(TRACE_PRE_BITS-1 downto 0):=(others => '0');
 
 function capture_register(r:capture_registers_t) return std_logic_vector;
-function baseline_flags(r:baseline_registers_t) return std_logic_vector;
+function baseline_flags(r:channel_registers_t) return std_logic_vector;
 
 --------------------------------------------------------------------------------
 -- Global registers
@@ -703,11 +705,12 @@ begin
 	return s;
 end function; 
 
-function baseline_flags(r:baseline_registers_t) return std_logic_vector is
+function baseline_flags(r:channel_registers_t) return std_logic_vector is
 	variable s:std_logic_vector(AXI_DATA_BITS-1 downto 0):=(others => '0');
 begin
-	s(0) := to_std_logic(r.new_only);
-	s(1) := to_std_logic(r.subtraction);
+	s(0) := to_std_logic(r.baseline.new_only);
+	s(1) := to_std_logic(r.baseline.subtraction);
+	s(TRACE_PRE_BITS+16-1 downto 16):=to_std_logic(r.capture.trace_pre);
 	return s;
 end function;
 

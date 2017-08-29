@@ -35,7 +35,7 @@
 -- baseline flags							address bit 10
 -- 	2  downto 0   baseline.average_order
 -- 	4 						baseline.subtraction 
---  24 downto 16  trace pre trigger  10 bits
+--  25 downto 16  trace_pre   10 bits
 -- input select								address bit 11
 
 -- address bit 23 filter config
@@ -133,6 +133,7 @@ if rising_edge(clk) then
 		reg.capture.trace_type <= SINGLE_TRACE_D;
 		reg.capture.trace_stride <= (others => '0');
 		reg.capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+		reg.capture.trace_pre <= DEFAULT_TRACE_PRE;
   else
     if write='1' then
       if address(DELAY_ADDR_BIT)='1' then
@@ -188,6 +189,7 @@ if rising_edge(clk) then
       if address(BL_FLAGS_ADDR_BIT)='1' then
         reg.baseline.new_only <= to_boolean(data(0));
         reg.baseline.subtraction <= to_boolean(data(1));
+        reg.capture.trace_pre <= unsigned(data(TRACE_PRE_BITS+16-1 downto 16)); 
       end if;
       if address(INPUT_SEL_ADDR_BIT)='1' then
       	reg.capture.adc_select <= data(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
@@ -228,7 +230,7 @@ reg_data(BL_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.baseline.threshold,AXI_DATA_BITS));
 reg_data(BL_COUNT_THRESHOLD_ADDR_BIT)
    <= to_std_logic(resize(reg.baseline.count_threshold,AXI_DATA_BITS));
-reg_data(BL_FLAGS_ADDR_BIT) <= baseline_flags(reg.baseline);
+reg_data(BL_FLAGS_ADDR_BIT) <= baseline_flags(reg);
 reg_data(INPUT_SEL_ADDR_BIT) <= resize(to_std_logic(reg.capture.invert) & 
 			 														reg.capture.adc_select,AXI_DATA_BITS
 		 														);
