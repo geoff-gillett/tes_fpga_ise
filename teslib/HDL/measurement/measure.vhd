@@ -567,14 +567,21 @@ begin
         m.pulse_stamped(NOW) <= FALSE;
       end if;
       
+      --time counters
+      --pulse_time=0 or trace_pre @ each minima below pulse_threshold
+      --  initialised to trace_pre if has_trace
+      --pulse_length=0 each positive pulse_threshold crossing 
+      --rise_time=0 each stamp_rise NOTE implies rise is valid
+     
+      m.pulse_timer(NOW) <= m.pulse_timer(PRE);
       if m.stamp_rise(PRE) then
         m.rise_timestamp <= m.pulse_timer(PRE);
       end if;
       if m.stamp_pulse(PRE) then
         if m.has_trace(PRE) then
           m.time_offset <= resize(m.reg(PRE).trace_pre,CHUNK_DATABITS);
-          m.pulse_timer(PRE) <= resize(m.reg(PRE).trace_pre,CHUNK_DATABITS);
-          pulse_time_n <= resize(m.reg(PRE).trace_pre+1,CHUNK_DATABITS+1);
+          m.pulse_timer(NOW) <= resize(m.reg(PRE).trace_pre,CHUNK_DATABITS);
+          pulse_time_n <= resize(m.reg(PRE).trace_pre-1,CHUNK_DATABITS+1);
         else
           m.time_offset <= m.pulse_timer(PRE);
         end if;
@@ -583,18 +590,11 @@ begin
       m.stamp_pulse(NOW) <= m.stamp_pulse(PRE);
       m.stamp_rise(NOW) <= m.stamp_rise(PRE);
       
-      --time counters
-      --pulse_time=0 or trace_pre @ each minima below pulse_threshold
-      --  initialised to trace_pre if has_trace
-      --pulse_length=0 each positive pulse_threshold crossing 
-      --rise_time=0 each stamp_rise NOTE implies rise is valid
-     
       if first_rise_pipe(DEPTH-2) and m.min(PRE2) then 
         -- NOTE has_trace(PRE) is at same latency as reg(PRE)
         if not m.has_trace(PRE) then  
           m.pulse_timer(PRE) <= (0 => '0', others => '0');
           pulse_time_n <= (0 => '1', others => '0'); 
-        else
         end if;
       elsif pulse_time_n(16)='1' then
         m.pulse_timer(PRE) <= (others => '1');
@@ -602,7 +602,6 @@ begin
         pulse_time_n <= pulse_time_n + 1;
         m.pulse_timer(PRE) <= pulse_time_n(15 downto 0);
       end if;
-      m.pulse_timer(NOW) <= m.pulse_timer(PRE);
       
       if stamp_rise_pre2 then  
         m.rise_timer(PRE) <= (0 => '0', others => '0');
