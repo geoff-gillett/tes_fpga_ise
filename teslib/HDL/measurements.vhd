@@ -80,7 +80,8 @@ type measurements_t is record
 	raw_trace:signed(CHUNK_DATABITS-1 downto 0);
 		
 		
-	has_pulse:boolean; --packet type contains a pulse	
+	has_pulse:boolean_vector(PRE to NOW); --packet type contains a pulse	
+	has_trace:boolean_vector(PRE to NOW); --packet type contains a trace	
 		
 		
   --valid rise with minima below pulse threshold PRE2 is 2 clks before
@@ -96,7 +97,6 @@ type measurements_t is record
   trace_stamped:boolean; -- cleared at trace start
   time_offset:unsigned(CHUNK_DATABITS-1 downto 0); --pulse_timer @ stamp_pulse
   --pulse_timer @ stamp_pulse + trace_pre
-  trace_time_offset:unsigned(CHUNK_DATABITS-1 downto 0); 
   
   --minima at start of a valid rise.
   rise_start:boolean_vector(PRE to NOW); 

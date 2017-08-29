@@ -8,6 +8,9 @@ use extensions.boolean_vector.all;
 library dsp;
 use dsp.types.all;
 
+library streamlib;
+use streamlib.types.all;
+
 use work.types.all;
 use work.registers.all;
 use work.events.all;
@@ -430,6 +433,16 @@ begin
       if pulse_start_cfd then 
         m.reg(PRE) <= reg; 
         m.enabled(PRE) <= event_enable;
+        m.has_pulse(PRE) <= reg.detection=PULSE_DETECTION_D or (
+                              reg.detection=TRACE_DETECTION_D and (
+                                reg.trace_type=SINGLE_TRACE_D or 
+                                reg.trace_type=DOT_PRODUCT_TRACE_D
+                              )
+                            );
+        m.has_trace(PRE) <= m.reg(PRE).detection=TRACE_DETECTION_D and (
+                              m.reg(PRE).trace_type=SINGLE_TRACE_D or 
+                              m.reg(PRE).trace_type=DOT_PRODUCT_TRACE_D
+                            );
       end if;
           
       if m.pulse_start(PRE2) then
@@ -441,6 +454,9 @@ begin
       if m.pulse_start(PRE) then 
         m.reg(NOW) <= m.reg(PRE);
         m.enabled(NOW) <= m.enabled(PRE);
+        m.has_pulse(NOW) <= m.has_pulse(PRE);
+        m.has_trace(NOW) <= m.has_trace(PRE);
+        
         
         m.last_peak_address <= reg.max_peaks+2;
         m.last_rise <= reg.max_peaks=0;
@@ -450,12 +466,6 @@ begin
         m.rise_address <= (1 => '1', others => '0'); -- start at 2
         rise_address_n <= (1 downto 0 => '1', others => '0');
         
-        m.has_pulse <= m.reg(PRE).detection=PULSE_DETECTION_D or (
-                         m.reg(PRE).detection=TRACE_DETECTION_D and (
-                           m.reg(PRE).trace_type=SINGLE_TRACE_D or 
-                           m.reg(PRE).trace_type=DOT_PRODUCT_TRACE_D
-                         )
-                       );
       end if;  
       
       if min_pipe(DEPTH-3) then
@@ -492,7 +502,7 @@ begin
         if m.valid_rise then
           m.last_rise <= rise_number_n >= m.reg(NOW).max_peaks; 
           if rise_number_n > m.reg(NOW).max_peaks then 
-            m.rise_overflow <= m.has_pulse;
+            m.rise_overflow <= m.has_rise;
           end if;
           if not m.last_rise then
             m.rise_address <= rise_address_n(PEAK_COUNT_BITS-1 downto 0);
@@ -561,21 +571,31 @@ begin
         m.rise_timestamp <= m.pulse_timer(PRE);
       end if;
       if m.stamp_pulse(PRE) then
-        m.time_offset <= m.pulse_timer(PRE);
---        m.trace_time_offset <= m.pulse_timer(PRE) + m.reg(PRE).trace_pre;
+        if m.has_trace(PRE) then
+          m.time_offset <= resize(m.reg(PRE).trace_pre,CHUNK_DATABITS);
+          m.pulse_timer(PRE) <= resize(m.reg(PRE).trace_pre,CHUNK_DATABITS);
+          pulse_time_n <= resize(m.reg(PRE).trace_pre+1,CHUNK_DATABITS+1);
+        else
+          m.time_offset <= m.pulse_timer(PRE);
+        end if;
       end if;
       
       m.stamp_pulse(NOW) <= m.stamp_pulse(PRE);
       m.stamp_rise(NOW) <= m.stamp_rise(PRE);
       
       --time counters
-      --pulse_time=0 each minima below pulse_threshold
+      --pulse_time=0 or trace_pre @ each minima below pulse_threshold
+      --  initialised to trace_pre if has_trace
       --pulse_length=0 each positive pulse_threshold crossing 
       --rise_time=0 each stamp_rise NOTE implies rise is valid
      
       if first_rise_pipe(DEPTH-2) and m.min(PRE2) then 
-        m.pulse_timer(PRE) <= (0 => '0', others => '0');
-        pulse_time_n <= (0 => '1', others => '0'); 
+        -- NOTE has_trace(PRE) is at same latency as reg(PRE)
+        if not m.has_trace(PRE) then  
+          m.pulse_timer(PRE) <= (0 => '0', others => '0');
+          pulse_time_n <= (0 => '1', others => '0'); 
+        else
+        end if;
       elsif pulse_time_n(16)='1' then
         m.pulse_timer(PRE) <= (others => '1');
       else
