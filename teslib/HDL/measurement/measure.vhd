@@ -124,13 +124,13 @@ attribute equivalent_register_removal:string;
 signal trace_pre2,raw_trace_pre2:unsigned(TRACE_PRE_BITS-1 downto 0);
 --number of samples before the trigger 
 signal f_trace_pre2,s_trace_pre2:unsigned(TRACE_PRE_BITS-1 downto 0);
-attribute equivalent_register_removal of f_trace_pre2:signal is "no";
-attribute equivalent_register_removal of s_trace_pre2:signal is "no";
-attribute equivalent_register_removal of raw_trace_pre2:signal is "no";
-attribute equivalent_register_removal of trace_pre2:signal is "no";
+attribute equivalent_register_removal of f_trace_pre2:signal is "NO";
+attribute equivalent_register_removal of s_trace_pre2:signal is "NO";
+attribute equivalent_register_removal of raw_trace_pre2:signal is "NO";
+attribute equivalent_register_removal of trace_pre2:signal is "NO";
 
 signal m:measurements_t;
-attribute equivalent_register_removal of m:signal is "yes";
+--attribute equivalent_register_removal of m:signal is "yes";
 
 signal f_trace,s_trace,raw_trace,raw_sig:std_logic_vector(WIDTH-1 downto 0);
 
@@ -454,8 +454,6 @@ begin
       m.has_trace <= m.has_trace(PRE3) & m.has_trace(PRE3 to PRE);
       if pulse_start_cfd then 
         m.reg(PRE3) <= reg; 
-        m.reg(PRE2) <= reg; 
-        m.reg(PRE) <= reg; 
         m.enabled(PRE3) <= event_enable;
         m.has_pulse(PRE3) <= reg.detection=PULSE_DETECTION_D or (
                               reg.detection=TRACE_DETECTION_D and (
@@ -478,9 +476,6 @@ begin
           
       if m.pulse_start(PRE) then 
         m.reg(NOW) <= m.reg(PRE3); --FIXME is this an issue? when start max start
---        m.enabled(NOW) <= m.enabled(PRE);
---        m.has_pulse(NOW) <= m.has_pulse(PRE);
---        m.has_trace(NOW) <= m.has_trace(PRE);
         
         
         m.last_peak_address <= reg.max_peaks+2;

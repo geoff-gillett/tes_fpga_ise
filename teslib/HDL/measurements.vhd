@@ -38,12 +38,10 @@ type u_chunk_pipe is array (natural range <>) of
      unsigned(CHUNK_DATABITS-1 downto 0);
 type s_chunk_pipe is array (natural range <>) of 
      signed(CHUNK_DATABITS-1 downto 0);
-
-
 	
 type measurements_t is record
 	--register settings used in CFD process.
-	--NOTE:PRE2 and PRE=PRE3 and reg(NOW) VALID @ DEPTH
+	--NOTE:use reg(PRE3) and reg(NOW) only
 	reg:creg_pipe(PRE3 to NOW); 
 	--event_enabled captured 4 clks (PRE) and 1 clk (NOW) prior to pulse_start.
   enabled:boolean_vector(PRE3 to NOW);
