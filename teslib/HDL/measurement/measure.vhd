@@ -123,11 +123,11 @@ attribute equivalent_register_removal:string;
 --number of samples before the trigger 
 signal trace_pre2,raw_trace_pre2:unsigned(TRACE_PRE_BITS-1 downto 0);
 --number of samples before the trigger 
-signal f_trace_pre2,s_trace_pre2:unsigned(TRACE_PRE_BITS-1 downto 0);
-attribute equivalent_register_removal of f_trace_pre2:signal is "NO";
-attribute equivalent_register_removal of s_trace_pre2:signal is "NO";
-attribute equivalent_register_removal of raw_trace_pre2:signal is "NO";
-attribute equivalent_register_removal of trace_pre2:signal is "NO";
+--signal f_trace_pre2,s_trace_pre2:unsigned(TRACE_PRE_BITS-1 downto 0);
+--attribute equivalent_register_removal of f_trace_pre2:signal is "NO";
+--attribute equivalent_register_removal of s_trace_pre2:signal is "NO";
+--attribute equivalent_register_removal of raw_trace_pre2:signal is "NO";
+--attribute equivalent_register_removal of trace_pre2:signal is "NO";
 
 signal m:measurements_t;
 --attribute equivalent_register_removal of m:signal is "yes";
@@ -162,7 +162,7 @@ port map(
   clk => clk,
   data_in => raw_d,
   data_out => raw_sig,
-  delay => to_integer(raw_trace_pre2),
+  delay => to_integer(trace_pre2),
   delayed => raw_trace
 );
 m.raw <= signed(raw_sig);
@@ -173,7 +173,7 @@ generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
   CF_FRAC => CF_FRAC,
-  DELAY => RAW_DELAY-202 --203 --210
+  DELAY => RAW_DELAY-203 --210
 )
 port map(
   clk => clk,
@@ -445,9 +445,9 @@ begin
       first_rise_pipe <= first_rise_cfd & first_rise_pipe(1 to DEPTH-1);
       
       --FIXME check the reg pipe setup has only PRE3 and NOW
-      f_trace_pre2 <= m.reg(PRE3).trace_pre;
-      s_trace_pre2 <= m.reg(PRE3).trace_pre;
-      raw_trace_pre2 <= m.reg(PRE3).trace_pre;
+--      f_trace_pre2 <= m.reg(PRE3).trace_pre;
+--      s_trace_pre2 <= m.reg(PRE3).trace_pre;
+--      raw_trace_pre2 <= m.reg(PRE3).trace_pre;
       trace_pre2 <= m.reg(PRE3).trace_pre;
       m.enabled <= m.enabled(PRE3) & m.enabled(PRE3 to PRE);
       m.has_pulse <= m.has_pulse(PRE3) & m.has_pulse(PRE3 to PRE);
@@ -687,9 +687,9 @@ generic map(
 )
 port map(
   clk => clk,
-  data_in => std_logic_vector(f_cfd),
+  data_in => std_logic_vector(f_pipe(1)),
   data_out => open,
-  delay => to_integer(f_trace_pre2),
+  delay => to_integer(trace_pre2),
   delayed => f_trace
 );
 m.f_trace <= signed(f_trace);
@@ -700,9 +700,9 @@ generic map(
 )
 port map(
   clk => clk,
-  data_in => std_logic_vector(s_cfd),
+  data_in => std_logic_vector(s_pipe(1)),
   data_out => open,
-  delay => to_integer(s_trace_pre2),
+  delay => to_integer(trace_pre2),
   delayed => s_trace
 );
 m.s_trace <= signed(s_trace);

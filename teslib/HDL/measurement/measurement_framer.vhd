@@ -849,20 +849,20 @@ begin
       commit_average <= FALSE;
       
       if m.pulse_start(PRE3) then
-        case m.reg(PRE).detection is
+        case m.reg(PRE3).detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D => 
           size(PRE) <= (0 => '1', others => '0');
           
         when PULSE_DETECTION_D => 
-          size(PRE) <= ('0' & m.reg(PRE).max_peaks) + 3; 
+          size(PRE) <= ('0' & m.reg(PRE3).max_peaks) + 3; 
         when TRACE_DETECTION_D => 
-          case m.reg(PRE).trace_type is
+          case m.reg(PRE3).trace_type is
             when SINGLE_TRACE_D =>
-              size(PRE) <= ('0' & m.reg(PRE).max_peaks) + 3; 
+              size(PRE) <= ('0' & m.reg(PRE3).max_peaks) + 3; 
             when AVERAGE_TRACE_D =>
               size(PRE) <= to_unsigned(2,PEAK_COUNT_BITS+1); 
             when DOT_PRODUCT_D | DOT_PRODUCT_TRACE_D =>
-              size(PRE) <= ('0' & m.reg(PRE).max_peaks) + 4; 
+              size(PRE) <= ('0' & m.reg(PRE3).max_peaks) + 4; 
           end case;
         end case;
       end if;
@@ -870,16 +870,16 @@ begin
       if (m.pulse_start(PRE2)) then 
         size2(PRE) <= resize(size(PRE) & '0',ADDRESS_BITS+1); 
           
-        case m.reg(PRE).detection is
+        case m.reg(PRE3).detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D => 
           frame_length(PRE) <= resize(size(PRE),ADDRESS_BITS+1); 
           
         when TRACE_DETECTION_D => 
-          case m.reg(PRE).trace_type is
+          case m.reg(PRE3).trace_type is
             when SINGLE_TRACE_D | AVERAGE_TRACE_D | DOT_PRODUCT_TRACE_D =>
               frame_length(PRE) 
-                <= resize(m.reg(PRE).trace_length,ADDRESS_BITS+1)+size(PRE); 
-              size2(PRE) <= resize(m.reg(PRE).trace_length,ADDRESS_BITS+1)+
+                <= resize(m.reg(PRE3).trace_length,ADDRESS_BITS+1)+size(PRE); 
+              size2(PRE) <= resize(m.reg(PRE3).trace_length,ADDRESS_BITS+1)+
                            (size(PRE) & '0'); 
                            
             when DOT_PRODUCT_D =>
@@ -902,49 +902,49 @@ begin
       -- on a new pulse even when this FSM is not idle
       if m.pulse_start(PRE) and (state=IDLE or state=HOLD) then 
                               
-        tflags.trace_length <= m.reg(PRE).trace_length;
-        tflags.stride <= m.reg(PRE).trace_stride;
-        tflags.trace_signal <= m.reg(PRE).trace_signal;
-        tflags.trace_type <= m.reg(PRE).trace_type;
+        tflags.trace_length <= m.reg(PRE3).trace_length;
+        tflags.stride <= m.reg(PRE3).trace_stride;
+        tflags.trace_signal <= m.reg(PRE3).trace_signal;
+        tflags.trace_type <= m.reg(PRE3).trace_type;
         tflags.offset <= size(PRE)(PEAK_COUNT_BITS-1 downto 0);
-        zero_stride <= m.reg(PRE).trace_stride=0; 
+        zero_stride <= m.reg(PRE3).trace_stride=0; 
         
-        eflags.cfd_rel2min <= m.reg(PRE).cfd_rel2min;
+        eflags.cfd_rel2min <= m.reg(PRE3).cfd_rel2min;
         eflags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
-        eflags.event_type.detection <= m.reg(PRE).detection;
-        eflags.height <= m.reg(PRE).height;
+        eflags.event_type.detection <= m.reg(PRE3).detection;
+        eflags.height <= m.reg(PRE3).height;
          
-        trace_detection <= m.reg(PRE).detection=TRACE_DETECTION_D;
-        area_detection <= m.reg(PRE).detection=AREA_DETECTION_D;
-        pulse_detection <= m.reg(PRE).detection=PULSE_DETECTION_D;
-        peak_detection <= m.reg(PRE).detection=PEAK_DETECTION_D;
+        trace_detection <= m.reg(PRE3).detection=TRACE_DETECTION_D;
+        area_detection <= m.reg(PRE3).detection=AREA_DETECTION_D;
+        pulse_detection <= m.reg(PRE3).detection=PULSE_DETECTION_D;
+        peak_detection <= m.reg(PRE3).detection=PEAK_DETECTION_D;
 
-        single_trace_detection <= m.reg(PRE).detection=TRACE_DETECTION_D and
-                                  m.reg(PRE).trace_type=SINGLE_TRACE_D;
+        single_trace_detection <= m.reg(PRE3).detection=TRACE_DETECTION_D and
+                                  m.reg(PRE3).trace_type=SINGLE_TRACE_D;
 
-        average_detection <= m.reg(PRE).trace_type=AVERAGE_TRACE_D and 
-                             m.reg(PRE).detection=TRACE_DETECTION_D;
+        average_detection <= m.reg(PRE3).trace_type=AVERAGE_TRACE_D and 
+                             m.reg(PRE3).detection=TRACE_DETECTION_D;
                                    
-        dp_detection <= (m.reg(PRE).trace_type=DOT_PRODUCT_D or 
-                         m.reg(PRE).trace_type=DOT_PRODUCT_TRACE_D) and
-                         m.reg(PRE).detection=TRACE_DETECTION_D;
+        dp_detection <= (m.reg(PRE3).trace_type=DOT_PRODUCT_D or 
+                         m.reg(PRE3).trace_type=DOT_PRODUCT_TRACE_D) and
+                         m.reg(PRE3).detection=TRACE_DETECTION_D;
                          
-        dp_only <=  m.reg(PRE).trace_type=DOT_PRODUCT_D and
-                    m.reg(PRE).detection=TRACE_DETECTION_D;
+        dp_only <=  m.reg(PRE3).trace_type=DOT_PRODUCT_D and
+                    m.reg(PRE3).detection=TRACE_DETECTION_D;
                                                          
-        trace_wr_en <= m.reg(PRE).detection=TRACE_DETECTION_D and
-                       m.reg(PRE).trace_type/=DOT_PRODUCT_D;
+        trace_wr_en <= m.reg(PRE3).detection=TRACE_DETECTION_D and
+                       m.reg(PRE3).trace_type/=DOT_PRODUCT_D;
                        
-        mux_enable <= (m.reg(PRE).detection/=TRACE_DETECTION_D or 
+        mux_enable <= (m.reg(PRE3).detection/=TRACE_DETECTION_D or 
                       (
-                        m.reg(PRE).detection=TRACE_DETECTION_D and 
-                        m.reg(PRE).trace_type/=AVERAGE_TRACE_D
+                        m.reg(PRE3).detection=TRACE_DETECTION_D and 
+                        m.reg(PRE3).trace_type/=AVERAGE_TRACE_D
                       )) and m.enabled(PRE);
                       
                      
-        trace_count_init <= m.reg(PRE).trace_length-1;
+        trace_count_init <= m.reg(PRE3).trace_length-1;
         
-        dp_address <= resize( m.reg(PRE).max_peaks,ADDRESS_BITS) + 3; 
+        dp_address <= resize( m.reg(PRE3).max_peaks,ADDRESS_BITS) + 3; 
         
         trace_start_address <= resize(size(PRE),ADDRESS_BITS);
         
@@ -952,8 +952,8 @@ begin
         -- size is the free space required to *start* a new event
 
         if m.reg(NOW).detection=TRACE_DETECTION_D then
-          dp_start <= m.reg(PRE).trace_type=DOT_PRODUCT_D or
-                      m.reg(PRE).trace_type=DOT_PRODUCT_TRACE_D;
+          dp_start <= m.reg(PRE3).trace_type=DOT_PRODUCT_D or
+                      m.reg(PRE3).trace_type=DOT_PRODUCT_TRACE_D;
         end if;
         
         

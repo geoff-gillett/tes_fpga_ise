@@ -22,13 +22,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="2759349333333fs"></ZoomStartTime>
-      <ZoomEndTime time="3053549333334fs"></ZoomEndTime>
-      <Cursor1Time time="3004516000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="57700000001fs"></ZoomEndTime>
+      <Cursor1Time time="8900000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="229"></NameColumnWidth>
-      <ValueColumnWidth column_width="124"></ValueColumnWidth>
+      <ValueColumnWidth column_width="213"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="11" />
    <wave_markers>
@@ -689,7 +689,6 @@
       <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
-         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/pulse_time_n" type="array">
          <obj_property name="ElementShortName">pulse_time_n[16:0]</obj_property>
@@ -1057,6 +1056,10 @@
             <obj_property name="ElementShortName">clk</obj_property>
             <obj_property name="ObjectShortName">clk</obj_property>
          </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.reg" type="array">
+            <obj_property name="ElementShortName">.reg[0:3]</obj_property>
+            <obj_property name="ObjectShortName">.reg[0:3]</obj_property>
+         </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/tflags.trace_type" type="other">
             <obj_property name="ElementShortName">.trace_type</obj_property>
             <obj_property name="ObjectShortName">.trace_type</obj_property>
@@ -1213,6 +1216,18 @@
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.enabled" type="array">
             <obj_property name="ElementShortName">.enabled[0:3]</obj_property>
             <obj_property name="ObjectShortName">.enabled[0:3]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.reg[3]" type="array">
+            <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="ElementShortName">[3]</obj_property>
+            <obj_property name="ObjectShortName">[3]</obj_property>
+            <obj_property name="label">m.reg(PRE3)</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pulse_start" type="array">
+            <obj_property name="ElementShortName">.pulse_start[0:3]</obj_property>
+            <obj_property name="ObjectShortName">.pulse_start[0:3]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak_detection" type="other">
             <obj_property name="ElementShortName">peak_detection</obj_property>
@@ -1588,7 +1603,7 @@
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="CellHeight">400</obj_property>
+         <obj_property name="CellHeight">40</obj_property>
          <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
          <obj_property name="AnalogYRangeMin">-400.000000</obj_property>
          <obj_property name="AnalogYRRangeMax">400.000000</obj_property>
