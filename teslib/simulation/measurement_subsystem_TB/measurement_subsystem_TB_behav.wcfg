@@ -22,19 +22,20 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="57700000001fs"></ZoomEndTime>
-      <Cursor1Time time="8900000000fs"></Cursor1Time>
+      <ZoomStartTime time="7372000000fs"></ZoomStartTime>
+      <ZoomEndTime time="8530000001fs"></ZoomEndTime>
+      <Cursor1Time time="7756000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="229"></NameColumnWidth>
-      <ValueColumnWidth column_width="213"></ValueColumnWidth>
+      <ValueColumnWidth column_width="209"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="11" />
    <wave_markers>
       <marker time="501676000000" label="" />
       <marker time="382780000000" label="" />
       <marker time="387656000000" label="" />
+      <marker time="97020000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -689,6 +690,7 @@
       <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
+         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/pulse_time_n" type="array">
          <obj_property name="ElementShortName">pulse_time_n[16:0]</obj_property>
@@ -887,6 +889,7 @@
       <wvobject fp_name="group642" type="group">
          <obj_property name="label">mux</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/tflags.trace_type" type="other">
             <obj_property name="ElementShortName">.trace_type</obj_property>
             <obj_property name="ObjectShortName">.trace_type</obj_property>
@@ -949,6 +952,7 @@
       <wvobject fp_name="group623" type="group">
          <obj_property name="label">Framer</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/frame_word" type="array">
             <obj_property name="ElementShortName">frame_word</obj_property>
             <obj_property name="ObjectShortName">frame_word</obj_property>
@@ -975,6 +979,7 @@
             <obj_property name="ObjectShortName">framer_free[10:0]</obj_property>
             <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
          </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/average_detection" type="other">
             <obj_property name="ElementShortName">average_detection</obj_property>
@@ -1116,6 +1121,20 @@
             <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.stamp_pulse" type="array">
+            <obj_property name="ElementShortName">.stamp_pulse[2:3]</obj_property>
+            <obj_property name="ObjectShortName">.stamp_pulse[2:3]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.pulse_stamped" type="array">
+            <obj_property name="ElementShortName">.pulse_stamped[2:3]</obj_property>
+            <obj_property name="ObjectShortName">.pulse_stamped[2:3]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_stamped" type="other">
+            <obj_property name="ElementShortName">trace_stamped</obj_property>
+            <obj_property name="ObjectShortName">trace_stamped</obj_property>
+            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_overflow" type="other">
             <obj_property name="ElementShortName">trace_overflow</obj_property>
             <obj_property name="ObjectShortName">trace_overflow</obj_property>
@@ -1217,17 +1236,17 @@
             <obj_property name="ElementShortName">.enabled[0:3]</obj_property>
             <obj_property name="ObjectShortName">.enabled[0:3]</obj_property>
          </wvobject>
-         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.reg[3]" type="array">
-            <obj_property name="DisplayName">label</obj_property>
-            <obj_property name="ElementShortName">[3]</obj_property>
-            <obj_property name="ObjectShortName">[3]</obj_property>
-            <obj_property name="label">m.reg(PRE3)</obj_property>
-         </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pulse_start" type="array">
             <obj_property name="ElementShortName">.pulse_start[0:3]</obj_property>
             <obj_property name="ObjectShortName">.pulse_start[0:3]</obj_property>
             <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.reg[0]" type="array">
+            <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="ElementShortName">[0]</obj_property>
+            <obj_property name="ObjectShortName">[0]</obj_property>
+            <obj_property name="label">m.reg(PRE3)</obj_property>
          </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/peak_detection" type="other">
             <obj_property name="ElementShortName">peak_detection</obj_property>

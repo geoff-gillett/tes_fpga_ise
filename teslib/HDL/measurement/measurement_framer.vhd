@@ -202,7 +202,7 @@ signal q_length:unsigned(ADDRESS_BITS downto 0);
 signal commit_average:boolean;
 signal started:boolean;
 signal q_mux_wr_en:boolean;
-signal trace_stamped:boolean;
+--signal trace_stamped:boolean;
 
 function to_streambus(v:std_logic_vector;last:boolean;endian:string) 
 return streambus_t is
@@ -486,21 +486,22 @@ begin
       if state=AVERAGE then
         trace_start <= start_average;
       else
-        --FIXME move trace_start to m and add trace stamped  
-        if TRACE_FROM_STAMP then
-          if m.stamp_pulse(PRE) and  (
-              m.enabled(NOW) or (m.pulse_start(PRE) and m.enabled(PRE))
-            ) then
-              trace_stamped <= FALSE;
-              trace_start <= TRUE;
-           end if;
-        elsif m.pulse_start(PRE) and m.enabled(PRE) then 
-          trace_start <= TRUE;
-          trace_stamped <= FALSE;
-        end if;
-        if m.stamp_pulse(PRE) and (state=FIRSTPULSE or state=WAITPULSEDONE) then
-          trace_stamped <= TRUE;
-        end if;
+--        if TRACE_FROM_STAMP then
+        if m.stamp_pulse(PRE) and  (
+            m.enabled(NOW) or (m.pulse_start(PRE) and m.enabled(PRE))
+          ) then
+            trace_start <= TRUE;
+--            trace_stamped <= TRUE;
+         end if;
+--        elsif m.pulse_start(PRE) and m.enabled(PRE) then 
+--          
+--          trace_start <= TRUE;
+--          trace_stamped <= m.stamp_pulse(PRE) and 
+--                           (state=FIRSTPULSE or state=WAITPULSEDONE);
+--        end if;
+--        if m.stamp_pulse(PRE) and (state=FIRSTPULSE or state=WAITPULSEDONE) then
+--          trace_stamped <= TRUE;
+--        end if;
       end if;
       
       --------------------------------------------------------------------------
@@ -1190,7 +1191,7 @@ begin
         if trace_overflow or (trace_last and trace_full) then
           state <= IDLE;
           overflow_reg <= TRUE;
-          dump_reg <= trace_stamped; 
+          dump_reg <= TRUE; --trace_stamped; 
           dp_dump <= TRUE;
           
         elsif trace_last or trace_done then
@@ -1276,7 +1277,7 @@ begin
               else  
                 error_reg <= TRUE;
 --                dump_reg <= m.pulse_stamped(NOW);
-                dump_reg <= trace_stamped;
+                dump_reg <= TRUE; --trace_stamped;
 --                pulse_stamped <= FALSE;
                 dp_dump <= TRUE;
               end if;

@@ -182,7 +182,7 @@ type mca_trigger_d is (
   SLOPE_NEG_0XING_MCA_TRIGGER_D,
   CFD_HIGH_MCA_TRIGGER_D, --height valid? 
   CFD_LOW_MCA_TRIGGER_D, -- rise stamp?
-  MAX_SLOPE_MCA_TRIGGER_D, -- timing trigger?
+  MAX_SLOPE_MCA_TRIGGER_D, -- timing trigger?s_area
   DOT_PRODUCT_MCA_TRIGGER_D
 );
 

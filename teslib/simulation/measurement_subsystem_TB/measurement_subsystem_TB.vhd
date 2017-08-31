@@ -350,7 +350,8 @@ stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
 --	     "../bin_traces/july 10/gt1_100khz.bin";
-	     "../bin_traces/gt1_100khz_adc.bin";
+--	     "../bin_traces/gt1_100khz_adc.bin";
+	     "../bin_traces/noise.bin";
 --	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/july 10/randn.bin";
 --	     "../bin_traces/double_peak_sample.bin";
@@ -511,8 +512,17 @@ chan_reg(0).capture.area_threshold <= to_unsigned(10000,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
 chan_reg(0).capture.trace_pre <= to_unsigned(64,TRACE_PRE_BITS);
-
-
+--------------------------------------------------------------------------------
+-- noise
+--------------------------------------------------------------------------------
+chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
+chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
+chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
+chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
+chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
+chan_reg(0).capture.trace_pre <= to_unsigned(0,TRACE_PRE_BITS);
 --------------------------------------------------------------------------------
 -- double peak thesis
 --------------------------------------------------------------------------------
