@@ -259,7 +259,6 @@ attribute mark_debug of pending:signal is "FALSE";
 --attribute mark_debug of m.enabled:signal is "FALSE";
 attribute mark_debug of framer_free:signal is "FALSE";
 
-
 begin
 debugGen:if DEBUG="TRUE" generate
 debugPending:process (clk) is
@@ -486,22 +485,8 @@ begin
       if state=AVERAGE then
         trace_start <= start_average;
       else
---        if TRACE_FROM_STAMP then
-        if m.stamp_pulse(PRE) and  (
-            m.enabled(NOW) or (m.pulse_start(PRE) and m.enabled(PRE))
-          ) then
-            trace_start <= TRUE;
---            trace_stamped <= TRUE;
-         end if;
---        elsif m.pulse_start(PRE) and m.enabled(PRE) then 
---          
---          trace_start <= TRUE;
---          trace_stamped <= m.stamp_pulse(PRE) and 
---                           (state=FIRSTPULSE or state=WAITPULSEDONE);
---        end if;
---        if m.stamp_pulse(PRE) and (state=FIRSTPULSE or state=WAITPULSEDONE) then
---          trace_stamped <= TRUE;
---        end if;
+        trace_start <= m.enabled(PRE) and m.stamp_pulse(PRE) and  
+                      (state=FIRSTPULSE or (state=IDLE and m.pulse_start(PRE)));
       end if;
       
       --------------------------------------------------------------------------

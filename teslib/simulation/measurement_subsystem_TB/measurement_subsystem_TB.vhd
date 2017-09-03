@@ -107,6 +107,12 @@ signal clk_count,io_clk_count:integer:=0;
 signal enable:boolean:=FALSE;
 
 file bytestream_file,trace_file:extensions.debug.integer_file;
+file min_file,max_file:extensions.debug.integer_file;
+file f0p_file,f0n_file:extensions.debug.integer_file;
+file ptn_file,init_reg_file:extensions.debug.integer_file;
+file rise_stamp_file,pulse_stamp_file:extensions.debug.integer_file;
+file rise_start_file,pulse_start_file:extensions.debug.integer_file;
+file height_valid_file,rise_stop_file:extensions.debug.integer_file;
 
 signal filter_config:fir_ctl_in_array(CHANNELS-1 downto 0);
 signal slope_config:fir_ctl_in_array(CHANNELS-1 downto 0);
@@ -120,18 +126,21 @@ constant SIM_WIDTH:natural:=8;
 signal sim_count:unsigned(SIM_WIDTH-1 downto 0);
 signal doublesig:signed(ADC_WIDTH-1 downto 0);
 
+signal store_reg:boolean;
 signal event_enable:std_logic:='0';
+signal clk_i:integer:=-1; --clk index for data files
+signal flags:boolean_vector(10 downto 0);
 
 begin
 	
 sample_clk <= not sample_clk after SAMPLE_CLK_PERIOD/2;
 io_clk <= not IO_clk after IO_CLK_PERIOD/2;
-reset0 <= '0' after 2*IO_CLK_PERIOD; 
-reset1 <= '0' after 10*IO_CLK_PERIOD; 
-reset2 <= '0' after 20*IO_CLK_PERIOD; 
+clk_i <= clk_i+1 after SAMPLE_CLK_PERIOD;
+reset0 <= '0' after 4*IO_CLK_PERIOD; 
+reset1 <= '0' after 20*IO_CLK_PERIOD; 
+reset2 <= '0' after 30*IO_CLK_PERIOD; 
 --bytestream_ready <= io_clk_count mod 3 = 0;
                     
-bytestream_ready <= TRUE;
 
 UUT:entity work.measurement_subsystem
 generic map(
@@ -301,6 +310,8 @@ chan_reg(1).baseline.timeconstant <= to_unsigned(25000,32);
 --chan_reg(0).capture.area_threshold <= to_unsigned(200000,AREA_WIDTH-1);
 
 --------------------------------------------------------------------------------
+-- data recording
+--------------------------------------------------------------------------------
 
 file_open(bytestream_file,"../bytestream", WRITE_MODE);
 byteStreamWriter:process
@@ -329,6 +340,220 @@ begin
   end loop;
 end process traceWriter; 
 
+flags <= -- byte 1
+         --  5           6          7                        
+         m(0).rise2 & m(0).rise1 & m(0).valid_rise & 
+         --byte 0
+         -- 0            1                   2                   
+         m(0).rise0 & m(0).rise_start(NOW) & m(0).pulse_start(NOW) & 
+         -- 3                4               5                6                 
+         m(0).will_cross & m(0).will_arm & m(0).cfd_error & m(0).cfd_overrun & 
+         -- 7
+         m(0).cfd_valid;
+         
+file_open(min_file, "../min_data",WRITE_MODE);
+minWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).min(NOW) then
+      write(min_file, clk_i);
+      write(min_file, to_integer(m(0).f));
+      write(min_file, to_integer(m(0).s));
+      write(min_file, to_integer(m(0).cfd_low));
+      write(min_file, to_integer(m(0).cfd_high));
+      write(min_file, to_integer(to_unsigned(flags)));
+      write(min_file, to_integer(m(0).max_slope));
+      write(min_file, to_integer(m(0).minima(NOW)));
+      write(min_file, to_integer(m(0).s_area));
+      write(min_file, to_integer(m(0).s_extrema));
+    end if;
+  end loop;
+end process minWriter; 
+
+file_open(max_file, "../max_data",WRITE_MODE);
+maxWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).max(NOW) then
+      write(max_file, clk_i);
+      write(max_file, to_integer(m(0).f));
+      write(max_file, to_integer(m(0).s));
+      write(max_file, to_integer(to_unsigned(flags)));
+      write(max_file, to_integer(m(0).s_area));
+      write(max_file, to_integer(m(0).s_extrema));
+      write(max_file, to_integer(m(0).peak_height));
+    end if;
+  end loop;
+end process maxWriter; 
+
+file_open(f0p_file, "../f0p_xings",WRITE_MODE);
+f0pWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).f_0_p then
+        write(f0p_file, clk_i);
+        write(f0p_file, to_integer(m(0).f_area));
+        write(f0p_file, to_integer(m(0).f_extrema));
+    end if;
+  end loop;
+end process f0pWriter; 
+
+file_open(f0n_file, "../f0n_xings",WRITE_MODE);
+f0nWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).f_0_n then
+        write(f0n_file, clk_i);
+        write(f0n_file, to_integer(m(0).f_area));
+        write(f0n_file, to_integer(m(0).f_extrema));
+    end if;
+  end loop;
+end process f0nWriter; 
+
+file_open(ptn_file, "../ptn_xings",WRITE_MODE);
+ptnWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).p_t_n(NOW) then
+      write(ptn_file, clk_i);
+      write(ptn_file, to_integer(m(0).pulse_area));
+      write(ptn_file, to_integer(m(0).pulse_length));
+      write(ptn_file, to_integer(m(0).pulse_timer(NOW)));
+    end if;
+  end loop;
+end process ptnWriter; 
+
+file_open(rise_start_file, "../rise_start",WRITE_MODE);
+riseStartWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).rise_start(NOW) then
+      write(rise_start_file, clk_i);
+      write(rise_start_file, to_integer(m(0).pulse_timer(NOW)));
+      write(rise_start_file, to_integer(m(0).rise_number));
+      write(rise_start_file, to_integer(m(0).rise_address));
+    end if;
+  end loop;
+end process riseStartWriter; 
+
+file_open(rise_stop_file, "../rise_stop",WRITE_MODE);
+riseStopWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).rise_stop(NOW) then
+      write(rise_stop_file, clk_i);
+      write(rise_stop_file, to_integer(m(0).pulse_timer(NOW)));
+      write(rise_stop_file, to_integer(m(0).rise_number));
+      write(rise_stop_file, to_integer(m(0).rise_address));
+      write(rise_stop_file, to_integer(m(0).rise_timer(NOW)));
+      write(rise_stop_file, to_integer(m(0).peak_height));
+    end if;
+  end loop;
+end process riseStopWriter; 
+
+file_open(height_valid_file, "../height_valid",WRITE_MODE);
+heightvalidWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).rise_stop(NOW) then
+      write(rise_stop_file, clk_i);
+      write(rise_stop_file, to_integer(m(0).pulse_timer(NOW)));
+      write(rise_stop_file, to_integer(m(0).rise_number));
+      write(rise_stop_file, to_integer(m(0).rise_address));
+      write(rise_stop_file, to_integer(m(0).rise_timer(NOW)));
+      write(rise_stop_file, to_integer(m(0).peak_height));
+    end if;
+  end loop;
+end process heightvalidWriter; 
+
+file_open(pulse_start_file, "../pulse_start",WRITE_MODE);
+pulseStartWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).pulse_start(NOW) then
+      write(pulse_start_file, clk_i);
+      write(pulse_start_file, to_integer(m(0).enabled(NOW)));
+      write(pulse_start_file, to_integer(m(0).reg(NOW).area_threshold));
+      write(pulse_start_file, to_integer(m(0).reg(NOW).cfd_rel2min));
+      write(pulse_start_file, to_integer(m(0).reg(NOW).constant_fraction));
+      write(pulse_start_file, to_integer(m(0).reg(NOW).detection));
+      write(pulse_start_file, to_integer(m(0).reg(NOW).height));
+      write(pulse_start_file, to_integer(m(0).reg(NOW).max_peaks));
+      write(pulse_start_file, to_integer(m(0).reg(NOW).pulse_threshold));
+      write(pulse_start_file, to_integer(m(0).reg(NOW).slope_threshold));
+      write(pulse_start_file, to_integer(m(0).reg(NOW).timing));
+    end if;
+  end loop;
+end process pulseStartWriter; 
+
+
+file_open(rise_stamp_file, "../stamp_rise",WRITE_MODE);
+riseStampWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).stamp_rise(NOW) then
+      write(rise_stamp_file, clk_i);
+      write(rise_stamp_file, to_integer(m(0).pulse_timer(NOW)));
+    end if;
+  end loop;
+end process riseStampWriter; 
+
+file_open(pulse_stamp_file, "../stamp_pulse",WRITE_MODE);
+pulseStampWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(sample_clk);
+    if m(0).stamp_pulse(NOW) then
+      write(pulse_stamp_file, clk_i);
+      write(pulse_stamp_file, to_integer(m(0).pulse_timer(NOW)));
+    end if;
+  end loop;
+end process pulseStampWriter; 
+
+file_open(init_reg_file, "../init_reg",WRITE_MODE);
+initRegWriter:process
+begin
+    wait until store_reg;
+    write(init_reg_file, clk_i);
+    write(init_reg_file, to_integer(unsigned(global.channel_enable)));
+    write(init_reg_file, to_integer(chan_reg(0).capture.area_threshold));
+    write(init_reg_file, to_integer(chan_reg(0).capture.cfd_rel2min));
+    write(init_reg_file, to_integer(chan_reg(0).capture.constant_fraction));
+    write(init_reg_file, to_integer(chan_reg(0).capture.detection));
+    write(init_reg_file, to_integer(chan_reg(0).capture.height));
+    write(init_reg_file, to_integer(chan_reg(0).capture.max_peaks));
+    write(init_reg_file, to_integer(chan_reg(0).capture.pulse_threshold));
+    write(init_reg_file, to_integer(chan_reg(0).capture.slope_threshold));
+    write(init_reg_file, to_integer(chan_reg(0).capture.timing));
+    write(init_reg_file, to_integer(chan_reg(0).capture.trace_type));
+    write(init_reg_file, to_integer(chan_reg(0).capture.trace_signal));
+    write(init_reg_file, to_integer(chan_reg(0).capture.trace_length));
+    write(init_reg_file, to_integer(chan_reg(0).capture.trace_stride));
+    write(init_reg_file, to_integer(global.mtu_chunks));
+    write(init_reg_file, to_integer(global.tick_latency));
+    write(init_reg_file, to_integer(global.tick_period));
+    write(init_reg_file, to_integer(global.window));
+    write(init_reg_file, to_integer(global.mca.value));
+    write(init_reg_file, to_integer(global.mca.trigger));
+    write(init_reg_file, to_integer(global.mca.qualifier));
+    write(init_reg_file, to_integer(global.mca.ticks));
+    write(init_reg_file, to_integer(global.mca.bin_n));
+    write(init_reg_file, to_integer(global.mca.channel));
+    write(init_reg_file, to_integer(global.mca.last_bin));
+    write(init_reg_file, to_integer(global.mca.lowest_value));
+    wait;
+end process initRegWriter; 
+--------------------------------------------------------------------------------
 clkCount:process(sample_clk)
 begin
   if rising_edge(sample_clk) then
@@ -460,20 +685,15 @@ begin
   chan_reg(1).capture.cfd_rel2min <= FALSE;
   chan_reg(1).capture.trace_stride <= (others => '0');
   
-	wait for SAMPLE_CLK_PERIOD*64;
-  simenable <= TRUE;
 	global.mca.value <= MCA_FILTERED_EXTREMA_D;
 	global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
 	global.mca.qualifier <= ALL_MCA_QUAL_D;
---	global.mca.update_asap <= TRUE;
   global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
   global.mca.bin_n <= to_unsigned(0,MCA_BIN_N_BITS);
   global.mca.channel <= (others => '0');
   global.mca.last_bin <= (others => '1'); --to_unsigned(1023,MCA_ADDRESS_BITS);
   global.mca.lowest_value <= to_signed(-8000,MCA_VALUE_BITS);
 --	global.mca.update_asap <= TRUE;
-	wait for SAMPLE_CLK_PERIOD;
-	global.mca.update_asap <= FALSE;
 
 --global.channel_enable <= "00000011";
 --global.channel_enable <= "00000001";
@@ -504,14 +724,15 @@ begin
 --------------------------------------------------------------------------------
 -- gt1_100khz_adc
 --------------------------------------------------------------------------------
-chan_reg(0).capture.slope_threshold <= to_unsigned(1500,DSP_BITS-1); --2300
---chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
-chan_reg(0).capture.pulse_threshold <= to_unsigned(3000,DSP_BITS-1); 
-chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
-chan_reg(0).capture.area_threshold <= to_unsigned(10000,AREA_WIDTH-1);
-chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
-chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
-chan_reg(0).capture.trace_pre <= to_unsigned(64,TRACE_PRE_BITS);
+--chan_reg(0).capture.slope_threshold <= to_unsigned(1500,DSP_BITS-1); --2300
+----chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(3000,DSP_BITS-1); 
+--chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+--chan_reg(0).capture.area_threshold <= to_unsigned(10000,AREA_WIDTH-1);
+--chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
+--chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
+--chan_reg(0).capture.trace_pre <= to_unsigned(64,TRACE_PRE_BITS);
+--chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D; 
 --------------------------------------------------------------------------------
 -- noise
 --------------------------------------------------------------------------------
@@ -545,141 +766,19 @@ chan_reg(0).capture.trace_pre <= to_unsigned(0,TRACE_PRE_BITS);
 --chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 --------------------------------------------------------------------------------
---
+--Trace settings
+--------------------------------------------------------------------------------
 chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
 --chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
 --chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 --chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
 chan_reg(0).capture.detection <= TRACE_DETECTION_D;
-wait for 6 us;
+--------------------------------------------------------------------------------
+wait until reset2='0';
+simenable <= TRUE;
+bytestream_ready <= TRUE;
 global.channel_enable <= "00000001";
-wait for 20 us;
---chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
---wait for 1420 us;
---chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
---wait for 1 ms;
---chan_reg(0).capture.detection <= AREA_DETECTION_D;
---wait for 1 ms;
---chan_reg(0).capture.detection <= PEAK_DETECTION_D;
---wait for 1 ms;
---chan_reg(0).capture.detection <= PULSE_DETECTION_D;
---chan_reg(0).capture.detection <= TRACE_DETECTION_D;
---global.channel_enable <= "00000011";
---  wait for 200 us;
---  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
---  chan_reg(0).capture.detection <= TRACE_DETECTION_D;
---global.channel_enable <= "00000001";
-  
---------------------------------------------------------------------------------
--- sample file 
---------------------------------------------------------------------------------
---  chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
---  wait for 1100 us;
---  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
---  wait for 1000 us;
---  chan_reg(0).capture.trace_type <= DOT_PRODUCT_D;
---  wait for 500 us;
---  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
---  wait for 2000 us;
---  chan_reg(0).capture.max_peaks <= to_unsigned(2,PEAK_COUNT_BITS);
---  wait for 500 us;
---  chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
---  wait for 1000 us;
---  chan_reg(0).capture.detection <= PULSE_DETECTION_D;
---  wait for 500 us;
---  chan_reg(0).capture.max_peaks <= to_unsigned(2,PEAK_COUNT_BITS);
---  wait for 500 us;
---  chan_reg(0).capture.detection <= AREA_DETECTION_D;
---  wait for 500 us;
---  chan_reg(0).capture.detection <= PEAK_DETECTION_D;
---  wait for 500 us;
---  chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-----  chan_reg(0).capture.pulse_threshold <= to_unsigned(108*8,DSP_BITS-1); 
---  wait for 500 us;
---  chan_reg(0).capture.detection <= AREA_DETECTION_D;
---  wait for 500 us;
---  chan_reg(0).capture.detection <= TRACE_DETECTION_D;
---  chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
---  wait for 2000 us;
---  chan_reg(0).capture.detection <= PULSE_DETECTION_D;
---  wait for 500 us;
---  chan_reg(0).capture.detection <= TRACE_DETECTION_D;
---  chan_reg(0).capture.trace_type <= DOT_PRODUCT_TRACE_D;
---------------------------------------------------------------------------------
-
---  wait for 70511 ns;
---  global.channel_enable <= "00000000";
---  wait for 12011 ns;
---  global.channel_enable <= "00000011";
---  wait for 40511 ns;
---  global.channel_enable <= "00000000";
---  wait for 13003 ns;
---  global.channel_enable <= "00000011";
-  
-  
---	wait for SAMPLE_CLK_PERIOD*20;
---	global.mca.value <= MCA_FILTERED_SIGNAL_D;
---	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
---	global.mca.qualifier <= VALID_PEAK_MCA_QUAL_D;
---	global.mca.update_asap <= TRUE;
---	wait for SAMPLE_CLK_PERIOD;
---  global.mca.update_asap <= FALSE;
---  wait until mca_interrupt;
---	global.mca.value <= MCA_FILTERED_SIGNAL_D;
---	global.mca.trigger <= MCA_DISABLED_D;
---	global.mca.update_asap <= TRUE;
---	wait for SAMPLE_CLK_PERIOD;
---	global.mca.update_asap <= FALSE;
---  wait;
-----  chan_reg(0).baseline.offset <= to_signed(5,DSP_BITS);
---  wait until mca_interrupt;
-----  chan_reg(0).baseline.offset <= to_signed(4,DSP_BITS);
---  wait until mca_interrupt;
-----  chan_reg(0).baseline.offset <= to_signed(3,DSP_BITS);
---  wait until mca_interrupt;
-----  chan_reg(0).baseline.offset <= to_signed(2,DSP_BITS);
---  wait;
---  wait until mca_interrupt;
---	global.mca.value <= MCA_FILTERED_SIGNAL_D;
---	global.mca.trigger <= SLOPE_NEG_0XING_MCA_TRIGGER_D;
---	global.mca.update_asap <= TRUE;
---	wait for SAMPLE_CLK_PERIOD;
---	global.mca.update_asap <= FALSE;
---	wait until mca_interrupt;
---	global.mca.value <= MCA_FILTERED_EXTREMA_D;
---	global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
---	global.mca.update_asap <= TRUE;
---	wait for SAMPLE_CLK_PERIOD;
---	global.mca.update_asap <= FALSE;
---	wait until mca_interrupt;
---	global.mca.value <= MCA_FILTERED_AREA_D;
---	global.mca.update_asap <= TRUE;
---	wait for SAMPLE_CLK_PERIOD;
---	global.mca.update_asap <= FALSE;
---	wait until mca_interrupt;
---	global.mca.value <= MCA_SLOPE_SIGNAL_D;
---	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
---	global.mca.update_asap <= TRUE;
---	wait for SAMPLE_CLK_PERIOD;
---	global.mca.update_asap <= FALSE;
---	wait until mca_interrupt;
---	global.mca.value <= MCA_SLOPE_EXTREMA_D;
---	global.mca.trigger <= SLOPE_0XING_MCA_TRIGGER_D;
---	global.mca.update_asap <= TRUE;
---	wait for SAMPLE_CLK_PERIOD;
---	global.mca.update_asap <= FALSE;
---	wait until mca_interrupt;
---	global.mca.value <= MCA_SLOPE_AREA_D;
---	global.mca.update_asap <= TRUE;
---	wait for SAMPLE_CLK_PERIOD;
---	global.mca.update_asap <= FALSE;
---	wait for SAMPLE_CLK_PERIOD;
---	wait until mca_interrupt;
---	global.mca.value <= MCA_RAW_SIGNAL_D;
---	global.mca.trigger <= CLOCK_MCA_TRIGGER_D;
---	global.mca.update_asap <= TRUE;
---	wait for SAMPLE_CLK_PERIOD;
---	global.mca.update_asap <= FALSE;
+store_reg <= TRUE;
 	wait;
 end process mcaControlStimulus;	
 

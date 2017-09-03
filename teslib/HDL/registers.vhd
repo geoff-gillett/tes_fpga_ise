@@ -167,6 +167,7 @@ function to_mca_value_d(i:natural range 0 to NUM_MCA_VALUE_D-1)
 				 return mca_value_d;
 function to_mca_value_d(s:std_logic_vector) return mca_value_d;
 function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector;
+function to_integer(v:mca_value_d) return integer;
 
 -- the trigger that samples a value into the MCA
 --FIXME could make no select bits give clock and add a trigger 
@@ -193,6 +194,7 @@ function to_mca_trigger_d(i:natural range 0 to NUM_MCA_TRIGGER_D-1)
 return mca_trigger_d;
 function to_mca_trigger_d(s:std_logic_vector) return mca_trigger_d;
 function to_std_logic(t:mca_trigger_d;w:natural) return std_logic_vector;
+function to_integer(t:mca_trigger_d) return integer;
   
 --FIXME could make no select bits use ALL
 --FIXME add valid_pulse?
@@ -216,6 +218,7 @@ function to_onehot(t:mca_qual_d) return std_logic_vector;
 function to_mca_qual_d(i:natural range 0 to NUM_MCA_QUAL_D-1) return mca_qual_d;
 function to_mca_qual_d(s:std_logic_vector) return mca_qual_d;
 function to_std_logic(t:mca_qual_d;w:natural) return std_logic_vector;
+function to_integer(q:mca_qual_d) return integer;
 
 type mca_qual1_d is (
   DISABLED_D, -- no select bits FIXME needed?
@@ -651,6 +654,10 @@ begin
 	o(mca_trigger_d'pos(t)) := '1';
 	return o(NUM_MCA_TRIGGER_D-1 downto 1);
 end function;
+function to_integer(t:mca_trigger_d) return integer is
+begin
+	return mca_trigger_d'pos(t);
+end function;
 
 -- mca_values_d
 function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector is
@@ -659,6 +666,11 @@ begin
 		assert FALSE report "w to small to represent mca_value_d" severity ERROR;
 	end if;
 	return to_std_logic(mca_value_d'pos(v),w);
+end function;
+
+function to_integer(v:mca_value_d) return integer is
+begin
+	return mca_value_d'pos(v);
 end function;
 
 function to_mca_value_d(i:natural range 0 to NUM_MCA_VALUE_D-1) 
@@ -704,6 +716,11 @@ variable o:std_logic_vector(NUM_MCA_QUAL_D-1 downto 0):=(others => '0');
 begin
 	o(mca_qual_d'pos(t)) := '1';
 	return o(NUM_MCA_QUAL_D-1 downto 1);
+end function;
+
+function to_integer(q:mca_qual_d) return integer is
+begin
+	return mca_qual_d'pos(q);
 end function;
 
 --------------------------------------------------------------------------------

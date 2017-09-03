@@ -107,9 +107,9 @@ signal f_0_n_cfd:boolean;
 signal f_0_p_cfd:boolean;
 signal rise_start_cfd:boolean;
 signal pulse_start_cfd:boolean;
-signal cfd_low_p:boolean;
-signal cfd_high_p:boolean;
-signal max_slope_p:boolean;
+--signal cfd_low_p:boolean;
+--signal cfd_high_p:boolean;
+--signal max_slope_p:boolean;
 signal s_0_x_cfd:boolean;
 signal cfd_overrun_cfd:boolean;
 signal first_rise_cfd:boolean;
@@ -319,14 +319,14 @@ cfdLowp:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      cfd_low_p <= FALSE;
+      cfd_low_p_pipe(1) <= FALSE;
       cfd_low_armed <= FALSE;
     else
       if min_cfd then
         cfd_low_armed <= TRUE;
       end if;
       if f_cfd >= cfd_low_cfd then
-        cfd_low_p <= (cfd_low_armed or min_cfd) and cfd_valid_cfd;
+        cfd_low_p_pipe(1) <= (cfd_low_armed or min_cfd) and cfd_valid_cfd;
         cfd_low_armed <= FALSE;
       end if;
     end if;
@@ -337,14 +337,14 @@ cfdHighp:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      cfd_high_p <= FALSE;
+      cfd_high_p_pipe(1) <= FALSE;
       cfd_high_armed <= FALSE;
     else
       if min_cfd then
         cfd_high_armed <= TRUE;
       end if;
       if f_cfd >= cfd_high_cfd then
-        cfd_high_p <= (cfd_high_armed or min_cfd) and cfd_valid_cfd;
+        cfd_high_p_pipe(1) <= (cfd_high_armed or min_cfd) and cfd_valid_cfd;
         cfd_high_armed <= FALSE;
       end if;
     end if;
@@ -355,14 +355,14 @@ maxSlope:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      max_slope_p <= FALSE;
+      max_slope_p_pipe(1) <= FALSE;
       max_slope_armed <= FALSE;
     else
       if min_cfd then
         max_slope_armed <= TRUE;
       end if;
       if f_cfd >= max_slope_cfd then
-        max_slope_p <= (max_slope_armed or min_cfd) and cfd_valid_cfd;
+        max_slope_p_pipe(1) <= (max_slope_armed or min_cfd) and cfd_valid_cfd;
         max_slope_armed <= FALSE;
       end if;
     end if;
@@ -424,11 +424,11 @@ begin
       max_slope_pipe <= max_slope_cfd & max_slope_pipe(1 to DEPTH-1);
       
       max_slope_p_pipe(2 to DEPTH) 
-        <= max_slope_p & max_slope_p_pipe(2 to DEPTH-1);
+        <= max_slope_p_pipe(1) & max_slope_p_pipe(2 to DEPTH-1);
       cfd_high_p_pipe(2 to DEPTH) 
-        <= cfd_high_p & cfd_high_p_pipe(2 to DEPTH-1);
+        <= cfd_high_p_pipe(1) & cfd_high_p_pipe(2 to DEPTH-1);
       cfd_low_p_pipe(2 to DEPTH) 
-        <= cfd_low_p & cfd_low_p_pipe(2 to DEPTH-1);
+        <= cfd_low_p_pipe(1) & cfd_low_p_pipe(2 to DEPTH-1);
         
       above_pipe <= above_cfd & above_pipe(1 to DEPTH-1);
       armed_pipe <= armed_cfd & armed_pipe(1 to DEPTH-1);
@@ -482,6 +482,7 @@ begin
         m.last_rise <= reg.max_peaks=0;
         
         m.has_rise <= FALSE;
+        m.rise_overflow <= FALSE;
         
         m.rise_address <= (1 => '1', others => '0'); -- start at 2
         rise_address_n <= (1 downto 0 => '1', others => '0');
@@ -496,10 +497,10 @@ begin
       m.minima(NOW) <= m.minima(PRE);
       
       if m.min(PRE) then
-        if rise_number_n=1 then
+        if m.rise_number=1 then
           m.rise1 <= TRUE;  
         end if;
-        if rise_number_n=2 then
+        if m.rise_number=2 then
           m.rise2 <= TRUE;  
         end if;
         if first_rise_pipe(DEPTH-1) then
@@ -522,7 +523,7 @@ begin
         if m.valid_rise then
           m.last_rise <= rise_number_n >= m.reg(NOW).max_peaks; 
           if rise_number_n > m.reg(NOW).max_peaks then 
-            m.rise_overflow <= m.has_rise;
+            m.rise_overflow <= TRUE;
           end if;
           if not m.last_rise then
             m.rise_address <= rise_address_n(PEAK_COUNT_BITS-1 downto 0);
