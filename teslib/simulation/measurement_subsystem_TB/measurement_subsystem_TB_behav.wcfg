@@ -22,9 +22,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="16580666667fs"></ZoomStartTime>
-      <ZoomEndTime time="19360666668fs"></ZoomEndTime>
-      <Cursor1Time time="17052000000fs"></Cursor1Time>
+      <ZoomStartTime time="7421833333333fs"></ZoomStartTime>
+      <ZoomEndTime time="8116833333334fs"></ZoomEndTime>
+      <Cursor1Time time="8001000000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="229"></NameColumnWidth>
@@ -32,9 +32,7 @@
    </column_width_setting>
    <WVObjectSize size="11" />
    <wave_markers>
-      <marker time="15568000000" label="" />
-      <marker time="16136000000" label="" />
-      <marker time="17052000000" label="" />
+      <marker time="13548000000" label="" />
    </wave_markers>
    <wvobject fp_name="group147" type="group">
       <obj_property name="label">testbench</obj_property>
@@ -769,6 +767,21 @@
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.min" type="array">
             <obj_property name="ElementShortName">.min[1:3]</obj_property>
             <obj_property name="ObjectShortName">.min[1:3]</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+            <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.min[1]" type="other">
+               <obj_property name="ElementShortName">[1]</obj_property>
+               <obj_property name="ObjectShortName">[1]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.min[2]" type="other">
+               <obj_property name="ElementShortName">[2]</obj_property>
+               <obj_property name="ObjectShortName">[2]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.min[3]" type="other">
+               <obj_property name="ElementShortName">[3]</obj_property>
+               <obj_property name="ObjectShortName">[3]</obj_property>
+               <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+               <obj_property name="UseCustomSignalColor">true</obj_property>
+            </wvobject>
          </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.max" type="array">
             <obj_property name="ElementShortName">.max[1:3]</obj_property>
@@ -841,6 +854,8 @@
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.rise0" type="other">
             <obj_property name="ElementShortName">.rise0</obj_property>
             <obj_property name="ObjectShortName">.rise0</obj_property>
+            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.rise1" type="other">
             <obj_property name="ElementShortName">.rise1</obj_property>
@@ -1041,6 +1056,14 @@
          <obj_property name="ElementShortName">f_cfd[15:0]</obj_property>
          <obj_property name="ObjectShortName">f_cfd[15:0]</obj_property>
       </wvobject>
+      <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/will_arm_cfd" type="other">
+         <obj_property name="ElementShortName">will_arm_cfd</obj_property>
+         <obj_property name="ObjectShortName">will_arm_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/armed_cfd" type="other">
+         <obj_property name="ElementShortName">armed_cfd</obj_property>
+         <obj_property name="ObjectShortName">armed_cfd</obj_property>
+      </wvobject>
       <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/cfd_low_armed" type="other">
          <obj_property name="ElementShortName">cfd_low_armed</obj_property>
          <obj_property name="ObjectShortName">cfd_low_armed</obj_property>
@@ -1108,17 +1131,21 @@
          <obj_property name="label">DEPTH-1</obj_property>
          <obj_property name="DisplayName">label</obj_property>
       </wvobject>
+      <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/first_rise_pipe[3]" type="other">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">[3]</obj_property>
+         <obj_property name="ObjectShortName">[3]</obj_property>
+         <obj_property name="label">first_rise[3]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/min_pipe[3]" type="other">
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="ElementShortName">[3]</obj_property>
+         <obj_property name="ObjectShortName">[3]</obj_property>
+         <obj_property name="label">min[3]</obj_property>
+      </wvobject>
       <wvobject type="divider" fp_name="divider1262">
          <obj_property name="label">depth</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/will_arm_cfd" type="other">
-         <obj_property name="ElementShortName">will_arm_cfd</obj_property>
-         <obj_property name="ObjectShortName">will_arm_cfd</obj_property>
-      </wvobject>
-      <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/armed_cfd" type="other">
-         <obj_property name="ElementShortName">armed_cfd</obj_property>
-         <obj_property name="ObjectShortName">armed_cfd</obj_property>
       </wvobject>
       <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/CF_WIDTH" type="other">
          <obj_property name="ElementShortName">CF_WIDTH</obj_property>
@@ -1401,6 +1428,7 @@
       <wvobject fp_name="group624" type="group">
          <obj_property name="label">Trace</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/clk" type="logic">
             <obj_property name="ElementShortName">clk</obj_property>
             <obj_property name="ObjectShortName">clk</obj_property>
@@ -1426,16 +1454,28 @@
             <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
             <obj_property name="radix_fractionWidth">3</obj_property>
             <obj_property name="radix_otherWidth">0</obj_property>
-            <obj_property name="CellHeight">50</obj_property>
             <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
             <obj_property name="AnalogYRangeMin">-3200.000000</obj_property>
             <obj_property name="AnalogYRRangeMax">30000.000000</obj_property>
             <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
             <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
             <obj_property name="AnalogHorizLine">0.000000</obj_property>
-            <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+            <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
             <obj_property name="CustomSignalColor">#FF00FF</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.f" type="array">
+            <obj_property name="ElementShortName">.f[15:0]</obj_property>
+            <obj_property name="ObjectShortName">.f[15:0]</obj_property>
+            <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+            <obj_property name="CellHeight">100</obj_property>
+            <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+            <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+            <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+            <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+            <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+            <obj_property name="AnalogHorizLine">0.000000</obj_property>
+            <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
          </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/mux_enable" type="other">
             <obj_property name="ElementShortName">mux_enable</obj_property>
@@ -1448,10 +1488,6 @@
             <obj_property name="ObjectShortName">mux_wr_en</obj_property>
             <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pulse_start" type="array">
-            <obj_property name="ElementShortName">.pulse_start[0:3]</obj_property>
-            <obj_property name="ObjectShortName">.pulse_start[0:3]</obj_property>
          </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/first_pulse_trace_header.trace_flags.multipulse" type="other">
             <obj_property name="ElementShortName">.multipulse</obj_property>
@@ -1485,12 +1521,6 @@
             <obj_property name="CustomSignalColor">#FF0000</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
-         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_start" type="other">
-            <obj_property name="ElementShortName">trace_start</obj_property>
-            <obj_property name="ObjectShortName">trace_start</obj_property>
-            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_last" type="other">
             <obj_property name="ElementShortName">trace_last</obj_property>
             <obj_property name="ObjectShortName">trace_last</obj_property>
@@ -1522,6 +1552,18 @@
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/last_accum_count" type="other">
             <obj_property name="ElementShortName">last_accum_count</obj_property>
             <obj_property name="ObjectShortName">last_accum_count</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/trace_start" type="other">
+            <obj_property name="ElementShortName">trace_start</obj_property>
+            <obj_property name="ObjectShortName">trace_start</obj_property>
+            <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pulse_start" type="array">
+            <obj_property name="ElementShortName">.pulse_start[0:3]</obj_property>
+            <obj_property name="ObjectShortName">.pulse_start[0:3]</obj_property>
+            <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/state" type="other">
             <obj_property name="ElementShortName">state</obj_property>
@@ -1586,6 +1628,12 @@
             <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
             <obj_property name="AnalogHorizLine">0.000000</obj_property>
             <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         </wvobject>
+         <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/measure/m.min[3]" type="other">
+            <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="ElementShortName">[3]</obj_property>
+            <obj_property name="ObjectShortName">[3]</obj_property>
+            <obj_property name="label">min[3]</obj_property>
          </wvobject>
          <wvobject fp_name="/measurement_subsystem_TB/UUT/\tesChannel(0)\/processingChannel/framer/m.pulse_start" type="array">
             <obj_property name="ElementShortName">.pulse_start[0:3]</obj_property>
