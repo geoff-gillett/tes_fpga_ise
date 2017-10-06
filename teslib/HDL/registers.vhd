@@ -153,7 +153,7 @@ type mca_value_d is (
   MCA_SLOPE_EXTREMA_D,
   MCA_PULSE_AREA_D, -- the area between threshold crossings
   MCA_RAW_SIGNAL_D, -- FIXME useful? 
-  MCA_CFD_HIGH_D,    -- high threshold 
+  MCA_CFD_HIGH_D,    -- high threshold why? 
   MCA_PULSE_TIMER_D, 
   MCA_RISE_TIMER_D, 
   MCA_DOT_PRODUCT_D 
@@ -224,6 +224,7 @@ type mca_qual1_d is (
   DISABLED_D, -- no select bits FIXME needed?
   ALL_D, 
   VALID_RISE_D,
+  NOT_VALID_RISE_D,
   ABOVE_AREA_D,
   ABOVE_PULSE_D,
   WILL_CROSS_D,
@@ -235,6 +236,8 @@ type mca_qual2_d is (
   DISABLED_D, -- no select bits FIXME needed?
   ALL_D, 
   RISE0_D,
+  NOT_RISE0_D,
+  ABOVE_PULSE_D,
   RISE1_D,
   RISE2_D
 );
