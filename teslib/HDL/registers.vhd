@@ -220,7 +220,7 @@ function to_mca_qual_d(s:std_logic_vector) return mca_qual_d;
 function to_std_logic(t:mca_qual_d;w:natural) return std_logic_vector;
 function to_integer(q:mca_qual_d) return integer;
 
-type mca_qual1_d is (
+type mca_qual0_d is (
   DISABLED_D, -- no select bits FIXME needed?
   ALL_D, 
   VALID_RISE_D,
@@ -232,7 +232,7 @@ type mca_qual1_d is (
   WILL_ARM_D
 );
 
-type mca_qual2_d is (
+type mca_qual1_d is (
   DISABLED_D, -- no select bits FIXME needed?
   ALL_D, 
   RISE0_D,

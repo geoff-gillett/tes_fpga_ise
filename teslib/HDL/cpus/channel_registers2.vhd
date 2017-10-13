@@ -115,7 +115,7 @@ signal reg:channel_registers_t:=(
     trace_type => SINGLE_TRACE_D,
     trace_stride => (others => '0'),
     trace_length => to_unsigned(512,TRACE_LENGTH_BITS),
-    trace_pre => (others => '0')
+    trace_pre => to_unsigned(64,TRACE_PRE_BITS)
   )
 );
 
