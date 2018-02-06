@@ -169,6 +169,7 @@ function to_mca_value_d(s:std_logic_vector) return mca_value_d;
 function to_std_logic(v:mca_value_d;w:natural) return std_logic_vector;
 function to_integer(v:mca_value_d) return integer;
 
+
 -- the trigger that samples a value into the MCA
 --FIXME could make no select bits give clock and add a trigger 
 type mca_trigger_d is (
