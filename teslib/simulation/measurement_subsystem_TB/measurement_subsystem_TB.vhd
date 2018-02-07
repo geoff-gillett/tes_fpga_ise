@@ -665,7 +665,7 @@ begin
   chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
 --  chan_reg(0).capture.detection <= TRACE_DETECTION_D;
   chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-  chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
+--  chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
   chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
   chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
   chan_reg(0).capture.trace_length <= to_unsigned(256,TRACE_LENGTH_BITS);
@@ -743,7 +743,7 @@ chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
-chan_reg(0).capture.trace_pre <= to_unsigned(0,TRACE_PRE_BITS);
+chan_reg(0).capture.trace_pre <= to_unsigned(64,TRACE_PRE_BITS);
 --------------------------------------------------------------------------------
 -- double peak thesis
 --------------------------------------------------------------------------------
@@ -772,14 +772,24 @@ chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
 --chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
 --chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 --chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
-chan_reg(0).capture.detection <= TRACE_DETECTION_D;
+chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 --------------------------------------------------------------------------------
 wait until reset2='0';
 simenable <= TRUE;
 bytestream_ready <= TRUE;
 global.channel_enable <= "00000001";
 store_reg <= TRUE;
-	wait;
+wait for 2 us;
+chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
+wait for 2 us;
+chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
+wait for 2 us;
+chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
+wait for 2 us;
+chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
+wait for 2 us;
+chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
 end process mcaControlStimulus;	
 
 end architecture testbench;
