@@ -576,7 +576,7 @@ stimulusFile:process
 --	     "../input_signals/tes2_250_old.bin";
 --	     "../bin_traces/july 10/gt1_100khz.bin";
 --	     "../bin_traces/gt1_100khz_adc.bin";
-	     "../bin_traces/noise.bin";
+	     "C:/TES_project/bin_traces/noise.bin";
 --	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/july 10/randn.bin";
 --	     "../bin_traces/double_peak_sample.bin";
