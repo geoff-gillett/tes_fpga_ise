@@ -66,9 +66,9 @@ type timestate is (IDLE,VALIDTIME);
 signal buffer_state,buffer_nextstate:bufferstate;
 signal reltime_state,reltime_nextstate:timestate;
 --
-signal timedif,last_eventtime,eventtime_reg,window_starttime
+signal timedif,last_eventtime,last_windowtime,eventtime_reg,window_timediff
 			 :unsigned(TIMETAG_BITS-1 downto 0);
-signal window_time:unsigned(TIMETAG_BITS-1 downto 0);
+--signal window_time:unsigned(TIMETAG_BITS-1 downto 0);
 --
 component time_fifo
 port (
@@ -330,20 +330,22 @@ when VALIDTIME =>
 end case;
 end process reltimeFsmTransition;
 --
+-- new window is not set when reltime<=window exclude ticks
 relativeTime:process(clk)
 begin
 	if rising_edge(clk) then
 		if reset = '1' then
 			reltime <= (others => '1');
 			last_eventtime <= (others => '0');
-			window_starttime <= (others => '0');
+			last_windowtime <= (others => '0');
+  		window_timediff <= (others => '0');
 			--timedif <= (others => '0');
 			timedif_valid <= FALSE;
 			new_window <= TRUE;
 		else
 			if reltime_state=IDLE and timefifo_valid then
 				timedif <= eventtime_reg-last_eventtime; 
-				window_time <= eventtime_reg-window_starttime;
+				window_timediff <= eventtime_reg-last_windowtime;
 				timedif_valid <= TRUE;
 			end if;
 			if timedif_valid then 
@@ -357,18 +359,16 @@ begin
 				-- FIXME need to ignore when *only* a tick
 				-- 
 				if unaryOR(commited_reg) then
-					if window_time > window then
-						new_window <= TRUE;
-						window_starttime <= eventtime_reg;
-					else 
-						new_window <= FALSE;
-					end if;
+					new_window <= window_timediff > window; 
 				end if;
 			end if;
 			if time_rd_en='1' then
 				timedif_valid <= FALSE;
 				if (not all_dumped_reg) or ticked_reg then
 					last_eventtime <= eventtime_reg;
+				end if;
+				if (not all_dumped_reg) then
+					last_windowtime <= eventtime_reg;
 				end if;
 			end if;
 		end if;

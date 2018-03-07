@@ -778,7 +778,7 @@ chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 wait until reset2='0';
 simenable <= TRUE;
 bytestream_ready <= TRUE;
-global.channel_enable <= "00000001";
+global.channel_enable <= "00000011";
 store_reg <= TRUE;
 wait for 2 us;
 chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
