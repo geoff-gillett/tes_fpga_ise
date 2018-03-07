@@ -39,7 +39,7 @@ use tes.functions.all;
 use tes.registers.all;
 use tes.measurements.all;
 
-entity ml605_fmc108_v6emac_bughunt is
+entity ml605_fmc108_v6emac_post_thesis is
 generic(
   VERSION:std_logic_vector(31 downto 0):=to_std_logic(23,32);
   DEFAULT_IODELAY_VALUE:integer:=24;
@@ -122,9 +122,9 @@ port(
   frame_error:out std_logic;
   frame_errorn:out std_logic
 );
-end entity ml605_fmc108_v6emac_bughunt;
+end entity ml605_fmc108_v6emac_post_thesis;
 
-architecture RTL of ml605_fmc108_v6emac_bughunt is
+architecture RTL of ml605_fmc108_v6emac_post_thesis is
 	
 --------------------------------------------------------------------------------
 -- Constants

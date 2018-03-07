@@ -303,7 +303,7 @@ error <= error_int;
 --  | size | threshold  |   flags  |   time   |  wr_en @ pulse end
 --  |       area        |  length  |  offset  |        @ pulse end -1
 --  repeating 8 byte peak records (up to 16) for extra peaks.
---  | height | minima | rise | time |                  @ maxima
+--  | height | max_slope | rise | time |                  @ maxima
 --
 --  | height | low1 |  low2  | time | -- use this for pulse2
                                       -- low2 is @ time
