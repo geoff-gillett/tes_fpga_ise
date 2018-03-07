@@ -45,7 +45,7 @@ generic(
   DEFAULT_IODELAY_VALUE:integer:=24;
   DEFAULT_CLK_IODELAY_VALUE:integer:=0;
   DSP_CHANNELS:integer:=2;
-  ACCUMULATE_N:natural:=15;
+  ACCUMULATE_N:natural:=16;
   ENDIAN:string:="LITTLE";
   MEASUREMENT_FRAMER_ADDRESS_BITS:natural:=MEASUREMENT_FRAMER_ADDRESS_BITS;
   ETHERNET_FRAMER_ADDRESS_BITS:natural:=ETHERNET_FRAMER_ADDRESS_BITS;
@@ -770,7 +770,7 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
 end generate tesChannel;
 --------------------------------------------------------------------------------
 
-measurementSubsystem:entity tes.measurement_subsystem20
+measurementSubsystem:entity tes.measurement_subsystem
 generic map(
   DSP_CHANNELS => DSP_CHANNELS,
   ADC_CHANNELS => ADC_CHANNELS,
