@@ -339,7 +339,6 @@ begin
 			last_eventtime <= (others => '0');
 			last_windowtime <= (others => '0');
   		window_timediff <= (others => '0');
-			--timedif <= (others => '0');
 			timedif_valid <= FALSE;
 			new_window <= TRUE;
 		else

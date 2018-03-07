@@ -587,6 +587,7 @@ begin
 		read(sample_file, sample);
 		wait until rising_edge(sample_clk);
 		adc_samples(0) <= to_std_logic(sample, 14);
+		adc_samples(1) <= to_std_logic(sample, 14);
 	end loop;
 	wait;
 end process stimulusFile;
@@ -607,7 +608,7 @@ end process stimulusFile;
 --	end loop;
 --	wait;
 --end process stimulusFile2;
-adc_samples(1) <= (others => '0');
+--adc_samples(1) <= (others => '0');
 
 ramp:process (sample_clk) is
 begin
@@ -780,15 +781,15 @@ simenable <= TRUE;
 bytestream_ready <= TRUE;
 global.channel_enable <= "00000011";
 store_reg <= TRUE;
-wait for 2 us;
+wait for 10 us;
 chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
-wait for 2 us;
+wait for 10 us;
 chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
-wait for 2 us;
+wait for 10 us;
 chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
-wait for 2 us;
+wait for 10 us;
 chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
-wait for 2 us;
+wait for 10 us;
 chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
 end process mcaControlStimulus;	
 
