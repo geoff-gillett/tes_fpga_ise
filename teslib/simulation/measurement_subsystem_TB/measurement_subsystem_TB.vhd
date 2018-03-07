@@ -673,7 +673,7 @@ begin
   chan_reg(0).capture.height <= PEAK_HEIGHT_D;
   chan_reg(0).capture.cfd_rel2min <= FALSE;
   --
-  chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
+  chan_reg(1).capture.adc_select <= (1 => '1', others => '0');
   chan_reg(1).capture.delay <= to_unsigned(10,DELAY_BITS);
   chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
   chan_reg(1).capture.detection <= PULSE_DETECTION_D;
@@ -682,7 +682,8 @@ begin
   chan_reg(1).capture.trace_type <= SINGLE_TRACE_D;
   chan_reg(1).capture.trace_signal <= FILTERED_TRACE_D;
   chan_reg(1).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
-  chan_reg(1).capture.height <= CFD_HIGH_D;
+--  chan_reg(1).capture.height <= CFD_HIGH_D;
+  chan_reg(1).capture.height <= PEAK_HEIGHT_D;
   chan_reg(1).capture.cfd_rel2min <= FALSE;
   chan_reg(1).capture.trace_stride <= (others => '0');
   
@@ -745,6 +746,15 @@ chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
 chan_reg(0).capture.trace_pre <= to_unsigned(64,TRACE_PRE_BITS);
+
+chan_reg(1).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
+--chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
+chan_reg(1).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
+chan_reg(1).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+chan_reg(1).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
+chan_reg(1).baseline.offset <= to_signed(0,DSP_BITS);
+chan_reg(1).capture.trace_stride <= (0 => '0', others => '0');
+chan_reg(1).capture.trace_pre <= to_unsigned(64,TRACE_PRE_BITS);
 --------------------------------------------------------------------------------
 -- double peak thesis
 --------------------------------------------------------------------------------
