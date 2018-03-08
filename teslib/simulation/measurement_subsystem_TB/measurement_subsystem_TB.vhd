@@ -783,7 +783,7 @@ chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
 --chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
 --chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
 --chan_reg(0).capture.trace_type <= AVERAGE_TRACE_D;
-chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+--chan_reg(0).capture.detection <= PULSE_DETECTION_D;
 chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
 --------------------------------------------------------------------------------
 wait until reset2='0';
@@ -791,16 +791,29 @@ simenable <= TRUE;
 bytestream_ready <= TRUE;
 global.channel_enable <= "00000011";
 store_reg <= TRUE;
-wait for 10 us;
-chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
-wait for 10 us;
-chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
-wait for 10 us;
-chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
-wait for 10 us;
-chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
-wait for 10 us;
-chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
+
+while TRUE loop
+  chan_reg(0).capture.detection <= PULSE_DETECTION_D;
+  wait for 10 us;
+  chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
+  wait for 10 us;
+  chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
+  wait for 10 us;
+  chan_reg(0).capture.timing <= MAX_SLOPE_TIMING_D;
+  wait for 10 us;
+  chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
+  wait for 10 us;
+  chan_reg(0).capture.detection <= TRACE_DETECTION_D;
+  wait for 10 us;
+  chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
+  wait for 10 us;
+  chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
+  wait for 10 us;
+  chan_reg(0).capture.timing <= MAX_SLOPE_TIMING_D;
+  wait for 10 us;
+  chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
+  wait for 10 us;
+end loop;
 end process mcaControlStimulus;	
 
 end architecture testbench;
