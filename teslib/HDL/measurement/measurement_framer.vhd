@@ -1461,8 +1461,7 @@ begin
         end if;
       end if;
       
-      -- time stamping
-      
+      -- start signal sent to mux
       if peak_detection and m.stamp_rise(NOW) and m.enabled(NOW) then
         if mux_full then
           error_reg <= TRUE;
