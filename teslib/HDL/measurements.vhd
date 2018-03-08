@@ -26,7 +26,7 @@ use work.registers.all;
 
 package measurements is
 
---DEPTH of pipelines in the measurement record
+--Max DEPTH of pipelines in the measurement record
 constant MEASUREMENT_DEPTH:natural:=3;
 constant NOW:natural:=MEASUREMENT_DEPTH; --value now
 constant PRE:natural:=MEASUREMENT_DEPTH-1; --value 1 clk before

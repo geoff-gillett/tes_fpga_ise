@@ -322,6 +322,7 @@ begin
       cfd_low_p_pipe(1) <= FALSE;
       cfd_low_armed <= FALSE;
     else
+      cfd_low_p_pipe(1) <= FALSE;
       if min_cfd then
         cfd_low_armed <= TRUE;
       end if;
@@ -340,6 +341,7 @@ begin
       cfd_high_p_pipe(1) <= FALSE;
       cfd_high_armed <= FALSE;
     else
+      cfd_high_p_pipe(1) <= FALSE;
       if min_cfd then
         cfd_high_armed <= TRUE;
       end if;
@@ -358,6 +360,7 @@ begin
       max_slope_p_pipe(1) <= FALSE;
       max_slope_armed <= FALSE;
     else
+      max_slope_p_pipe(1) <= FALSE;
       if min_cfd then
         max_slope_armed <= TRUE;
       end if;
