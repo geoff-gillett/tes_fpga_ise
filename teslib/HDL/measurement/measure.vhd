@@ -361,7 +361,7 @@ begin
       if min_cfd then
         max_slope_armed <= TRUE;
       end if;
-      if f_cfd >= max_slope_cfd then
+      if s_cfd >= max_slope_cfd then
         max_slope_p_pipe(1) <= (max_slope_armed or min_cfd) and cfd_valid_cfd;
         max_slope_armed <= FALSE;
       end if;
@@ -541,6 +541,7 @@ begin
           stamp_rise_pre2 <= cfd_low_p_pipe(DEPTH-3);
         end if;
         
+      --FIXME useful?
       when SLOPE_THRESH_TIMING_D =>
         stamp_rise_pre2 <= s_t_p_pipe(DEPTH-3);
         
