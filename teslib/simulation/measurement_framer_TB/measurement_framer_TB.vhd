@@ -419,7 +419,8 @@ port map(
 stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
-	     "../bin_traces/gt1_100khz_signal.bin";
+--	     "../bin_traces/gt1_100khz_signal.bin";
+	     "C:/TES_project/bin_traces/noise.bin";
 --	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/july 10/randn.bin";
 --	     "../bin_traces/double_peak_signal.bin";
@@ -464,7 +465,6 @@ reg.constant_fraction  <= to_unsigned(CF,17);
 --reg.pulse_threshold <= to_unsigned(0,WIDTH-1);
 --reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-reg.detection <= TRACE_DETECTION_D;
 reg.trace_signal <= FILTERED_TRACE_D;
 reg.timing <= PULSE_THRESH_TIMING_D;
 reg.height <= PEAK_HEIGHT_D;
@@ -473,14 +473,14 @@ event_enable <= TRUE;
 --------------------------------------------------------------------------------
 -- gt1 samples
 --------------------------------------------------------------------------------
-reg.slope_threshold <= to_unsigned(1000,DSP_BITS-1); --2300
+reg.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
 --reg.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
-reg.pulse_threshold <= to_unsigned(1000,DSP_BITS-1); 
-reg.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+reg.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
+reg.trace_length <= to_unsigned(100,TRACE_LENGTH_BITS);
 reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --chan_reg(0).baseline.offset <= to_signed(-500*8-793,DSP_BITS);
 reg.trace_stride <= (0 => '0', others => '0');
-reg.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
+reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 
 file_open(init_reg_file, "../init_reg",WRITE_MODE);
 initRegWriter:process
@@ -516,15 +516,36 @@ begin
   reg.trace_type <= SINGLE_TRACE_D;
   ready_hold <= TRUE;
 --  raw <= (WIDTH-1  => '0', others => '0');
-  wait for CLK_PERIOD*100;
-  reset <= '0';
-  resetn <= '1';
+  wait for CLK_PERIOD*300;
   wait for CLK_PERIOD;
   store_reg <= TRUE;
   wait for CLK_PERIOD;
   store_reg <= FALSE;
-  wait for CLK_PERIOD*300;
-  simenable <= TRUE;
+  reset <= '0';
+  resetn <= '1';
+  while TRUE loop
+    reg.timing <= PULSE_THRESH_TIMING_D;
+    reg.detection <= PULSE_DETECTION_D;
+    wait for 4 us;
+    reg.detection <= TRACE_DETECTION_D;
+    wait for 4 us;
+    reg.timing <= CFD_LOW_TIMING_D;
+    reg.detection <= PULSE_DETECTION_D;
+    wait for 4 us;
+    reg.detection <= TRACE_DETECTION_D;
+    wait for 4 us;
+    reg.timing <= PULSE_THRESH_TIMING_D;
+    reg.detection <= PULSE_DETECTION_D;
+    wait for 4 us;
+    reg.detection <= TRACE_DETECTION_D;
+    wait for 4 us;
+    reg.timing <= MAX_SLOPE_TIMING_D;
+    reg.detection <= PULSE_DETECTION_D;
+    wait for 4 us;
+    reg.detection <= TRACE_DETECTION_D;
+    wait for 4 us;
+  end loop;
+  
 --  wait for 2730 us;
 --  reg.trace_type <= DOT_PRODUCT_TRACE_D;
 --  wait for 100 us;
@@ -539,7 +560,6 @@ begin
 --  raw <= (WIDTH-1  => '0', others => '1');
 --  wait for CLK_PERIOD;
 --  raw <= (WIDTH-1  => '0', others => '0');
-  wait;
 end process;
 
 end architecture testbench;
