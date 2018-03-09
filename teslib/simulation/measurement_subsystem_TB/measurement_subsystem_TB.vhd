@@ -741,7 +741,7 @@ begin
 chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
 chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
-chan_reg(0).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(100,TRACE_LENGTH_BITS);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
