@@ -22,7 +22,7 @@ use extensions.logic.all;
 use extensions.boolean_vector.all;
 
 --accumulate 2**n samples that are below threshold then divide by 2**n
-entity average_fixed_n_enable is
+entity average_fixed_n is
 generic(
   WIDTH:integer:=16;
   DIVIDE_N:natural:=19
@@ -32,23 +32,19 @@ port(
   reset:in std_logic;
   
   threshold:in signed(WIDTH-1 downto 0);
-  -- count this sample towards the average
-  enable:in boolean;
   sample:in signed(WIDTH-1 downto 0);
   
-  average:out signed(WIDTH-1 downto 0);
-  -- the average is valid
-  valid:out boolean
+  average:out signed(WIDTH-1 downto 0)
 );
-end entity average_fixed_n_enable;
+end entity average_fixed_n;
 
-architecture DSP48 of average_fixed_n_enable is
+architecture DSP48 of average_fixed_n is
 
 signal count:unsigned(DIVIDE_N-1 downto 0);
 signal threshold_reg:signed(WIDTH downto 0);
 signal rel_threshold:signed(WIDTH-1 downto 0);
 --signal n_reg:unsigned(DIVIDE_BITS-1 downto 0):=to_unsigned(3,DIVIDE_BITS);
-signal valid_int,round_reg:boolean:=FALSE;
+signal valid,round_reg:boolean:=FALSE;
 signal average_int,sample_reg,sample_reg2:signed(WIDTH-1 downto 0)
        :=(others => '0');
 signal below_threshold:boolean:=TRUE;
@@ -139,9 +135,9 @@ begin
       sample_reg <= sample;
      
       round_reg <= state=ROUND;
-      valid_int <= round_reg;
+      valid <= round_reg;
       
-      if valid_int then
+      if valid then
         average_int <= signed(p_out(DIVIDE_N+WIDTH-1 downto DIVIDE_N));
       end if;
       

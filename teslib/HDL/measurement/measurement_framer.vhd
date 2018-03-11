@@ -15,6 +15,12 @@ use work.events.all;
 use work.registers.all;
 use work.functions.all;
 
+
+--TODO rearrange so that traces are first captured in the framer before
+--averaging this would allow filtering.
+--needs upper area threshold
+--modify the accumulator to work on 4 chunks at a time.
+
 --FIXME mux full errors????
 entity measurement_framer is
 generic(
@@ -48,8 +54,9 @@ end entity measurement_framer;
 
 architecture RTL of measurement_framer is
 
---  
+-- chunk_counter will break if CHUNKS not a power of 2
 constant CHUNKS:integer:=BUS_CHUNKS;
+-- pipelining depth
 constant DEPTH:integer:=3;
 
 type write_buffer is array (DEPTH-1 downto 0) of streambus_t;
@@ -250,6 +257,182 @@ begin
   return sb;
 end function;
 
+
+--------------------------------------------------------------------------------
+-- Rework
+--------------------------------------------------------------------------------
+--pulse FSM
+type p_states is (IDLE,FIRSTRISE,RISES,WAITING,DONE);
+signal p_state,p_nextstate:p_states;
+--trace FSM
+type tr_states is (IDLE,FIRSTPULSE,TRACING,DONE);
+signal tr_state,tr_nextstate:tr_states;
+--chunk gathering FSM
+type cw_states is (STORE0,STORE1,STORE2,WRITE);
+--trace chunk gathering fsm
+signal cw_state:cw_states;
+type r_states is (IDLE,WAITING,STAMPED);
+-- rise FSM
+signal r_state,r_nextstate:r_states;
+type av_states is (IDLE,EMPTYING,STAMPED);
+-- rise FSM
+signal av_state,av_nextstate:av_states;
+-- framer queue FSM
+-- Want to be able to write 2 things simultaneously
+-- Monitor trace writes
+type q_states is (EMPTY, FULL);
+
+
+attribute fsm_encoding of cw_state:signal is "one-hot";
+attribute fsm_encoding of p_state:signal is "one-hot";
+attribute fsm_encoding of tr_state:signal is "one-hot";
+attribute fsm_encoding of r_state:signal is "one-hot";
+-- pulse_start and trace requested
+signal tr_start,p_start,r_start:boolean;
+signal tr_last,p_last,r_last:boolean;
+--r_last and last rise
+signal r_done:boolean;
+--rise timing point
+signal r_stamp:boolean;
+-- pulse complete and valid
+-- trace stride counters
+signal stride_counter:unsigned(TRACE_STRIDE_BITS-1 downto 0);
+-- saved trace stride register
+signal stride:unsigned(TRACE_STRIDE_BITS-1 downto 0);
+--accumulates trace samples before writing to framer
+signal trace_word:std_logic_vector(BUS_DATABITS-1 downto 16);
+signal tr_address:unsigned(ADDRESS_BITS-1 downto 0);
+signal tr_write:boolean;
+--trace chunk
+signal trace:std_logic_vector(WIDTH-1 downto 0); 
+signal tr_remaining:unsigned(TRACE_LENGTH_BITS-1 downto 0);
+
+--
+signal dump_it:boolean;
+
+--------------------------------------------------------------------------------
+-- New types
+--------------------------------------------------------------------------------
+----------------------- event_flags_t - 16 bits---------------------------------
+--|    2     |   2    |     1       |   3   ||   2    |   2    |     3      | 1 |
+--|peak_count| fields | cfd_rel2min |channel||timing_d|height_d|event_type_t|new|
+type eflags_t is record 
+  fields:std_logic_vector(1 downto 0);
+	rise_number:unsigned(PEAK_COUNT_BITS-1 downto 0); 
+	cfd_rel2min:boolean; 
+	height:height_d;
+	timing:timing_d;
+	channel:unsigned(CHANNEL_BITS-1 downto 0); 
+	event_type:event_type_t; 
+--	new_window:boolean;
+end record;
+signal rise_flags,pulse_flags:eflags_t;
+
+function to_std_logic(f:eflags_t) return std_logic_vector is 
+begin    
+				 -- first transmitted byte
+  return to_std_logic(f.rise_number) &
+         f.fields &
+         to_std_logic(f.cfd_rel2min) &
+         to_std_logic(f.channel) &
+				 -- second transmitted byte
+         to_std_logic(f.timing,2) &
+         to_std_logic(f.height,2) &
+         to_std_logic(f.event_type) & '-';
+end function;
+
+type firstword_t is record
+  eflags:eflags_t;
+  tflags:trace_flags_t;
+  time:unsigned(CHUNK_DATABITS-1 downto 0);
+  size:unsigned(CHUNK_DATABITS-1 downto 0);
+end record;
+signal firstword_reg:firstword_t;
+
+type pulse_header_t is record
+  area:unsigned(2*CHUNK_DATABITS-1 downto 0);
+  length:unsigned(CHUNK_DATABITS-1 downto 0);
+  pre:unsigned(TRACE_PRE_BITS-1 downto 0);
+  -- what else?
+end record;
+signal pulse_header_reg:pulse_header_t;
+
+--------------------------------------------------------------------------------
+-- rises
+--------------------------------------------------------------------------------
+-- fields =   00 f2:minima     f3:rise_time
+--            01 f2:minima     f3:max_slope
+--            10 f2:rise_time  f3:max_slope
+--            11 f2:max_slope  f3:minima
+--TODO baseline??
+signal fields:std_logic_vector(1 downto 0):="00";
+type rise_t is record
+  height:signed(CHUNK_DATABITS-1 downto 0);
+  -- minima or max_slope
+  f2:std_logic_vector(CHUNK_DATABITS-1 downto 0);
+  -- rise_time or minima or max_slope
+  f3:std_logic_vector(CHUNK_DATABITS-1 downto 0);
+  ptime:unsigned(CHUNK_DATABITS-1 downto 0);
+end record;
+
+function to_std_logic(r:rise_t;endianness:string) 
+return std_logic_vector is
+begin
+	return set_endianness(r.height,endianness) &
+	       set_endianness(r.f2,endianness) &
+	       set_endianness(r.f3,endianness) &
+	       set_endianness(r.ptime,endianness);
+end function;
+
+type rise_event_t is record
+  height:signed(CHUNK_DATABITS-1 downto 0);
+  -- minima, max_slope or rise_time
+  f2:std_logic_vector(CHUNK_DATABITS-1 downto 0);
+  -- rise_time or minima
+  eflags:eflags_t;
+end record;
+
+function to_std_logic(r:rise_event_t;f:eflags_t;endianness:string) 
+return std_logic_vector is
+begin
+	return set_endianness(r.height,endianness) &
+	       set_endianness(r.f2,endianness) &
+	       set_endianness(to_std_logic(f),endianness); -- &
+	       --"--------------------------------";
+end function;
+
+signal rise_reg:rise_t;
+signal rise_event:rise_event_t;
+
+--------------------------------------------------------------------------------
+-- average trace
+--------------------------------------------------------------------------------
+type av_header_t is record
+  multi_peak:unsigned(2*CHUNK_DATABITS-1 downto 0);
+  multi_pulse:unsigned(2*CHUNK_DATABITS-1 downto 0);
+end record;
+
+--------------------------------------------------------------------------------
+-- framer signals
+--------------------------------------------------------------------------------
+signal f_data,f_store1,f_store2:streambus_t;
+signal f_address:unsigned(ADDRESS_BITS-1 downto 0);
+signal f_we:boolean_vector(BUS_CHUNKS-1 downto 0);
+signal f_length:unsigned(ADDRESS_BITS downto 0);
+
+--------------------------------------------------------------------------------
+-- timer signals
+--------------------------------------------------------------------------------
+signal pulse_timer,rise_timer:unsigned(CHUNK_DATABITS-1 downto 0);
+signal pulse_timer_n,rise_timer_n:unsigned(CHUNK_DATABITS downto 0);
+
+--------------------------------------------------------------------------------
+-- Framer queue
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
 --------------------------------------------------------------------------------
 -- debugging
 --------------------------------------------------------------------------------
@@ -260,6 +443,299 @@ attribute mark_debug of pending:signal is "FALSE";
 attribute mark_debug of framer_free:signal is "FALSE";
 
 begin
+--temporary
+trace <= trace_chunk;
+--------------------------------------------------------------------------------
+--New FSMs
+--------------------------------------------------------------------------------
+newFSMnextstate:process (clk) is
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      p_state <= IDLE;
+      tr_state <= IDLE;
+      r_state <= IDLE;
+    else
+      p_state <= p_nextstate;
+      tr_state <= tr_nextstate;
+      r_state <= r_nextstate;
+    end if;
+  end if;
+end process newFSMnextstate;
+
+tr_start <= m.has_trace(NOW) and m.pulse_start(NOW);
+tr_last <= tr_remaining=0 and stride_counter=0;
+trFSMtransition:process(
+  tr_state, tr_start, p_last, tr_last, p_state, dump_it
+)
+begin
+  tr_nextstate <= tr_state;
+  case tr_state is 
+  when IDLE =>
+    if tr_start then
+      tr_nextstate <= FIRSTPULSE;
+    end if;
+    when FIRSTPULSE =>
+      if tr_last then
+        if p_state=DONE or p_last then
+          tr_nextstate <= IDLE;
+        else
+          tr_nextstate <= DONE;
+        end if;
+      else
+        if p_last then
+          tr_nextstate <= TRACING;
+        end if;
+      end if;
+    when TRACING =>
+      if tr_last then
+        if p_state=DONE or p_last then
+          tr_nextstate <= IDLE;
+        else
+          tr_nextstate <= DONE;
+        end if;
+      end if;
+    when DONE =>
+      -- waiting for pulse
+      if p_last then
+        tr_nextstate <= IDLE;
+      end if;
+  end case;
+  if dump_it then
+    tr_nextstate <= IDLE;
+  end if;
+end process trFSMtransition;
+--------------------------------------------------------------------------------
+-- trace logic
+--------------------------------------------------------------------------------
+traceCounters:process (clk) is
+begin
+  if rising_edge(clk) then
+    case tr_state is 
+    when IDLE =>
+      stride <= m.reg(NOW).trace_stride;
+      stride_counter <= m.reg(NOW).trace_stride;
+      tr_address <= trace_start_address;
+      tr_remaining <= m.reg(NOW).trace_length;
+    when FIRSTPULSE | TRACING =>
+      if stride_counter=0 then
+        stride_counter <= stride;
+        tr_remaining <= tr_remaining-1;
+        if cw_state=WRITE then
+          tr_address <= tr_address+1;
+        end if;
+      else
+        stride_counter <= stride_counter-1;
+      end if;
+    when DONE =>
+        null;
+    end case;
+  end if;
+end process traceCounters;
+tr_write <= (tr_state=FIRSTPULSE or tr_state=TRACING) and 
+            stride_counter=0 and cw_state=WRITE;
+
+traceWord:process(clk)
+begin
+  if rising_edge(clk) then
+    if tr_start then
+        trace_word(63 downto 48) <= trace;
+        cw_state <= STORE1;
+    elsif stride_counter=0 then
+      case cw_state is 
+      when STORE0 =>
+        trace_word(63 downto 48) <= trace;
+        cw_state <= STORE1;
+      when STORE1 =>
+        trace_word(47 downto 32) <= trace;
+        cw_state <= STORE2;
+      when STORE2 =>
+        trace_word(31 downto 16) <= trace;
+        cw_state <= WRITE;
+      when WRITE =>
+        cw_state <= STORE0;
+      end case;  
+    end if;
+  end if;
+end process traceWord;
+p_start <= m.pulse_start(NOW);
+p_last <= m.p_t_n(NOW);
+pulseFSMtransitions:process(
+  p_state, p_start, p_last, r_done, tr_last, tr_state, dump_it, r_last
+)
+begin
+  p_nextstate <= p_state;
+  case p_state is 
+  when IDLE =>
+    if p_start then
+      p_nextstate <= FIRSTRISE;
+    end if;
+  when FIRSTRISE => 
+    if r_done then
+      if p_last then
+        p_nextstate <= IDLE;
+      else
+        p_nextstate <= WAITING;
+      end if;
+    elsif r_last then
+      if p_last then
+        p_nextstate <= IDLE;
+      else
+        p_nextstate <= RISES;
+      end if;
+    end if;
+  when RISES =>
+    if p_last then
+      if tr_state=IDLE or tr_state=DONE or tr_last then
+        p_nextstate <= IDLE;  
+      else
+        p_nextstate <= DONE;
+      end if;
+    elsif r_done then
+      if p_last then
+        p_nextstate <= IDLE;  
+      else
+        p_nextstate <= WAITING;
+      end if;
+    end if;
+  when WAITING =>
+    if p_last then
+      if tr_state=IDLE or tr_state=DONE or tr_last then
+        p_nextstate <= IDLE;  
+      else
+        p_nextstate <= DONE;
+      end if;
+    end if;
+  when DONE =>
+    -- waiting for trace
+    if tr_last then
+      p_nextstate <= IDLE;
+    end if;
+  end case;
+  if dump_it then
+    p_nextstate <= IDLE;
+  end if;
+end process pulseFSMtransitions;
+
+--------------------------------------------------------------------------------
+-- rise logic
+--------------------------------------------------------------------------------
+r_start <= m.rise_start(NOW);
+r_last <= m.rise_stop(NOW);
+r_done <= m.rise_start(NOW) and m.last_rise;
+r_stamp <= m.stamp_rise(NOW);
+riseFSMtransitions:process(r_state, dump_it, r_last, r_start, r_stamp)
+begin
+  r_nextstate <= r_state;
+  case r_state is 
+  when IDLE =>
+    if r_start then
+      r_nextstate <= WAITING;
+    end if;
+  when WAITING =>
+    if r_stamp then
+      if r_last then
+        r_nextstate <= IDLE;
+      else
+        r_nextstate <= STAMPED;
+      end if;
+    end if;
+  when STAMPED =>
+    if r_last then
+      r_nextstate <= IDLE;
+    end if;
+  end case;
+  if dump_it then
+    r_nextstate <= IDLE;
+  end if;
+end process riseFSMtransitions;
+
+--------------------------------------------------------------------------------
+-- registering
+--------------------------------------------------------------------------------
+-- fields_reg 00 f2:minima     f3:rise_time
+--            01 f2:minima     f3:max_slope
+--            10 f2:rise_time  f3:max_slope
+--            11 f2:max_slope  f3:minima
+riseReg:process (clk) is
+begin
+  if rising_edge(clk) then
+    if r_stamp then
+      rise_reg.ptime <= pulse_timer;
+    end if;
+    if m.height_valid(NOW) then
+      rise_reg.height <= m.height(NOW);
+      if fields="00" then 
+        rise_reg.f3 <= to_std_logic(rise_timer);
+      end if;
+      if fields="10" then
+        rise_event.f2 <= to_std_logic(rise_timer);
+      end if;
+    end if;
+    if r_start then
+      rise_flags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
+      rise_flags.cfd_rel2min <= m.reg(NOW).cfd_rel2min;
+      rise_flags.event_type.detection <= m.reg(NOW).detection;
+      rise_flags.event_type.tick <= FALSE;
+      rise_flags.fields <= fields;
+      rise_flags.height <= m.reg(NOW).height;
+      
+      if p_state=IDLE then
+        pulse_flags.channel <= to_unsigned(CHANNEL,CHANNEL_BITS);
+        pulse_flags.cfd_rel2min <= m.reg(NOW).cfd_rel2min;
+        pulse_flags.event_type.detection <= m.reg(NOW).detection;
+        pulse_flags.event_type.tick <= FALSE;
+        pulse_flags.fields <= fields;
+        pulse_flags.height <= m.reg(NOW).height;
+      end if;
+      
+      if fields(1)='0' then
+        rise_reg.f2 <= to_std_logic(m.minima(NOW));
+        rise_event.f2 <= to_std_logic(m.minima(NOW));
+      end if;
+      if fields = "11" then
+        rise_reg.f2 <= to_std_logic(m.max_slope);
+        rise_event.f2 <= to_std_logic(m.max_slope);
+      end if;
+    end if;
+    if r_last then
+      rise_flags.rise_number <= m.rise_number;
+      pulse_flags.rise_number <= m.rise_number;
+    end if;
+  end if;
+end process riseReg;
+
+--------------------------------------------------------------------------------
+-- timers
+--------------------------------------------------------------------------------
+timing:process (clk) is
+begin
+  if rising_edge(clk) then
+    if m.rise_start(PRE) then
+      rise_timer <= (others => '0');
+      rise_timer_n <= (0 => '1', others => '0');
+    else
+      if rise_timer_n(16)/='1' then
+        rise_timer <= rise_timer_n(CHUNK_DATABITS-1 downto 0);
+        rise_timer_n <= rise_timer_n+1;
+      end if;
+    end if;
+    
+    if m.pulse_start(PRE) then
+      pulse_timer <= (others => '0');
+      pulse_timer_n <= (0 => '1', others => '0');
+    else
+      if pulse_timer_n(16)/='1' then
+        pulse_timer <= pulse_timer_n(CHUNK_DATABITS-1 downto 0);
+        pulse_timer_n <= pulse_timer_n+1;
+      end if;
+    end if;
+  end if;
+end process timing;
+
+--------------------------------------------------------------------------------
+-- debugging
+--------------------------------------------------------------------------------
 debugGen:if DEBUG="TRUE" generate
 debugPending:process (clk) is
 begin
@@ -267,7 +743,18 @@ begin
     if reset = '1' then
       pending <= (others => '0');
     else
-      -- simulation checks on framing
+      --------------------------------------------------------------------------
+      -- assertions
+      --------------------------------------------------------------------------
+      assert (pending >= 0 and pending <= 2) 
+      report "out of sync" severity FAILURE;
+      assert not (r_last and not (r_stamp or r_state=STAMPED))
+      report "rise ended without stamp" severity FAILURE;
+      assert not (p_last and not (r_last or r_state=IDLE))
+      report "pulse ended before rise ended" severity FAILURE;
+      --------------------------------------------------------------------------
+      -- simulation checks on framing and MUX signals
+      --------------------------------------------------------------------------
       if commit_frame then
         assert framer_length <= framer_free report "BAD commit" severity FAILURE;
       end if;
@@ -281,14 +768,14 @@ begin
       if (commit_int or dump_int) and (not start_int) and state/=HOLD then
         pending <= pending - 1;
       end if;
-      
-   assert (pending >= 0 and pending <= 2) report "out of sync" severity FAILURE;
-        
     end if;
   end if;
 end process debugPending;
 end generate;
 
+--------------------------------------------------------------------------------
+-- Old stuff
+--------------------------------------------------------------------------------
 m <= measurements;
 
 commit <= commit_int;
@@ -359,7 +846,6 @@ this_pulse_trace_header.length <= m.pulse_length_timer(NOW);
 --this_pulse_trace_header.offset <= m.time_offset;
 this_pulse_trace_header.area <= m.pulse_area;
 
-
 --used when trace longer than pulse use stored pulse data
 first_pulse_trace_header.size <= resize(frame_length(NOW) & "000",CHUNK_DATABITS);
 first_pulse_trace_header.flags <= first_pulse.flags;
@@ -426,7 +912,7 @@ end process muxOutput;
 q_can_write <= not (s_state=CAPTURE and wr_chunk_state=WRITE and trace_wr_en) 
                and not (dp_detection and dp_valid);
                
---FIXME this underestimates, also ready when in a  last word state and 
+--FIXME this underestimates, also ready when in a last word state and 
 q_ready <= q_state=IDLE and not (q_aux or q_single or q_header or q_pulse);
 
 framerControl:process(clk)
@@ -892,7 +1378,8 @@ begin
         tflags.stride <= m.reg(PRE3).trace_stride;
         tflags.trace_signal <= m.reg(PRE3).trace_signal;
         tflags.trace_type <= m.reg(PRE3).trace_type;
-        tflags.offset <= size(PRE)(PEAK_COUNT_BITS-1 downto 0);
+        --FIXME offset only needs to be 3 bits
+        tflags.offset <= '0'& size(PRE);
         zero_stride <= m.reg(PRE3).trace_stride=0; 
         
         eflags.cfd_rel2min <= m.reg(PRE3).cfd_rel2min;

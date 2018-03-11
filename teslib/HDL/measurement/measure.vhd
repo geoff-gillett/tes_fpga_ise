@@ -153,6 +153,7 @@ port map(
   input => std_logic_vector(raw),
   delayed => raw_d
 );
+
 rawTrace:entity work.dynamic_RAM_delay2
 generic map(
   DEPTH     => 2**10,
@@ -225,6 +226,9 @@ port map(
 -- register changes at DEPTH-ALAT should not have significant 
 -- effect on functionality, they will lead to a error in a single area 
 -- measurement at the threshold register change.
+
+--TODO mux raw and f into pulse area
+-- add new signal for measurements that is a mux of raw and f
 pulseArea:entity dsp.area_acc
 generic map(
   WIDTH => WIDTH,
@@ -573,6 +577,7 @@ begin
          valid_rise_pipe(DEPTH-2)then
         m.stamp_pulse(PRE) <= not m.pulse_stamped(PRE);
         m.pulse_stamped(PRE) <= TRUE;
+        --FIXME WTF????
         if m.has_trace(PRE) then --NOTE:has_trace changes @ PRE3
           m.pulse_timer(PRE) <= resize(trace_pre2,CHUNK_DATABITS);
           pulse_time_n <= trace_timer_n_init_pre;

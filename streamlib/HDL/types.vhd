@@ -47,6 +47,7 @@ type streambus_t is record
 	last:boolean_vector(BUS_CHUNKS-1 downto 0); -- end of frame
 	data:std_logic_vector(BUS_DATABITS-1 downto 0);
 end record;
+
 type streambus_array is array (natural range <>) of streambus_t;
 type streamvector_array is array (natural range <>) of streamvector_t;
 subtype datachunk_t is std_logic_vector(CHUNK_DATABITS-1 downto 0);

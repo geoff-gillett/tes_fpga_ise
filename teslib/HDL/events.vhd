@@ -326,7 +326,7 @@ end function;
 function to_std_logic(f:detection_flags_t) return std_logic_vector is 
 begin    
 				 -- first transmitted byte
-  return to_std_logic(f.rise_number) &
+  return "00" & to_std_logic(f.rise_number) &
          to_std_logic(f.cfd_rel2min) &
          to_std_logic(f.channel) &
 				 -- second transmitted byte

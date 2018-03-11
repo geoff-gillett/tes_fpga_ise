@@ -39,6 +39,21 @@ type u_chunk_pipe is array (natural range <>) of
 type s_chunk_pipe is array (natural range <>) of 
      signed(CHUNK_DATABITS-1 downto 0);
 	
+type sig_t is record
+  sample:signed(CHUNK_DATABITS-1 downto 0);
+  -- sample delayed by pre
+  trace:signed(CHUNK_DATABITS-1 downto 0);
+  threshold:unsigned(CHUNK_DATABITS-1 downto 0);
+  --positive zero crossing
+  z_p:boolean;
+  --negative zero crossing
+  z_n:boolean;
+  --positive threshold crossing
+  t_p:boolean;
+  --negative threshold crossing
+  t_n:boolean;
+end record;
+
 type measurements_t is record
 	--register settings used in CFD process.
 	--NOTE:use reg(PRE3) and reg(NOW) only

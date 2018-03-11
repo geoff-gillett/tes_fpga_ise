@@ -124,6 +124,8 @@ if rising_edge(clk)  then
 end if;
 end process sampleoffset;
 
+
+
 --baseline_threshold <= (WIDTH-1 => '0',others => '1');
 baseline_threshold <= resize(signed('0' & registers.baseline.threshold),WIDTH);
 baselineAv:entity dsp.average_fixed_n

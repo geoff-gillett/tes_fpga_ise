@@ -1,9 +1,11 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use std.textio.all;
 
 library extensions;
 use extensions.boolean_vector.all;
+use extensions.logic.all;
 use extensions.debug.all;
 
 library dsp;
@@ -54,7 +56,8 @@ signal store_reg:boolean;
 constant CF:integer:=2**17/5;
 signal m:measurements_t;
 signal event_enable:boolean;
-signal raw,f,s:signed(WIDTH-1 downto 0);
+signal r:std_logic_vector(13 downto 0);
+signal f,s,raw:signed(WIDTH-1 downto 0);
 signal clk_i:integer:=-1; --clk index for data files
 
 file trace_file,min_file,max_file:integer_file;
@@ -430,7 +433,8 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(clk);
-		raw <= to_signed(sample, WIDTH);
+		r <= to_std_logic(sample, 14);
+		raw  <= shift_left(resize(signed(r),WIDTH),3);
 	end loop;
 	wait;
 end process stimulusFile;
@@ -466,10 +470,10 @@ reg.constant_fraction  <= to_unsigned(CF,17);
 --reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 reg.trace_signal <= FILTERED_TRACE_D;
-reg.timing <= PULSE_THRESH_TIMING_D;
+--reg.timing <= PULSE_THRESH_TIMING_D;
 reg.height <= PEAK_HEIGHT_D;
 reg.cfd_rel2min <= FALSE;
-event_enable <= TRUE;
+--event_enable <= TRUE;
 --------------------------------------------------------------------------------
 -- gt1 samples
 --------------------------------------------------------------------------------
@@ -479,7 +483,8 @@ reg.pulse_threshold <= to_unsigned(0,DSP_BITS-1);
 reg.trace_length <= to_unsigned(100,TRACE_LENGTH_BITS);
 reg.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --chan_reg(0).baseline.offset <= to_signed(-500*8-793,DSP_BITS);
-reg.trace_stride <= (0 => '0', others => '0');
+reg.trace_stride <= (0 => '1', others => '0');
+reg.trace_pre <= to_unsigned(64,TRACE_PRE_BITS);
 reg.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
 
 file_open(init_reg_file, "../init_reg",WRITE_MODE);
@@ -505,10 +510,10 @@ begin
     wait;
 end process initRegWriter; 
 
-ready_clk <= (clk_i mod (5*256)) = 0;
-ready <= (clk_i mod 16) = 0;
+--ready_clk <= (clk_i mod (5*256)) = 0;
+--ready <= (clk_i mod 16) = 0;
 --ready <= FALSE when ready_hold else ready_clk;
---ready <= TRUE;
+ready <= TRUE;
 
 stimulus:process is
 begin
@@ -523,28 +528,32 @@ begin
   store_reg <= FALSE;
   reset <= '0';
   resetn <= '1';
-  while TRUE loop
-    reg.timing <= PULSE_THRESH_TIMING_D;
-    reg.detection <= PULSE_DETECTION_D;
-    wait for 4 us;
-    reg.detection <= TRACE_DETECTION_D;
-    wait for 4 us;
-    reg.timing <= CFD_LOW_TIMING_D;
-    reg.detection <= PULSE_DETECTION_D;
-    wait for 4 us;
-    reg.detection <= TRACE_DETECTION_D;
-    wait for 4 us;
-    reg.timing <= PULSE_THRESH_TIMING_D;
-    reg.detection <= PULSE_DETECTION_D;
-    wait for 4 us;
-    reg.detection <= TRACE_DETECTION_D;
-    wait for 4 us;
-    reg.timing <= MAX_SLOPE_TIMING_D;
-    reg.detection <= PULSE_DETECTION_D;
-    wait for 4 us;
-    reg.detection <= TRACE_DETECTION_D;
-    wait for 4 us;
-  end loop;
+  event_enable <= TRUE;
+  reg.detection <= TRACE_DETECTION_D;
+  reg.timing <= PULSE_THRESH_TIMING_D;
+--  while TRUE loop
+--    reg.timing <= PULSE_THRESH_TIMING_D;
+--    reg.detection <= PULSE_DETECTION_D;
+--    wait for 4 us;
+--    reg.detection <= TRACE_DETECTION_D;
+--    wait for 4 us;
+--    reg.timing <= CFD_LOW_TIMING_D;
+--    reg.detection <= PULSE_DETECTION_D;
+--    wait for 4 us;
+--    reg.detection <= TRACE_DETECTION_D;
+--    wait for 4 us;
+--    reg.timing <= PULSE_THRESH_TIMING_D;
+--    reg.detection <= PULSE_DETECTION_D;
+--    wait for 4 us;
+--    reg.detection <= TRACE_DETECTION_D;
+--    wait for 4 us;
+--    reg.timing <= MAX_SLOPE_TIMING_D;
+--    reg.detection <= PULSE_DETECTION_D;
+--    wait for 4 us;
+--    reg.detection <= TRACE_DETECTION_D;
+--    wait for 4 us;
+--  end loop;
+    wait;
   
 --  wait for 2730 us;
 --  reg.trace_type <= DOT_PRODUCT_TRACE_D;
