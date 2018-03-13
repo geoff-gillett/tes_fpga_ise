@@ -130,3 +130,4 @@ dsplib/Vivado_IP/FIR_142SYM_24_28/
 dsplib/Vivado_IP/FIR_ASYM23_C25_28_O23_8_RCE/
 dsplib/Vivado_IP/FIR_SYM145_C24_23_O25_3_RCE/
 dsplib/Vivado_IP/FIR_SYM141_C24_23_O25_3_RCE/
+streamlib/vivado_IP/framer_fifo/
