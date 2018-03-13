@@ -81,13 +81,15 @@ port (
   dout:out std_logic_vector(143 downto 0);
   full:out std_logic;
   almost_full:out std_logic;
-  empty:out std_logic
+  empty:out std_logic;
+  almost_empty:out std_logic
+ 
 );
 end component;
 
 constant Q_BITS:natural:=
 --commit|    length    |    we    |  address   |       data      
-    1+   ADDRESS_BITS+1+BUS_CHUNKS+ADDRESS_BITS+BUS_CHUNKS*CHUNK_BITS;
+       1+ADDRESS_BITS+1+BUS_CHUNKS+ADDRESS_BITS+BUS_CHUNKS*CHUNK_BITS;
 constant DATA_BIT:natural:=BUS_CHUNKS*CHUNK_BITS;
 constant ADDRESS_BIT:natural:=ADDRESS_BITS+BUS_CHUNKS*CHUNK_BITS;
 constant WE_BIT:natural:=BUS_CHUNKS+ADDRESS_BITS+BUS_CHUNKS*CHUNK_BITS;
@@ -96,34 +98,26 @@ constant LENGTH_BIT:natural:=
 
 --------------------------------------------------------------------------------
 -- Queue signals
-----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- FIFO
-signal q_din:std_logic_vector(143 downto 0);
+signal q_din,q_0,q_1,q_2:std_logic_vector(143 downto 0);
 signal q_wr_en:std_logic;
 signal q_rd_en:std_logic;
 signal q_dout:std_logic_vector(143 downto 0);
 signal q_full:std_logic;
 signal q_almost_full:std_logic;
 signal q_empty:std_logic;
+signal q_almost_empty:std_logic;
 
 --number of words in queue
 signal queued,queued_p,queued_m:signed(ADDRESS_BITS+1 downto 0);
 -- framer free adjusted for words queued
 signal free_int:signed(ADDRESS_BITS+1 downto 0);
+
 --strorage registers
-signal din:std_logic_vector(143 downto 0);
-signal wr_en:std_logic;
-signal data_reg1:streambus_t;
-signal address_reg1:unsigned(ADDRESS_BITS-1 downto 0);
-signal we_reg1:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal length_reg1:unsigned(ADDRESS_BITS downto 0);
-signal commit_reg1:boolean;
-signal data_reg2:streambus_t;
-signal address_reg2:unsigned(ADDRESS_BITS-1 downto 0);
-signal we_reg2:boolean_vector(BUS_CHUNKS-1 downto 0);
-signal length_reg2:unsigned(ADDRESS_BITS downto 0);
-signal commit_reg2:boolean;
-----------------------------------------------------------------------------------
+signal reg1,reg2:std_logic_vector(143 downto 0);
+signal reg1_we,reg2_we:boolean;
+--------------------------------------------------------------------------------
 signal data_int:streambus_t;
 signal we_int:boolean_vector(BUS_CHUNKS-1 downto 0);
 signal length_int:unsigned(ADDRESS_BITS downto 0);
@@ -160,106 +154,99 @@ begin
             queued_p <= queued_p-1;
           else
             free_int <= signed('0' & framer_free)-queued_p;
-            queued <= queued_m;
-            queued_m <= queued_m-1;
-            queued_p <= queued_p-1;
+            queued <= queued_p;
+            queued_m <= queued_m+1;
+            queued_p <= queued_p+1;
           end if;
         else
-          free_int <= signed('0' & framer_free)-queued_p;
+          free_int <= signed('0' & framer_free)-queued;
         end if;
       end if;
     end if;
   end if;
 end process queueCount;
 
---din commit(1):we(BUS_CHUNKS):length(ADDRESS_BITS+1):data(72)
+--din commit(1):length(ADDRESS_BITS+1):we(BUS_CHUNKS):address(ADDRESS_BITS)+data(72)
+q_0(143 downto Q_BITS) <= (others => '-');
+q_0(Q_BITS-1) <= to_std_logic(commit0);
+q_0(LENGTH_BIT-1 downto LENGTH_BIT-ADDRESS_BITS-1) <= to_std_logic(length0);
+q_0(WE_BIT-1 downto WE_BIT-BUS_CHUNKS) <= to_std_logic(we0);
+q_0(ADDRESS_BIT-1 downto ADDRESS_BIT-ADDRESS_BITS) <= to_std_logic(address0);
+q_0(DATA_BIT-1 downto 0) <= to_std_logic(data0);
+q_1(143 downto Q_BITS) <= (others => '-');
+q_1(Q_BITS-1) <= to_std_logic(commit1);
+q_1(LENGTH_BIT-1 downto LENGTH_BIT-ADDRESS_BITS-1) <= to_std_logic(length1);
+q_1(WE_BIT-1 downto WE_BIT-BUS_CHUNKS) <= to_std_logic(we1);
+q_1(ADDRESS_BIT-1 downto ADDRESS_BIT-ADDRESS_BITS) <= to_std_logic(address1);
+q_1(DATA_BIT-1 downto 0) <= to_std_logic(data1);
+q_2(143 downto Q_BITS) <= (others => '-');
+q_2(Q_BITS-1) <= to_std_logic(commit2);
+q_2(LENGTH_BIT-1 downto LENGTH_BIT-ADDRESS_BITS-1) <= to_std_logic(length2);
+q_2(WE_BIT-1 downto WE_BIT-BUS_CHUNKS) <= to_std_logic(we2);
+q_2(ADDRESS_BIT-1 downto ADDRESS_BIT-ADDRESS_BITS) <= to_std_logic(address2);
+q_2(DATA_BIT-1 downto 0) <= to_std_logic(data2);
+reg1_we <= unaryOR(reg1(WE_BIT-1 downto WE_BIT-BUS_CHUNKS));
+reg2_we <= unaryOR(reg2(WE_BIT-1 downto WE_BIT-BUS_CHUNKS));
 queueing:process (clk) is
 begin
   if rising_edge(clk) then
     if reset='1' then
-      wr_en <= '0';
+      q_wr_en <= '0';
       ready1_int <= TRUE;
       ready2_int <= TRUE;
-      din(143 downto Q_BITS) <= (others => '-');
+      q_din(143 downto Q_BITS) <= (others => '-');
     else
-      wr_en <= '0';
+      q_wr_en <= '0';
       if unaryOR(we0) then
         assert q_full='0' report "queue FIFO overflow" severity FAILURE;
-        din(Q_BITS-1 downto 0) <= to_std_logic(commit0) &
-                                      to_std_logic(we0) &
-                                      to_std_logic(length0) &
-                                      to_std_logic(address0) &
-                                      to_std_logic(data0);
-        wr_en <= '1';
+        q_din <= q_0;
+        q_wr_en <= '1';
+        
+        --WANT to change this to be a mini queue with 2 registers
+        -- input ports dictate priority
+        -- but any can be used
+        -- 
+        
+        
+        
         
         if unaryOR(we1) then
           ready1_int <= FALSE;
           assert ready1_int report "write overflow port 1" severity FAILURE;
-          data_reg1 <= data1;
-          address_reg1 <= address1;
-          we_reg1 <= we1;
-          length_reg1 <= length1;
-          commit_reg1 <= commit1;
+          reg1 <= q_1;
         end if;
         if unaryOR(we2) then
           ready2_int <= FALSE;
           assert ready2_int report "write overflow port 2" severity FAILURE;
-          data_reg2 <= data2;
-          address_reg2 <= address2;
-          we_reg2 <= we2;
-          length_reg2 <= length2;
-          commit_reg2 <= commit2;
+          reg2 <= q_2;
         end if;
       elsif unaryOR(we1) then
         assert q_full='0' report "queue FIFO overflow" severity FAILURE;
-        din(Q_BITS-1 downto 0) <= to_std_logic(commit1) &
-                                      to_std_logic(we1) &
-                                      to_std_logic(length1) &
-                                      to_std_logic(address1) &
-                                      to_std_logic(data1);
-        wr_en <= '1';
+        --FIXME change these to use constants instaed of concatenation
+        q_din <= q_1;
+        q_wr_en <= '1';
         
-        data_reg1 <= data1;
-        address_reg1 <= address1;
-        we_reg1 <= we1;
-        length_reg1 <= length1;
-        commit_reg1 <= commit1;
+        reg1 <= q_1;
         ready1_int <= unaryOR(we1);
         
         if unaryOR(we2) then
-          assert not unaryOR(we_reg2) 
+          assert not reg2_we
           report "write overflow port 2" severity FAILURE;
           ready2_int <= FALSE;
-          data_reg2 <= data2;
-          address_reg2 <= address2;
-          we_reg2 <= we2;
-          length_reg2 <= length2;
-          commit_reg2 <= commit2;
+          reg2 <= q_2;
         end if;
       elsif unaryOR(we2) then
         assert q_full='0' report "queue FIFO overflow" severity FAILURE;
-        din(Q_BITS-1 downto 0) <= to_std_logic(commit2) &
-                                      to_std_logic(we2) &
-                                      to_std_logic(length2) &
-                                      to_std_logic(address2) &
-                                      to_std_logic(data2);
-        wr_en <= '1';
+        q_din <= q_2;
+        q_wr_en <= '1';
         
         if unaryOR(we1) then
-          assert not unaryOR(we_reg1) 
+          assert not reg1_we 
           report "write overflow port 1" severity FAILURE;
           ready1_int <= FALSE;
-          data_reg1 <= data1;
-          address_reg1 <= address1;
-          we_reg1 <= we1;
-          length_reg1 <= length1;
-          commit_reg1 <= commit1;
+          reg1 <= q_1;
         end if;
-        data_reg2 <= data2;
-        address_reg2 <= address2;
-        we_reg2 <= we2;
-        length_reg2 <= length2;
-        commit_reg2 <= commit2;
+        reg2 <= q_2;
         ready2_int <= unaryOR(we2);
       end if;
     end if;
@@ -276,15 +263,15 @@ port map (
   dout => q_dout,
   full => q_full,
   almost_full => q_almost_full,
-  empty => q_empty
+  empty => q_empty,
+  almost_empty => q_almost_empty
+ 
 );
-q_din <= din;
-q_wr_en <= wr_en;
+q_rd_en <= not q_empty;
 
 queueRead:process(clk)
 begin
   if rising_edge(clk) then
-    q_rd_en <= '0';
     commit_int <= to_boolean(q_dout(Q_BITS-1));
     address_int 
       <= unsigned(q_dout(ADDRESS_BIT-1 downto ADDRESS_BIT-ADDRESS_BITS));
@@ -292,14 +279,12 @@ begin
       <= unsigned(q_dout(LENGTH_BIT-1 downto LENGTH_BIT-ADDRESS_BITS-1));
     if q_empty = '0' then
       we_int <= to_boolean(q_dout(WE_BIT-1 downto WE_BIT-BUS_CHUNKS));
-      q_rd_en <= '1';
+      commit_int <= to_boolean(q_dout(Q_BITS-1));
     else
       we_int <= (others => FALSE);
-      q_rd_en <= '0';
+      commit_int <= FALSE;
     end if;
-    data_int <= to_streambus(
-      q_dout(DATA_BIT-1 downto DATA_BIT-(BUS_CHUNKS*CHUNK_BITS))
-    );
+    data_int <= to_streambus(q_dout(DATA_BIT-1 downto 0));
   end if;
 end process queueRead;
 

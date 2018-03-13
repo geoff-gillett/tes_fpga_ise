@@ -28,7 +28,7 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.USE_DOUT_RESET">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.DOUT_RESET_VALUE">0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.ALMOST_FULL_FLAG">true</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.ALMOST_EMPTY_FLAG">false</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.ALMOST_EMPTY_FLAG">true</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.VALID_FLAG">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.VALID_SENSE">Active_High</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.UNDERFLOW_FLAG">false</spirit:configurableElementValue>
