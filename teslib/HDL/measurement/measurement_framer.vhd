@@ -606,7 +606,7 @@ begin
   --      tflags.multipulse <= FALSE; --FIXME main FSM
   --      tflags.multipeak <= FALSE; --FIXME main FSM
         
-        if trace_start and state/=HOLD then
+        if trace_start and state/=HOLD and m.has_trace(NOW) then
           t_state <= CAPTURE; 
         end if;
         
