@@ -669,7 +669,7 @@ begin
 --  chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
   chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
   chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
-  chan_reg(0).capture.trace_length <= to_unsigned(256,TRACE_LENGTH_BITS);
+  chan_reg(0).capture.trace_length <= to_unsigned(64,TRACE_LENGTH_BITS);
   chan_reg(0).capture.height <= PEAK_HEIGHT_D;
   chan_reg(0).capture.cfd_rel2min <= FALSE;
   --
@@ -681,7 +681,7 @@ begin
   chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
   chan_reg(1).capture.trace_type <= SINGLE_TRACE_D;
   chan_reg(1).capture.trace_signal <= FILTERED_TRACE_D;
-  chan_reg(1).capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
+  chan_reg(1).capture.trace_length <= to_unsigned(32,TRACE_LENGTH_BITS);
 --  chan_reg(1).capture.height <= CFD_HIGH_D;
   chan_reg(1).capture.height <= PEAK_HEIGHT_D;
   chan_reg(1).capture.cfd_rel2min <= FALSE;
@@ -741,7 +741,7 @@ begin
 chan_reg(0).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
 chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); 
-chan_reg(0).capture.trace_length <= to_unsigned(100,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_length <= to_unsigned(64,TRACE_LENGTH_BITS);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
 chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
@@ -795,24 +795,24 @@ store_reg <= TRUE;
 while TRUE loop
   chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
   chan_reg(0).capture.detection <= PULSE_DETECTION_D;
-  wait for 4 us;
+  wait for 50 us;
   chan_reg(0).capture.detection <= TRACE_DETECTION_D;
-  wait for 4 us;
+  wait for 50 us;
   chan_reg(0).capture.timing <= CFD_LOW_TIMING_D;
   chan_reg(0).capture.detection <= PULSE_DETECTION_D;
-  wait for 4 us;
+  wait for 50 us;
   chan_reg(0).capture.detection <= TRACE_DETECTION_D;
-  wait for 4 us;
+  wait for 50 us;
   chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
   chan_reg(0).capture.detection <= PULSE_DETECTION_D;
-  wait for 4 us;
+  wait for 50 us;
   chan_reg(0).capture.detection <= TRACE_DETECTION_D;
-  wait for 4 us;
+  wait for 50 us;
   chan_reg(0).capture.timing <= MAX_SLOPE_TIMING_D;
   chan_reg(0).capture.detection <= PULSE_DETECTION_D;
-  wait for 4 us;
+  wait for 50 us;
   chan_reg(0).capture.detection <= TRACE_DETECTION_D;
-  wait for 4 us;
+  wait for 50 us;
 end loop;
 end process mcaControlStimulus;	
 
