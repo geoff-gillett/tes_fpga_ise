@@ -616,20 +616,22 @@ begin
           end if;
       end case;
       
-      if trace_start or trace_reset then
-        wr_chunk_state <= STORE0; 
-        if average_detection and state/=AVERAGE then --FIXME
-          trace_address <= (others => '0');
+      if trace_reset then 
+        if trace_start then
+          wr_chunk_state <= STORE0; 
+          if average_detection and state/=AVERAGE then --FIXME
+            trace_address <= (others => '0');
+          else
+            trace_address <= trace_start_address;
+          end if;
+          trace_count <= trace_count_init;
+          next_trace_count <= trace_count_init-1;
+          last_trace_count <= FALSE;
+          t_state <= CAPTURE;
         else
-          trace_address <= trace_start_address;
+          t_state <= IDLE;
         end if;
-        trace_count <= trace_count_init;
-        next_trace_count <= trace_count_init-1;
-        last_trace_count <= FALSE;
-        t_state <= CAPTURE;
-      else
-        t_state <= IDLE;
-      end if;
+      end if;     
     
 --------------------------------------------------------------------------------
 -- event writing queue
