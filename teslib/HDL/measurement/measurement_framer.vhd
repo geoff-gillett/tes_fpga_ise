@@ -73,7 +73,7 @@ signal free:unsigned(ADDRESS_BITS downto 0);
 --signal next_free:signed(ADDRESS_BITS+1 downto 0);
 type size_pipe is array (natural range <>) of 
      unsigned(PEAK_COUNT_BITS downto 0);
-signal size:size_pipe(PRE to NOW);
+signal size:size_pipe(PRE2 to NOW);
 type frame_length_pipe is array (natural range <>) of 
      unsigned(ADDRESS_BITS downto 0);
 signal frame_length,size2:frame_length_pipe(PRE to NOW);
@@ -498,7 +498,7 @@ begin
       when INIT => 
 --        next_stride_count <= tflags.stride-1;
 --        stride_count <= (others => '0');
-        if trace_start then
+        if trace_start and m.has_trace(NOW) then
            s_state <= CAPTURE; 
         end if;
         
@@ -509,8 +509,8 @@ begin
 --        end if;
         if stride_count=0 or zero_stride or trace_start then
           s_state <= CAPTURE;
-          next_stride_count <= m.reg(NOW).trace_stride-1;
-          stride_count <= m.reg(NOW).trace_stride;
+          next_stride_count <= tflags.stride-1;
+          stride_count <= tflags.stride;
           if wr_chunk_state=WRITE then --FIXME????
             trace_last <= last_trace_count and trace_detection;
           end if;
@@ -610,28 +610,25 @@ begin
           t_state <= CAPTURE; 
         end if;
         
-        
       when CAPTURE =>
           if trace_last then
             t_state <= DONE;
           end if;
       end case;
       
-      if trace_reset then 
-        if trace_start then
-          wr_chunk_state <= STORE0; 
-          if average_detection and state/=AVERAGE then --FIXME
-            trace_address <= (others => '0');
-          else
-            trace_address <= trace_start_address;
-          end if;
-          trace_count <= trace_count_init;
-          next_trace_count <= trace_count_init-1;
-          last_trace_count <= FALSE;
-          t_state <= CAPTURE;
+      if trace_start or trace_reset then
+        wr_chunk_state <= STORE0; 
+        if average_detection and state/=AVERAGE then --FIXME
+          trace_address <= (others => '0');
         else
-          t_state <= IDLE;
+          trace_address <= trace_start_address;
         end if;
+        trace_count <= trace_count_init;
+        next_trace_count <= trace_count_init-1;
+        last_trace_count <= FALSE;
+        t_state <= CAPTURE;
+      else
+        t_state <= IDLE;
       end if;
     
 --------------------------------------------------------------------------------
@@ -834,58 +831,59 @@ begin
       trace_reset <= FALSE;
       commit_average <= FALSE;
       
-      if m.pulse_start(PRE3) then
+      if m.pulse_start(PRE3) then --FIXME PRE2??
+        
         case m.reg(PRE3).detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D => 
-          size(PRE) <= (0 => '1', others => '0');
+          size(PRE2) <= (0 => '1', others => '0');
           
         when PULSE_DETECTION_D => 
-          size(PRE) <= ('0' & m.reg(PRE3).max_peaks) + 3; 
+          size(PRE2) <= ('0' & m.reg(PRE3).max_peaks) + 3; 
         when TRACE_DETECTION_D => 
           case m.reg(PRE3).trace_type is
             when SINGLE_TRACE_D =>
-              size(PRE) <= ('0' & m.reg(PRE3).max_peaks) + 3; 
+              size(PRE2) <= ('0' & m.reg(PRE3).max_peaks) + 3; 
             when AVERAGE_TRACE_D =>
-              size(PRE) <= to_unsigned(2,PEAK_COUNT_BITS+1); 
+              size(PRE2) <= to_unsigned(2,PEAK_COUNT_BITS+1); 
             when DOT_PRODUCT_D | DOT_PRODUCT_TRACE_D =>
-              size(PRE) <= ('0' & m.reg(PRE3).max_peaks) + 4; 
+              size(PRE2) <= ('0' & m.reg(PRE3).max_peaks) + 4; 
           end case;
         end case;
       end if;
       
       if (m.pulse_start(PRE2)) then 
-        size2(PRE) <= resize(size(PRE) & '0',ADDRESS_BITS+1); 
+        size2(PRE) <= resize(size(PRE2) & '0',ADDRESS_BITS+1); 
           
         case m.reg(PRE3).detection is
         when PEAK_DETECTION_D | AREA_DETECTION_D | PULSE_DETECTION_D => 
-          frame_length(PRE) <= resize(size(PRE),ADDRESS_BITS+1); 
+          frame_length(PRE) <= resize(size(PRE2),ADDRESS_BITS+1); 
           
         when TRACE_DETECTION_D => 
           case m.reg(PRE3).trace_type is
             when SINGLE_TRACE_D | AVERAGE_TRACE_D | DOT_PRODUCT_TRACE_D =>
               frame_length(PRE) 
-                <= resize(m.reg(PRE3).trace_length,ADDRESS_BITS+1)+size(PRE); 
+                <= resize(m.reg(PRE3).trace_length,ADDRESS_BITS+1)+size(PRE2); 
               size2(PRE) <= resize(m.reg(PRE3).trace_length,ADDRESS_BITS+1)+
-                           (size(PRE) & '0'); 
+                           (size(PRE2) & '0'); 
                            
             when DOT_PRODUCT_D =>
-              frame_length(PRE) <= resize(size(PRE),ADDRESS_BITS+1);
+              frame_length(PRE) <= resize(size(PRE2),ADDRESS_BITS+1);
               
           end case;
         end case;
       end if;
       frame_length(NOW) <= frame_length(PRE);
+      size(PRE) <= size(PRE2);
       size(NOW) <= size(PRE);
       size2(NOW) <= size2(PRE);
           
 
---        m.rise_number <= (others => '0');
---        rise_number_n <= (0 => '1',others => '0');
---      end if;  
-
       -- capture register settings when pulse FSM is idle and a new pulse starts
       -- TODO consider if there is an issue when registers change upstream
       -- on a new pulse even when this FSM is not idle
+      --FIXME why pulse_start(PRE) and inside is reg(PRE3)
+      --because reg(PRE3) is reg captured @ pulse_start_cfd
+      --and m.reg(NOW) is m.reg(PRE3) captured @ m.pulse_start(PRE)
       if m.pulse_start(PRE) and (state=IDLE or state=HOLD) then 
                               
         tflags.trace_length <= m.reg(PRE3).trace_length;
@@ -932,7 +930,7 @@ begin
         
         dp_address <= resize( m.reg(PRE3).max_peaks,ADDRESS_BITS) + 3; 
         
-        trace_start_address <= resize(size(PRE),ADDRESS_BITS);
+        trace_start_address <= resize(size(PRE),ADDRESS_BITS);--FIXME should be PRE2?
         
         -- length is the frame length to be committed
         -- size is the free space required to *start* a new event

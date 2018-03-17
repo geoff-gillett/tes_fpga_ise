@@ -57,7 +57,7 @@ signal pulse_time_n,pulse_length_n,rise_time_n:unsigned(16 downto 0);
 --------------------------------------------------------------------------------
 --accumulate and round latency the true latency of area_acc is 5
 --but want area since the previous crossing which value is 1 clk before xing
-constant ALAT:natural:=4; 
+constant ALAT:natural:=4; --area latency 
 constant ELAT:natural:=1; --extrema latency
 constant DEPTH:integer:=ALAT; --main pipeline depth
 
@@ -179,7 +179,6 @@ port map(
   clk => clk,
   reset => reset,
   
-  -- reg can only change 1 clk before a minima 
   registers => registers,
   registers_out => reg,
   
@@ -212,10 +211,6 @@ port map(
   max_slope => max_slope_cfd,
   will_cross => will_cross_cfd,
   will_arm => will_arm_cfd,
-  
---  cfd_low_p => cfd_low_p,
---  cfd_high_p => cfd_high_p,
---  max_slope_p => max_slope_p,
   
   cfd_valid => cfd_valid_cfd,
   cfd_error => cfd_error_cfd,
@@ -452,9 +447,6 @@ begin
 --      s_trace_pre2 <= m.reg(PRE3).trace_pre;
 --      raw_trace_pre2 <= m.reg(PRE3).trace_pre;
       trace_pre2 <= m.reg(PRE3).trace_pre;
-      m.enabled <= m.enabled(PRE3) & m.enabled(PRE3 to PRE);
-      m.has_pulse <= m.has_pulse(PRE3) & m.has_pulse(PRE3 to PRE);
-      m.has_trace <= m.has_trace(PRE3) & m.has_trace(PRE3 to PRE);
       if pulse_start_cfd then 
         m.reg(PRE3) <= reg; 
         m.enabled(PRE3) <= event_enable;
@@ -469,6 +461,9 @@ begin
                               reg.trace_type=DOT_PRODUCT_TRACE_D
                             );
       end if;
+      m.enabled <= m.enabled(PRE3) & m.enabled(PRE3 to PRE);
+      m.has_pulse <= m.has_pulse(PRE3) & m.has_pulse(PRE3 to PRE);
+      m.has_trace <= m.has_trace(PRE3) & m.has_trace(PRE3 to PRE);
           
       if m.pulse_start(PRE2) then
         rise_number_n2 <= (1 => '1', others => '0');
