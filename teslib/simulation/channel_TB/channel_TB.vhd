@@ -172,9 +172,10 @@ end process clkCount;
 stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
-	     "../bin_traces/gt1_100khz.bin";
+--	     "../bin_traces/gt1_100khz.bin";
 --	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/july 10/randn.bin";
+	     "C:/TES_project/bin_traces/noise.bin";
 --	     "../bin_traces/double_peak_signal.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
@@ -182,7 +183,7 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(clk);
---		adc_sample <= to_signed(sample, WIDTH);
+		adc_sample <= to_signed(sample, 14);
 	end loop;
 	wait;
 end process stimulusFile;
@@ -263,9 +264,9 @@ ready <= TRUE;
 wait for CLK_PERIOD*1500;
 simenable <= TRUE;
 wait for CLK_PERIOD;
-adc_sample <= to_signed(8000,ADC_WIDTH);
+--adc_sample <= to_signed(8000,ADC_WIDTH);
 wait for CLK_PERIOD;
-adc_sample <= to_signed(0,ADC_WIDTH);
+--adc_sample <= to_signed(0,ADC_WIDTH);
 wait; 
 end process stimulus;
 

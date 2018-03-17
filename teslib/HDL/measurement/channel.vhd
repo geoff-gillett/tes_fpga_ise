@@ -73,11 +73,21 @@ constant RAW_DELAY:natural:=1026;
 signal resetn:std_logic:='0';  
 signal sample_in,filtered,slope:signed(WIDTH-1 downto 0);
 signal m:measurements_t;
-signal sample_inv,baseline_sample:signed(ADC_WIDTH+FRAC downto 0);
-signal baseline_estimate,baseline_in:signed(WIDTH-1 downto 0);
+signal sample_inv,baseline_sample:signed(ADC_WIDTH-1 downto 0);
+signal baseline_estimate,baseline_dif:signed(WIDTH-1 downto 0);
+signal baseline_in:signed(BASELINE_BITS-1 downto 0);
 signal sat:boolean;
 signal baseline_sign:std_logic;
 signal baseline_threshold:signed(WIDTH-1 downto 0);
+signal baseline:unsigned(BASELINE_BITS-1 downto 0);
+signal new_baseline_value:boolean;
+signal baseline_count:unsigned(17 downto 0);
+signal new_baseline:boolean;
+type baseline_pipe is array (natural range <>) of 
+     signed(BASELINE_BITS-1 downto 0);
+signal baseline_p:baseline_pipe(1 to 8);
+signal baseline_valid:boolean_vector(1 downto 8);
+signal count_above,new_bl:boolean;
 
 --debug
 constant DEBUG:string:="FALSE";
@@ -95,9 +105,7 @@ measurements <= m;
 
 -- baseline offset is fixed WIDTH.FRAC
 --FIXME use a DSP slice?
-sat <= not ( unaryAND(baseline_sample(ADC_WIDTH+FRAC downto WIDTH-1)) or 
-       (unaryAND(not baseline_sample(ADC_WIDTH+FRAC downto WIDTH-1))) );
-baseline_sign <= baseline_sample(ADC_WIDTH+FRAC);
+
 sampleoffset:process(clk)
 begin
 if rising_edge(clk)  then
@@ -109,58 +117,65 @@ if rising_edge(clk)  then
   else
     resetn <= '1';
     if registers.capture.invert then
-      sample_inv <= shift_left(-resize(adc_sample,ADC_WIDTH+FRAC+1),FRAC); 
-    else
-      sample_inv <= shift_left(resize(adc_sample,ADC_WIDTH+FRAC+1),FRAC); 
+      sample_inv <= -adc_sample; 
     end if;
-    
-    baseline_sample 
-      <= sample_inv - resize(registers.baseline.offset,ADC_WIDTH+FRAC);
-    if sat then
-      baseline_in <= (WIDTH-1 => baseline_sign, others => not baseline_sign);
-    else
-      baseline_in <= resize(baseline_sample, WIDTH);
-    end if;
---    baseline_threshold 
---      <= resize((signed('0' & registers.baseline.threshold)),WIDTH); 
+    baseline_sample <= sample_inv - registers.baseline.offset(WIDTH-1 downto 3);
+    baseline_threshold 
+      <= resize((signed('0' & registers.baseline.threshold)),WIDTH); 
   end if;
 end if;
 end process sampleoffset;
+baseline_in <= resize(baseline_sample,BASELINE_BITS);
 
---baselineMCA:entity mcalib.most_frequent
---generic map(
---  ADDRESS_BITS => BASELINE_BITS,
---  COUNTER_BITS => 18,
---  TIMECONSTANT_BITS => BASELINE_TIMECONSTANT_BITS
---)
---port map(
---  clk => clk,
---  reset => reset1,
---  timeconstant => registers.baseline.timeconstant,
---  count_threshold => registers.baseline.count_threshold,
---  sample => adc_sample,
---  sample_valid => sample_valid,
---  most_frequent_bin => most_frequent_bin,
---  new_most_frequent_bin => new_most_frequent_bin,
---  most_frequent_count => most_frequent_count,
---  new_most_frequent => new_most_frequent
---);
-
-
---baseline_threshold <= (WIDTH-1 => '0',others => '1');
-baseline_threshold <= resize(signed('0' & registers.baseline.threshold),WIDTH);
-baselineAv:entity dsp.average_fixed_n
+baselineMCA:entity mcalib.most_frequent
 generic map(
-  WIDTH => WIDTH,
-  DIVIDE_N => BASELINE_N
+  ADDRESS_BITS => BASELINE_BITS,
+  COUNTER_BITS => BASELINE_COUNTER_BITS,
+  TIMECONSTANT_BITS => BASELINE_TIMECONSTANT_BITS
 )
 port map(
   clk => clk,
   reset => reset1,
-  threshold => baseline_threshold, 
-  sample => baseline_in,
-  average => baseline_estimate
+  timeconstant => registers.baseline.timeconstant,
+  count_threshold => registers.baseline.count_threshold,
+  sample => to_std_logic(baseline_in),
+  sample_valid => TRUE,
+  most_frequent_bin => baseline,
+  new_most_frequent_bin => open,
+  most_frequent_count => baseline_count,
+  new_most_frequent => new_bl
 );
+
+baselinePipe:process (clk) is
+begin
+  if rising_edge(clk) then
+    if reset1 = '1' then
+      baseline_valid <= (others => FALSE);
+    else
+      if new_baseline or not registers.baseline.new_only then
+        baseline_valid <= TRUE & baseline_valid(1 to 7);
+        baseline_p <= signed(baseline) & baseline_p(1 to 7); 
+        baseline_dif <= baseline_p(7) - signed(baseline);
+        baseline_estimate <= baseline_estimate + baseline_dif;
+      end if;
+    end if;
+  end if;
+end process baselinePipe;
+
+----baseline_threshold <= (WIDTH-1 => '0',others => '1');
+--baseline_threshold <= resize(signed('0' & registers.baseline.threshold),WIDTH);
+--baselineAv:entity dsp.average_fixed_n
+--generic map(
+--  WIDTH => WIDTH,
+--  DIVIDE_N => BASELINE_N
+--)
+--port map(
+--  clk => clk,
+--  reset => reset1,
+--  threshold => baseline_threshold, 
+--  sample => baseline_in,
+--  average => baseline_estimate
+--);
 
 --FIXME in principle this could overflow
 baselineSubraction:process(clk)
