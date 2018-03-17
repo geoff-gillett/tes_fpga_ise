@@ -658,44 +658,6 @@ doublesig <= to_signed(-200,ADC_WIDTH)
 
 mcaControlStimulus:process
 begin
-  global.mca.update_asap <= FALSE;
-  global.mca.update_on_completion <= FALSE;
---  global.channel_enable <= "00000000";
-  chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
-  chan_reg(0).capture.delay <= (others => '0');
-  chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
---  chan_reg(0).capture.detection <= TRACE_DETECTION_D;
-  chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
---  chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
-  chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
-  chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
-  chan_reg(0).capture.trace_length <= to_unsigned(64,TRACE_LENGTH_BITS);
-  chan_reg(0).capture.height <= PEAK_HEIGHT_D;
-  chan_reg(0).capture.cfd_rel2min <= FALSE;
-  --
-  chan_reg(1).capture.adc_select <= (1 => '1', others => '0');
-  chan_reg(1).capture.delay <= to_unsigned(10,DELAY_BITS);
-  chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
-  chan_reg(1).capture.detection <= PULSE_DETECTION_D;
-  chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
-  chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
-  chan_reg(1).capture.trace_type <= SINGLE_TRACE_D;
-  chan_reg(1).capture.trace_signal <= FILTERED_TRACE_D;
-  chan_reg(1).capture.trace_length <= to_unsigned(32,TRACE_LENGTH_BITS);
---  chan_reg(1).capture.height <= CFD_HIGH_D;
-  chan_reg(1).capture.height <= PEAK_HEIGHT_D;
-  chan_reg(1).capture.cfd_rel2min <= FALSE;
-  chan_reg(1).capture.trace_stride <= (others => '0');
-  
-	global.mca.value <= MCA_FILTERED_EXTREMA_D;
-	global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
-	global.mca.qualifier <= ALL_MCA_QUAL_D;
-  global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
-  global.mca.bin_n <= to_unsigned(0,MCA_BIN_N_BITS);
-  global.mca.channel <= (others => '0');
-  global.mca.last_bin <= (others => '1'); --to_unsigned(1023,MCA_ADDRESS_BITS);
-  global.mca.lowest_value <= to_signed(-8000,MCA_VALUE_BITS);
---	global.mca.update_asap <= TRUE;
 
 --global.channel_enable <= "00000011";
 --global.channel_enable <= "00000001";
@@ -744,8 +706,8 @@ chan_reg(0).capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1);
 chan_reg(0).capture.trace_length <= to_unsigned(64,TRACE_LENGTH_BITS);
 chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
-chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
-chan_reg(0).capture.trace_pre <= to_unsigned(64,TRACE_PRE_BITS);
+chan_reg(0).capture.trace_stride <= (0 => '1', others => '0');
+chan_reg(0).capture.trace_pre <= to_unsigned(32,TRACE_PRE_BITS);
 
 chan_reg(1).capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
 --chan_reg(0).capture.pulse_threshold <= to_unsigned(109*8+1,DSP_BITS-1); 
@@ -776,6 +738,48 @@ chan_reg(1).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --chan_reg(0).capture.trace_stride <= (0 => '0', others => '0');
 --chan_reg(0).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --chan_reg(0).baseline.offset <= to_signed(0,DSP_BITS);
+--------------------------------------------------------------------------------
+--
+--------------------------------------------------------------------------------
+  global.mca.update_asap <= FALSE;
+  global.mca.update_on_completion <= FALSE;
+--  global.channel_enable <= "00000000";
+chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
+chan_reg(0).capture.delay <= (others => '0');
+chan_reg(0).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
+--  chan_reg(0).capture.detection <= TRACE_DETECTION_D;
+chan_reg(0).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
+--  chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
+chan_reg(0).capture.trace_type <= SINGLE_TRACE_D;
+chan_reg(0).capture.trace_signal <= FILTERED_TRACE_D;
+chan_reg(0).capture.trace_length <= to_unsigned(32,TRACE_LENGTH_BITS);
+chan_reg(0).capture.trace_stride <= (0 => '1', others => '0');
+chan_reg(0).capture.height <= PEAK_HEIGHT_D;
+chan_reg(0).capture.cfd_rel2min <= FALSE;
+  --
+chan_reg(1).capture.adc_select <= (0 => '1', others => '0');
+chan_reg(1).capture.delay <= to_unsigned(1,DELAY_BITS);
+chan_reg(1).capture.constant_fraction  <= to_unsigned(CF,CFD_BITS-1);
+chan_reg(1).capture.detection <= PULSE_DETECTION_D;
+chan_reg(1).capture.max_peaks <= to_unsigned(1,PEAK_COUNT_BITS);
+chan_reg(1).capture.timing <= PULSE_THRESH_TIMING_D;
+chan_reg(1).capture.trace_type <= SINGLE_TRACE_D;
+chan_reg(1).capture.trace_signal <= FILTERED_TRACE_D;
+chan_reg(1).capture.trace_length <= to_unsigned(32,TRACE_LENGTH_BITS);
+--  chan_reg(1).capture.height <= CFD_HIGH_D;
+chan_reg(1).capture.height <= PEAK_HEIGHT_D;
+chan_reg(1).capture.cfd_rel2min <= FALSE;
+chan_reg(1).capture.trace_stride <= (others => '0');
+  
+global.mca.value <= MCA_FILTERED_EXTREMA_D;
+global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
+global.mca.qualifier <= ALL_MCA_QUAL_D;
+global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
+global.mca.bin_n <= to_unsigned(0,MCA_BIN_N_BITS);
+global.mca.channel <= (others => '0');
+global.mca.last_bin <= (others => '1'); --to_unsigned(1023,MCA_ADDRESS_BITS);
+global.mca.lowest_value <= to_signed(-8000,MCA_VALUE_BITS);
+--	global.mca.update_asap <= TRUE;
 --------------------------------------------------------------------------------
 --Trace settings
 --------------------------------------------------------------------------------
