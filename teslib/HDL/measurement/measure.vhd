@@ -447,6 +447,9 @@ begin
 --      s_trace_pre2 <= m.reg(PRE3).trace_pre;
 --      raw_trace_pre2 <= m.reg(PRE3).trace_pre;
       trace_pre2 <= m.reg(PRE3).trace_pre;
+      m.enabled <= m.enabled(PRE3) & m.enabled(PRE3 to PRE);
+      m.has_pulse <= m.has_pulse(PRE3) & m.has_pulse(PRE3 to PRE);
+      m.has_trace <= m.has_trace(PRE3) & m.has_trace(PRE3 to PRE);
       if pulse_start_cfd then 
         m.reg(PRE3) <= reg; 
         m.enabled(PRE3) <= event_enable;
@@ -461,9 +464,6 @@ begin
                               reg.trace_type=DOT_PRODUCT_TRACE_D
                             );
       end if;
-      m.enabled <= m.enabled(PRE3) & m.enabled(PRE3 to PRE);
-      m.has_pulse <= m.has_pulse(PRE3) & m.has_pulse(PRE3 to PRE);
-      m.has_trace <= m.has_trace(PRE3) & m.has_trace(PRE3 to PRE);
           
       if m.pulse_start(PRE2) then
         rise_number_n2 <= (1 => '1', others => '0');
