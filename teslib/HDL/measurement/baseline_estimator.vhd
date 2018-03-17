@@ -119,7 +119,7 @@ if rising_edge(clk) then
 end if;
 end process baselineControl;
 
-mostFrequent:entity mcalib.most_frequent2
+mostFrequent:entity mcalib.most_frequent
 generic map(
   ADDRESS_BITS => BASELINE_BITS,
   COUNTER_BITS => COUNTER_BITS,

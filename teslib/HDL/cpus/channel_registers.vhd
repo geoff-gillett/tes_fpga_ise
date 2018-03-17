@@ -59,7 +59,7 @@ use work.registers.all;
 --use work.events.all;
 
 -- expects s_clk = 2*reg_clk
-entity channel_registers2 is
+entity channel_registers is
 generic(
 	CHANNEL:integer:=0;
   FILTER_COEF_WIDTH:natural:=23;
@@ -85,9 +85,9 @@ port (
   baseline_config:out fir_control_in_t;
   baseline_events:in fir_control_out_t
 );
-end entity channel_registers2;
+end entity channel_registers;
 --
-architecture RTL of channel_registers2 is
+architecture RTL of channel_registers is
 
 signal reg:channel_registers_t:=(
   baseline  => (

@@ -54,7 +54,7 @@ constant BASELINE_BIT:natural:=27;
 begin
 clk <= not clk after CLK_PERIOD/2;
 
-UUT:entity work.channel_registers2
+UUT:entity work.channel_registers
 generic map(
   CHANNEL      => CHANNEL,
   FILTER_COEF_WIDTH => FILTER_COEF_WIDTH,

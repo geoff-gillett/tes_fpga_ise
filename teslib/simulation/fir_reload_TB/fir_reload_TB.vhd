@@ -78,7 +78,7 @@ begin
 clk <= not clk after CLK_PERIOD/2;
 
 chanGen:for c in 0 to DSP_CHANNELS-1 generate
-  UUT:entity work.channel_registers2
+  UUT:entity work.channel_registers
   generic map(
     CHANNEL => CHANNEL,
     FILTER_COEF_WIDTH => FILTER_COEF_WIDTH,

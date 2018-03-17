@@ -12,6 +12,8 @@ use extensions.logic.all;
 library dsp;
 use dsp.types.all;
 
+library mcalib;
+
 use work.registers.all;
 use work.measurements.all;
 use work.types.all;
@@ -23,6 +25,7 @@ generic(
   CF_WIDTH:natural:=18;
   CF_FRAC:natural:=17;
   BASELINE_N:natural:= 19;
+  BASELINE_BITS:natural:=10;
   WIDTH:natural:=16; 
   FRAC:natural:=3; 
   SLOPE_FRAC:natural:=8; 
@@ -123,6 +126,26 @@ if rising_edge(clk)  then
   end if;
 end if;
 end process sampleoffset;
+
+--baselineMCA:entity mcalib.most_frequent
+--generic map(
+--  ADDRESS_BITS => BASELINE_BITS,
+--  COUNTER_BITS => 18,
+--  TIMECONSTANT_BITS => BASELINE_TIMECONSTANT_BITS
+--)
+--port map(
+--  clk => clk,
+--  reset => reset1,
+--  timeconstant => registers.baseline.timeconstant,
+--  count_threshold => registers.baseline.count_threshold,
+--  sample => adc_sample,
+--  sample_valid => sample_valid,
+--  most_frequent_bin => most_frequent_bin,
+--  new_most_frequent_bin => new_most_frequent_bin,
+--  most_frequent_count => most_frequent_count,
+--  new_most_frequent => new_most_frequent
+--);
+
 
 --baseline_threshold <= (WIDTH-1 => '0',others => '1');
 baseline_threshold <= resize(signed('0' & registers.baseline.threshold),WIDTH);

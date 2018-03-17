@@ -43,7 +43,7 @@ signal clk_count:natural:=0;
 begin
 
 clk <= not clk after CLK_PERIOD/2;
-UUT:entity work.most_frequent2
+UUT:entity work.most_frequent
 generic map(
   ADDRESS_BITS => ADDRESS_BITS,
   COUNTER_BITS => COUNTER_BITS,

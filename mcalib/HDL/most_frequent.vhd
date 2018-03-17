@@ -18,7 +18,7 @@ use extensions.logic.all;
 
 library mcalib;
 
-entity most_frequent2 is
+entity most_frequent is
 generic(
   --number of bins (channels) = 2**ADDRESS_BITS
   ADDRESS_BITS:integer:=12;
@@ -42,9 +42,9 @@ port(
   most_frequent_count:out unsigned(COUNTER_BITS-1 downto 0);
   new_most_frequent:out boolean
 );
-end entity most_frequent2;
+end entity most_frequent;
 --
-architecture MCA of most_frequent2 is
+architecture MCA of most_frequent is
 -- TODO modify clear so that smaller minimum time constants are possible
 -- ie do partial clears threshold needs some thought
 --------------------------------------------------------------------------------
