@@ -18,13 +18,11 @@ use work.registers.all;
 use work.measurements.all;
 use work.types.all;
 
---FIXME remove internal precision
 entity channel is
 generic(
   CHANNEL:natural:=0;
   CF_WIDTH:natural:=18;
   CF_FRAC:natural:=17;
-  BASELINE_N:natural:= 19;
   BASELINE_BITS:natural:=10;
   WIDTH:natural:=16; 
   FRAC:natural:=3; 
@@ -73,25 +71,7 @@ constant RAW_DELAY:natural:=1026;
 signal resetn:std_logic:='0';  
 signal sample_in,filtered,slope:signed(WIDTH-1 downto 0);
 signal m:measurements_t;
-signal adc_inv,baseline_sample:signed(ADC_WIDTH-1 downto 0);
-signal baseline_sum:signed(WIDTH-1 downto 0);
-signal baseline_dif,diff_reg:signed(BASELINE_BITS downto 0);
-signal baseline_estimate:signed(WIDTH-1 downto 0);
-signal baseline_in:signed(BASELINE_BITS-1 downto 0);
-signal sat:boolean;
-signal baseline_sign:std_logic;
-signal baseline_threshold:signed(WIDTH-1 downto 0);
-signal baseline:unsigned(BASELINE_BITS-1 downto 0);
-signal new_baseline_value:boolean;
-signal baseline_count:unsigned(17 downto 0);
-signal new_bl_value:boolean;
-type baseline_pipe is array (natural range <>) of 
-     signed(BASELINE_BITS-1 downto 0);
-signal baseline_p:baseline_pipe(1 to 8);
-signal baseline_valid:boolean_vector(1 to 8);
-signal count_above,new_bl:boolean;
-signal baseline_ready:boolean;
-signal new_sum:boolean;
+signal baseline_sample:signed(ADC_WIDTH-1 downto 0);
 
 --debug
 constant DEBUG:string:="FALSE";
@@ -104,40 +84,23 @@ attribute mark_debug of baseline_sample:signal is DEBUG;
 attribute keep of sample_in:signal is DEBUG;
 attribute mark_debug of sample_in:signal is DEBUG;
 
-
 begin
 measurements <= m;
 
--- baseline offset is fixed WIDTH.FRAC
---FIXME use a DSP slice?
-
-sampleoffset:process(clk)
+resetP:process (clk) is
 begin
-if rising_edge(clk)  then
-  if reset1='1' then
-    --FIXME sample_inv could be a variable
-    adc_inv <= (others => '0');
-    baseline_sample  <= (others => '0');
---    resetn <= '0';
-  else
-    resetn <= '1';
-    if registers.capture.invert then
-      adc_inv <= -adc_sample; 
-    else
-      adc_inv <= adc_sample; 
-    end if;
-    baseline_sample 
-      <= adc_inv-resize(shift_right(registers.baseline.offset,FRAC),ADC_WIDTH);
-    baseline_threshold 
-      <= resize((signed('0' & registers.baseline.threshold)),WIDTH); 
+  if rising_edge(clk) then
+    resetn <= not reset1;
   end if;
-end if;
-end process sampleoffset;
-baseline_in <= resize(baseline_sample,BASELINE_BITS);
+end process resetP;
 
-baselineMCA:entity mcalib.most_frequent
+
+estimator:entity mcalib.baseline
 generic map(
-  ADDRESS_BITS => BASELINE_BITS,
+  WIDTH => WIDTH,
+  FRAC => FRAC,
+  ADC_WIDTH => ADC_WIDTH,
+  BASELINE_BITS => BASELINE_BITS,
   COUNTER_BITS => BASELINE_COUNTER_BITS,
   TIMECONSTANT_BITS => BASELINE_TIMECONSTANT_BITS
 )
@@ -145,60 +108,17 @@ port map(
   clk => clk,
   reset => reset1,
   timeconstant => registers.baseline.timeconstant,
-  count_threshold => registers.baseline.count_threshold,
-  sample => to_std_logic(baseline_in),
-  sample_valid => TRUE,
-  most_frequent_bin => baseline,
-  new_most_frequent_bin => new_bl_value,
-  most_frequent_count => baseline_count,
-  new_most_frequent => new_bl
+  count_threshold  => registers.baseline.count_threshold,
+  dynamic => registers.baseline.subtraction,
+  new_only => registers.baseline.new_only,
+  invert => registers.capture.invert,
+  offset => registers.baseline.offset,
+  adc_sample => adc_sample,
+  adc_sample_valid => TRUE,
+  sample => sample_in,
+  sample_valid => open
 );
 
-baselinePipe:process (clk) is
-begin
-  if rising_edge(clk) then
-    if reset1 = '1' then
-      baseline_valid <= (others => FALSE);
-      baseline_dif <= (others => '0');
-      baseline_estimate <= (others => '0');
-      baseline_sum <= (others => '0');
-    else
-      new_sum <= FALSE;
-      if (not registers.baseline.new_only and new_bl) or 
-         (registers.baseline.new_only and new_bl_value) then
-        baseline_valid <= TRUE & baseline_valid(1 to 7);
-        baseline_p <= signed(baseline) & baseline_p(1 to 7); 
---        baseline_dif 
---          <= resize(signed(baseline),BASELINE_BITS+1)-baseline_p(8);
-        if baseline_valid(8) then
-          baseline_dif 
-            <= resize(signed(baseline),BASELINE_BITS+1)-baseline_p(8);
-          new_sum <= TRUE;
-          baseline_estimate <= baseline_estimate + baseline_dif;
-        else
-          baseline_sum <= baseline_sum+signed(baseline);
-        end if;
-      end if;
-      if new_sum and baseline_valid(8) then
-        baseline_sum <= baseline_sum + baseline_dif;
-      end if;
-    end if;
-  end if;
-end process baselinePipe;
-
---FIXME in principle this could overflow
-baselineSubraction:process(clk)
-begin
-if rising_edge(clk) then
-  baseline_ready <= baseline_valid(8);
-  if registers.baseline.subtraction and baseline_ready then
-    sample_in <= shift_left(resize(baseline_in,WIDTH),FRAC) - baseline_sum;	
-  else
-    sample_in 
-      <= shift_left(resize(adc_inv,WIDTH),FRAC) - registers.baseline.offset;
-  end if;
-end if;
-end process baselineSubraction;
 
 FIR:entity dsp.FIR_SYM141_ASYM23_OUT16_3
 generic map(
