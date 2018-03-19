@@ -175,7 +175,8 @@ stimulusFile:process
 --	     "../bin_traces/gt1_100khz.bin";
 --	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/july 10/randn.bin";
-	     "C:/TES_project/bin_traces/noise.bin";
+--	     "C:/TES_project/bin_traces/noise.bin";
+	     "C:/TES_project/bin_traces/gaussian_noise.bin";
 --	     "../bin_traces/double_peak_signal.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
@@ -235,16 +236,16 @@ stage2_config.config_valid <= '0';
 stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
-registers.baseline.offset <= to_signed(0,WIDTH);
-registers.baseline.count_threshold <= to_unsigned(10,BASELINE_COUNTER_BITS);
+registers.baseline.offset <= to_signed(800,WIDTH);
+registers.baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
 registers.baseline.new_only <= FALSE;
 registers.baseline.subtraction <= TRUE;
-registers.baseline.timeconstant <= to_unsigned(25000,32);
+registers.baseline.timeconstant <= to_unsigned(1500,20);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
-registers.capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
-registers.capture.pulse_threshold <= to_unsigned(127*8+6,DSP_BITS-1); --start peak stop
+registers.capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
+registers.capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); --start peak stop
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 registers.capture.detection <= PULSE_DETECTION_D;
@@ -254,7 +255,7 @@ registers.capture.cfd_rel2min <= FALSE;
 registers.capture.trace_pre <= (others => '0');
 event_enable <= TRUE;
 
-adc_sample <= to_signed(0,ADC_WIDTH);
+--adc_sample <= to_signed(0,ADC_WIDTH);
 wait for CLK_PERIOD*20;
 reset1 <= '0';
 wait for CLK_PERIOD*40;

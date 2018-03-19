@@ -23,23 +23,27 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="36137872348fs"></ZoomEndTime>
-      <Cursor1Time time="1000000000fs"></Cursor1Time>
+      <ZoomEndTime time="8580000001fs"></ZoomEndTime>
+      <Cursor1Time time="1680000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="229"></NameColumnWidth>
-      <ValueColumnWidth column_width="72"></ValueColumnWidth>
+      <NameColumnWidth column_width="279"></NameColumnWidth>
+      <ValueColumnWidth column_width="188"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="7" />
+   <WVObjectSize size="4" />
    <wave_markers>
       <marker time="10380000000" label="" />
    </wave_markers>
-   <wvobject fp_name="group23" type="group">
+   <wvobject fp_name="group333" type="group">
       <obj_property name="label">testbench</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <wvobject fp_name="/channel_TB/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/clk_i" type="other">
+         <obj_property name="ElementShortName">clk_i</obj_property>
+         <obj_property name="ObjectShortName">clk_i</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/reset1" type="logic">
          <obj_property name="ElementShortName">reset1</obj_property>
@@ -49,26 +53,87 @@
          <obj_property name="ElementShortName">reset2</obj_property>
          <obj_property name="ObjectShortName">reset2</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/sim_count" type="array">
-         <obj_property name="ElementShortName">sim_count[8:0]</obj_property>
-         <obj_property name="ObjectShortName">sim_count[8:0]</obj_property>
-      </wvobject>
       <wvobject fp_name="/channel_TB/adc_sample" type="array">
          <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
          <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         <obj_property name="CellHeight">100</obj_property>
-         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-         <obj_property name="AnalogYRangeMin">-10.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">1100.000000</obj_property>
-         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-         <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/registers" type="array">
          <obj_property name="ElementShortName">registers</obj_property>
          <obj_property name="ObjectShortName">registers</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/channel_TB/registers.baseline" type="array">
+            <obj_property name="ElementShortName">.baseline</obj_property>
+            <obj_property name="ObjectShortName">.baseline</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+         </wvobject>
+         <wvobject fp_name="/channel_TB/registers.capture" type="array">
+            <obj_property name="ElementShortName">.capture</obj_property>
+            <obj_property name="ObjectShortName">.capture</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/start" type="other">
+         <obj_property name="ElementShortName">start</obj_property>
+         <obj_property name="ObjectShortName">start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/commit" type="other">
+         <obj_property name="ElementShortName">commit</obj_property>
+         <obj_property name="ObjectShortName">commit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/dump" type="other">
+         <obj_property name="ElementShortName">dump</obj_property>
+         <obj_property name="ObjectShortName">dump</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/framer_overflow" type="other">
+         <obj_property name="ElementShortName">framer_overflow</obj_property>
+         <obj_property name="ObjectShortName">framer_overflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/framer_error" type="other">
+         <obj_property name="ElementShortName">framer_error</obj_property>
+         <obj_property name="ObjectShortName">framer_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/m" type="array">
+         <obj_property name="ElementShortName">m</obj_property>
+         <obj_property name="ObjectShortName">m</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/stream" type="array">
+         <obj_property name="ElementShortName">stream</obj_property>
+         <obj_property name="ObjectShortName">stream</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/valid" type="other">
+         <obj_property name="ElementShortName">valid</obj_property>
+         <obj_property name="ObjectShortName">valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/ready" type="other">
+         <obj_property name="ElementShortName">ready</obj_property>
+         <obj_property name="ObjectShortName">ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/clk_count" type="other">
+         <obj_property name="ElementShortName">clk_count</obj_property>
+         <obj_property name="ObjectShortName">clk_count</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/event_enable" type="other">
+         <obj_property name="ElementShortName">event_enable</obj_property>
+         <obj_property name="ObjectShortName">event_enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/sim_count" type="array">
+         <obj_property name="ElementShortName">sim_count[8:0]</obj_property>
+         <obj_property name="ObjectShortName">sim_count[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/idle_count" type="array">
+         <obj_property name="ElementShortName">idle_count[9:0]</obj_property>
+         <obj_property name="ObjectShortName">idle_count[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/adc_count" type="array">
+         <obj_property name="ElementShortName">adc_count[8:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_count[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/squaresig" type="array">
+         <obj_property name="ElementShortName">squaresig[13:0]</obj_property>
+         <obj_property name="ObjectShortName">squaresig[13:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/doublesig" type="array">
+         <obj_property name="ElementShortName">doublesig[13:0]</obj_property>
+         <obj_property name="ObjectShortName">doublesig[13:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/stage1_config" type="array">
          <obj_property name="ElementShortName">stage1_config</obj_property>
@@ -86,53 +151,76 @@
          <obj_property name="ElementShortName">stage2_events</obj_property>
          <obj_property name="ObjectShortName">stage2_events</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/start" type="other">
-         <obj_property name="ElementShortName">start</obj_property>
-         <obj_property name="ObjectShortName">start</obj_property>
+      <wvobject fp_name="/channel_TB/simenable" type="other">
+         <obj_property name="ElementShortName">simenable</obj_property>
+         <obj_property name="ObjectShortName">simenable</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/commit" type="other">
-         <obj_property name="ElementShortName">commit</obj_property>
-         <obj_property name="ObjectShortName">commit</obj_property>
+      <wvobject fp_name="/channel_TB/long" type="other">
+         <obj_property name="ElementShortName">long</obj_property>
+         <obj_property name="ObjectShortName">long</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/dump" type="other">
-         <obj_property name="ElementShortName">dump</obj_property>
-         <obj_property name="ObjectShortName">dump</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/m" type="array">
-         <obj_property name="ElementShortName">m</obj_property>
-         <obj_property name="ObjectShortName">m</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/stream" type="array">
-         <obj_property name="ElementShortName">stream</obj_property>
-         <obj_property name="ObjectShortName">stream</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/valid" type="other">
-         <obj_property name="ElementShortName">valid</obj_property>
-         <obj_property name="ObjectShortName">valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/ready" type="other">
-         <obj_property name="ElementShortName">ready</obj_property>
-         <obj_property name="ObjectShortName">ready</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/clk_count" type="other">
-         <obj_property name="ElementShortName">clk_count</obj_property>
-         <obj_property name="ObjectShortName">clk_count</obj_property>
+      <wvobject fp_name="/channel_TB/flags" type="array">
+         <obj_property name="ElementShortName">flags[10:0]</obj_property>
+         <obj_property name="ObjectShortName">flags[10:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/CHANNEL" type="other">
          <obj_property name="ElementShortName">CHANNEL</obj_property>
          <obj_property name="ObjectShortName">CHANNEL</obj_property>
       </wvobject>
+      <wvobject fp_name="/channel_TB/CF_WIDTH" type="other">
+         <obj_property name="ElementShortName">CF_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">CF_WIDTH</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/CF_FRAC" type="other">
+         <obj_property name="ElementShortName">CF_FRAC</obj_property>
+         <obj_property name="ObjectShortName">CF_FRAC</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/WIDTH" type="other">
+         <obj_property name="ElementShortName">WIDTH</obj_property>
+         <obj_property name="ObjectShortName">WIDTH</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/FRAC" type="other">
+         <obj_property name="ElementShortName">FRAC</obj_property>
+         <obj_property name="ObjectShortName">FRAC</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/SLOPE_FRAC" type="other">
+         <obj_property name="ElementShortName">SLOPE_FRAC</obj_property>
+         <obj_property name="ObjectShortName">SLOPE_FRAC</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/ADC_WIDTH" type="other">
+         <obj_property name="ElementShortName">ADC_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">ADC_WIDTH</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/AREA_WIDTH" type="other">
+         <obj_property name="ElementShortName">AREA_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">AREA_WIDTH</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/AREA_FRAC" type="other">
+         <obj_property name="ElementShortName">AREA_FRAC</obj_property>
+         <obj_property name="ObjectShortName">AREA_FRAC</obj_property>
+      </wvobject>
       <wvobject fp_name="/channel_TB/ENDIAN" type="array">
          <obj_property name="ElementShortName">ENDIAN[1:6]</obj_property>
          <obj_property name="ObjectShortName">ENDIAN[1:6]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/STRICT_CROSSING" type="other">
+         <obj_property name="ElementShortName">STRICT_CROSSING</obj_property>
+         <obj_property name="ObjectShortName">STRICT_CROSSING</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/CLK_PERIOD" type="other">
          <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
          <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
       </wvobject>
+      <wvobject fp_name="/channel_TB/SIM_WIDTH" type="other">
+         <obj_property name="ElementShortName">SIM_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">SIM_WIDTH</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/CF" type="other">
+         <obj_property name="ElementShortName">CF</obj_property>
+         <obj_property name="ObjectShortName">CF</obj_property>
+      </wvobject>
    </wvobject>
-   <wvobject fp_name="group24" type="group">
+   <wvobject fp_name="group377" type="group">
       <obj_property name="label">UUT</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
@@ -151,89 +239,6 @@
       <wvobject fp_name="/channel_TB/UUT/registers" type="array">
          <obj_property name="ElementShortName">registers</obj_property>
          <obj_property name="ObjectShortName">registers</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider498">
-         <obj_property name="label">baseline</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/registers.baseline.offset" type="array">
-         <obj_property name="ElementShortName">.offset[15:0]</obj_property>
-         <obj_property name="ObjectShortName">.offset[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/adc_sample" type="array">
-         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
-         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
-         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-         <obj_property name="AnalogYRangeMin">-500.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">3000.000000</obj_property>
-         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-         <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/sample_inv" type="array">
-         <obj_property name="ElementShortName">sample_inv[17:0]</obj_property>
-         <obj_property name="ObjectShortName">sample_inv[17:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/sat" type="other">
-         <obj_property name="ElementShortName">sat</obj_property>
-         <obj_property name="ObjectShortName">sat</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/baseline_sample" type="array">
-         <obj_property name="ElementShortName">baseline_sample[17:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline_sample[17:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/baseline_estimate" type="array">
-         <obj_property name="ElementShortName">baseline_estimate[15:0]</obj_property>
-         <obj_property name="ObjectShortName">baseline_estimate[15:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-         <obj_property name="AnalogYRangeMin">-100.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">100.000000</obj_property>
-         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-         <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider499">
-         <obj_property name="label">FIR</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/sample_in" type="array">
-         <obj_property name="ElementShortName">sample_in[15:0]</obj_property>
-         <obj_property name="ObjectShortName">sample_in[15:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/event_enable" type="other">
          <obj_property name="ElementShortName">event_enable</obj_property>
@@ -254,6 +259,10 @@
       <wvobject fp_name="/channel_TB/UUT/stage2_events" type="array">
          <obj_property name="ElementShortName">stage2_events</obj_property>
          <obj_property name="ObjectShortName">stage2_events</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/mux_full" type="other">
+         <obj_property name="ElementShortName">mux_full</obj_property>
+         <obj_property name="ObjectShortName">mux_full</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/start" type="other">
          <obj_property name="ElementShortName">start</obj_property>
@@ -291,44 +300,227 @@
          <obj_property name="ElementShortName">ready</obj_property>
          <obj_property name="ObjectShortName">ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/filtered" type="array">
-         <obj_property name="ElementShortName">filtered[15:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
+      <wvobject fp_name="/channel_TB/UUT/resetn" type="logic">
+         <obj_property name="ElementShortName">resetn</obj_property>
+         <obj_property name="ObjectShortName">resetn</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline_sum" type="array">
+         <obj_property name="ElementShortName">baseline_sum[15:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_sum[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-         <obj_property name="AnalogYRangeMin">-200.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">1100.000000</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
          <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
          <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
          <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/sample_in" type="array">
+         <obj_property name="ElementShortName">sample_in[15:0]</obj_property>
+         <obj_property name="ObjectShortName">sample_in[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
+         <obj_property name="AnalogYRangeMin">-20000.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">20000.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/filtered" type="array">
+         <obj_property name="ElementShortName">filtered[15:0]</obj_property>
+         <obj_property name="ObjectShortName">filtered[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/slope" type="array">
          <obj_property name="ElementShortName">slope[15:0]</obj_property>
          <obj_property name="ObjectShortName">slope[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">8</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_FIXED</obj_property>
-         <obj_property name="AnalogYRangeMin">-20.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">20.000000</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
          <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
          <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
          <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
-         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject type="divider" fp_name="divider731">
+         <obj_property name="label">baseline</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/registers.baseline.new_only" type="other">
+         <obj_property name="ElementShortName">.new_only</obj_property>
+         <obj_property name="ObjectShortName">.new_only</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/registers.baseline.offset" type="array">
+         <obj_property name="ElementShortName">.offset[15:0]</obj_property>
+         <obj_property name="ObjectShortName">.offset[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/registers.baseline.timeconstant" type="array">
+         <obj_property name="ElementShortName">.timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">.timeconstant[31:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/registers.baseline.count_threshold" type="array">
+         <obj_property name="ElementShortName">.count_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">.count_threshold[17:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/adc_sample" type="array">
+         <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_sample[13:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CellHeight">80</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/adc_inv" type="array">
+         <obj_property name="ElementShortName">adc_inv[13:0]</obj_property>
+         <obj_property name="ObjectShortName">adc_inv[13:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline_sample" type="array">
+         <obj_property name="ElementShortName">baseline_sample[13:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_sample[13:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline_in" type="array">
+         <obj_property name="ElementShortName">baseline_in[9:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_in[9:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CellHeight">80</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/new_bl" type="other">
+         <obj_property name="ElementShortName">new_bl</obj_property>
+         <obj_property name="ObjectShortName">new_bl</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline" type="array">
+         <obj_property name="ElementShortName">baseline[9:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline[9:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline_count" type="array">
+         <obj_property name="ElementShortName">baseline_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_count[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline_p" type="array">
+         <obj_property name="ElementShortName">baseline_p[1:8][9:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_p[1:8][9:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/new_sum" type="other">
+         <obj_property name="ElementShortName">new_sum</obj_property>
+         <obj_property name="ObjectShortName">new_sum</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline_sum" type="array">
+         <obj_property name="ElementShortName">baseline_sum[15:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_sum[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline_valid" type="array">
+         <obj_property name="ElementShortName">baseline_valid[1:8]</obj_property>
+         <obj_property name="ObjectShortName">baseline_valid[1:8]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline_dif" type="array">
+         <obj_property name="ElementShortName">baseline_dif[10:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_dif[10:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline_estimate" type="array">
+         <obj_property name="ElementShortName">baseline_estimate[15:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_estimate[15:0]</obj_property>
+         <obj_property name="Radix">REALRADIX</obj_property>
+         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+         <obj_property name="radix_fractionWidth">3</obj_property>
+         <obj_property name="radix_otherWidth">0</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baseline_threshold" type="array">
+         <obj_property name="ElementShortName">baseline_threshold[15:0]</obj_property>
+         <obj_property name="ObjectShortName">baseline_threshold[15:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/CHANNEL" type="other">
          <obj_property name="ElementShortName">CHANNEL</obj_property>
          <obj_property name="ObjectShortName">CHANNEL</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/CF_WIDTH" type="other">
+         <obj_property name="ElementShortName">CF_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">CF_WIDTH</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/CF_FRAC" type="other">
+         <obj_property name="ElementShortName">CF_FRAC</obj_property>
+         <obj_property name="ObjectShortName">CF_FRAC</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/BASELINE_N" type="other">
+         <obj_property name="ElementShortName">BASELINE_N</obj_property>
+         <obj_property name="ObjectShortName">BASELINE_N</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/BASELINE_BITS" type="other">
+         <obj_property name="ElementShortName">BASELINE_BITS</obj_property>
+         <obj_property name="ObjectShortName">BASELINE_BITS</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/WIDTH" type="other">
          <obj_property name="ElementShortName">WIDTH</obj_property>
@@ -354,6 +546,22 @@
          <obj_property name="ElementShortName">AREA_FRAC</obj_property>
          <obj_property name="ObjectShortName">AREA_FRAC</obj_property>
       </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/FRAMER_ADDRESS_BITS" type="other">
+         <obj_property name="ElementShortName">FRAMER_ADDRESS_BITS</obj_property>
+         <obj_property name="ObjectShortName">FRAMER_ADDRESS_BITS</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/ACCUMULATOR_WIDTH" type="other">
+         <obj_property name="ElementShortName">ACCUMULATOR_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">ACCUMULATOR_WIDTH</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/ACCUMULATE_N" type="other">
+         <obj_property name="ElementShortName">ACCUMULATE_N</obj_property>
+         <obj_property name="ObjectShortName">ACCUMULATE_N</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/TRACE_FROM_STAMP" type="other">
+         <obj_property name="ElementShortName">TRACE_FROM_STAMP</obj_property>
+         <obj_property name="ObjectShortName">TRACE_FROM_STAMP</obj_property>
+      </wvobject>
       <wvobject fp_name="/channel_TB/UUT/ENDIAN" type="array">
          <obj_property name="ElementShortName">ENDIAN[1:6]</obj_property>
          <obj_property name="ObjectShortName">ENDIAN[1:6]</obj_property>
@@ -367,20 +575,152 @@
          <obj_property name="ObjectShortName">DEBUG[1:5]</obj_property>
       </wvobject>
    </wvobject>
-   <wvobject fp_name="group449" type="group">
+   <wvobject fp_name="group437" type="group">
       <obj_property name="label">measure</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <wvobject fp_name="/channel_TB/UUT/measure/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
       </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/event_enable" type="other">
+         <obj_property name="ElementShortName">event_enable</obj_property>
+         <obj_property name="ObjectShortName">event_enable</obj_property>
+      </wvobject>
       <wvobject fp_name="/channel_TB/UUT/measure/registers" type="array">
          <obj_property name="ElementShortName">registers</obj_property>
          <obj_property name="ObjectShortName">registers</obj_property>
       </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/raw" type="array">
+         <obj_property name="ElementShortName">raw[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/s" type="array">
+         <obj_property name="ElementShortName">s[15:0]</obj_property>
+         <obj_property name="ObjectShortName">s[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/f" type="array">
+         <obj_property name="ElementShortName">f[15:0]</obj_property>
+         <obj_property name="ObjectShortName">f[15:0]</obj_property>
+      </wvobject>
       <wvobject fp_name="/channel_TB/UUT/measure/measurements" type="array">
          <obj_property name="ElementShortName">measurements</obj_property>
          <obj_property name="ObjectShortName">measurements</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_error_cfd" type="other">
+         <obj_property name="ElementShortName">cfd_error_cfd</obj_property>
+         <obj_property name="ObjectShortName">cfd_error_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/s_cfd" type="array">
+         <obj_property name="ElementShortName">s_cfd[15:0]</obj_property>
+         <obj_property name="ObjectShortName">s_cfd[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/f_cfd" type="array">
+         <obj_property name="ElementShortName">f_cfd[15:0]</obj_property>
+         <obj_property name="ObjectShortName">f_cfd[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/raw_d" type="array">
+         <obj_property name="ElementShortName">raw_d[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_d[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/pulse_time_n" type="array">
+         <obj_property name="ElementShortName">pulse_time_n[16:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_time_n[16:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/pulse_length_n" type="array">
+         <obj_property name="ElementShortName">pulse_length_n[16:0]</obj_property>
+         <obj_property name="ObjectShortName">pulse_length_n[16:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/rise_time_n" type="array">
+         <obj_property name="ElementShortName">rise_time_n[16:0]</obj_property>
+         <obj_property name="ObjectShortName">rise_time_n[16:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_low_p_pipe" type="array">
+         <obj_property name="ElementShortName">cfd_low_p_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_p_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_high_p_pipe" type="array">
+         <obj_property name="ElementShortName">cfd_high_p_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_p_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/max_slope_p_pipe" type="array">
+         <obj_property name="ElementShortName">max_slope_p_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">max_slope_p_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/s_t_p_pipe" type="array">
+         <obj_property name="ElementShortName">s_t_p_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">s_t_p_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/min_pipe" type="array">
+         <obj_property name="ElementShortName">min_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">min_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/max_pipe" type="array">
+         <obj_property name="ElementShortName">max_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">max_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/will_cross_pipe" type="array">
+         <obj_property name="ElementShortName">will_cross_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">will_cross_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/will_arm_pipe" type="array">
+         <obj_property name="ElementShortName">will_arm_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">will_arm_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/above_pipe" type="array">
+         <obj_property name="ElementShortName">above_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">above_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/armed_pipe" type="array">
+         <obj_property name="ElementShortName">armed_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">armed_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_error_pipe" type="array">
+         <obj_property name="ElementShortName">cfd_error_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">cfd_error_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_overrun_pipe" type="array">
+         <obj_property name="ElementShortName">cfd_overrun_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">cfd_overrun_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/rise_start_pipe" type="array">
+         <obj_property name="ElementShortName">rise_start_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">rise_start_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/first_rise_pipe" type="array">
+         <obj_property name="ElementShortName">first_rise_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">first_rise_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/pulse_start_pipe" type="array">
+         <obj_property name="ElementShortName">pulse_start_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">pulse_start_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/valid_rise" type="other">
+         <obj_property name="ElementShortName">valid_rise</obj_property>
+         <obj_property name="ObjectShortName">valid_rise</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/rise_number_n" type="array">
+         <obj_property name="ElementShortName">rise_number_n[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rise_number_n[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/rise_number_n2" type="array">
+         <obj_property name="ElementShortName">rise_number_n2[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rise_number_n2[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_low_cfd" type="array">
+         <obj_property name="ElementShortName">cfd_low_cfd[15:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_cfd[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_high_cfd" type="array">
+         <obj_property name="ElementShortName">cfd_high_cfd[15:0]</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_cfd[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/max_slope_cfd" type="array">
+         <obj_property name="ElementShortName">max_slope_cfd[15:0]</obj_property>
+         <obj_property name="ObjectShortName">max_slope_cfd[15:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/measure/max_cfd" type="other">
          <obj_property name="ElementShortName">max_cfd</obj_property>
@@ -390,33 +730,45 @@
          <obj_property name="ElementShortName">min_cfd</obj_property>
          <obj_property name="ObjectShortName">min_cfd</obj_property>
       </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/will_cross_cfd" type="other">
+         <obj_property name="ElementShortName">will_cross_cfd</obj_property>
+         <obj_property name="ObjectShortName">will_cross_cfd</obj_property>
+      </wvobject>
       <wvobject fp_name="/channel_TB/UUT/measure/will_arm_cfd" type="other">
          <obj_property name="ElementShortName">will_arm_cfd</obj_property>
          <obj_property name="ObjectShortName">will_arm_cfd</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/cfd_valid_cfd" type="other">
-         <obj_property name="ElementShortName">cfd_valid_cfd</obj_property>
-         <obj_property name="ObjectShortName">cfd_valid_cfd</obj_property>
+      <wvobject fp_name="/channel_TB/UUT/measure/armed_cfd" type="other">
+         <obj_property name="ElementShortName">armed_cfd</obj_property>
+         <obj_property name="ObjectShortName">armed_cfd</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/cfd_error_cfd" type="other">
-         <obj_property name="ElementShortName">cfd_error_cfd</obj_property>
-         <obj_property name="ObjectShortName">cfd_error_cfd</obj_property>
+      <wvobject fp_name="/channel_TB/UUT/measure/s_t_p_cfd" type="other">
+         <obj_property name="ElementShortName">s_t_p_cfd</obj_property>
+         <obj_property name="ObjectShortName">s_t_p_cfd</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/low_pipe[2]" type="array">
-         <obj_property name="ElementShortName">[2][15:0]</obj_property>
-         <obj_property name="ObjectShortName">[2][15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
+      <wvobject fp_name="/channel_TB/UUT/measure/above_cfd" type="other">
+         <obj_property name="ElementShortName">above_cfd</obj_property>
+         <obj_property name="ObjectShortName">above_cfd</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/min_pipe[2]" type="other">
-         <obj_property name="ElementShortName">[2]</obj_property>
-         <obj_property name="ObjectShortName">[2]</obj_property>
+      <wvobject fp_name="/channel_TB/UUT/measure/p_t_p_cfd" type="other">
+         <obj_property name="ElementShortName">p_t_p_cfd</obj_property>
+         <obj_property name="ObjectShortName">p_t_p_cfd</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/min_pipe[3]" type="other">
-         <obj_property name="ElementShortName">[3]</obj_property>
-         <obj_property name="ObjectShortName">[3]</obj_property>
+      <wvobject fp_name="/channel_TB/UUT/measure/p_t_n_cfd" type="other">
+         <obj_property name="ElementShortName">p_t_n_cfd</obj_property>
+         <obj_property name="ObjectShortName">p_t_n_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/rise_address_n" type="array">
+         <obj_property name="ElementShortName">rise_address_n[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rise_address_n[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/f_pipe" type="array">
+         <obj_property name="ElementShortName">f_pipe[1:4][15:0]</obj_property>
+         <obj_property name="ObjectShortName">f_pipe[1:4][15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/s_pipe" type="array">
+         <obj_property name="ElementShortName">s_pipe[1:4][15:0]</obj_property>
+         <obj_property name="ObjectShortName">s_pipe[1:4][15:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/measure/high_pipe" type="array">
          <obj_property name="ElementShortName">high_pipe[1:4][15:0]</obj_property>
@@ -426,13 +778,137 @@
          <obj_property name="ElementShortName">low_pipe[1:4][15:0]</obj_property>
          <obj_property name="ObjectShortName">low_pipe[1:4][15:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/min_pipe" type="array">
-         <obj_property name="ElementShortName">min_pipe[1:4]</obj_property>
-         <obj_property name="ObjectShortName">min_pipe[1:4]</obj_property>
+      <wvobject fp_name="/channel_TB/UUT/measure/max_slope_pipe" type="array">
+         <obj_property name="ElementShortName">max_slope_pipe[1:4][15:0]</obj_property>
+         <obj_property name="ObjectShortName">max_slope_pipe[1:4][15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/f_0_x_cfd" type="other">
+         <obj_property name="ElementShortName">f_0_x_cfd</obj_property>
+         <obj_property name="ObjectShortName">f_0_x_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/f_0_p_pipe" type="array">
+         <obj_property name="ElementShortName">f_0_p_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">f_0_p_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/p_t_p_pipe" type="array">
+         <obj_property name="ElementShortName">p_t_p_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">p_t_p_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/f_0_n_pipe" type="array">
+         <obj_property name="ElementShortName">f_0_n_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">f_0_n_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/p_t_n_pipe" type="array">
+         <obj_property name="ElementShortName">p_t_n_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">p_t_n_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/valid_rise_pipe" type="array">
+         <obj_property name="ElementShortName">valid_rise_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">valid_rise_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_valid_pipe" type="array">
+         <obj_property name="ElementShortName">cfd_valid_pipe[1:4]</obj_property>
+         <obj_property name="ObjectShortName">cfd_valid_pipe[1:4]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/stamp_rise_pre2" type="other">
+         <obj_property name="ElementShortName">stamp_rise_pre2</obj_property>
+         <obj_property name="ObjectShortName">stamp_rise_pre2</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/p_t_x_cfd" type="other">
+         <obj_property name="ElementShortName">p_t_x_cfd</obj_property>
+         <obj_property name="ObjectShortName">p_t_x_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/f_0_n_cfd" type="other">
+         <obj_property name="ElementShortName">f_0_n_cfd</obj_property>
+         <obj_property name="ObjectShortName">f_0_n_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/f_0_p_cfd" type="other">
+         <obj_property name="ElementShortName">f_0_p_cfd</obj_property>
+         <obj_property name="ObjectShortName">f_0_p_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/rise_start_cfd" type="other">
+         <obj_property name="ElementShortName">rise_start_cfd</obj_property>
+         <obj_property name="ObjectShortName">rise_start_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/pulse_start_cfd" type="other">
+         <obj_property name="ElementShortName">pulse_start_cfd</obj_property>
+         <obj_property name="ObjectShortName">pulse_start_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/s_0_x_cfd" type="other">
+         <obj_property name="ElementShortName">s_0_x_cfd</obj_property>
+         <obj_property name="ObjectShortName">s_0_x_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_overrun_cfd" type="other">
+         <obj_property name="ElementShortName">cfd_overrun_cfd</obj_property>
+         <obj_property name="ObjectShortName">cfd_overrun_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/first_rise_cfd" type="other">
+         <obj_property name="ElementShortName">first_rise_cfd</obj_property>
+         <obj_property name="ObjectShortName">first_rise_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/rise_valid_cfd" type="other">
+         <obj_property name="ElementShortName">rise_valid_cfd</obj_property>
+         <obj_property name="ObjectShortName">rise_valid_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_valid_cfd" type="other">
+         <obj_property name="ElementShortName">cfd_valid_cfd</obj_property>
+         <obj_property name="ObjectShortName">cfd_valid_cfd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/reg" type="array">
+         <obj_property name="ElementShortName">reg</obj_property>
+         <obj_property name="ObjectShortName">reg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/trace_timer_n_init_pre" type="array">
+         <obj_property name="ElementShortName">trace_timer_n_init_pre[16:0]</obj_property>
+         <obj_property name="ObjectShortName">trace_timer_n_init_pre[16:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/trace_pre2" type="array">
+         <obj_property name="ElementShortName">trace_pre2[9:0]</obj_property>
+         <obj_property name="ObjectShortName">trace_pre2[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/raw_trace_pre2" type="array">
+         <obj_property name="ElementShortName">raw_trace_pre2[9:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_trace_pre2[9:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/measure/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/f_trace" type="array">
+         <obj_property name="ElementShortName">f_trace[15:0]</obj_property>
+         <obj_property name="ObjectShortName">f_trace[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/s_trace" type="array">
+         <obj_property name="ElementShortName">s_trace[15:0]</obj_property>
+         <obj_property name="ObjectShortName">s_trace[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/raw_trace" type="array">
+         <obj_property name="ElementShortName">raw_trace[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_trace[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/raw_sig" type="array">
+         <obj_property name="ElementShortName">raw_sig[15:0]</obj_property>
+         <obj_property name="ObjectShortName">raw_sig[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_low_armed" type="other">
+         <obj_property name="ElementShortName">cfd_low_armed</obj_property>
+         <obj_property name="ObjectShortName">cfd_low_armed</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/cfd_high_armed" type="other">
+         <obj_property name="ElementShortName">cfd_high_armed</obj_property>
+         <obj_property name="ObjectShortName">cfd_high_armed</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/max_slope_armed" type="other">
+         <obj_property name="ElementShortName">max_slope_armed</obj_property>
+         <obj_property name="ObjectShortName">max_slope_armed</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/CF_WIDTH" type="other">
+         <obj_property name="ElementShortName">CF_WIDTH</obj_property>
+         <obj_property name="ObjectShortName">CF_WIDTH</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/CF_FRAC" type="other">
+         <obj_property name="ElementShortName">CF_FRAC</obj_property>
+         <obj_property name="ObjectShortName">CF_FRAC</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/measure/WIDTH" type="other">
          <obj_property name="ElementShortName">WIDTH</obj_property>
@@ -450,863 +926,198 @@
          <obj_property name="ElementShortName">AREA_FRAC</obj_property>
          <obj_property name="ObjectShortName">AREA_FRAC</obj_property>
       </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/RAW_DELAY" type="other">
+         <obj_property name="ElementShortName">RAW_DELAY</obj_property>
+         <obj_property name="ObjectShortName">RAW_DELAY</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/TOWARDS_INF" type="other">
+         <obj_property name="ElementShortName">TOWARDS_INF</obj_property>
+         <obj_property name="ObjectShortName">TOWARDS_INF</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/AREA_ABOVE" type="other">
+         <obj_property name="ElementShortName">AREA_ABOVE</obj_property>
+         <obj_property name="ObjectShortName">AREA_ABOVE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/ALAT" type="other">
+         <obj_property name="ElementShortName">ALAT</obj_property>
+         <obj_property name="ObjectShortName">ALAT</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/ELAT" type="other">
+         <obj_property name="ElementShortName">ELAT</obj_property>
+         <obj_property name="ObjectShortName">ELAT</obj_property>
+      </wvobject>
       <wvobject fp_name="/channel_TB/UUT/measure/DEPTH" type="other">
          <obj_property name="ElementShortName">DEPTH</obj_property>
          <obj_property name="ObjectShortName">DEPTH</obj_property>
       </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/measure/DEBUG" type="array">
+         <obj_property name="ElementShortName">DEBUG[1:5]</obj_property>
+         <obj_property name="ObjectShortName">DEBUG[1:5]</obj_property>
+      </wvobject>
    </wvobject>
-   <wvobject fp_name="group1414" type="group">
-      <obj_property name="label">CFD</obj_property>
+   <wvobject fp_name="group965" type="group">
+      <obj_property name="label">baseline</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/clk" type="logic">
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/reset" type="logic">
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/reset" type="logic">
          <obj_property name="ElementShortName">reset</obj_property>
          <obj_property name="ObjectShortName">reset</obj_property>
       </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/max" type="other">
-         <obj_property name="ElementShortName">max</obj_property>
-         <obj_property name="ObjectShortName">max</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/min" type="other">
-         <obj_property name="ElementShortName">min</obj_property>
-         <obj_property name="ObjectShortName">min</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/max_slope" type="array">
-         <obj_property name="ElementShortName">max_slope[15:0]</obj_property>
-         <obj_property name="ObjectShortName">max_slope[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">8</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/will_arm" type="other">
-         <obj_property name="ElementShortName">will_arm</obj_property>
-         <obj_property name="ObjectShortName">will_arm</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/armed" type="other">
-         <obj_property name="ElementShortName">armed</obj_property>
-         <obj_property name="ObjectShortName">armed</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfd_error" type="other">
-         <obj_property name="ElementShortName">cfd_error</obj_property>
-         <obj_property name="ObjectShortName">cfd_error</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfd_valid" type="other">
-         <obj_property name="ElementShortName">cfd_valid</obj_property>
-         <obj_property name="ObjectShortName">cfd_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/started" type="other">
-         <obj_property name="ElementShortName">started</obj_property>
-         <obj_property name="ObjectShortName">started</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider1096">
-         <obj_property name="label">latency 4</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_pipe[4]" type="array">
-         <obj_property name="ElementShortName">[4][15:0]</obj_property>
-         <obj_property name="ObjectShortName">[4][15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">8</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="CellHeight">100</obj_property>
-         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
-         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
-         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-         <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/filtered_pipe[4]" type="array">
-         <obj_property name="ElementShortName">[4][15:0]</obj_property>
-         <obj_property name="ObjectShortName">[4][15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="CellHeight">100</obj_property>
-         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
-         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
-         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-         <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/armed_i" type="other">
-         <obj_property name="ElementShortName">armed_i</obj_property>
-         <obj_property name="ObjectShortName">armed_i</obj_property>
-         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/above_pipe[4]" type="other">
-         <obj_property name="ElementShortName">[4]</obj_property>
-         <obj_property name="ObjectShortName">[4]</obj_property>
-         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider1129">
-         <obj_property name="label">latency 5</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cf_int" type="array">
-         <obj_property name="ElementShortName">cf_int[17:0]</obj_property>
-         <obj_property name="ObjectShortName">cf_int[17:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">17</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/minima" type="array">
-         <obj_property name="ElementShortName">minima[15:0]</obj_property>
-         <obj_property name="ObjectShortName">minima[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/minima_pipe[5]" type="array">
-         <obj_property name="ElementShortName">[5][15:0]</obj_property>
-         <obj_property name="ObjectShortName">[5][15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/filtered_pipe[5]" type="array">
-         <obj_property name="ElementShortName">[5][15:0]</obj_property>
-         <obj_property name="ObjectShortName">[5][15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider1141">
-         <obj_property name="label">latency 11</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/p" type="array">
-         <obj_property name="ElementShortName">p[15:0]</obj_property>
-         <obj_property name="ObjectShortName">p[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider1162">
-         <obj_property name="label">latency DEPTH</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/q_wr_en" type="logic">
-         <obj_property name="ElementShortName">q_wr_en</obj_property>
-         <obj_property name="ObjectShortName">q_wr_en</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/max_slope_i" type="array">
-         <obj_property name="ElementShortName">max_slope_i[15:0]</obj_property>
-         <obj_property name="ObjectShortName">max_slope_i[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">8</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/overrun_i" type="other">
-         <obj_property name="ElementShortName">overrun_i</obj_property>
-         <obj_property name="ObjectShortName">overrun_i</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider1163">
-         <obj_property name="label">dout</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_d" type="array">
-         <obj_property name="ElementShortName">slope_d[15:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_d[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">8</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="CellHeight">100</obj_property>
-         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
-         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
-         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-         <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/filtered_d" type="array">
-         <obj_property name="ElementShortName">filtered_d[15:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_d[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-         <obj_property name="CellHeight">100</obj_property>
-         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
-         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
-         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
-         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
-         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
-         <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/q_rd_en" type="logic">
-         <obj_property name="ElementShortName">q_rd_en</obj_property>
-         <obj_property name="ObjectShortName">q_rd_en</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/max_d" type="other">
-         <obj_property name="ElementShortName">max_d</obj_property>
-         <obj_property name="ObjectShortName">max_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/min_d" type="other">
-         <obj_property name="ElementShortName">min_d</obj_property>
-         <obj_property name="ObjectShortName">min_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/overrun_d" type="other">
-         <obj_property name="ElementShortName">overrun_d</obj_property>
-         <obj_property name="ObjectShortName">overrun_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/max_slope_d" type="array">
-         <obj_property name="ElementShortName">max_slope_d[15:0]</obj_property>
-         <obj_property name="ObjectShortName">max_slope_d[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/q_empty" type="logic">
-         <obj_property name="ElementShortName">q_empty</obj_property>
-         <obj_property name="ObjectShortName">q_empty</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/q_dout" type="array">
-         <obj_property name="ElementShortName">q_dout[71:0]</obj_property>
-         <obj_property name="ObjectShortName">q_dout[71:0]</obj_property>
-         <obj_property name="Radix">HEXRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/armed_d" type="other">
-         <obj_property name="ElementShortName">armed_d</obj_property>
-         <obj_property name="ObjectShortName">armed_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/above_pulse_threshold_d" type="other">
-         <obj_property name="ElementShortName">above_pulse_threshold_d</obj_property>
-         <obj_property name="ObjectShortName">above_pulse_threshold_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/will_arm_d" type="other">
-         <obj_property name="ElementShortName">will_arm_d</obj_property>
-         <obj_property name="ObjectShortName">will_arm_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/pulse_threshold_pos_d" type="other">
-         <obj_property name="ElementShortName">pulse_threshold_pos_d</obj_property>
-         <obj_property name="ObjectShortName">pulse_threshold_pos_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/pulse_threshold_neg_d" type="other">
-         <obj_property name="ElementShortName">pulse_threshold_neg_d</obj_property>
-         <obj_property name="ObjectShortName">pulse_threshold_neg_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_threshold_pos_d" type="other">
-         <obj_property name="ElementShortName">slope_threshold_pos_d</obj_property>
-         <obj_property name="ObjectShortName">slope_threshold_pos_d</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider1176">
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_0x_reg" type="array">
-         <obj_property name="ElementShortName">slope_0x_reg[15:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_0x_reg[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/filtered_int" type="array">
-         <obj_property name="ElementShortName">filtered_int[15:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_int[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/filtered_0x_reg" type="array">
-         <obj_property name="ElementShortName">filtered_0x_reg[15:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_0x_reg[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_int" type="array">
-         <obj_property name="ElementShortName">slope_int[15:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_int[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/WIDTH" type="other">
-         <obj_property name="ElementShortName">WIDTH</obj_property>
-         <obj_property name="ObjectShortName">WIDTH</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/DELAY" type="other">
-         <obj_property name="ElementShortName">DELAY</obj_property>
-         <obj_property name="ObjectShortName">DELAY</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/DEPTH" type="other">
-         <obj_property name="ElementShortName">DEPTH</obj_property>
-         <obj_property name="ObjectShortName">DEPTH</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_0_p" type="other">
-         <obj_property name="ElementShortName">slope_0_p</obj_property>
-         <obj_property name="ObjectShortName">slope_0_p</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_0_n" type="other">
-         <obj_property name="ElementShortName">slope_0_n</obj_property>
-         <obj_property name="ObjectShortName">slope_0_n</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_threshold_int" type="array">
-         <obj_property name="ElementShortName">slope_threshold_int[15:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_threshold_int[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/filtered_pipe" type="array">
-         <obj_property name="ElementShortName">filtered_pipe[1:9][15:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_pipe[1:9][15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_pipe" type="array">
-         <obj_property name="ElementShortName">slope_pipe[1:9][15:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_pipe[1:9][15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/minima_pipe" type="array">
-         <obj_property name="ElementShortName">minima_pipe[1:9][15:0]</obj_property>
-         <obj_property name="ObjectShortName">minima_pipe[1:9][15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/armed_pipe" type="array">
-         <obj_property name="ElementShortName">armed_pipe[1:9]</obj_property>
-         <obj_property name="ObjectShortName">armed_pipe[1:9]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/above_pipe" type="array">
-         <obj_property name="ElementShortName">above_pipe[1:9]</obj_property>
-         <obj_property name="ObjectShortName">above_pipe[1:9]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_0x" type="array">
-         <obj_property name="ElementShortName">slope_0x[15:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_0x[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/filtered_0x" type="array">
-         <obj_property name="ElementShortName">filtered_0x[15:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_0x[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/delay_counter" type="other">
-         <obj_property name="ElementShortName">delay_counter</obj_property>
-         <obj_property name="ObjectShortName">delay_counter</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/above_i" type="other">
-         <obj_property name="ElementShortName">above_i</obj_property>
-         <obj_property name="ObjectShortName">above_i</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/overrun_d" type="other">
-         <obj_property name="ElementShortName">overrun_d</obj_property>
-         <obj_property name="ObjectShortName">overrun_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/armed_d" type="other">
-         <obj_property name="ElementShortName">armed_d</obj_property>
-         <obj_property name="ObjectShortName">armed_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/q_reset" type="logic">
-         <obj_property name="ElementShortName">q_reset</obj_property>
-         <obj_property name="ObjectShortName">q_reset</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cf_data" type="array">
-         <obj_property name="ElementShortName">cf_data[71:0]</obj_property>
-         <obj_property name="ObjectShortName">cf_data[71:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/q_full" type="logic">
-         <obj_property name="ElementShortName">q_full</obj_property>
-         <obj_property name="ObjectShortName">q_full</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/full_i" type="other">
-         <obj_property name="ElementShortName">full_i</obj_property>
-         <obj_property name="ObjectShortName">full_i</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/flags_i" type="array">
-         <obj_property name="ElementShortName">flags_i[8:0]</obj_property>
-         <obj_property name="ObjectShortName">flags_i[8:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/flags_d" type="array">
-         <obj_property name="ElementShortName">flags_d[8:0]</obj_property>
-         <obj_property name="ObjectShortName">flags_d[8:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/flags_i_s" type="array">
-         <obj_property name="ElementShortName">flags_i_s[8:0]</obj_property>
-         <obj_property name="ObjectShortName">flags_i_s[8:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/filtered_d" type="array">
-         <obj_property name="ElementShortName">filtered_d[15:0]</obj_property>
-         <obj_property name="ObjectShortName">filtered_d[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_d" type="array">
-         <obj_property name="ElementShortName">slope_d[15:0]</obj_property>
-         <obj_property name="ObjectShortName">slope_d[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/max_d" type="other">
-         <obj_property name="ElementShortName">max_d</obj_property>
-         <obj_property name="ObjectShortName">max_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/min_d" type="other">
-         <obj_property name="ElementShortName">min_d</obj_property>
-         <obj_property name="ObjectShortName">min_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/above_pulse_threshold_d" type="other">
-         <obj_property name="ElementShortName">above_pulse_threshold_d</obj_property>
-         <obj_property name="ObjectShortName">above_pulse_threshold_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/pulse_threshold_pos_d" type="other">
-         <obj_property name="ElementShortName">pulse_threshold_pos_d</obj_property>
-         <obj_property name="ObjectShortName">pulse_threshold_pos_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/pulse_threshold_neg_d" type="other">
-         <obj_property name="ElementShortName">pulse_threshold_neg_d</obj_property>
-         <obj_property name="ObjectShortName">pulse_threshold_neg_d</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/slope_threshold_pos_d" type="other">
-         <obj_property name="ElementShortName">slope_threshold_pos_d</obj_property>
-         <obj_property name="ObjectShortName">slope_threshold_pos_d</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group1495" type="group">
-      <obj_property name="label">constant_fraction</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/clk" type="logic">
-         <obj_property name="ElementShortName">clk</obj_property>
-         <obj_property name="ObjectShortName">clk</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/reset" type="logic">
-         <obj_property name="ElementShortName">reset</obj_property>
-         <obj_property name="ObjectShortName">reset</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/min" type="array">
-         <obj_property name="ElementShortName">min[15:0]</obj_property>
-         <obj_property name="ObjectShortName">min[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/cf" type="array">
-         <obj_property name="ElementShortName">cf[17:0]</obj_property>
-         <obj_property name="ObjectShortName">cf[17:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">17</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/sig" type="array">
-         <obj_property name="ElementShortName">sig[15:0]</obj_property>
-         <obj_property name="ObjectShortName">sig[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/p" type="array">
-         <obj_property name="ElementShortName">p[15:0]</obj_property>
-         <obj_property name="ObjectShortName">p[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/a" type="array">
-         <obj_property name="ElementShortName">a[29:0]</obj_property>
-         <obj_property name="ObjectShortName">a[29:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/b" type="array">
-         <obj_property name="ElementShortName">b[17:0]</obj_property>
-         <obj_property name="ObjectShortName">b[17:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/c" type="array">
-         <obj_property name="ElementShortName">c[47:0]</obj_property>
-         <obj_property name="ObjectShortName">c[47:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/d" type="array">
-         <obj_property name="ElementShortName">d[24:0]</obj_property>
-         <obj_property name="ObjectShortName">d[24:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/p_out" type="array">
-         <obj_property name="ElementShortName">p_out[47:0]</obj_property>
-         <obj_property name="ObjectShortName">p_out[47:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/WIDTH" type="other">
-         <obj_property name="ElementShortName">WIDTH</obj_property>
-         <obj_property name="ObjectShortName">WIDTH</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/CF_WIDTH" type="other">
-         <obj_property name="ElementShortName">CF_WIDTH</obj_property>
-         <obj_property name="ObjectShortName">CF_WIDTH</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/measure/CFD/cfCalc/CF_FRAC" type="other">
-         <obj_property name="ElementShortName">CF_FRAC</obj_property>
-         <obj_property name="ObjectShortName">CF_FRAC</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group635" type="group">
-      <obj_property name="label">measurement framer</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/channel_TB/UUT/framer/clk" type="logic">
-         <obj_property name="ElementShortName">clk</obj_property>
-         <obj_property name="ObjectShortName">clk</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/reset" type="logic">
-         <obj_property name="ElementShortName">reset</obj_property>
-         <obj_property name="ObjectShortName">reset</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/measurements" type="array">
-         <obj_property name="ElementShortName">measurements</obj_property>
-         <obj_property name="ObjectShortName">measurements</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/mux_full" type="other">
-         <obj_property name="ElementShortName">mux_full</obj_property>
-         <obj_property name="ObjectShortName">mux_full</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/overflow" type="other">
-         <obj_property name="ElementShortName">overflow</obj_property>
-         <obj_property name="ObjectShortName">overflow</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/error" type="other">
-         <obj_property name="ElementShortName">error</obj_property>
-         <obj_property name="ObjectShortName">error</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/stream" type="array">
-         <obj_property name="ElementShortName">stream</obj_property>
-         <obj_property name="ObjectShortName">stream</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/valid" type="other">
-         <obj_property name="ElementShortName">valid</obj_property>
-         <obj_property name="ObjectShortName">valid</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/ready" type="other">
-         <obj_property name="ElementShortName">ready</obj_property>
-         <obj_property name="ObjectShortName">ready</obj_property>
-         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/valid_int" type="other">
-         <obj_property name="ElementShortName">valid_int</obj_property>
-         <obj_property name="ObjectShortName">valid_int</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/ready_int" type="other">
-         <obj_property name="ElementShortName">ready_int</obj_property>
-         <obj_property name="ObjectShortName">ready_int</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/m" type="array">
-         <obj_property name="ElementShortName">m</obj_property>
-         <obj_property name="ObjectShortName">m</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/pulse_peak" type="array">
-         <obj_property name="ElementShortName">pulse_peak</obj_property>
-         <obj_property name="ObjectShortName">pulse_peak</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/pulse" type="array">
-         <obj_property name="ElementShortName">pulse</obj_property>
-         <obj_property name="ObjectShortName">pulse</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/measurements.pulse_area" type="array">
-         <obj_property name="ElementShortName">.pulse_area[31:0]</obj_property>
-         <obj_property name="ObjectShortName">.pulse_area[31:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">1</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider699">
-         <obj_property name="label">trace</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/trace_done" type="other">
-         <obj_property name="ElementShortName">trace_done</obj_property>
-         <obj_property name="ObjectShortName">trace_done</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/trace_start" type="other">
-         <obj_property name="ElementShortName">trace_start</obj_property>
-         <obj_property name="ObjectShortName">trace_start</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/t_state" type="other">
-         <obj_property name="ElementShortName">t_state</obj_property>
-         <obj_property name="ObjectShortName">t_state</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/trace_count" type="array">
-         <obj_property name="ElementShortName">trace_count[9:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_count[9:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/stride_count" type="array">
-         <obj_property name="ElementShortName">stride_count[4:0]</obj_property>
-         <obj_property name="ObjectShortName">stride_count[4:0]</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider682">
-         <obj_property name="label">Queue</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/q_state" type="other">
-         <obj_property name="ElementShortName">q_state</obj_property>
-         <obj_property name="ObjectShortName">q_state</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider803">
-         <obj_property name="label">framer</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/frame_word" type="array">
-         <obj_property name="ElementShortName">frame_word</obj_property>
-         <obj_property name="ObjectShortName">frame_word</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/frame_address" type="array">
-         <obj_property name="ElementShortName">frame_address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_address[9:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/frame_we" type="array">
-         <obj_property name="ElementShortName">frame_we[3:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_we[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/frame_length" type="array">
-         <obj_property name="ElementShortName">frame_length[2:3][10:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_length[2:3][10:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/commit_frame" type="other">
-         <obj_property name="ElementShortName">commit_frame</obj_property>
-         <obj_property name="ObjectShortName">commit_frame</obj_property>
-         <obj_property name="CustomSignalColor">#FF0000</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider711">
-         <obj_property name="label">FSM</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer_free" type="array">
-         <obj_property name="ElementShortName">framer_free[10:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_free[10:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/free" type="array">
-         <obj_property name="ElementShortName">free[10:0]</obj_property>
-         <obj_property name="ObjectShortName">free[10:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FF0000</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/m.stamp_pulse" type="array">
-         <obj_property name="ElementShortName">.stamp_pulse[2:3]</obj_property>
-         <obj_property name="ObjectShortName">.stamp_pulse[2:3]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/start" type="other">
-         <obj_property name="ElementShortName">start</obj_property>
-         <obj_property name="ObjectShortName">start</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/commit" type="other">
-         <obj_property name="ElementShortName">commit</obj_property>
-         <obj_property name="ObjectShortName">commit</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/dump" type="other">
-         <obj_property name="ElementShortName">dump</obj_property>
-         <obj_property name="ObjectShortName">dump</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/pending" type="array">
-         <obj_property name="ElementShortName">pending[3:0]</obj_property>
-         <obj_property name="ObjectShortName">pending[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/clk" type="logic">
-         <obj_property name="ElementShortName">clk</obj_property>
-         <obj_property name="ObjectShortName">clk</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer_free" type="array">
-         <obj_property name="ElementShortName">framer_free[10:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_free[10:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/free" type="array">
-         <obj_property name="ElementShortName">free[10:0]</obj_property>
-         <obj_property name="ObjectShortName">free[10:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FF0000</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/q_state" type="other">
-         <obj_property name="ElementShortName">q_state</obj_property>
-         <obj_property name="ObjectShortName">q_state</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/trace_start" type="other">
-         <obj_property name="ElementShortName">trace_start</obj_property>
-         <obj_property name="ObjectShortName">trace_start</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/t_state" type="other">
-         <obj_property name="ElementShortName">t_state</obj_property>
-         <obj_property name="ObjectShortName">t_state</obj_property>
-         <obj_property name="CustomSignalColor">#F0E68C</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/stride_count" type="array">
-         <obj_property name="ElementShortName">stride_count[4:0]</obj_property>
-         <obj_property name="ObjectShortName">stride_count[4:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/trace_address" type="array">
-         <obj_property name="ElementShortName">trace_address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_address[9:0]</obj_property>
-      </wvobject>
-      <wvobject type="divider" fp_name="divider2071">
-         <obj_property name="label">trace</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/measurements.pulse_start" type="array">
-         <obj_property name="ElementShortName">.pulse_start[0:3]</obj_property>
-         <obj_property name="ObjectShortName">.pulse_start[0:3]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/trace_chunk" type="array">
-         <obj_property name="ElementShortName">trace_chunk[15:0]</obj_property>
-         <obj_property name="ObjectShortName">trace_chunk[15:0]</obj_property>
-         <obj_property name="Radix">REALRADIX</obj_property>
-         <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
-         <obj_property name="radix_fractionWidth">3</obj_property>
-         <obj_property name="radix_otherWidth">0</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/pulse_valid" type="other">
-         <obj_property name="ElementShortName">pulse_valid</obj_property>
-         <obj_property name="ObjectShortName">pulse_valid</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/queue" type="array">
-         <obj_property name="ElementShortName">queue[2:0]</obj_property>
-         <obj_property name="ObjectShortName">queue[2:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer_free" type="array">
-         <obj_property name="ElementShortName">framer_free[10:0]</obj_property>
-         <obj_property name="ObjectShortName">framer_free[10:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/mux_full" type="other">
-         <obj_property name="ElementShortName">mux_full</obj_property>
-         <obj_property name="ObjectShortName">mux_full</obj_property>
-         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/m.pulse_start" type="array">
-         <obj_property name="ElementShortName">.pulse_start[0:3]</obj_property>
-         <obj_property name="ObjectShortName">.pulse_start[0:3]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/m.height_valid" type="array">
-         <obj_property name="ElementShortName">.height_valid[2:3]</obj_property>
-         <obj_property name="ObjectShortName">.height_valid[2:3]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/m.stamp_pulse" type="array">
-         <obj_property name="ElementShortName">.stamp_pulse[2:3]</obj_property>
-         <obj_property name="ObjectShortName">.stamp_pulse[2:3]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/pulse_overflow" type="other">
-         <obj_property name="ElementShortName">pulse_overflow</obj_property>
-         <obj_property name="ObjectShortName">pulse_overflow</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/peak" type="array">
-         <obj_property name="ElementShortName">peak</obj_property>
-         <obj_property name="ObjectShortName">peak</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/area" type="array">
-         <obj_property name="ElementShortName">area</obj_property>
-         <obj_property name="ObjectShortName">area</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/pulse" type="array">
-         <obj_property name="ElementShortName">pulse</obj_property>
-         <obj_property name="ObjectShortName">pulse</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/pulse_peak" type="array">
-         <obj_property name="ElementShortName">pulse_peak</obj_property>
-         <obj_property name="ObjectShortName">pulse_peak</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/area_overflow" type="other">
-         <obj_property name="ElementShortName">area_overflow</obj_property>
-         <obj_property name="ObjectShortName">area_overflow</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/frame_address" type="array">
-         <obj_property name="ElementShortName">frame_address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_address[9:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/frame_we" type="array">
-         <obj_property name="ElementShortName">frame_we[3:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_we[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/frame_length" type="array">
-         <obj_property name="ElementShortName">frame_length[2:3][10:0]</obj_property>
-         <obj_property name="ObjectShortName">frame_length[2:3][10:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/commit_frame" type="other">
-         <obj_property name="ElementShortName">commit_frame</obj_property>
-         <obj_property name="ObjectShortName">commit_frame</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/m.pulse_area" type="array">
-         <obj_property name="ElementShortName">.pulse_area[31:0]</obj_property>
-         <obj_property name="ObjectShortName">.pulse_area[31:0]</obj_property>
-         <obj_property name="Radix">HEXRADIX</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/area" type="array">
-         <obj_property name="ElementShortName">area</obj_property>
-         <obj_property name="ObjectShortName">area</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/ENDIAN" type="array">
-         <obj_property name="ElementShortName">ENDIAN[1:6]</obj_property>
-         <obj_property name="ObjectShortName">ENDIAN[1:6]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/CHUNKS" type="other">
-         <obj_property name="ElementShortName">CHUNKS</obj_property>
-         <obj_property name="ObjectShortName">CHUNKS</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group663" type="group">
-      <obj_property name="label">framer</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/clk" type="logic">
-         <obj_property name="ElementShortName">clk</obj_property>
-         <obj_property name="ObjectShortName">clk</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/reset" type="logic">
-         <obj_property name="ElementShortName">reset</obj_property>
-         <obj_property name="ObjectShortName">reset</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/data" type="array">
-         <obj_property name="ElementShortName">data</obj_property>
-         <obj_property name="ObjectShortName">data</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/address" type="array">
-         <obj_property name="ElementShortName">address[9:0]</obj_property>
-         <obj_property name="ObjectShortName">address[9:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/chunk_we" type="array">
-         <obj_property name="ElementShortName">chunk_we[3:0]</obj_property>
-         <obj_property name="ObjectShortName">chunk_we[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/length" type="array">
-         <obj_property name="ElementShortName">length[10:0]</obj_property>
-         <obj_property name="ObjectShortName">length[10:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/commit" type="other">
-         <obj_property name="ElementShortName">commit</obj_property>
-         <obj_property name="ObjectShortName">commit</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/free" type="array">
-         <obj_property name="ElementShortName">free[10:0]</obj_property>
-         <obj_property name="ObjectShortName">free[10:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/stream" type="array">
-         <obj_property name="ElementShortName">stream</obj_property>
-         <obj_property name="ObjectShortName">stream</obj_property>
-         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/valid" type="other">
-         <obj_property name="ElementShortName">valid</obj_property>
-         <obj_property name="ObjectShortName">valid</obj_property>
-         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/ready" type="other">
-         <obj_property name="ElementShortName">ready</obj_property>
-         <obj_property name="ObjectShortName">ready</obj_property>
-         <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/din" type="array">
-         <obj_property name="ElementShortName">din[71:0]</obj_property>
-         <obj_property name="ObjectShortName">din[71:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/streamvector" type="array">
-         <obj_property name="ElementShortName">streamvector[71:0]</obj_property>
-         <obj_property name="ObjectShortName">streamvector[71:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/BUS_CHUNKS" type="other">
-         <obj_property name="ElementShortName">BUS_CHUNKS</obj_property>
-         <obj_property name="ObjectShortName">BUS_CHUNKS</obj_property>
-      </wvobject>
-      <wvobject fp_name="/channel_TB/UUT/framer/framer/ADDRESS_BITS" type="other">
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/timeconstant" type="array">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/count_threshold" type="array">
+         <obj_property name="ElementShortName">count_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count_threshold[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/sample" type="array">
+         <obj_property name="ElementShortName">sample[9:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/sample_valid" type="other">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/most_frequent_bin" type="array">
+         <obj_property name="ElementShortName">most_frequent_bin[9:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_bin[9:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/new_most_frequent_bin" type="other">
+         <obj_property name="ElementShortName">new_most_frequent_bin</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent_bin</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/most_frequent_count" type="array">
+         <obj_property name="ElementShortName">most_frequent_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_count[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/new_most_frequent" type="other">
+         <obj_property name="ElementShortName">new_most_frequent</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/nextstate" type="other">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/clr_state" type="other">
+         <obj_property name="ElementShortName">clr_state</obj_property>
+         <obj_property name="ObjectShortName">clr_state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/clr_nextstate" type="other">
+         <obj_property name="ElementShortName">clr_nextstate</obj_property>
+         <obj_property name="ObjectShortName">clr_nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/timer" type="array">
+         <obj_property name="ElementShortName">timer[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timer[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/timeout" type="other">
+         <obj_property name="ElementShortName">timeout</obj_property>
+         <obj_property name="ObjectShortName">timeout</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/address_to_clear" type="array">
+         <obj_property name="ElementShortName">address_to_clear[9:0]</obj_property>
+         <obj_property name="ObjectShortName">address_to_clear[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/clear_done" type="other">
+         <obj_property name="ElementShortName">clear_done</obj_property>
+         <obj_property name="ObjectShortName">clear_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/idle0" type="other">
+         <obj_property name="ElementShortName">idle0</obj_property>
+         <obj_property name="ObjectShortName">idle0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/idle1" type="other">
+         <obj_property name="ElementShortName">idle1</obj_property>
+         <obj_property name="ObjectShortName">idle1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/swap0" type="other">
+         <obj_property name="ElementShortName">swap0</obj_property>
+         <obj_property name="ObjectShortName">swap0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/swap1" type="other">
+         <obj_property name="ElementShortName">swap1</obj_property>
+         <obj_property name="ObjectShortName">swap1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/bin" type="array">
+         <obj_property name="ElementShortName">bin[9:0]</obj_property>
+         <obj_property name="ObjectShortName">bin[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/bin_valid0" type="other">
+         <obj_property name="ElementShortName">bin_valid0</obj_property>
+         <obj_property name="ObjectShortName">bin_valid0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/bin_valid1" type="other">
+         <obj_property name="ElementShortName">bin_valid1</obj_property>
+         <obj_property name="ObjectShortName">bin_valid1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/most_frequent_bin0" type="array">
+         <obj_property name="ElementShortName">most_frequent_bin0[9:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_bin0[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/most_frequent_bin1" type="array">
+         <obj_property name="ElementShortName">most_frequent_bin1[9:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_bin1[9:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/new_most_frequent_bin0" type="other">
+         <obj_property name="ElementShortName">new_most_frequent_bin0</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent_bin0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/new_most_frequent_bin1" type="other">
+         <obj_property name="ElementShortName">new_most_frequent_bin1</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent_bin1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/most_frequent_count0" type="array">
+         <obj_property name="ElementShortName">most_frequent_count0[17:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_count0[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/most_frequent_count1" type="array">
+         <obj_property name="ElementShortName">most_frequent_count1[17:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_count1[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/new_most_frequent0" type="other">
+         <obj_property name="ElementShortName">new_most_frequent0</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/new_most_frequent1" type="other">
+         <obj_property name="ElementShortName">new_most_frequent1</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/readable0" type="other">
+         <obj_property name="ElementShortName">readable0</obj_property>
+         <obj_property name="ObjectShortName">readable0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/readable1" type="other">
+         <obj_property name="ElementShortName">readable1</obj_property>
+         <obj_property name="ObjectShortName">readable1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/clear0" type="other">
+         <obj_property name="ElementShortName">clear0</obj_property>
+         <obj_property name="ObjectShortName">clear0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/clear1" type="other">
+         <obj_property name="ElementShortName">clear1</obj_property>
+         <obj_property name="ObjectShortName">clear1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/ADDRESS_BITS" type="other">
          <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
          <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/COUNTER_BITS" type="other">
+         <obj_property name="ElementShortName">COUNTER_BITS</obj_property>
+         <obj_property name="ObjectShortName">COUNTER_BITS</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/baselineMCA/TIMECONSTANT_BITS" type="other">
+         <obj_property name="ElementShortName">TIMECONSTANT_BITS</obj_property>
+         <obj_property name="ObjectShortName">TIMECONSTANT_BITS</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
