@@ -229,11 +229,11 @@ stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 registers.baseline.offset <= to_signed(800,WIDTH);
-registers.baseline.count_threshold <= to_unsigned(80,BASELINE_COUNTER_BITS);
+registers.baseline.count_threshold <= to_unsigned(15,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
 registers.baseline.new_only <= TRUE;
 registers.baseline.subtraction <= TRUE;
-registers.baseline.timeconstant <= to_unsigned(20000,32);
+registers.baseline.timeconstant <= to_unsigned(2000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 registers.capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
@@ -259,7 +259,7 @@ simenable <= TRUE;
 
 while TRUE loop
   wait for 233 us;
-  registers.baseline.offset <= to_signed(1600,WIDTH);
+  registers.baseline.offset <= to_signed(-800,WIDTH);
   wait for 233 us;
   registers.baseline.offset <= to_signed(800,WIDTH);
 end loop;

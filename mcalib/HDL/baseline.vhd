@@ -57,9 +57,10 @@ constant DEPTH:natural:=2**(FRAC-1);
 
 signal estimate_f1:signed(BASELINE_BITS downto 0);
 signal new_estimate:boolean;
-signal adc_inv,offset_adc:signed(ADC_WIDTH-1 downto 0);
+signal adc_inv,offset_adc,dynamic_adc:signed(ADC_WIDTH-1 downto 0);
 signal baseline_sample:signed(BASELINE_BITS-1 downto 0);
-signal baseline_sample_valid,msb_0,msb_1:boolean;
+signal baseline_sample_valid0,baseline_sample_valid:boolean;
+signal msb_0,msb_1:boolean;
 signal baseline_sum:signed(WIDTH-1 downto 0);
 signal baseline_dif:signed(BASELINE_BITS+1 downto 0);
 type baseline_pipe is array (natural range <>) of 
@@ -85,6 +86,11 @@ if rising_edge(clk)  then
     end if;
     --offset correction
     offset_adc <= adc_inv-resize(shift_right(offset,FRAC),ADC_WIDTH);
+    if dynamic then
+      dynamic_adc <= offset_adc-resize(baseline_sum,ADC_WIDTH);
+    else
+      dynamic_adc <= offset_adc;
+    end if;
   end if;
 end if;
 end process sampleoffset;
@@ -95,15 +101,19 @@ baselineSat:process(clk)
 begin
   if rising_edge(clk) then
     if reset = '1' then
+      
+      baseline_sample_valid0 <= FALSE;
       baseline_sample_valid <= FALSE;
+      
     else
-      baseline_sample_valid <= adc_sample_valid;
+      baseline_sample_valid0 <= adc_sample_valid;
+      baseline_sample_valid <= baseline_sample_valid0;
       if msb_0 xor msb_1 then
-        baseline_sample <= offset_adc(BASELINE_BITS-1 downto 0);
+        baseline_sample <= dynamic_adc(BASELINE_BITS-1 downto 0);
       else
         --saturate
         baseline_sample <= (
-          BASELINE_BITS-1 => offset_adc(ADC_WIDTH-1),
+          BASELINE_BITS-1 => dynamic_adc(ADC_WIDTH-1),
           others => '0'
         );
       end if;
