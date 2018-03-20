@@ -126,29 +126,30 @@ flags <= -- byte 1
          --  4             5              6             7
          m.will_arm & m.cfd_error & m.cfd_overrun & m.cfd_valid;
 
-file_open(stream_file, "../stream",WRITE_MODE);
-streamWriter:process
-begin
-  while TRUE loop
-    wait until rising_edge(clk);
-    if ready and valid then
-      if stream.last(0) then
-        write(stream_file, -clk_i);
-      else
-        write(stream_file, clk_i);
-      end if;
-      write(stream_file,to_integer(signed(to_0(stream.data(31 downto 0)))));
-      write(stream_file,to_integer(signed(to_0(stream.data(63 downto 32)))));
-    end if;
-  end loop;
-end process streamWriter; 
-file_open(stream_file,"../stream",WRITE_MODE);
+--file_open(stream_file, "../stream",WRITE_MODE);
+--streamWriter:process
+--begin
+--  while TRUE loop
+--    wait until rising_edge(clk);
+--    if ready and valid then
+--      if stream.last(0) then
+--        write(stream_file, -clk_i);
+--      else
+--        write(stream_file, clk_i);
+--      end if;
+--      write(stream_file,to_integer(signed(to_0(stream.data(31 downto 0)))));
+--      write(stream_file,to_integer(signed(to_0(stream.data(63 downto 32)))));
+--    end if;
+--  end loop;
+--end process streamWriter; 
+--file_open(stream_file,"../stream",WRITE_MODE);
 
 file_open(trace_file, "../traces",WRITE_MODE);
 traceWriter:process
 begin
   while TRUE loop
     wait until rising_edge(clk);
+    write(trace_file, to_integer(m.baseline));
     write(trace_file, to_integer(m.raw));
     write(trace_file, to_integer(m.f));
     write(trace_file, to_integer(m.s));
@@ -229,12 +230,12 @@ stage2_config.config_valid <= '0';
 stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
-registers.baseline.offset <= to_signed(800,WIDTH);
+registers.baseline.offset <= to_signed(0,WIDTH);
 registers.baseline.count_threshold <= to_unsigned(80,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
 registers.baseline.new_only <= TRUE;
 registers.baseline.subtraction <= TRUE;
-registers.baseline.timeconstant <= to_unsigned(20000,32);
+registers.baseline.timeconstant <= to_unsigned(15000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 registers.capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
@@ -259,10 +260,11 @@ wait for CLK_PERIOD*1500;
 simenable <= TRUE;
 
 while TRUE loop
-  wait for 233 us;
-  registers.baseline.offset <= to_signed(1600,WIDTH);
-  wait for 233 us;
+  registers.baseline.offset <= to_signed(0,WIDTH);
+  wait for 200 us;
   registers.baseline.offset <= to_signed(800,WIDTH);
+  wait for 200 us;
+  registers.baseline.offset <= to_signed(-800,WIDTH);
 end loop;
 
 

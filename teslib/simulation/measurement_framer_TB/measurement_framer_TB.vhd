@@ -384,6 +384,7 @@ port map(
   reset => reset,
   event_enable => event_enable,
   registers => reg,
+  baseline => (others => '0'),
   raw => raw,
   s => s,
   f => f,

@@ -48,6 +48,7 @@ port(
   adc_sample_valid:in boolean;
   --baseline corrected sample.
   sample:out signed(WIDTH-1 downto 0);
+  baseline:out signed(WIDTH-1 downto 0); 
   sample_valid:out boolean
 );
 end entity baseline;
@@ -165,6 +166,7 @@ if rising_edge(clk) then
   sample_valid <= baseline_ready;
   if dynamic and baseline_ready then
     sample <= shift_left(resize(offset_adc,WIDTH),FRAC)-baseline_sum;	
+    baseline <= baseline_sum;
   else
     sample <= shift_left(resize(adc_inv,WIDTH),FRAC)-offset;
   end if;

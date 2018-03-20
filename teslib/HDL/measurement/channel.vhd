@@ -67,10 +67,11 @@ end entity channel;
 
 architecture fixed_16_3 of channel is
   
-constant RAW_DELAY:natural:=1026;
+constant RAW_DELAY:natural:=1022;
 signal resetn:std_logic:='0';  
-signal sample_in,filtered,slope:signed(WIDTH-1 downto 0);
+signal raw,filtered,slope:signed(WIDTH-1 downto 0);
 signal m:measurements_t;
+signal baseline:signed(WIDTH-1 downto 0);
 
 --debug
 begin
@@ -82,7 +83,6 @@ begin
     resetn <= not reset1;
   end if;
 end process resetP;
-
 
 estimator:entity mcalib.baseline
 generic map(
@@ -104,7 +104,8 @@ port map(
   offset => registers.baseline.offset,
   adc_sample => adc_sample,
   adc_sample_valid => TRUE,
-  sample => sample_in,
+  sample => raw,
+  baseline => baseline,
   sample_valid => open
 );
 
@@ -118,7 +119,7 @@ generic map(
 port map(
   clk => clk,
   resetn => resetn,
-  sample_in => sample_in,
+  sample_in => raw,
   stage1_config => stage1_config,
   stage1_events => stage1_events,
   stage2_config => stage2_config,
@@ -142,7 +143,8 @@ port map(
   reset => reset1,
   event_enable => event_enable,
   registers => registers.capture,
-  raw => sample_in,
+  baseline => baseline,
+  raw => raw,
   s => slope,
   f => filtered,
   measurements => m
