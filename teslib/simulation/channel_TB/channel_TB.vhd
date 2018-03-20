@@ -168,7 +168,8 @@ stimulusFile:process
 --	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/july 10/randn.bin";
 --	     "C:/TES_project/bin_traces/noise.bin";
-	     "C:/TES_project/bin_traces/gaussian_noise.bin";
+--	     "C:/TES_project/bin_traces/gaussian_noise.bin";
+	     "C:/TES_project/bin_traces/gaussian_noise20Mhz.bin";
 --	     "../bin_traces/double_peak_signal.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
