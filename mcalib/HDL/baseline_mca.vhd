@@ -160,15 +160,16 @@ begin
   swap1 <= FALSE;
   case state is
   when INIT =>
-    nextstate <= BUFF0;
+    nextstate <= BOTH0;
     swap0 <= TRUE;
+    swap1 <= TRUE;
     bin_valid1 <= FALSE;
     bin_valid0 <= FALSE;
   when BUFF0 =>
     -- buffer0 active buff1 clearing
     bin_valid0 <= sample_valid;
     bin_valid1 <= FALSE;
-    if timeout and idle1 then
+    if idle1 then
       nextstate <= BOTH0;
       swap1 <= TRUE;
     end if;
@@ -185,7 +186,7 @@ begin
     -- buff1 only buff0 clearing
     bin_valid0 <= FALSE;
     bin_valid1 <= sample_valid;
-    if timeout and idle0 then
+    if idle0 then
       nextstate <= BOTH1;
       swap0 <= TRUE;
     end if;
@@ -248,13 +249,9 @@ if rising_edge(clk) then
       double_est <= (others => '-');
       initialised <= FALSE;
   when BUFF0 =>
-    if new0 then
-      if valid1 then
-        double_est <= resize(signed(mf0),ADDRESS_BITS+1)+signed(mf1);
-      else
-        double_est <= shift_left(resize(signed(mf0),ADDRESS_BITS+1),1);
-      end if;
-      new_est <= TRUE;
+    if new0 or new1 then
+      double_est <= resize(signed(mf0),ADDRESS_BITS+1)+signed(mf1);
+      new_est <= valid0 and valid1;
     end if;
   when BOTH0 => 
     if new0 or new1 then

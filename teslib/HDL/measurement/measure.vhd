@@ -162,7 +162,7 @@ generic map(
 )
 port map(
   clk => clk,
-  input => std_logic_vector(raw),
+  input => std_logic_vector(baseline),
   delayed => baseline_d
 );
 rawTrace:entity work.dynamic_RAM_delay2

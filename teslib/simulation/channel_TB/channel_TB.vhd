@@ -264,9 +264,9 @@ simenable <= TRUE;
 while TRUE loop
   registers.baseline.offset <= to_signed(0,WIDTH);
   wait for 500 us;
-  registers.baseline.offset <= to_signed(800,WIDTH);
+  registers.baseline.offset <= to_signed(1600,WIDTH);
   wait for 500 us;
-  registers.baseline.offset <= to_signed(-800,WIDTH);
+  registers.baseline.offset <= to_signed(-1600,WIDTH);
 end loop;
 
 
