@@ -168,7 +168,8 @@ stimulusFile:process
 --	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/july 10/randn.bin";
 --	     "C:/TES_project/bin_traces/noise.bin";
-	     "C:/TES_project/bin_traces/gaussian_noise.bin";
+--	     "C:/TES_project/bin_traces/gaussian_noise.bin";
+	     "C:/TES_project/bin_traces/gaussian_noise20Mhz.bin";
 --	     "../bin_traces/double_peak_signal.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
@@ -229,11 +230,11 @@ stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 registers.baseline.offset <= to_signed(800,WIDTH);
-registers.baseline.count_threshold <= to_unsigned(15,BASELINE_COUNTER_BITS);
+registers.baseline.count_threshold <= to_unsigned(20,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
 registers.baseline.new_only <= TRUE;
 registers.baseline.subtraction <= TRUE;
-registers.baseline.timeconstant <= to_unsigned(2000,32);
+registers.baseline.timeconstant <= to_unsigned(4000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 registers.capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
@@ -258,9 +259,9 @@ wait for CLK_PERIOD*1500;
 simenable <= TRUE;
 
 while TRUE loop
-  wait for 233 us;
+  wait for 100 us;
   registers.baseline.offset <= to_signed(-800,WIDTH);
-  wait for 233 us;
+  wait for 100 us;
   registers.baseline.offset <= to_signed(800,WIDTH);
 end loop;
 
