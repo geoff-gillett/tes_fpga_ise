@@ -4,7 +4,7 @@
 --
 -- Design Name: TES_digitiser
 -- Module Name: histogram_unit
--- Project Name: channel
+-- Project Name: mcalib
 -- Target Devices: virtex6
 -- Tool versions: ISE 14.7
 --------------------------------------------------------------------------------
@@ -46,8 +46,6 @@ port(
 end entity baseline_mca;
 --
 architecture most_frequent of baseline_mca is
--- TODO modify clear so that smaller minimum time constants are possible
--- ie do partial clears threshold needs some thought
 --------------------------------------------------------------------------------
 -- shift register functions
 type FSMstate is (INIT,BUFF0,BOTH0,BUFF1,BOTH1);
@@ -63,12 +61,6 @@ signal idle0,idle1:boolean;
 signal swap0,swap1:boolean;
 signal bin:unsigned(ADDRESS_BITS-1 downto 0);
 signal bin_valid0,bin_valid1:boolean;
---signal most_frequent_bin0,most_frequent_bin1:unsigned(ADDRESS_BITS-1 downto 0);
---signal new_most_frequent_bin0:boolean;
---signal new_most_frequent_bin1:boolean;
---signal most_frequent_count0:unsigned(COUNTER_BITS-1 downto 0);
---signal most_frequent_count1:unsigned(COUNTER_BITS-1 downto 0);
---signal new_most_frequent0,new_most_frequent1:boolean;
 signal readable0,readable1:boolean;
 signal clear0,clear1:boolean;
 --
@@ -79,7 +71,7 @@ signal double_est:signed(ADDRESS_BITS downto 0);
 signal new_est:boolean;
 signal new_mf_bin0,new_mf_bin1:boolean;
 signal mf_count0,mf_count1:unsigned(COUNTER_BITS-1 downto 0);
-signal new_mf0,new_mf1,new0,new1:boolean;
+signal new_mf0,new_mf1,new0,new1,valid0,valid1:boolean;
 signal initialised:boolean;
 --signal bin_to_read:unsigned(ADDRESS_BITS-1 downto 0);
 attribute equivalent_register_removal:string;
@@ -178,8 +170,6 @@ begin
     bin_valid1 <= FALSE;
     if timeout and idle1 then
       nextstate <= BOTH0;
---      clr_nextstate <= BUFF0;
---      swap0 <= TRUE;
       swap1 <= TRUE;
     end if;
   when BOTH0 =>
@@ -190,17 +180,14 @@ begin
       nextstate <= BUFF1;
       clr_nextstate <= BUFF0;
       swap0 <= TRUE;
---      swap1 <= TRUE;
     end if;
   when BUFF1 =>
     -- buff1 only buff0 clearing
     bin_valid0 <= FALSE;
     bin_valid1 <= sample_valid;
     if timeout and idle0 then
---      clr_nextstate <= BUFF1;
       nextstate <= BOTH1;
       swap0 <= TRUE;
---      swap1 <= TRUE;
     end if;
   when BOTH1 =>
     -- both active buff1 will clear
@@ -209,7 +196,6 @@ begin
     if timeout then
       nextstate <= BUFF0;
       clr_nextstate <= BUFF1;
---      swap0 <= TRUE;
       swap1 <= TRUE;
     end if;
   end case;
@@ -224,12 +210,15 @@ begin
     if reset = '1' then
       new0 <= FALSE;
       new1 <= FALSE;
+      valid0 <= FALSE;
+      valid1 <= FALSE;
       mf0 <= (others => '-');
       mf1 <= (others => '-');
     else
       new0 <= FALSE;
       new1 <= FALSE;
       if mf_count0 >= count_threshold then
+        valid0 <= TRUE;
         mf0 <= mf_bin0;
         if new_only then
           new0 <= new_mf_bin0;
@@ -239,6 +228,7 @@ begin
       end if;
       if mf_count1 >= count_threshold then
         mf1 <= mf_bin1;
+        valid1 <= TRUE;
         if new_only then
           new1 <= new_mf_bin1;
         else
@@ -259,28 +249,27 @@ if rising_edge(clk) then
       initialised <= FALSE;
   when BUFF0 =>
     if new0 then
-      if not initialised then
-        double_est <= shift_left(resize(signed(mf0),ADDRESS_BITS+1),1);
-      else
+      if valid1 then
         double_est <= resize(signed(mf0),ADDRESS_BITS+1)+signed(mf1);
+      else
+        double_est <= shift_left(resize(signed(mf0),ADDRESS_BITS+1),1);
       end if;
       new_est <= TRUE;
     end if;
   when BOTH0 => 
-    initialised <= TRUE;
     if new0 or new1 then
       double_est <= resize(signed(mf0),ADDRESS_BITS+1)+signed(mf1);
-      new_est <= TRUE;
+      new_est <= valid0 and valid1;
     end if;
   when BUFF1 =>
     if new1 then
       double_est <= resize(signed(mf0),ADDRESS_BITS+1)+signed(mf1);
-      new_est <= TRUE;
+      new_est <= valid0 and valid1;
     end if;
   when BOTH1 => 
     if new0 or new1 then
       double_est <= resize(signed(mf0),ADDRESS_BITS+1)+signed(mf1);
-      new_est <= TRUE;
+      new_est <= valid0 and valid1;
     end if;
   end case;
 end if;
@@ -294,11 +283,11 @@ begin
     when IDLE =>
       address_to_clear <= (others => '0');
     when BUFF0 =>
-      if readable1 then
+      if readable0 then
         address_to_clear <= address_to_clear+1;
       end if;
     when BUFF1 =>
-      if readable0 then
+      if readable1 then
         address_to_clear <= address_to_clear+1;
       end if;
     end case;
@@ -315,16 +304,17 @@ begin
     clear1 <= FALSE;
   when BUFF0 =>
     if readable0 then
-      clear0 <= FALSE;
-      clear1 <= TRUE;
-    end if;
-  when BUFF1 =>
-    if readable1 then
       clear1 <= FALSE;
       clear0 <= TRUE;
     end if;
+  when BUFF1 =>
+    if readable1 then
+      clear0 <= FALSE;
+      clear1 <= TRUE;
+    end if;
   end case;
 end process clearFSM;
+
 --------------------------------------------------------------------------------
 -- Time
 --------------------------------------------------------------------------------
@@ -334,13 +324,18 @@ if rising_edge(clk) then
   if state=INIT then
     timer <= (others => '0');
   else
-    timeout <= timer >= timeconstant;
+    timeout <= FALSE;
+    if timer >= timeconstant then
+      timeout <= TRUE;
+    end if;
     if swap0 or swap1 then
       timer <= (others => '0');
-    elsif not timer >= timeconstant  then
+      timeout <= FALSE;
+    elsif not timeout  then
       timer <= timer+1;
     end if;
   end if;
 end if;
 end process timing;
+
 end architecture most_frequent;

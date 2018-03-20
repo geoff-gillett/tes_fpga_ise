@@ -320,7 +320,6 @@ tesChannel:for c in DSP_CHANNELS-1 downto 0 generate
     FRAC => FRAC,
     CF_WIDTH => CF_WIDTH,
     CF_FRAC => CF_FRAC,
-    BASELINE_N => BASELINE_N,
     SLOPE_FRAC => SLOPE_FRAC,
     ADC_WIDTH => ADC_WIDTH,
     AREA_WIDTH => AREA_WIDTH,

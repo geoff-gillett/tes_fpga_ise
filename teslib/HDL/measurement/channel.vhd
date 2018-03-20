@@ -71,19 +71,8 @@ constant RAW_DELAY:natural:=1026;
 signal resetn:std_logic:='0';  
 signal sample_in,filtered,slope:signed(WIDTH-1 downto 0);
 signal m:measurements_t;
-signal baseline_sample:signed(ADC_WIDTH-1 downto 0);
 
 --debug
-constant DEBUG:string:="FALSE";
-attribute mark_debug:string;
-attribute keep:string;
-attribute keep of adc_sample:signal is DEBUG;
-attribute mark_debug of adc_sample:signal is DEBUG;
-attribute keep of baseline_sample:signal is DEBUG;
-attribute mark_debug of baseline_sample:signal is DEBUG;
-attribute keep of sample_in:signal is DEBUG;
-attribute mark_debug of sample_in:signal is DEBUG;
-
 begin
 measurements <= m;
 

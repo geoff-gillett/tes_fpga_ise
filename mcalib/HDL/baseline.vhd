@@ -4,7 +4,7 @@
 --
 -- Design Name: TES_digitiser
 -- Module Name: baseline_estimator
--- Project Name: ML605
+-- Project Name: mcalib
 -- Target Devices: virtex6
 -- Tool versions: ISE 14.7
 --------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ port(
   new_only:in boolean;
   invert:in boolean;
   offset:in signed(WIDTH-1 downto 0);
-  
+  --
   adc_sample:in signed(ADC_WIDTH-1 downto 0);
   adc_sample_valid:in boolean;
   --baseline corrected sample.
@@ -53,7 +53,7 @@ port(
 end entity baseline;
 
 architecture RTL of baseline is
-constant DEPTH:natural:=ceilLog2(FRAC-1);
+constant DEPTH:natural:=2**(FRAC-1);
 
 signal estimate_f1:signed(BASELINE_BITS downto 0);
 signal new_estimate:boolean;
@@ -61,9 +61,9 @@ signal adc_inv,offset_adc:signed(ADC_WIDTH-1 downto 0);
 signal baseline_sample:signed(BASELINE_BITS-1 downto 0);
 signal baseline_sample_valid,msb_0,msb_1:boolean;
 signal baseline_sum:signed(WIDTH-1 downto 0);
-signal baseline_dif:signed(BASELINE_BITS downto 0);
+signal baseline_dif:signed(BASELINE_BITS+1 downto 0);
 type baseline_pipe is array (natural range <>) of 
-     signed(BASELINE_BITS-1 downto 0);
+     signed(BASELINE_BITS downto 0);
 signal baseline_p:baseline_pipe(1 to DEPTH);
 signal baseline_valid:boolean_vector(1 to DEPTH);
 signal new_sum:boolean;
@@ -103,7 +103,7 @@ begin
       else
         --saturate
         baseline_sample <= (
-          ADC_WIDTH-1 => offset_adc(BASELINE_BITS-1),
+          BASELINE_BITS-1 => offset_adc(ADC_WIDTH-1),
           others => '0'
         );
       end if;
@@ -143,14 +143,14 @@ begin
         baseline_p <= signed(estimate_f1) & baseline_p(1 to DEPTH-1); 
         if baseline_valid(DEPTH) then
           baseline_dif <= resize(
-                            signed(estimate_f1),BASELINE_BITS+1
+                            signed(estimate_f1),BASELINE_BITS+2
                           )-baseline_p(DEPTH);
           new_sum <= TRUE;
         else
           baseline_sum <= baseline_sum+signed(estimate_f1);
         end if;
       end if;
-      if new_sum and baseline_valid(8) then
+      if new_sum and baseline_valid(DEPTH) then
         baseline_sum <= baseline_sum + baseline_dif;
       end if;
     end if;

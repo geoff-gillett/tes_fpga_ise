@@ -29,20 +29,12 @@ generic(
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  ENDIAN:string:="LITTLE";
-  STRICT_CROSSING:boolean:=TRUE
+  ENDIAN:string:="LITTLE"
 );
 end entity channel_TB;
 
 architecture testbench of channel_TB is
-file trace_file,min_file,max_file:integer_file;
-file f0p_file,f0n_file:integer_file;
-file ptn_file,init_reg_file:integer_file;
-file rise_stamp_file,pulse_stamp_file:integer_file;
-file rise_start_file,pulse_start_file:integer_file;
-file height_valid_file,rise_stop_file:integer_file;
-file dump_file,commit_file,start_file:integer_file;
-file framer_error_file,framer_overflow_file:integer_file;
+file trace_file:integer_file;
 file stream_file:integer_file;
 
 signal clk:std_logic:='1';
@@ -237,15 +229,15 @@ stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 registers.baseline.offset <= to_signed(800,WIDTH);
-registers.baseline.count_threshold <= to_unsigned(30,BASELINE_COUNTER_BITS);
+registers.baseline.count_threshold <= to_unsigned(80,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
-registers.baseline.new_only <= FALSE;
+registers.baseline.new_only <= TRUE;
 registers.baseline.subtraction <= TRUE;
-registers.baseline.timeconstant <= to_unsigned(1500,20);
+registers.baseline.timeconstant <= to_unsigned(20000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 registers.capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
-registers.capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); --start peak stop
+registers.capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); --startpeakstop
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 registers.capture.detection <= PULSE_DETECTION_D;
@@ -264,11 +256,15 @@ wait for CLK_PERIOD;
 ready <= TRUE;
 wait for CLK_PERIOD*1500;
 simenable <= TRUE;
-wait for CLK_PERIOD;
---adc_sample <= to_signed(8000,ADC_WIDTH);
-wait for CLK_PERIOD;
---adc_sample <= to_signed(0,ADC_WIDTH);
-wait; 
+
+while TRUE loop
+  wait for 233 us;
+  registers.baseline.offset <= to_signed(1600,WIDTH);
+  wait for 233 us;
+  registers.baseline.offset <= to_signed(800,WIDTH);
+end loop;
+
+
 end process stimulus;
 
 end architecture testbench;
