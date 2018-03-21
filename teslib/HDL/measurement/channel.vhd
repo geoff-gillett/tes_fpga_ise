@@ -23,7 +23,7 @@ generic(
   CHANNEL:natural:=0;
   CF_WIDTH:natural:=18;
   CF_FRAC:natural:=17;
-  BASELINE_BITS:natural:=10;
+  BASELINE_BITS:natural:=11;
   WIDTH:natural:=16; 
   FRAC:natural:=3; 
   SLOPE_FRAC:natural:=8; 
@@ -106,7 +106,7 @@ port map(
   adc_sample_valid => TRUE,
   sample => raw,
   baseline => baseline,
-  sample_valid => open
+  valid => open
 );
 
 
