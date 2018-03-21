@@ -34,8 +34,8 @@ generic(
 end entity channel_TB;
 
 architecture testbench of channel_TB is
-file trace_file:integer_file;
-file stream_file:integer_file;
+file trace_file,reg_file:integer_file;
+--file stream_file:integer_file;
 
 signal clk:std_logic:='1';
 signal clk_i:integer:=-1; --clk index for data files
@@ -69,6 +69,7 @@ signal stage2_config:fir_control_in_t;
 signal stage2_events:fir_control_out_t;
 signal simenable:boolean:=FALSE;
 signal long:boolean:=TRUE;
+signal new_offset,save_reg:boolean:=FALSE;
 
 signal flags:boolean_vector(10 downto 0);
 
@@ -155,6 +156,34 @@ begin
     write(trace_file, to_integer(m.s));
   end loop;
 end process traceWriter; 
+
+--FIXME this should write all the registers create a function for a consistent
+--file format.
+file_open(reg_file, "../registers",WRITE_MODE);
+regWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if save_reg then
+      write(reg_file, to_integer(registers.baseline.timeconstant));
+      write(reg_file, to_integer(registers.baseline.count_threshold));
+      if registers.baseline.new_only then
+        write(reg_file, 1);
+      else
+        write(reg_file, 0);
+      end if;
+      if registers.baseline.subtraction then
+        write(reg_file, 1);
+      else
+        write(reg_file, 0);
+      end if;
+    end if;
+    if new_offset then
+      write(reg_file, clk_count);
+      write(reg_file, to_integer(registers.baseline.offset));
+    end if; 
+  end loop;
+end process regWriter; 
 
 clkCount:process is
 begin
@@ -260,13 +289,25 @@ wait for CLK_PERIOD;
 ready <= TRUE;
 wait for CLK_PERIOD*1500;
 simenable <= TRUE;
+save_reg <= TRUE;
+wait for CLK_PERIOD;
+save_reg <= FALSE;
 
 while TRUE loop
+  new_offset <= TRUE;
   registers.baseline.offset <= to_signed(0,WIDTH);
+  wait for CLK_PERIOD;
+  new_offset <= FALSE;
   wait for 500 us;
+  new_offset <= TRUE;
   registers.baseline.offset <= to_signed(1600,WIDTH);
+  wait for CLK_PERIOD;
+  new_offset <= FALSE;
   wait for 500 us;
+  new_offset <= TRUE;
   registers.baseline.offset <= to_signed(-1600,WIDTH);
+  wait for CLK_PERIOD;
+  new_offset <= FALSE;
   wait for 500 us;
 end loop;
 
