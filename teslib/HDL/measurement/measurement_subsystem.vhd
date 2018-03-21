@@ -51,7 +51,6 @@ generic(
 	FRAC:integer:=3;
 	CF_WIDTH:natural:=18;
 	CF_FRAC:natural:=17;
-	BASELINE_N:natural:=19;
 	SLOPE_FRAC:natural:=8;
 	AREA_WIDTH:natural:=32;
 	AREA_FRAC:natural:=1;
