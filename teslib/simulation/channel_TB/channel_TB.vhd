@@ -261,12 +261,12 @@ stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 registers.baseline.offset <= to_signed(0,WIDTH);
 --registers.baseline.count_threshold <= to_unsigned(80,BASELINE_COUNTER_BITS);
-registers.baseline.count_threshold <= to_unsigned(50,BASELINE_COUNTER_BITS);
+registers.baseline.count_threshold <= to_unsigned(100,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
 registers.baseline.new_only <= TRUE;
 registers.baseline.subtraction <= TRUE;
 --registers.baseline.timeconstant <= to_unsigned(15000,32);
-registers.baseline.timeconstant <= to_unsigned(10000,32);
+registers.baseline.timeconstant <= to_unsigned(40000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
 registers.capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
@@ -298,17 +298,17 @@ while TRUE loop
   registers.baseline.offset <= to_signed(0,WIDTH);
   wait for CLK_PERIOD;
   new_offset <= FALSE;
-  wait for 500 us;
+  wait for 1 ms;
   new_offset <= TRUE;
   registers.baseline.offset <= to_signed(1600,WIDTH);
   wait for CLK_PERIOD;
   new_offset <= FALSE;
-  wait for 500 us;
+  wait for 1 ms;
   new_offset <= TRUE;
   registers.baseline.offset <= to_signed(-1600,WIDTH);
   wait for CLK_PERIOD;
   new_offset <= FALSE;
-  wait for 500 us;
+  wait for 1 ms;
 end loop;
 
 

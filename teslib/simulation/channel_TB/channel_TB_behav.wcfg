@@ -22,15 +22,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="11343000000fs"></ZoomStartTime>
-      <ZoomEndTime time="11640200001fs"></ZoomEndTime>
-      <Cursor1Time time="11516000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="74300000001fs"></ZoomEndTime>
+      <Cursor1Time time="1000000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="200"></NameColumnWidth>
       <ValueColumnWidth column_width="96"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="12" />
+   <WVObjectSize size="15" />
    <wave_markers>
       <marker time="10380000000" label="" />
    </wave_markers>
@@ -72,8 +72,11 @@
       <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
       <obj_property name="AnalogHorizLine">0.000000</obj_property>
       <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
-      <obj_property name="CustomSignalColor">#FF0000</obj_property>
+      <obj_property name="CustomSignalColor">#00FFFF</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">3</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
    </wvobject>
    <wvobject fp_name="/channel_TB/m.s" type="array">
       <obj_property name="ElementShortName">.s[15:0]</obj_property>
@@ -87,6 +90,11 @@
       <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
       <obj_property name="AnalogHorizLine">0.000000</obj_property>
       <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
+      <obj_property name="radix_fractionWidth">3</obj_property>
+      <obj_property name="radix_otherWidth">0</obj_property>
+      <obj_property name="CustomSignalColor">#FF0000</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject fp_name="/channel_TB/UUT/registers.baseline.offset" type="array">
       <obj_property name="ElementShortName">.offset[15:0]</obj_property>
@@ -111,17 +119,46 @@
       <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
       <obj_property name="AnalogHorizLine">0.000000</obj_property>
       <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject fp_name="/channel_TB/UUT/estimator/new_sum" type="other">
       <obj_property name="ElementShortName">new_sum</obj_property>
       <obj_property name="ObjectShortName">new_sum</obj_property>
       <obj_property name="CustomSignalColor">#00FFFF</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="label">new baseline</obj_property>
+   </wvobject>
+   <wvobject fp_name="/channel_TB/UUT/estimator/estimate_f1" type="array">
+      <obj_property name="ElementShortName">estimate_f1[11:0]</obj_property>
+      <obj_property name="ObjectShortName">estimate_f1[11:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="CellHeight">100</obj_property>
+      <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+      <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+      <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+      <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+      <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+      <obj_property name="AnalogHorizLine">0.000000</obj_property>
+      <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/channel_TB/UUT/estimator/new_estimate" type="other">
+      <obj_property name="ElementShortName">new_estimate</obj_property>
+      <obj_property name="ObjectShortName">new_estimate</obj_property>
+      <obj_property name="CustomSignalColor">#FF00FF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/state" type="other">
+      <obj_property name="ElementShortName">state</obj_property>
+      <obj_property name="ObjectShortName">state</obj_property>
+      <obj_property name="CustomSignalColor">#FFD700</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject fp_name="group248" type="group">
       <obj_property name="label">testbench</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/channel_TB/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -165,7 +202,6 @@
       <wvobject fp_name="/channel_TB/m" type="array">
          <obj_property name="ElementShortName">m</obj_property>
          <obj_property name="ObjectShortName">m</obj_property>
-         <obj_property name="isExpanded"></obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/stream" type="array">
          <obj_property name="ElementShortName">stream</obj_property>
@@ -388,14 +424,13 @@
          <obj_property name="ElementShortName">filtered[15:0]</obj_property>
          <obj_property name="ObjectShortName">filtered[15:0]</obj_property>
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-         <obj_property name="CellHeight">100</obj_property>
          <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
          <obj_property name="AnalogYRangeMin">0.000000</obj_property>
          <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
          <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
          <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
          <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
          <obj_property name="CustomSignalColor">#00FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
@@ -430,14 +465,13 @@
          <obj_property name="Radix">REALRADIX</obj_property>
          <obj_property name="CustomSignalColor">#00FFFF</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
-         <obj_property name="CellHeight">100</obj_property>
          <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
          <obj_property name="AnalogYRangeMin">0.000000</obj_property>
          <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
          <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
          <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
          <obj_property name="AnalogHorizLine">0.000000</obj_property>
-         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+         <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
          <obj_property name="radix_realType">SIGNEDFIXEDPOINTRADIX</obj_property>
          <obj_property name="radix_fractionWidth">3</obj_property>
          <obj_property name="radix_otherWidth">0</obj_property>
@@ -620,6 +654,14 @@
          <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
          <obj_property name="CustomSignalColor">#FF0000</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="CellHeight">100</obj_property>
+         <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+         <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+         <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+         <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+         <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+         <obj_property name="AnalogHorizLine">0.000000</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/new_sum" type="other">
          <obj_property name="ElementShortName">new_sum</obj_property>
@@ -672,9 +714,456 @@
    <wvobject fp_name="group370" type="group">
       <obj_property name="label">baseline_mca</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/timeconstant" type="array">
+         <obj_property name="ElementShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timeconstant[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/count_threshold" type="array">
+         <obj_property name="ElementShortName">count_threshold[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count_threshold[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/new_only" type="other">
+         <obj_property name="ElementShortName">new_only</obj_property>
+         <obj_property name="ObjectShortName">new_only</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/sample" type="array">
+         <obj_property name="ElementShortName">sample[10:0]</obj_property>
+         <obj_property name="ObjectShortName">sample[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/sample_valid" type="other">
+         <obj_property name="ElementShortName">sample_valid</obj_property>
+         <obj_property name="ObjectShortName">sample_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/estimate_f1" type="array">
+         <obj_property name="ElementShortName">estimate_f1[11:0]</obj_property>
+         <obj_property name="ObjectShortName">estimate_f1[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/new_estimate" type="other">
+         <obj_property name="ElementShortName">new_estimate</obj_property>
+         <obj_property name="ObjectShortName">new_estimate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/nextstate" type="other">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/clr_state" type="other">
+         <obj_property name="ElementShortName">clr_state</obj_property>
+         <obj_property name="ObjectShortName">clr_state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/clr_nextstate" type="other">
+         <obj_property name="ElementShortName">clr_nextstate</obj_property>
+         <obj_property name="ObjectShortName">clr_nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/timer" type="array">
+         <obj_property name="ElementShortName">timer[31:0]</obj_property>
+         <obj_property name="ObjectShortName">timer[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/timeout" type="other">
+         <obj_property name="ElementShortName">timeout</obj_property>
+         <obj_property name="ObjectShortName">timeout</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/address_to_clear" type="array">
+         <obj_property name="ElementShortName">address_to_clear[10:0]</obj_property>
+         <obj_property name="ObjectShortName">address_to_clear[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/clear_done" type="other">
+         <obj_property name="ElementShortName">clear_done</obj_property>
+         <obj_property name="ObjectShortName">clear_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/idle0" type="other">
+         <obj_property name="ElementShortName">idle0</obj_property>
+         <obj_property name="ObjectShortName">idle0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/idle1" type="other">
+         <obj_property name="ElementShortName">idle1</obj_property>
+         <obj_property name="ObjectShortName">idle1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/swap0" type="other">
+         <obj_property name="ElementShortName">swap0</obj_property>
+         <obj_property name="ObjectShortName">swap0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/swap1" type="other">
+         <obj_property name="ElementShortName">swap1</obj_property>
+         <obj_property name="ObjectShortName">swap1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/bin" type="array">
+         <obj_property name="ElementShortName">bin[10:0]</obj_property>
+         <obj_property name="ObjectShortName">bin[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/bin_valid0" type="other">
+         <obj_property name="ElementShortName">bin_valid0</obj_property>
+         <obj_property name="ObjectShortName">bin_valid0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/bin_valid1" type="other">
+         <obj_property name="ElementShortName">bin_valid1</obj_property>
+         <obj_property name="ObjectShortName">bin_valid1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/readable0" type="other">
+         <obj_property name="ElementShortName">readable0</obj_property>
+         <obj_property name="ObjectShortName">readable0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/readable1" type="other">
+         <obj_property name="ElementShortName">readable1</obj_property>
+         <obj_property name="ObjectShortName">readable1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/clear0" type="other">
+         <obj_property name="ElementShortName">clear0</obj_property>
+         <obj_property name="ObjectShortName">clear0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/clear1" type="other">
+         <obj_property name="ElementShortName">clear1</obj_property>
+         <obj_property name="ObjectShortName">clear1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/mf_bin0" type="array">
+         <obj_property name="ElementShortName">mf_bin0[10:0]</obj_property>
+         <obj_property name="ObjectShortName">mf_bin0[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/mf_bin1" type="array">
+         <obj_property name="ElementShortName">mf_bin1[10:0]</obj_property>
+         <obj_property name="ObjectShortName">mf_bin1[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/mf0" type="array">
+         <obj_property name="ElementShortName">mf0[10:0]</obj_property>
+         <obj_property name="ObjectShortName">mf0[10:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/mf1" type="array">
+         <obj_property name="ElementShortName">mf1[10:0]</obj_property>
+         <obj_property name="ObjectShortName">mf1[10:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/double_est" type="array">
+         <obj_property name="ElementShortName">double_est[11:0]</obj_property>
+         <obj_property name="ObjectShortName">double_est[11:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/new_est" type="other">
+         <obj_property name="ElementShortName">new_est</obj_property>
+         <obj_property name="ObjectShortName">new_est</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/new_mf_bin0" type="other">
+         <obj_property name="ElementShortName">new_mf_bin0</obj_property>
+         <obj_property name="ObjectShortName">new_mf_bin0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/new_mf_bin1" type="other">
+         <obj_property name="ElementShortName">new_mf_bin1</obj_property>
+         <obj_property name="ObjectShortName">new_mf_bin1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/mf_count0" type="array">
+         <obj_property name="ElementShortName">mf_count0[17:0]</obj_property>
+         <obj_property name="ObjectShortName">mf_count0[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/mf_count1" type="array">
+         <obj_property name="ElementShortName">mf_count1[17:0]</obj_property>
+         <obj_property name="ObjectShortName">mf_count1[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/new_mf0" type="other">
+         <obj_property name="ElementShortName">new_mf0</obj_property>
+         <obj_property name="ObjectShortName">new_mf0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/new_mf1" type="other">
+         <obj_property name="ElementShortName">new_mf1</obj_property>
+         <obj_property name="ObjectShortName">new_mf1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/new0" type="other">
+         <obj_property name="ElementShortName">new0</obj_property>
+         <obj_property name="ObjectShortName">new0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/new1" type="other">
+         <obj_property name="ElementShortName">new1</obj_property>
+         <obj_property name="ObjectShortName">new1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/valid0" type="other">
+         <obj_property name="ElementShortName">valid0</obj_property>
+         <obj_property name="ObjectShortName">valid0</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/valid1" type="other">
+         <obj_property name="ElementShortName">valid1</obj_property>
+         <obj_property name="ObjectShortName">valid1</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/initialised" type="other">
+         <obj_property name="ElementShortName">initialised</obj_property>
+         <obj_property name="ObjectShortName">initialised</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/ADDRESS_BITS" type="other">
+         <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
+         <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/COUNTER_BITS" type="other">
+         <obj_property name="ElementShortName">COUNTER_BITS</obj_property>
+         <obj_property name="ObjectShortName">COUNTER_BITS</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/TIMECONSTANT_BITS" type="other">
+         <obj_property name="ElementShortName">TIMECONSTANT_BITS</obj_property>
+         <obj_property name="ObjectShortName">TIMECONSTANT_BITS</obj_property>
+      </wvobject>
    </wvobject>
-   <wvobject fp_name="group764" type="group">
+   <wvobject fp_name="group2031" type="group">
       <obj_property name="label">buffer0</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/reset" type="logic">
+         <obj_property name="ElementShortName">reset</obj_property>
+         <obj_property name="ObjectShortName">reset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/mca_idle" type="other">
+         <obj_property name="ElementShortName">mca_idle</obj_property>
+         <obj_property name="ObjectShortName">mca_idle</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/swap" type="other">
+         <obj_property name="ElementShortName">swap</obj_property>
+         <obj_property name="ObjectShortName">swap</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/bin" type="array">
+         <obj_property name="ElementShortName">bin[10:0]</obj_property>
+         <obj_property name="ObjectShortName">bin[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/bin_valid" type="other">
+         <obj_property name="ElementShortName">bin_valid</obj_property>
+         <obj_property name="ObjectShortName">bin_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/out_of_bounds" type="other">
+         <obj_property name="ElementShortName">out_of_bounds</obj_property>
+         <obj_property name="ObjectShortName">out_of_bounds</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/most_frequent_bin" type="array">
+         <obj_property name="ElementShortName">most_frequent_bin[10:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_bin[10:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/new_most_frequent_bin" type="other">
+         <obj_property name="ElementShortName">new_most_frequent_bin</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent_bin</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/most_frequent_count" type="array">
+         <obj_property name="ElementShortName">most_frequent_count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">most_frequent_count[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/new_most_frequent" type="other">
+         <obj_property name="ElementShortName">new_most_frequent</obj_property>
+         <obj_property name="ObjectShortName">new_most_frequent</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/total_in_bounds" type="array">
+         <obj_property name="ElementShortName">total_in_bounds[63:0]</obj_property>
+         <obj_property name="ObjectShortName">total_in_bounds[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/readable" type="other">
+         <obj_property name="ElementShortName">readable</obj_property>
+         <obj_property name="ObjectShortName">readable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/last_clear" type="other">
+         <obj_property name="ElementShortName">last_clear</obj_property>
+         <obj_property name="ObjectShortName">last_clear</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/clear" type="other">
+         <obj_property name="ElementShortName">clear</obj_property>
+         <obj_property name="ObjectShortName">clear</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/bin_to_read" type="array">
+         <obj_property name="ElementShortName">bin_to_read[10:0]</obj_property>
+         <obj_property name="ObjectShortName">bin_to_read[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/count" type="array">
+         <obj_property name="ElementShortName">count[17:0]</obj_property>
+         <obj_property name="ObjectShortName">count[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/MCA" type="array">
+         <obj_property name="ElementShortName">MCA[0:2047][17:0]</obj_property>
+         <obj_property name="ObjectShortName">MCA[0:2047][17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/wr_en" type="other">
+         <obj_property name="ElementShortName">wr_en</obj_property>
+         <obj_property name="ObjectShortName">wr_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/rd_addr" type="array">
+         <obj_property name="ElementShortName">rd_addr[10:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_addr[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/wr_addr" type="array">
+         <obj_property name="ElementShortName">wr_addr[10:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_addr[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/mf_int" type="array">
+         <obj_property name="ElementShortName">mf_int[10:0]</obj_property>
+         <obj_property name="ObjectShortName">mf_int[10:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/ram_out1" type="array">
+         <obj_property name="ElementShortName">ram_out1[17:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_out1[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/dout" type="array">
+         <obj_property name="ElementShortName">dout[17:0]</obj_property>
+         <obj_property name="ObjectShortName">dout[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/din" type="array">
+         <obj_property name="ElementShortName">din[17:0]</obj_property>
+         <obj_property name="ObjectShortName">din[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/mf_count_int" type="array">
+         <obj_property name="ElementShortName">mf_count_int[17:0]</obj_property>
+         <obj_property name="ObjectShortName">mf_count_int[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/ram_out2" type="array">
+         <obj_property name="ElementShortName">ram_out2[17:0]</obj_property>
+         <obj_property name="ObjectShortName">ram_out2[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/oldcount" type="array">
+         <obj_property name="ElementShortName">oldcount[18:0]</obj_property>
+         <obj_property name="ObjectShortName">oldcount[18:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/inc_pipe" type="array">
+         <obj_property name="ElementShortName">inc_pipe[1:2][1:0]</obj_property>
+         <obj_property name="ObjectShortName">inc_pipe[1:2][1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/newcount" type="array">
+         <obj_property name="ElementShortName">newcount[18:0]</obj_property>
+         <obj_property name="ObjectShortName">newcount[18:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/incremented_count" type="array">
+         <obj_property name="ElementShortName">incremented_count[18:0]</obj_property>
+         <obj_property name="ObjectShortName">incremented_count[18:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/swap_pipe" type="array">
+         <obj_property name="ElementShortName">swap_pipe[1:6]</obj_property>
+         <obj_property name="ObjectShortName">swap_pipe[1:6]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/bin_pipe" type="array">
+         <obj_property name="ElementShortName">bin_pipe[1:6][10:0]</obj_property>
+         <obj_property name="ObjectShortName">bin_pipe[1:6][10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/valid_pipe" type="array">
+         <obj_property name="ElementShortName">valid_pipe[1:6]</obj_property>
+         <obj_property name="ObjectShortName">valid_pipe[1:6]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/oob_pipe" type="array">
+         <obj_property name="ElementShortName">oob_pipe[1:6]</obj_property>
+         <obj_property name="ObjectShortName">oob_pipe[1:6]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/state" type="other">
+         <obj_property name="ElementShortName">state</obj_property>
+         <obj_property name="ObjectShortName">state</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/nextstate" type="other">
+         <obj_property name="ElementShortName">nextstate</obj_property>
+         <obj_property name="ObjectShortName">nextstate</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/new_mf" type="other">
+         <obj_property name="ElementShortName">new_mf</obj_property>
+         <obj_property name="ObjectShortName">new_mf</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/new_mf_bin" type="other">
+         <obj_property name="ElementShortName">new_mf_bin</obj_property>
+         <obj_property name="ObjectShortName">new_mf_bin</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/total_int" type="array">
+         <obj_property name="ElementShortName">total_int[63:0]</obj_property>
+         <obj_property name="ObjectShortName">total_int[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/double" type="other">
+         <obj_property name="ElementShortName">double</obj_property>
+         <obj_property name="ObjectShortName">double</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/collision" type="array">
+         <obj_property name="ElementShortName">collision[3:6]</obj_property>
+         <obj_property name="ObjectShortName">collision[3:6]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/newcount_pipe" type="array">
+         <obj_property name="ElementShortName">newcount_pipe[3:6][18:0]</obj_property>
+         <obj_property name="ObjectShortName">newcount_pipe[3:6][18:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/din_mux" type="array">
+         <obj_property name="ElementShortName">din_mux[17:0]</obj_property>
+         <obj_property name="ObjectShortName">din_mux[17:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/wr_addr_mux" type="array">
+         <obj_property name="ElementShortName">wr_addr_mux[10:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_addr_mux[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/wr_en_mux" type="other">
+         <obj_property name="ElementShortName">wr_en_mux</obj_property>
+         <obj_property name="ObjectShortName">wr_en_mux</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/active" type="other">
+         <obj_property name="ElementShortName">active</obj_property>
+         <obj_property name="ObjectShortName">active</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/ADDRESS_BITS" type="other">
+         <obj_property name="ElementShortName">ADDRESS_BITS</obj_property>
+         <obj_property name="ObjectShortName">ADDRESS_BITS</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/COUNTER_BITS" type="other">
+         <obj_property name="ElementShortName">COUNTER_BITS</obj_property>
+         <obj_property name="ObjectShortName">COUNTER_BITS</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/TOTAL_BITS" type="other">
+         <obj_property name="ElementShortName">TOTAL_BITS</obj_property>
+         <obj_property name="ObjectShortName">TOTAL_BITS</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/SAT_AT_DIN" type="other">
+         <obj_property name="ElementShortName">SAT_AT_DIN</obj_property>
+         <obj_property name="ObjectShortName">SAT_AT_DIN</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/READ_LAT" type="other">
+         <obj_property name="ElementShortName">READ_LAT</obj_property>
+         <obj_property name="ObjectShortName">READ_LAT</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/RAM_IN_REG" type="other">
+         <obj_property name="ElementShortName">RAM_IN_REG</obj_property>
+         <obj_property name="ObjectShortName">RAM_IN_REG</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/PROC_LAT" type="other">
+         <obj_property name="ElementShortName">PROC_LAT</obj_property>
+         <obj_property name="ObjectShortName">PROC_LAT</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/INC_BITS" type="other">
+         <obj_property name="ElementShortName">INC_BITS</obj_property>
+         <obj_property name="ObjectShortName">INC_BITS</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/DEPTH" type="other">
+         <obj_property name="ElementShortName">DEPTH</obj_property>
+         <obj_property name="ObjectShortName">DEPTH</obj_property>
+      </wvobject>
+      <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/COL_DEPTH" type="other">
+         <obj_property name="ElementShortName">COL_DEPTH</obj_property>
+         <obj_property name="ObjectShortName">COL_DEPTH</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>

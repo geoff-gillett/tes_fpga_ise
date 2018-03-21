@@ -179,6 +179,7 @@ if rising_edge(clk) then
     valid <= valid_pipe(2);
   else
     sample <= shift_left(resize(adc_inv,WIDTH),FRAC)-offset;
+    baseline <= (others => '0');
     valid <= valid_pipe(1);
   end if;
 end if;
