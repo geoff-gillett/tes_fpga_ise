@@ -77,6 +77,8 @@ type measurements_t is record
 	raw:signed(CHUNK_DATABITS-1 downto 0);
 	raw_trace:signed(CHUNK_DATABITS-1 downto 0);
 	
+	-- baseline mainly for simulation
+	baseline:signed(CHUNK_DATABITS-1 downto 0);
 		
   --packet type contains a pulse	
 	has_pulse:boolean_vector(PRE3 to NOW); 

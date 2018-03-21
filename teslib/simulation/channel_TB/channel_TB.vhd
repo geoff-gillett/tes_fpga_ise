@@ -29,21 +29,13 @@ generic(
   ADC_WIDTH:natural:=14;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  ENDIAN:string:="LITTLE";
-  STRICT_CROSSING:boolean:=TRUE
+  ENDIAN:string:="LITTLE"
 );
 end entity channel_TB;
 
 architecture testbench of channel_TB is
-file trace_file,min_file,max_file:integer_file;
-file f0p_file,f0n_file:integer_file;
-file ptn_file,init_reg_file:integer_file;
-file rise_stamp_file,pulse_stamp_file:integer_file;
-file rise_start_file,pulse_start_file:integer_file;
-file height_valid_file,rise_stop_file:integer_file;
-file dump_file,commit_file,start_file:integer_file;
-file framer_error_file,framer_overflow_file:integer_file;
-file stream_file:integer_file;
+file trace_file,reg_file:integer_file;
+--file stream_file:integer_file;
 
 signal clk:std_logic:='1';
 signal clk_i:integer:=-1; --clk index for data files
@@ -77,6 +69,7 @@ signal stage2_config:fir_control_in_t;
 signal stage2_events:fir_control_out_t;
 signal simenable:boolean:=FALSE;
 signal long:boolean:=TRUE;
+signal new_offset,save_reg:boolean:=FALSE;
 
 signal flags:boolean_vector(10 downto 0);
 
@@ -134,34 +127,63 @@ flags <= -- byte 1
          --  4             5              6             7
          m.will_arm & m.cfd_error & m.cfd_overrun & m.cfd_valid;
 
-file_open(stream_file, "../stream",WRITE_MODE);
-streamWriter:process
-begin
-  while TRUE loop
-    wait until rising_edge(clk);
-    if ready and valid then
-      if stream.last(0) then
-        write(stream_file, -clk_i);
-      else
-        write(stream_file, clk_i);
-      end if;
-      write(stream_file,to_integer(signed(to_0(stream.data(31 downto 0)))));
-      write(stream_file,to_integer(signed(to_0(stream.data(63 downto 32)))));
-    end if;
-  end loop;
-end process streamWriter; 
-file_open(stream_file,"../stream",WRITE_MODE);
+--file_open(stream_file, "../stream",WRITE_MODE);
+--streamWriter:process
+--begin
+--  while TRUE loop
+--    wait until rising_edge(clk);
+--    if ready and valid then
+--      if stream.last(0) then
+--        write(stream_file, -clk_i);
+--      else
+--        write(stream_file, clk_i);
+--      end if;
+--      write(stream_file,to_integer(signed(to_0(stream.data(31 downto 0)))));
+--      write(stream_file,to_integer(signed(to_0(stream.data(63 downto 32)))));
+--    end if;
+--  end loop;
+--end process streamWriter; 
+--file_open(stream_file,"../stream",WRITE_MODE);
 
 file_open(trace_file, "../traces",WRITE_MODE);
 traceWriter:process
 begin
   while TRUE loop
     wait until rising_edge(clk);
+    write(trace_file, to_integer(m.baseline));
     write(trace_file, to_integer(m.raw));
     write(trace_file, to_integer(m.f));
     write(trace_file, to_integer(m.s));
   end loop;
 end process traceWriter; 
+
+--FIXME this should write all the registers create a function for a consistent
+--file format.
+file_open(reg_file, "../registers",WRITE_MODE);
+regWriter:process
+begin
+  while TRUE loop
+    wait until rising_edge(clk);
+    if save_reg then
+      write(reg_file, to_integer(registers.baseline.timeconstant));
+      write(reg_file, to_integer(registers.baseline.count_threshold));
+      if registers.baseline.new_only then
+        write(reg_file, 1);
+      else
+        write(reg_file, 0);
+      end if;
+      if registers.baseline.subtraction then
+        write(reg_file, 1);
+      else
+        write(reg_file, 0);
+      end if;
+    end if;
+    if new_offset then
+      write(reg_file, clk_count);
+      write(reg_file, to_integer(registers.baseline.offset));
+    end if; 
+  end loop;
+end process regWriter; 
 
 clkCount:process is
 begin
@@ -172,9 +194,12 @@ end process clkCount;
 stimulusFile:process
 	file sample_file:integer_file is in 
 --	     "../input_signals/tes2_250_old.bin";
-	     "../bin_traces/gt1_100khz.bin";
+--	     "../bin_traces/gt1_100khz.bin";
 --	     "../bin_traces/july 10/randn2.bin";
 --	     "../bin_traces/july 10/randn.bin";
+--	     "C:/TES_project/bin_traces/noise.bin";
+--	     "C:/TES_project/bin_traces/gaussian_noise.bin";
+	     "C:/TES_project/bin_traces/gaussian_noise20Mhz.bin";
 --	     "../bin_traces/double_peak_signal.bin";
 	variable sample:integer;
 	--variable sample_in:std_logic_vector(13 downto 0);
@@ -182,7 +207,7 @@ begin
 	while not endfile(sample_file) loop
 		read(sample_file, sample);
 		wait until rising_edge(clk);
---		adc_sample <= to_signed(sample, WIDTH);
+		adc_sample <= to_signed(sample, 14);
 	end loop;
 	wait;
 end process stimulusFile;
@@ -235,15 +260,17 @@ stage2_config.reload_data <= (others => '0');
 stage2_config.reload_last <= '0';
 stage2_config.reload_valid <= '0';
 registers.baseline.offset <= to_signed(0,WIDTH);
-registers.baseline.count_threshold <= to_unsigned(10,BASELINE_COUNTER_BITS);
+--registers.baseline.count_threshold <= to_unsigned(80,BASELINE_COUNTER_BITS);
+registers.baseline.count_threshold <= to_unsigned(100,BASELINE_COUNTER_BITS);
 registers.baseline.threshold <= (others => '1');
-registers.baseline.new_only <= FALSE;
+registers.baseline.new_only <= TRUE;
 registers.baseline.subtraction <= TRUE;
-registers.baseline.timeconstant <= to_unsigned(25000,32);
+--registers.baseline.timeconstant <= to_unsigned(15000,32);
+registers.baseline.timeconstant <= to_unsigned(40000,32);
 
 registers.capture.constant_fraction  <= to_unsigned(CF,DSP_BITS-1);
-registers.capture.slope_threshold <= to_unsigned(8*256,DSP_BITS-1); --2300
-registers.capture.pulse_threshold <= to_unsigned(127*8+6,DSP_BITS-1); --start peak stop
+registers.capture.slope_threshold <= to_unsigned(0,DSP_BITS-1); --2300
+registers.capture.pulse_threshold <= to_unsigned(0,DSP_BITS-1); --startpeakstop
 registers.capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 registers.capture.max_peaks <= to_unsigned(0,PEAK_COUNT_BITS);
 registers.capture.detection <= PULSE_DETECTION_D;
@@ -253,7 +280,7 @@ registers.capture.cfd_rel2min <= FALSE;
 registers.capture.trace_pre <= (others => '0');
 event_enable <= TRUE;
 
-adc_sample <= to_signed(0,ADC_WIDTH);
+--adc_sample <= to_signed(0,ADC_WIDTH);
 wait for CLK_PERIOD*20;
 reset1 <= '0';
 wait for CLK_PERIOD*40;
@@ -262,11 +289,29 @@ wait for CLK_PERIOD;
 ready <= TRUE;
 wait for CLK_PERIOD*1500;
 simenable <= TRUE;
+save_reg <= TRUE;
 wait for CLK_PERIOD;
-adc_sample <= to_signed(8000,ADC_WIDTH);
-wait for CLK_PERIOD;
-adc_sample <= to_signed(0,ADC_WIDTH);
-wait; 
+save_reg <= FALSE;
+
+while TRUE loop
+  new_offset <= TRUE;
+  registers.baseline.offset <= to_signed(0,WIDTH);
+  wait for CLK_PERIOD;
+  new_offset <= FALSE;
+  wait for 1 ms;
+  new_offset <= TRUE;
+  registers.baseline.offset <= to_signed(1600,WIDTH);
+  wait for CLK_PERIOD;
+  new_offset <= FALSE;
+  wait for 1 ms;
+  new_offset <= TRUE;
+  registers.baseline.offset <= to_signed(-1600,WIDTH);
+  wait for CLK_PERIOD;
+  new_offset <= FALSE;
+  wait for 1 ms;
+end loop;
+
+
 end process stimulus;
 
 end architecture testbench;

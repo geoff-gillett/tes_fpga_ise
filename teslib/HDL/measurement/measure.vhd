@@ -24,7 +24,7 @@ generic(
   FRAC:natural:=3;
   AREA_WIDTH:natural:=32;
   AREA_FRAC:natural:=1;
-  RAW_DELAY:natural:=1026;
+  RAW_DELAY:natural:=1022;
   TOWARDS_INF:boolean:=TRUE;
   AREA_ABOVE:boolean:=TRUE
 );
@@ -34,6 +34,7 @@ port (
   
   event_enable:in boolean;
   registers:in capture_registers_t;
+  baseline:in signed(WIDTH-1 downto 0);
   raw:in signed(WIDTH-1 downto 0);
   s:in signed(WIDTH-1 downto 0);
   f:in signed(WIDTH-1 downto 0);
@@ -138,6 +139,7 @@ constant DEBUG:string:="FALSE";
 attribute mark_debug:string;
 attribute mark_debug of valid_rise:signal is DEBUG;
 signal cfd_low_armed,cfd_high_armed,max_slope_armed:boolean;
+signal baseline_d:std_logic_vector(WIDTH-1 downto 0);
 
 begin
 measurements <= m;
@@ -153,6 +155,16 @@ port map(
   input => std_logic_vector(raw),
   delayed => raw_d
 );
+baselineDelay:entity dsp.sdp_bram_delay
+generic map(
+  DELAY => RAW_DELAY+4,
+  WIDTH => WIDTH
+)
+port map(
+  clk => clk,
+  input => std_logic_vector(baseline),
+  delayed => baseline_d
+);
 rawTrace:entity work.dynamic_RAM_delay2
 generic map(
   DEPTH     => 2**10,
@@ -167,13 +179,14 @@ port map(
 );
 m.raw <= signed(raw_sig);
 m.raw_trace <= signed(raw_trace);
+m.baseline <= signed(baseline_d);
 
 CFD:entity work.CFD
 generic map(
   WIDTH => WIDTH,
   CF_WIDTH => CF_WIDTH,
   CF_FRAC => CF_FRAC,
-  DELAY => RAW_DELAY-203 --210
+  DELAY => RAW_DELAY-202 --203 --210
 )
 port map(
   clk => clk,
