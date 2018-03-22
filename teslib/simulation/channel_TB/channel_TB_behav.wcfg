@@ -22,17 +22,18 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="74300000001fs"></ZoomEndTime>
-      <Cursor1Time time="1000000000fs"></Cursor1Time>
+      <ZoomStartTime time="3083500000000fs"></ZoomStartTime>
+      <ZoomEndTime time="4184500000001fs"></ZoomEndTime>
+      <Cursor1Time time="4001000000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="200"></NameColumnWidth>
-      <ValueColumnWidth column_width="96"></ValueColumnWidth>
+      <ValueColumnWidth column_width="123"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="15" />
    <wave_markers>
       <marker time="10380000000" label="" />
+      <marker time="1009492000000" label="" />
    </wave_markers>
    <wvobject fp_name="/channel_TB/adc_sample" type="array">
       <obj_property name="ElementShortName">adc_sample[13:0]</obj_property>
@@ -747,6 +748,9 @@
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/estimate_f1" type="array">
          <obj_property name="ElementShortName">estimate_f1[11:0]</obj_property>
          <obj_property name="ObjectShortName">estimate_f1[11:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/new_estimate" type="other">
          <obj_property name="ElementShortName">new_estimate</obj_property>
@@ -803,6 +807,7 @@
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/bin" type="array">
          <obj_property name="ElementShortName">bin[10:0]</obj_property>
          <obj_property name="ObjectShortName">bin[10:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/bin_valid0" type="other">
          <obj_property name="ElementShortName">bin_valid0</obj_property>
@@ -970,14 +975,18 @@
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/most_frequent_count" type="array">
          <obj_property name="ElementShortName">most_frequent_count[17:0]</obj_property>
          <obj_property name="ObjectShortName">most_frequent_count[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/new_most_frequent" type="other">
          <obj_property name="ElementShortName">new_most_frequent</obj_property>
          <obj_property name="ObjectShortName">new_most_frequent</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/total_in_bounds" type="array">
          <obj_property name="ElementShortName">total_in_bounds[63:0]</obj_property>
          <obj_property name="ObjectShortName">total_in_bounds[63:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/readable" type="other">
          <obj_property name="ElementShortName">readable</obj_property>
@@ -998,6 +1007,7 @@
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/count" type="array">
          <obj_property name="ElementShortName">count[17:0]</obj_property>
          <obj_property name="ObjectShortName">count[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/MCA" type="array">
          <obj_property name="ElementShortName">MCA[0:2047][17:0]</obj_property>
@@ -1025,14 +1035,17 @@
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/ram_out1" type="array">
          <obj_property name="ElementShortName">ram_out1[17:0]</obj_property>
          <obj_property name="ObjectShortName">ram_out1[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/dout" type="array">
          <obj_property name="ElementShortName">dout[17:0]</obj_property>
          <obj_property name="ObjectShortName">dout[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/din" type="array">
          <obj_property name="ElementShortName">din[17:0]</obj_property>
          <obj_property name="ObjectShortName">din[17:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/mf_count_int" type="array">
          <obj_property name="ElementShortName">mf_count_int[17:0]</obj_property>
@@ -1044,6 +1057,9 @@
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/ram_out2" type="array">
          <obj_property name="ElementShortName">ram_out2[17:0]</obj_property>
          <obj_property name="ObjectShortName">ram_out2[17:0]</obj_property>
+         <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/oldcount" type="array">
          <obj_property name="ElementShortName">oldcount[18:0]</obj_property>
@@ -1056,10 +1072,14 @@
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/newcount" type="array">
          <obj_property name="ElementShortName">newcount[18:0]</obj_property>
          <obj_property name="ObjectShortName">newcount[18:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FF0000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/incremented_count" type="array">
          <obj_property name="ElementShortName">incremented_count[18:0]</obj_property>
          <obj_property name="ObjectShortName">incremented_count[18:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/channel_TB/UUT/estimator/dyngen/mca/buffer0/swap_pipe" type="array">
          <obj_property name="ElementShortName">swap_pipe[1:6]</obj_property>
