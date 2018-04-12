@@ -44,7 +44,7 @@ constant DELAY_BITS:integer:=10;
 constant PEAK_COUNT_BITS:integer:=4;
 constant TRACE_STRIDE_BITS:integer:=5;
 constant TRACE_LENGTH_BITS:integer:=10;
-constant TRACE_PRE_BITS:natural:=10;
+constant TRACE_PRE_BITS:natural:=16;
 
 constant MCA_BIN_N_BITS:integer:=5;
 constant MCA_CHANNEL_WIDTH:integer:=3;
@@ -312,7 +312,7 @@ type channel_register_array is array (natural range <>)
 -- baseline.flags							address bit 10
 -- 2  downto 0  baseline.average_order
 -- 4 						baseline.subtraction 
--- 25 downto 16 trace_pre (TRACE_PRE_BITS+16-1 downto 16)
+-- 31 downto 16 trace_pre (TRACE_PRE_BITS+16-1 downto 16)
 --
 -- input select								address bit 11  
 
@@ -384,7 +384,7 @@ type mca_value_array is array (natural range <>)
 --TODO check that 0xings are same as valids
 	
 type mca_registers_t is record
-	bin_n:unsigned(MCA_BIN_N_BITS-1 downto 0); -- FIXME this should be 5 bits
+	bin_n:unsigned(MCA_BIN_N_BITS-1 downto 0); 
 	lowest_value:signed(MCA_VALUE_BITS-1 downto 0);
 	-- NOTE must be odd LSB set to 1 so there are an even number of bins
 	last_bin:unsigned(MCA_ADDRESS_BITS-1 downto 0);

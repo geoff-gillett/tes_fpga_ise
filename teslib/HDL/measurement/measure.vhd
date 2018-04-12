@@ -489,7 +489,7 @@ begin
         m.reg(NOW) <= m.reg(PRE3); --FIXME is this an issue? when start max start
         
         
-        m.last_peak_address <= reg.max_peaks+2;
+        m.last_peak_address <= reg.max_peaks+2; --FIXME use pipe?
         m.last_rise <= reg.max_peaks=0;
         
         m.has_rise <= FALSE;

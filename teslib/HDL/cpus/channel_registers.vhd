@@ -93,10 +93,10 @@ signal reg:channel_registers_t:=(
   baseline  => (
     offset => (others => '0'),
     subtraction => FALSE,
-    timeconstant => (others => '0'),
+    timeconstant => to_unsigned(250000, BASELINE_TIMECONSTANT_BITS),
     threshold => (others => '0'),
-    count_threshold => (others => '0'),
-    new_only => FALSE
+    count_threshold => to_unsigned(60, BASELINE_COUNTER_BITS),
+    new_only => TRUE
   ),
   capture => (
     max_peaks => (others => '0'),
@@ -115,7 +115,7 @@ signal reg:channel_registers_t:=(
     trace_type => SINGLE_TRACE_D,
     trace_stride => (others => '0'),
     trace_length => to_unsigned(512,TRACE_LENGTH_BITS),
-    trace_pre => to_unsigned(64,TRACE_PRE_BITS)
+    trace_pre => to_unsigned(128,TRACE_PRE_BITS)
   )
 );
 
@@ -140,94 +140,70 @@ regWrite:process(clk)
 begin
 if rising_edge(clk) then
   --FIXME these resets needed? use assignment at definition
-	if reset='1' then
---		reg.baseline.offset <= DEFAULT_BL_OFFSET;
---		reg.baseline.subtraction <= DEFAULT_BL_SUBTRACTION;
---		reg.baseline.timeconstant <= DEFAULT_BL_TIMECONSTANT;
---		reg.baseline.threshold <= DEFAULT_BL_THRESHOLD;
---		reg.baseline.count_threshold <= DEFAULT_BL_COUNT_THRESHOLD;
---		reg.capture.max_peaks <= DEFAULT_MAX_PEAKS;
---		reg.capture.constant_fraction <= DEFAULT_CONSTANT_FRACTION;
---		reg.capture.pulse_threshold <= DEFAULT_PULSE_THRESHOLD;
---		reg.capture.slope_threshold <= DEFAULT_SLOPE_THRESHOLD;
---		reg.capture.slope_threshold <= DEFAULT_SLOPE_THRESHOLD;
---		reg.capture.area_threshold <= DEFAULT_AREA_THRESHOLD;
---		reg.capture.height <= DEFAULT_HEIGHT;
---		reg.capture.timing <= DEFAULT_TIMING;
---		reg.capture.detection <= DEFAULT_DETECTION;
---		reg.capture.delay <= DEFAULT_DELAY;
---		reg.capture.adc_select <= (CHANNEL => '1',others => '0');
---		reg.capture.trace_signal <= FILTERED_TRACE_D;
---		reg.capture.trace_type <= SINGLE_TRACE_D;
---		reg.capture.trace_stride <= (others => '0');
---		reg.capture.trace_length <= to_unsigned(512,TRACE_LENGTH_BITS);
---		reg.capture.trace_pre <= DEFAULT_TRACE_PRE;
-  else
-    if write='1' then
-      if address(DELAY_ADDR_BIT)='1' then
-        reg.capture.delay <= unsigned(data(DELAY_BITS-1 downto 0)); 
-      end if;
-      if address(CAPTURE_ADDR_BIT)='1' then
-      	--FIXME make this a function
-      	reg.capture.detection <= to_detection_d(data(1 downto 0));
-      	reg.capture.timing <= to_timing_d(data(3 downto 2));
-      	reg.capture.max_peaks <= unsigned(data(7 downto 4));
-      	reg.capture.height <= to_height_d(data(9 downto 8));
-      	reg.capture.trace_signal <= to_trace_signal_d(data(11 downto 10));
-      	reg.capture.trace_type <= to_trace_type_d(data(13 downto 12));
-      	reg.capture.trace_stride <= unsigned(data(18 downto 14));
-      	reg.capture.trace_length 
-      	 <= unsigned(data(18+TRACE_LENGTH_BITS-1 downto 18));
-      end if;
-      if address(PULSE_THRESHOLD_ADDR_BIT)='1' then
-        reg.capture.pulse_threshold 
-        	<= unsigned(data(DSP_BITS-2 downto 0)); 
-      end if;
-      if address(SLOPE_THRESHOLD_ADDR_BIT)='1' then
-        reg.capture.slope_threshold 
-        	<= unsigned(data(DSP_BITS-2 downto 0)); 
-      end if;
-      if address(CONSTANT_FRACTION_ADDR_BIT)='1' then
-      	reg.capture.constant_fraction
-          <= unsigned(data(CFD_BITS-2 downto 0));
-        reg.capture.cfd_rel2min <= data(AXI_DATA_BITS-1)='1'; 
-      end if;
-      if address(AREA_THRESHOLD_ADDR_BIT)='1' then
-      	reg.capture.area_threshold 
-      		<= unsigned(data(AREA_BITS-2 downto 0)); 
-      end if;
-      if address(DELAY_ADDR_BIT)='1' then
-      	reg.capture.delay <= unsigned(data(DELAY_BITS-1 downto 0)); 
-      end if;
-      if address(BL_OFFSET_ADDR_BIT)='1' then
-        reg.baseline.offset <= signed(data(DSP_BITS-1 downto 0)); 
-      end if;
-      if address(BL_TIMECONSTANT_ADDR_BIT)='1' then
-        reg.baseline.timeconstant 
-        	<= unsigned(data(BASELINE_TIMECONSTANT_BITS-1 downto 0)); 
-      end if;
-      if address(BL_THRESHOLD_ADDR_BIT)='1' then
-        reg.baseline.threshold 
-        	<= signed(data(DSP_BITS-1 downto 0)); 
-      end if;
-      if address(BL_COUNT_THRESHOLD_ADDR_BIT)='1' then
-        reg.baseline.count_threshold 
-        	<= unsigned(data(BASELINE_COUNTER_BITS-1 downto 0)); 
-      end if;
-      if address(BL_FLAGS_ADDR_BIT)='1' then
-        reg.baseline.new_only <= to_boolean(data(0));
-        reg.baseline.subtraction <= to_boolean(data(1));
-        reg.capture.trace_pre <= unsigned(data(TRACE_PRE_BITS+16-1 downto 16)); 
-      end if;
-      if address(INPUT_SEL_ADDR_BIT)='1' then
-      	reg.capture.adc_select <= data(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
-      	reg.capture.invert <= data(ADC_CHIPS*ADC_CHIP_CHANNELS)='1';
-      end if;
-      if address(FIR_RELOAD_ADDR_BIT)='1' then
-        coef_data <= data;
-      else 
-        coef_data <= (others => '0');
-      end if;
+  if write='1' then
+    if address(DELAY_ADDR_BIT)='1' then
+      reg.capture.delay <= unsigned(data(DELAY_BITS-1 downto 0)); 
+    end if;
+    if address(CAPTURE_ADDR_BIT)='1' then
+      --FIXME make this a function
+      reg.capture.detection <= to_detection_d(data(1 downto 0));
+      reg.capture.timing <= to_timing_d(data(3 downto 2));
+      reg.capture.max_peaks <= unsigned(data(7 downto 4));
+      reg.capture.height <= to_height_d(data(9 downto 8));
+      reg.capture.trace_signal <= to_trace_signal_d(data(11 downto 10));
+      reg.capture.trace_type <= to_trace_type_d(data(13 downto 12));
+      reg.capture.trace_stride <= unsigned(data(18 downto 14));
+      reg.capture.trace_length 
+       <= unsigned(data(18+TRACE_LENGTH_BITS-1 downto 18));
+    end if;
+    if address(PULSE_THRESHOLD_ADDR_BIT)='1' then
+      reg.capture.pulse_threshold 
+        <= unsigned(data(DSP_BITS-2 downto 0)); 
+    end if;
+    if address(SLOPE_THRESHOLD_ADDR_BIT)='1' then
+      reg.capture.slope_threshold 
+        <= unsigned(data(DSP_BITS-2 downto 0)); 
+    end if;
+    if address(CONSTANT_FRACTION_ADDR_BIT)='1' then
+      reg.capture.constant_fraction
+        <= unsigned(data(CFD_BITS-2 downto 0));
+      reg.capture.cfd_rel2min <= data(AXI_DATA_BITS-1)='1'; 
+    end if;
+    if address(AREA_THRESHOLD_ADDR_BIT)='1' then
+      reg.capture.area_threshold 
+        <= unsigned(data(AREA_BITS-2 downto 0)); 
+    end if;
+    if address(DELAY_ADDR_BIT)='1' then
+      reg.capture.delay <= unsigned(data(DELAY_BITS-1 downto 0)); 
+    end if;
+    if address(BL_OFFSET_ADDR_BIT)='1' then
+      reg.baseline.offset <= signed(data(DSP_BITS-1 downto 0)); 
+    end if;
+    if address(BL_TIMECONSTANT_ADDR_BIT)='1' then
+      reg.baseline.timeconstant 
+        <= unsigned(data(BASELINE_TIMECONSTANT_BITS-1 downto 0)); 
+    end if;
+    if address(BL_THRESHOLD_ADDR_BIT)='1' then
+      reg.baseline.threshold 
+        <= signed(data(DSP_BITS-1 downto 0)); 
+    end if;
+    if address(BL_COUNT_THRESHOLD_ADDR_BIT)='1' then
+      reg.baseline.count_threshold 
+        <= unsigned(data(BASELINE_COUNTER_BITS-1 downto 0)); 
+    end if;
+    if address(BL_FLAGS_ADDR_BIT)='1' then
+      reg.baseline.new_only <= to_boolean(data(0));
+      reg.baseline.subtraction <= to_boolean(data(1));
+      reg.capture.trace_pre <= unsigned(data(TRACE_PRE_BITS+16-1 downto 16)); 
+    end if;
+    if address(INPUT_SEL_ADDR_BIT)='1' then
+      reg.capture.adc_select <= data(ADC_CHIPS*ADC_CHIP_CHANNELS-1 downto 0);
+      reg.capture.invert <= data(ADC_CHIPS*ADC_CHIP_CHANNELS)='1';
+    end if;
+    if address(FIR_RELOAD_ADDR_BIT)='1' then
+      coef_data <= data;
+    else 
+      coef_data <= (others => '0');
     end if;
   end if;
 end if;
