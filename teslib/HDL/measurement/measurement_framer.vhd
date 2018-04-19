@@ -1136,9 +1136,15 @@ begin
                   queue(0) <= to_streambus(pulse,0,ENDIAN);
                   queue(1) <= to_streambus(pulse,1,ENDIAN);
                   -- write last 
+                  -- FIXME is this overwriting if full?
+                  
                   queue(2) <= to_streambus(pulse_peak,TRUE,ENDIAN);
                   last_peak_address <= resize(m.last_peak_address,ADDRESS_BITS);
-                  q_pulse <= mux_enable;
+                  if m.rise_overflow then
+                    q_header <= mux_enable;
+                  else
+                    q_pulse <= mux_enable;
+                  end if;
                   q_mux_wr_en <= mux_enable;
                 end if;
                 
@@ -1437,7 +1443,7 @@ begin
 --            pulse_stamped <= FALSE;
           else
             tflags.multirise <= m.has_rise;
-            aux_word_reg <= to_streambus(pulse_peak,FALSE,ENDIAN);--?? last?
+            aux_word_reg <= to_streambus(pulse_peak,m.last_rise,ENDIAN);--?? last?
             aux_address <= resize(m.rise_address,ADDRESS_BITS);
             q_aux <= not average_detection and not m.rise_overflow;
 --            pulse_peak_valid <= mux_enable;
