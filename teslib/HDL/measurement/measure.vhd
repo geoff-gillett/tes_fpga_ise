@@ -693,6 +693,7 @@ begin
   end if;
 end process pulseMeas;
 
+--FIXME mux before the delays
 fTrace:entity work.dynamic_RAM_delay2
 generic map(
   DEPTH     => 2**10,
