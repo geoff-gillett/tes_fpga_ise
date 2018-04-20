@@ -127,6 +127,7 @@ type measurements_t is record
   height_valid:boolean_vector(PRE to NOW); 
   --captured height measurement @ height_valid
   peak_height:signed(CHUNK_DATABITS-1 downto 0); 
+--  max_slope:signed(CHUNK_DATABITS-1 downto 0); 
   
 	--maxima at end of a valid rise
   rise_stop:boolean_vector(PRE to NOW); 

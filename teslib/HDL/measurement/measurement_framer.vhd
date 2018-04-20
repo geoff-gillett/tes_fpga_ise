@@ -368,13 +368,15 @@ first_pulse_trace_header.length <= first_pulse.length;
 first_pulse_trace_header.offset <= first_pulse.offset;
 first_pulse_trace_header.area <= first_pulse.area;
 
-pulse_peak.minima <= m.minima(NOW);
+--pulse_peak.minima <= m.minima(NOW);
+pulse_peak.minima <= m.max_slope;
 pulse_peak.timestamp <= m.rise_timestamp;
 pulse_peak.rise_time <= m.rise_timer(NOW);
 pulse_peak.height <= m.height(NOW);
 
 peak.height <= m.height(NOW);
-peak.minima <= m.minima(NOW);
+--peak.minima <= m.minima(NOW);
+peak.minima <= m.max_slope;
 peak.flags <= current_eflags;
 
 area.flags <= current_eflags;
