@@ -229,9 +229,9 @@ begin
   o(4):=to_std_logic(m.will_cross);
   o(5):=to_std_logic(m.armed);
   o(6):=to_std_logic(m.will_arm);
-  o(7):=to_std_logic(m.rise0);
-  o(8):=to_std_logic(m.rise1);
-  o(9):=to_std_logic(m.rise2);
+  o(7):=to_std_logic(m.rise0 and m.valid_rise);
+  o(8):=to_std_logic(m.rise1 and m.valid_rise);
+  o(9):=to_std_logic(m.rise2 and m.valid_rise);
   return o;
 end function;
 

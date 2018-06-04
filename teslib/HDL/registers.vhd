@@ -145,7 +145,7 @@ function to_trace_type_d(i:natural range 0 to NUM_TRACE_TYPE_D-1)
 --FIXME 
 type mca_value_d is (
   MCAVAL_ZERO_D, --FIXME can use this slot?
-	MCAVAL_F_D, -- the output of the dsp filter
+  MCAVAL_F_D, -- the output of the dsp filter
   MCAVAL_F_AREA_D, -- the area between zero crossings
   MCA_FILTERED_EXTREMA_D, -- max or min between zero crossings
   MCA_SLOPE_SIGNAL_D, -- the output of the dsp differentiator
@@ -173,8 +173,8 @@ function to_integer(v:mca_value_d) return integer;
 -- the trigger that samples a value into the MCA
 --FIXME could make no select bits give clock and add a trigger 
 type mca_trigger_d is (
-	MCA_DISABLED_D, -- no select bits set
-	CLOCK_MCA_TRIGGER_D,
+  MCA_DISABLED_D, -- no select bits set
+  CLOCK_MCA_TRIGGER_D,
   PULSE_THRESHOLD_POS_MCA_TRIGGER_D, --FIXME order reversed
   PULSE_THRESHOLD_NEG_MCA_TRIGGER_D, 
   SLOPE_THRESHOLD_MCA_TRIGGER_D, --FIXME does not work?

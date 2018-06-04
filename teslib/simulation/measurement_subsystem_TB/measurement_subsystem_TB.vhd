@@ -741,8 +741,8 @@ chan_reg(1).capture.area_threshold <= to_unsigned(0,AREA_WIDTH-1);
 --------------------------------------------------------------------------------
 --
 --------------------------------------------------------------------------------
-  global.mca.update_asap <= FALSE;
-  global.mca.update_on_completion <= FALSE;
+global.mca.update_asap <= FALSE;
+global.mca.update_on_completion <= FALSE;
 --  global.channel_enable <= "00000000";
 chan_reg(0).capture.adc_select <= (0 => '1', others => '0');
 chan_reg(0).capture.delay <= (others => '0');
@@ -771,8 +771,8 @@ chan_reg(1).capture.height <= PEAK_HEIGHT_D;
 chan_reg(1).capture.cfd_rel2min <= FALSE;
 chan_reg(1).capture.trace_stride <= (others => '0');
   
-global.mca.value <= MCA_FILTERED_EXTREMA_D;
-global.mca.trigger <= FILTERED_0XING_MCA_TRIGGER_D;
+global.mca.value <= MCAVAL_F_D;
+global.mca.trigger <= SLOPE_NEG_0XING_MCA_TRIGGER_D;
 global.mca.qualifier <= ALL_MCA_QUAL_D;
 global.mca.ticks <= to_unsigned(1,MCA_TICKCOUNT_BITS);
 global.mca.bin_n <= to_unsigned(0,MCA_BIN_N_BITS);
@@ -795,6 +795,10 @@ simenable <= TRUE;
 bytestream_ready <= TRUE;
 global.channel_enable <= "00000011";
 store_reg <= TRUE;
+wait for 100*IO_CLK_PERIOD;
+global.mca.update_asap <= TRUE;
+wait for IO_CLK_PERIOD;
+global.mca.update_asap <= FALSE;
 
 while TRUE loop
   chan_reg(0).capture.timing <= PULSE_THRESH_TIMING_D;
